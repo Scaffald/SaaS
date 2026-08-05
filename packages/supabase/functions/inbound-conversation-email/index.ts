@@ -3,7 +3,7 @@
  * Forsured app removed; this function is retained for deployment compatibility but does not process emails.
  */
 import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
-import { createCorsResponse } from '../_shared/cors'
+import { createCorsResponse } from '../_shared/cors.ts'
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {

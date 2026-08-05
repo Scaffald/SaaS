@@ -1,14 +1,26 @@
 {
-  "publicProfile": "Profil public",
-  "search": "Rechercher",
   "auth": {
     "callback": "Auth Callback",
     "confirm": "Confirm Account",
     "login": "Sign In",
+    "privacy": "Politique de confidentialité",
     "success": "Success",
-    "verify": "Verify Email",
     "terms": "Conditions d'utilisation",
-    "privacy": "Politique de confidentialité"
+    "verify": "Verify Email"
+  },
+  "communities": {
+    "bookmarks": "Bookmarks",
+    "connections": {
+      "title": "Connections"
+    },
+    "detail": "Community",
+    "members": "Members",
+    "post": {
+      "create": "Create Post",
+      "detail": "Post Detail"
+    },
+    "reputation": "Reputation",
+    "title": "Communities"
   },
   "dashboard": {
     "applications": {
@@ -48,13 +60,13 @@
         "title": "Workers"
       }
     },
+    "home": "Accueil",
     "news": "News",
     "organizations": {
       "create": "Request Organization",
       "title": "Organizations"
     },
     "profile": {
-      "overview": "Aperçu",
       "backgroundCheck": {
         "dispute": "Dispute Background Check",
         "initiate": "Start Background Check",
@@ -66,14 +78,15 @@
       "experience": "Experience",
       "general": "General",
       "idVerification": "ID Verification",
-      "verification": "Vérification",
       "importReview": "Import Review",
+      "overview": "Aperçu",
       "resume": {
         "review": "Resume Review",
         "title": "Resumé"
       },
       "skills": "Skills",
-      "title": "Profile"
+      "title": "Profile",
+      "verification": "Vérification"
     },
     "settings": {
       "authentication": "Authentication Settings",
@@ -89,7 +102,6 @@
       "invitations": "Team Invitations",
       "title": "Teams"
     },
-    "home": "Accueil",
     "title": "Dashboard",
     "user": "User Profile",
     "workLogs": {
@@ -99,29 +111,7 @@
     }
   },
   "home": "Home",
-  "onboarding": {
-    "title": "Commencer"
-  },
-  "org": {
-    "title": "Mes organisations",
-    "detail": "Organisation",
-    "logs": "Journaux",
-    "invitations": "Invitations"
-  },
-  "communities": {
-    "title": "Communities",
-    "connections": {
-      "title": "Connections"
-    },
-    "bookmarks": "Bookmarks",
-    "reputation": "Reputation",
-    "detail": "Community",
-    "members": "Members",
-    "post": {
-      "create": "Create Post",
-      "detail": "Post Detail"
-    }
-  },
+  "legalUpdate": "Mise à jour des conditions",
   "office": {
     "applications": {
       "inquiry": "Inquiry Detail",
@@ -139,10 +129,6 @@
       "scheduling": "Interview Scheduling",
       "selfSchedule": "Self-Schedule",
       "title": "ATS"
-    },
-    "communities": {
-      "title": "Communities",
-      "verification": "Community Verification"
     },
     "cms": {
       "jobs": {
@@ -190,6 +176,10 @@
         "title": "Workers"
       }
     },
+    "communities": {
+      "title": "Communities",
+      "verification": "Community Verification"
+    },
     "notifications": "Notifications",
     "payments": "Payment Analytics",
     "settings": {
@@ -202,6 +192,17 @@
     "transactions": "Transaction History",
     "violations": "Violation Reports"
   },
+  "onboarding": {
+    "title": "Commencer"
+  },
+  "org": {
+    "detail": "Organisation",
+    "invitations": "Invitations",
+    "logs": "Journaux",
+    "title": "Mes organisations"
+  },
+  "publicProfile": "Profil public",
+  "search": "Rechercher",
   "teams": {
     "invitations": {
       "accept": "Accept Team Invitation"

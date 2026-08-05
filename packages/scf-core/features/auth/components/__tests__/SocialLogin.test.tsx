@@ -60,20 +60,7 @@ describe('SocialLogin', () => {
     vi.clearAllMocks()
   })
 
-  it('routes Google/Apple presses to onConsentMissing when provided (no provider call)', async () => {
-    const { SocialLogin } = await import('../SocialLogin')
-    const onConsentMissing = vi.fn()
-    const { getByTestId } = render(<SocialLogin onConsentMissing={onConsentMissing} />)
-
-    getByTestId('google-button').click()
-    getByTestId('apple-button').click()
-
-    expect(mockOnGooglePress).not.toHaveBeenCalled()
-    expect(mockOnApplePress).not.toHaveBeenCalled()
-    expect(onConsentMissing).toHaveBeenCalledTimes(2)
-  })
-
-  it('forwards to Google/Apple handlers when onConsentMissing is undefined', async () => {
+  it('forwards presses straight to the Google/Apple handlers (no consent gate)', async () => {
     const { SocialLogin } = await import('../SocialLogin')
     const { getByTestId } = render(<SocialLogin />)
 

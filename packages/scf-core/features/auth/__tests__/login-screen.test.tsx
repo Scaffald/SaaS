@@ -70,13 +70,6 @@ vi.mock('@scf/core/utils/auth-sdk-hooks', () => ({
   }),
 }))
 
-vi.mock('@scf/core/utils/cookieConsent/useRecordConsentMutation', () => ({
-  useRecordTermsAcceptanceMutation: () => ({
-    mutateAsync: vi.fn().mockResolvedValue({}),
-    isPending: false,
-  }),
-}))
-
 vi.mock('@scf/core/utils/analytics/client', () => ({
   captureEvent: captureEventMock,
 }))
@@ -122,14 +115,6 @@ describe('LoginScreen', () => {
     vi.restoreAllMocks()
   })
 
-  // SC-65: helper — simulate user checking the Terms checkbox. The form
-  // fields are always enabled, but submission still requires consent.
-  function acceptTerms(container: HTMLElement) {
-    const checkbox = container.querySelector('[role="checkbox"]') as HTMLElement | null
-    if (!checkbox) throw new Error('Terms checkbox not found')
-    fireEvent.click(checkbox)
-  }
-
   it('renders login form', async () => {
     const { LoginScreen } = await import('../login-screen')
     const { getByPlaceholderText } = render(<LoginScreen />)
@@ -141,7 +126,7 @@ describe('LoginScreen', () => {
     const LoginScreen = mod.LoginScreen
     mockMutateAsync.mockResolvedValue({ mode: 'magic_link' })
 
-    const { container, getByPlaceholderText, getByRole } = render(<LoginScreen />)
+    const { getByPlaceholderText, getByRole } = render(<LoginScreen />)
 
     // Router should clear the email param after mount
     await waitFor(() => {
@@ -150,8 +135,6 @@ describe('LoginScreen', () => {
 
     const input = getByPlaceholderText('your@email.acme')
     fireEvent.change(input, { target: { value: ' Person@Example.com ' } })
-
-    acceptTerms(container)
 
     const submitButton = getByRole('button', { name: /sign in or register/i })
     fireEvent.click(submitButton)
@@ -186,8 +169,6 @@ describe('LoginScreen', () => {
     const input = getByPlaceholderText('your@email.acme')
     fireEvent.change(input, { target: { value: 'duplicate@example.com' } })
 
-    acceptTerms(container)
-
     fireEvent.click(getByRole('button', { name: /sign in or register/i }))
 
     await waitFor(() => {
@@ -210,31 +191,38 @@ describe('LoginScreen', () => {
     const input = getByPlaceholderText('your@email.acme')
     fireEvent.change(input, { target: { value: 'user@example.com' } })
 
-    acceptTerms(container)
-
     fireEvent.click(getByRole('button', { name: /sign in or register/i }))
 
     expect(await findByText('Network down')).toBeInTheDocument()
   })
 
-  it('SC-65: surfaces inline consent error and blocks submit when Terms is unchecked', async () => {
+  it('renders the passive legal notice with terms and privacy links', async () => {
+    const { LoginScreen } = await import('../login-screen')
+
+    const { getByTestId, getByText } = render(<LoginScreen />)
+
+    expect(getByTestId('login-legal-notice')).toBeInTheDocument()
+
+    fireEvent.click(getByText('auth.login.legalNotice.terms'))
+    expect(mockPush).toHaveBeenCalledWith(ROUTES.AUTH.TERMS.path)
+
+    fireEvent.click(getByText('auth.login.legalNotice.privacy'))
+    expect(mockPush).toHaveBeenCalledWith(ROUTES.AUTH.PRIVACY.path)
+  })
+
+  it('submits without any consent interaction (no checkbox gate)', async () => {
     const { LoginScreen } = await import('../login-screen')
     mockMutateAsync.mockResolvedValue({ mode: 'magic_link' })
 
-    const { getByPlaceholderText, getByRole, findByText, queryByText } = render(
-      <LoginScreen />
-    )
-
-    // No inline error before any submit attempt.
-    expect(queryByText('auth.errors.mustAcceptTerms')).not.toBeInTheDocument()
+    const { getByPlaceholderText, getByRole } = render(<LoginScreen />)
 
     const input = getByPlaceholderText('your@email.acme')
     fireEvent.change(input, { target: { value: 'user@example.com' } })
 
-    // Submit without checking Terms — inline error appears, no magic link.
     fireEvent.click(getByRole('button', { name: /sign in or register/i }))
 
-    expect(await findByText('auth.errors.mustAcceptTerms')).toBeInTheDocument()
-    expect(mockMutateAsync).not.toHaveBeenCalled()
+    await waitFor(() => {
+      expect(mockMutateAsync).toHaveBeenCalled()
+    })
   })
 })

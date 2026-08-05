@@ -67,7 +67,15 @@ export default function RootIndex() {
     isServerRender: typeof window === 'undefined',
     isPending,
     hasUser: !!user,
-    prerequisitesComplete: isCheckingPrereqs ? undefined : !!prereqStatus?.isComplete,
+    // When the query settles without data (error), fall back to the onboarding
+    // redirect — same failure mode as the old `!!prereqStatus?.isComplete`
+    // coercion; the onboarding layout has its own retry UX.
+    prereqs: isCheckingPrereqs
+      ? undefined
+      : {
+          needsOnboarding: prereqStatus ? prereqStatus.needsOnboarding : true,
+          needsLegalAcceptance: prereqStatus ? prereqStatus.needsLegalAcceptance : false,
+        },
   }
 
   // Check if router is ready

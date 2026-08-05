@@ -58,13 +58,15 @@ test.describe('Profile prerequisites checkboxes', () => {
   test('legal agreement labels toggle the related checkboxes', async ({ page }) => {
     const helpers = await loadPrerequisitesForm(page)
 
-    const privacyButton = page.getByRole('button', { name: /i accept the privacy policy/i })
-    await privacyButton.click()
-    expect(await helpers.isCheckboxCheckedByTestId('checkbox-legal-privacy-policy')).toBe(true)
+    // Click near the label's start — the document name mid-label is a link
+    // that navigates to the full text rather than toggling.
+    const privacyButton = page.getByRole('button', { name: /i agree to the privacy policy/i })
+    await privacyButton.click({ position: { x: 5, y: 5 } })
+    expect(await helpers.isCheckboxCheckedByTestId('prereq-privacy-checkbox')).toBe(true)
 
-    const termsButton = page.getByRole('button', { name: /i accept the terms of service/i })
-    await termsButton.click()
-    expect(await helpers.isCheckboxCheckedByTestId('checkbox-legal-terms-of-service')).toBe(true)
+    const termsButton = page.getByRole('button', { name: /i agree to the terms of service/i })
+    await termsButton.click({ position: { x: 5, y: 5 } })
+    expect(await helpers.isCheckboxCheckedByTestId('prereq-terms-checkbox')).toBe(true)
 
     // Ensure semantic checkbox query works for automation suites
     const allCheckboxes = helpers.getCheckboxesByRole()

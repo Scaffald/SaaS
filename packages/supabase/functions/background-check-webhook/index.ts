@@ -1,16 +1,19 @@
 import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
 import { z } from 'zod'
-import { notifyBackgroundCheckStatusChange } from '../_shared/background-check-notifications'
+// Extensionless relative imports break `functions serve` bundling for the
+// whole stack ("failed to read file: ... no such file or directory") — the
+// same class PR #396 fixed and #436 reintroduced. Keep the .ts suffixes.
+import { notifyBackgroundCheckStatusChange } from '../_shared/background-check-notifications.ts'
 import {
   appendStatusHistory,
   BACKGROUND_CHECK_SYNC_COLUMNS,
   BackgroundCheckStatus,
   mapProviderStatus,
   mergeMetadata,
-} from '../_shared/background-check-status'
-import { corsHeaders } from '../_shared/cors'
-import { createNationSearchClient } from '../_shared/nationsearch/client'
-import type { NotificationSupabaseClient } from '../_shared/notifications/types'
+} from '../_shared/background-check-status.ts'
+import { corsHeaders } from '../_shared/cors.ts'
+import { createNationSearchClient } from '../_shared/nationsearch/client.ts'
+import type { NotificationSupabaseClient } from '../_shared/notifications/types.ts'
 import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
 
 const SIGNATURE_HEADER = 'x-nationsearch-signature'

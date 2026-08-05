@@ -6329,6 +6329,39 @@ export type Database = {
           },
         ]
       }
+      legal_documents: {
+        Row: {
+          created_at: string
+          doc_type: string
+          effective_at: string
+          id: string
+          is_current: boolean
+          title: string | null
+          url: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          doc_type: string
+          effective_at?: string
+          id?: string
+          is_current?: boolean
+          title?: string | null
+          url: string
+          version: string
+        }
+        Update: {
+          created_at?: string
+          doc_type?: string
+          effective_at?: string
+          id?: string
+          is_current?: boolean
+          title?: string | null
+          url?: string
+          version?: string
+        }
+        Relationships: []
+      }
       message_templates: {
         Row: {
           body: string
@@ -7003,6 +7036,7 @@ export type Database = {
           description: string
           display_name: string
           id: string
+          is_self_scoped: boolean
           is_sensitive: boolean
           rbac_permissions: string[]
           requires_admin_approval: boolean
@@ -7015,6 +7049,7 @@ export type Database = {
           description: string
           display_name: string
           id?: string
+          is_self_scoped?: boolean
           is_sensitive?: boolean
           rbac_permissions?: string[]
           requires_admin_approval?: boolean
@@ -7027,6 +7062,7 @@ export type Database = {
           description?: string
           display_name?: string
           id?: string
+          is_self_scoped?: boolean
           is_sensitive?: boolean
           rbac_permissions?: string[]
           requires_admin_approval?: boolean
@@ -11354,7 +11390,7 @@ export type Database = {
       user_certifications: {
         Row: {
           certificate_file_path: string | null
-          certification_id: string
+          certification_id: string | null
           created_at: string | null
           credential_id: string | null
           credential_url: string | null
@@ -11363,13 +11399,15 @@ export type Database = {
           id: string
           is_active: boolean | null
           issue_date: string | null
+          issuing_organization: string | null
+          name: string | null
           updated_at: string | null
           user_id: string
           verification_status: string | null
         }
         Insert: {
           certificate_file_path?: string | null
-          certification_id: string
+          certification_id?: string | null
           created_at?: string | null
           credential_id?: string | null
           credential_url?: string | null
@@ -11378,13 +11416,15 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           issue_date?: string | null
+          issuing_organization?: string | null
+          name?: string | null
           updated_at?: string | null
           user_id: string
           verification_status?: string | null
         }
         Update: {
           certificate_file_path?: string | null
-          certification_id?: string
+          certification_id?: string | null
           created_at?: string | null
           credential_id?: string | null
           credential_url?: string | null
@@ -11393,6 +11433,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           issue_date?: string | null
+          issuing_organization?: string | null
+          name?: string | null
           updated_at?: string | null
           user_id?: string
           verification_status?: string | null
@@ -12195,6 +12237,7 @@ export type Database = {
           status: string
           submitted_at: string | null
           tasks_completed: string[] | null
+          team_id: string | null
           time_entries: Json
           total_hours: number | null
           updated_at: string | null
@@ -12227,6 +12270,7 @@ export type Database = {
           status?: string
           submitted_at?: string | null
           tasks_completed?: string[] | null
+          team_id?: string | null
           time_entries?: Json
           total_hours?: number | null
           updated_at?: string | null
@@ -12259,6 +12303,7 @@ export type Database = {
           status?: string
           submitted_at?: string | null
           tasks_completed?: string[] | null
+          team_id?: string | null
           time_entries?: Json
           total_hours?: number | null
           updated_at?: string | null
@@ -12274,6 +12319,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "construction_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_logs_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
           {
@@ -12308,6 +12360,72 @@ export type Database = {
       }
     }
     Views: {
+      user_profiles: {
+        Row: {
+          authorized_countries: string[] | null
+          availability: string[] | null
+          career_level: string | null
+          drivers_license_classes: string[] | null
+          education_level: string | null
+          hourly_rate: number | null
+          id: string | null
+          military_status: string[] | null
+          open_to_travel: boolean | null
+          preferred_work_locations: string[] | null
+          travel_distance_miles: number | null
+          updated_at: string | null
+          us_passport: boolean | null
+          us_resident: boolean | null
+        }
+        Insert: {
+          authorized_countries?: string[] | null
+          availability?: string[] | null
+          career_level?: string | null
+          drivers_license_classes?: string[] | null
+          education_level?: string | null
+          hourly_rate?: number | null
+          id?: string | null
+          military_status?: string[] | null
+          open_to_travel?: boolean | null
+          preferred_work_locations?: string[] | null
+          travel_distance_miles?: number | null
+          updated_at?: string | null
+          us_passport?: boolean | null
+          us_resident?: boolean | null
+        }
+        Update: {
+          authorized_countries?: string[] | null
+          availability?: string[] | null
+          career_level?: string | null
+          drivers_license_classes?: string[] | null
+          education_level?: string | null
+          hourly_rate?: number | null
+          id?: string | null
+          military_status?: string[] | null
+          open_to_travel?: boolean | null
+          preferred_work_locations?: string[] | null
+          travel_distance_miles?: number | null
+          updated_at?: string | null
+          us_passport?: boolean | null
+          us_resident?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_user_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_user_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_id_verification_latest: {
         Row: {
           badge_expires_at: string | null
@@ -12566,7 +12684,7 @@ export type Database = {
       }
       cleanup_expired_api_keys: { Args: never; Returns: number }
       cleanup_expired_oauth_codes: { Args: never; Returns: number }
-      cleanup_old_notifications: { Args: never; Returns: undefined }
+      cleanup_old_notifications: { Args: never; Returns: Json }
       configure_stripe_server: {
         Args: { p_api_key_secret_id: string; p_api_version?: string }
         Returns: undefined
@@ -12786,6 +12904,13 @@ export type Database = {
       send_profile_completion_reminders: { Args: never; Returns: number }
       unpin_review: { Args: { p_review_id: string }; Returns: undefined }
       update_stale_applications: { Args: never; Returns: number }
+      user_has_any_team_permission: {
+        Args: {
+          p_permission: Database["core"]["Enums"]["team_permission"]
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       user_has_role: {
         Args: { p_org_id?: string; p_role_name: string; p_user_id: string }
         Returns: boolean

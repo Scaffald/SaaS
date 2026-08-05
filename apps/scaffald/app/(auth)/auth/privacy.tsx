@@ -1,9 +1,12 @@
 import { LegalDocumentLayout } from './components/LegalDocumentLayout'
+import { formatEffectiveDate } from '@scf/core/utils/legal/fetchLegalDocuments'
+import { useLegalDocumentInfo } from '@scf/core/utils/legal/useLegalDocumentInfo'
 import { Paragraph, Stack, useThemeContext } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
 
 export default function PrivacyScreen() {
   const { theme } = useThemeContext()
+  const docInfo = useLegalDocumentInfo('privacy_policy')
 
   const paragraphStyle = { color: colors.text[theme].secondary }
 
@@ -174,7 +177,7 @@ export default function PrivacyScreen() {
   return (
     <LegalDocumentLayout
       title="Privacy Policy"
-      subtitle="Last updated: March 2025 · Version 1"
+      subtitle={`Last updated: ${formatEffectiveDate(docInfo.effective_at)} · Version ${docInfo.version}`}
       sections={sections}
     />
   )

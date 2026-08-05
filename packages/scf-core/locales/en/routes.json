@@ -1,16 +1,35 @@
 {
-  "publicProfile": "Public Profile",
-  "search": "Search",
   "auth": {
     "callback": "Auth Callback",
     "confirm": "Confirm Account",
     "login": "Sign In",
+    "privacy": "Privacy Policy",
     "success": "Success",
-    "verify": "Verify Email",
     "terms": "Terms of Service",
-    "privacy": "Privacy Policy"
+    "verify": "Verify Email"
+  },
+  "communities": {
+    "bookmarks": "Bookmarks",
+    "connections": {
+      "title": "Connections"
+    },
+    "detail": "Community",
+    "members": "Members",
+    "post": {
+      "create": "Create Post",
+      "detail": "Post Detail"
+    },
+    "reputation": "Reputation",
+    "title": "Communities"
   },
   "dashboard": {
+    "analytics": {
+      "engagement": "Engagement",
+      "overview": "Overview",
+      "search": "Search",
+      "title": "Analytics",
+      "visibility": "Visibility"
+    },
     "applications": {
       "inquiry": "Inquiry",
       "title": "Applications"
@@ -63,6 +82,7 @@
         "title": "Workers"
       }
     },
+    "home": "Home",
     "news": "News",
     "notifications": "Notifications",
     "organizations": {
@@ -70,7 +90,6 @@
       "title": "Organizations"
     },
     "profile": {
-      "overview": "Overview",
       "backgroundCheck": {
         "dispute": "Dispute Background Check",
         "initiate": "Start Background Check",
@@ -82,14 +101,15 @@
       "experience": "Experience",
       "general": "General",
       "idVerification": "ID Verification",
-      "verification": "Verification",
       "importReview": "Import Review",
+      "overview": "Overview",
       "resume": {
         "review": "Resume Review",
         "title": "Resumé"
       },
       "skills": "Skills",
-      "title": "Profile"
+      "title": "Profile",
+      "verification": "Verification"
     },
     "settings": {
       "authentication": "Authentication Settings",
@@ -105,14 +125,6 @@
       "invitations": "Team Invitations",
       "title": "Teams"
     },
-    "home": "Home",
-    "analytics": {
-      "title": "Analytics",
-      "overview": "Overview",
-      "engagement": "Engagement",
-      "visibility": "Visibility",
-      "search": "Search"
-    },
     "title": "Dashboard",
     "user": "User Profile",
     "workLogs": {
@@ -122,29 +134,7 @@
     }
   },
   "home": "Home",
-  "onboarding": {
-    "title": "Get Started"
-  },
-  "org": {
-    "title": "My Organizations",
-    "detail": "Organization",
-    "logs": "Logs",
-    "invitations": "Invitations"
-  },
-  "communities": {
-    "title": "Communities",
-    "connections": {
-      "title": "Connections"
-    },
-    "bookmarks": "Bookmarks",
-    "reputation": "Reputation",
-    "detail": "Community",
-    "members": "Members",
-    "post": {
-      "create": "Create Post",
-      "detail": "Post Detail"
-    }
-  },
+  "legalUpdate": "Terms update",
   "office": {
     "applications": {
       "inquiry": "Inquiry Detail",
@@ -162,10 +152,6 @@
       "scheduling": "Interview Scheduling",
       "selfSchedule": "Self-Schedule",
       "title": "ATS"
-    },
-    "communities": {
-      "title": "Communities",
-      "verification": "Community Verification"
     },
     "cms": {
       "jobs": {
@@ -213,6 +199,10 @@
         "title": "Workers"
       }
     },
+    "communities": {
+      "title": "Communities",
+      "verification": "Community Verification"
+    },
     "compliance": {
       "eeoReports": "EEO Reports",
       "projectHiring": "Project Hiring",
@@ -239,6 +229,17 @@
     "transactions": "Transaction History",
     "violations": "Violation Reports"
   },
+  "onboarding": {
+    "title": "Get Started"
+  },
+  "org": {
+    "detail": "Organization",
+    "invitations": "Invitations",
+    "logs": "Logs",
+    "title": "My Organizations"
+  },
+  "publicProfile": "Public Profile",
+  "search": "Search",
   "teams": {
     "invitations": {
       "accept": "Accept Team Invitation"

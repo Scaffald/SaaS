@@ -22,15 +22,20 @@ export default function OnboardingLayout() {
     enabled: !!user,
   })
 
-  // Redirect to dashboard once when prerequisites are already complete
+  // Redirect away once when the onboarding form has nothing left to do:
+  // fully complete → dashboard; profile complete but a newer legal version is
+  // unaccepted → the lightweight /legal-update screen (not this full form).
   // biome-ignore lint/correctness/useExhaustiveDependencies: router is stable
   useEffect(() => {
-    if (isCheckingPrereqs || !statusData?.isComplete || hasRedirectedToDashboardRef.current) {
+    if (isCheckingPrereqs || !statusData || hasRedirectedToDashboardRef.current) {
       return
     }
+    if (statusData.needsOnboarding) return
     hasRedirectedToDashboardRef.current = true
-    router.replace(ROUTES.DASHBOARD.path)
-  }, [statusData?.isComplete, isCheckingPrereqs])
+    router.replace(
+      statusData.needsLegalAcceptance ? ROUTES.LEGAL_UPDATE.path : ROUTES.DASHBOARD.path
+    )
+  }, [statusData, isCheckingPrereqs])
 
   if (isCheckingPrereqs) {
     return (

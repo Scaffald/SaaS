@@ -18,7 +18,12 @@ export type RootRouteInput = {
   isPending: boolean
   hasUser: boolean
   /** Undefined while the prerequisites query is in flight. */
-  prerequisitesComplete?: boolean
+  prereqs?: {
+    /** Profile fields missing → the full onboarding form. */
+    needsOnboarding: boolean
+    /** Profile complete but a newer legal version is unaccepted → /legal-update. */
+    needsLegalAcceptance: boolean
+  }
 }
 
 export type RootRouteDecision =
@@ -37,7 +42,7 @@ export type RootRouteDecision =
  * marketing surface.
  */
 export function resolveRootRoute(input: RootRouteInput): RootRouteDecision {
-  const { platform, isServerRender, isPending, hasUser, prerequisitesComplete } = input
+  const { platform, isServerRender, isPending, hasUser, prereqs } = input
   const isWeb = platform === 'web'
 
   // Web hydrates the server-rendered document, so this decision has to come out
@@ -57,13 +62,17 @@ export function resolveRootRoute(input: RootRouteInput): RootRouteDecision {
 
   if (!hasUser) return { type: 'redirect', path: AUTH_ROUTES.LOGIN.path }
 
-  // Signed in: hold until prerequisites resolve, then route by completeness.
-  if (prerequisitesComplete === undefined) return { type: 'wait' }
+  // Signed in: hold until prerequisites resolve, then route by which gate (if
+  // any) is unresolved: profile gaps outrank legal staleness.
+  if (prereqs === undefined) return { type: 'wait' }
 
-  return {
-    type: 'redirect',
-    path: prerequisitesComplete ? ROUTES.DASHBOARD.path : ROUTES.ONBOARDING.path,
+  if (prereqs.needsOnboarding) {
+    return { type: 'redirect', path: ROUTES.ONBOARDING.path }
   }
+  if (prereqs.needsLegalAcceptance) {
+    return { type: 'redirect', path: ROUTES.LEGAL_UPDATE.path }
+  }
+  return { type: 'redirect', path: ROUTES.DASHBOARD.path }
 }
 
 /**

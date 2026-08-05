@@ -54,7 +54,7 @@ const SIGNED_EXPORT_URL_TTL_SECONDS = 60 * 10
 const PUBLIC_WORK_LOG_PHOTO_TTL_SECONDS = 60 * 5
 
 const WORK_LOG_SELECT =
-  'id, user_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, total_hours, submitted_at, verified_at, disputed_at, dispute_reason, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status, created_at, updated_at, verified_by_user_id, pending_move_to_project_id, pending_move_reason, pending_move_requested_at, pending_move_requested_by'
+  'id, user_id, team_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, total_hours, submitted_at, verified_at, disputed_at, dispute_reason, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status, created_at, updated_at, verified_by_user_id, pending_move_to_project_id, pending_move_reason, pending_move_requested_at, pending_move_requested_by'
 
 const sanitizeFileName = (fileName: string): string => {
   return fileName

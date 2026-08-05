@@ -1467,7 +1467,7 @@ app.openapi(getMessagesRoute, async (c) => {
     .schema("core")
     .from("application_messages")
     .select(
-      `id, body, created_at, author_user_id, author:users!author_user_id(id, display_name, username)`,
+      "id, body, created_at, author_user_id, author:users!author_user_id(id, display_name, username)",
     )
     .eq("application_id", id)
     .order("created_at", { ascending: true });
