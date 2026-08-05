@@ -107,24 +107,19 @@ export const applicationUpdateSchema = z.object({
   // Additional fields
   notes: z.record(z.string(), z.unknown()).optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
-  // API-surface status names, not the DB values. The API layer maps these
-  // through STATUS_API_TO_DB before writing — `pending`/`reviewing` are stored
-  // as `new`/`screen`. `inquired` was missing here while the DB CHECK
-  // constraint (migration 112) and the office kanban both used it, so every
-  // attempt to move a candidate into the inquiry stage was rejected at the
-  // door with a 400.
-  status: z
-    .enum([
-      'pending',
-      'reviewing',
-      'inquired',
-      'interview',
-      'offer',
-      'hired',
-      'rejected',
-      'withdrawn',
-    ])
-    .optional(),
+  // NO `status` HERE, deliberately.
+  //
+  // This schema backs PATCH /v1/applications/{id}, which is the *applicant's*
+  // endpoint — it authorises on `application.user_id === auth user`. While
+  // `status` was accepted here, an applicant could PATCH their own application
+  // straight to `hired`: they own the row, and the only other guard was that
+  // the current status be `new` or `screen`, which is exactly where a fresh
+  // application sits. Verified against a live local API before removing it.
+  //
+  // The applicant's one legitimate status change is withdrawal, which has its
+  // own endpoint (POST /v1/applications/{id}/withdraw) and its own rules.
+  // Employer-side moves belong to PATCH /v1/employer/applications/{id}, which
+  // authorises on organisation access and validates the transition.
 })
 
 /**

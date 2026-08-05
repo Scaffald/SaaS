@@ -21,15 +21,36 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { authMiddleware, requireAuth } from "../middleware/auth.ts";
+import { createClient } from "@supabase/supabase-js";
 import {
   listAccessibleOrganizationIds,
   PIPELINE_ROLES,
+  resolveApplicationOrgAccess,
 } from "../lib/application-access.ts";
+import { checkTransition } from "../lib/application-transitions.ts";
 import {
   API_STATUSES,
   STATUS_API_TO_DB,
   withApiStatus,
 } from "./applications.ts";
+
+/**
+ * Service-role client, used only after a handler has already authorised the
+ * request.
+ *
+ * The middleware hands handlers an RLS-enforcing client carrying the caller's
+ * JWT. core.application_activity's insert policy requires *team membership*,
+ * while pipeline access is granted by an org-level role assignment — so an org
+ * admin who is not on a team would be silently unable to record the transition
+ * they just performed. Rather than widen that policy (which would grant a
+ * second, looser path to the same data), authorise explicitly in the handler
+ * and write the audit row with the service role.
+ */
+function getServiceClient() {
+  const url = Deno.env.get("SUPABASE_URL") ?? "";
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  return createClient(url, key);
+}
 
 const app = new OpenAPIHono();
 
@@ -286,5 +307,324 @@ app.openapi(listEmployerApplicationsRoute, async (c) => {
     200,
   );
 });
+
+// ─────────────────────────────────────────────────────────────────────────
+// PATCH /v1/employer/applications/{id}
+// ─────────────────────────────────────────────────────────────────────────
+
+/**
+ * Employer-side update. Deliberately a *separate* schema from
+ * applicationUpdateSchema: that one is the applicant's, and widening it to
+ * carry `status` would let a candidate move themselves to `hired`.
+ */
+const employerApplicationUpdateSchema = z
+  .object({
+    status: z.enum(API_STATUSES).optional(),
+    assigned_to: z.string().uuid().nullable().optional(),
+  })
+  .refine((body) => Object.keys(body).length > 0, {
+    message: "Provide at least one field to update",
+  })
+  .openapi("UpdateEmployerApplicationRequest");
+
+const updateEmployerApplicationRoute = createRoute({
+  method: "patch",
+  path: "/{id}",
+  tags: ["Applications"],
+  summary: "Update an application from the hiring side",
+  description:
+    "Move an application through the pipeline or reassign it. Requires organisation access. Stage moves are validated against the transition table and recorded in the activity log.",
+  middleware: requireAuth,
+  request: {
+    params: z.object({ id: z.string().uuid() }),
+    body: {
+      content: {
+        "application/json": { schema: employerApplicationUpdateSchema },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Updated application",
+      content: { "application/json": { schema: employerApplicationSchema } },
+    },
+    400: {
+      description: "Transition not allowed",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+    401: {
+      description: "Unauthorized",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+    403: {
+      description: "No access to this application",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+    404: {
+      description: "Not found",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+});
+
+app.openapi(updateEmployerApplicationRoute, async (c) => {
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { id } = c.req.valid("param");
+  const input = c.req.valid("json");
+
+  if (!user) {
+    return c.json(
+      { error: "Unauthorized", message: "Authentication required" },
+      401,
+    );
+  }
+
+  const access = await resolveApplicationOrgAccess(supabase, user.id, id, {
+    allowedRoles: PIPELINE_ROLES,
+  });
+
+  // 404 before 403 on a missing row, so a stranger cannot probe which
+  // application ids exist.
+  if (!access.found) {
+    return c.json(
+      { error: "Not Found", message: "Application not found" },
+      404,
+    );
+  }
+
+  if (!access.hasOrgAccess) {
+    return c.json(
+      {
+        error: "Forbidden",
+        message: "You do not have access to this application",
+      },
+      403,
+    );
+  }
+
+  const { data: existing, error: readError } = await supabase
+    .schema("core")
+    .from("applications")
+    .select("id, status, assigned_to")
+    .eq("id", id)
+    .single();
+
+  if (readError || !existing) {
+    return c.json(
+      { error: "Not Found", message: "Application not found" },
+      404,
+    );
+  }
+
+  const currentStatus = existing.status as string;
+  const nextStatus = input.status
+    ? STATUS_API_TO_DB[input.status]
+    : currentStatus;
+
+  const transition = checkTransition(currentStatus, nextStatus);
+  if (!transition.allowed) {
+    return c.json(
+      {
+        error: "Bad Request",
+        message: transition.reason ?? "Invalid transition",
+      },
+      400,
+    );
+  }
+
+  // Marking a hire requires the upfront success fee to be settled.
+  //
+  // This rule previously lived only in the legacy tRPC `applications.update`
+  // procedure — on the *applicant's* path, which is where the self-promotion
+  // hole was. Removing status from that procedure would have dropped the rule
+  // entirely, so it moves here, to the endpoint that actually performs hires.
+  if (nextStatus === "hired" && currentStatus !== "hired") {
+    const feeError = await checkUpfrontFeeSettled(
+      access.organizationId,
+      id,
+      existing.user_id as string,
+    );
+    if (feeError) {
+      return c.json({ error: "Bad Request", message: feeError }, 400);
+    }
+  }
+
+  const now = new Date().toISOString();
+  const statusChanged = nextStatus !== currentStatus;
+
+  const payload: Record<string, unknown> = { updated_at: now };
+  if (input.status !== undefined) {
+    payload.status = nextStatus;
+    // Only bump stage_changed_at on an actual move — time-in-stage is computed
+    // from it, and touching it on an unrelated PATCH would reset the clock.
+    if (statusChanged) payload.stage_changed_at = now;
+  }
+  if (input.assigned_to !== undefined) {
+    payload.assigned_to = input.assigned_to;
+    payload.assigned_by = user.id;
+    payload.assigned_at = now;
+  }
+
+  const { data: updated, error: updateError } = await supabase
+    .schema("core")
+    .from("applications")
+    .update(payload)
+    .eq("id", id)
+    .select(LIST_SELECT)
+    .single();
+
+  if (updateError || !updated) {
+    console.error("Error updating application:", updateError);
+    return c.json(
+      {
+        error: "Internal Server Error",
+        message: updateError?.message ?? "Update failed",
+      },
+      500,
+    );
+  }
+
+  await recordActivity(access.organizationId, id, user.id, {
+    statusChanged,
+    currentStatus,
+    nextStatus,
+    assignedToChanged: input.assigned_to !== undefined &&
+      input.assigned_to !== existing.assigned_to,
+    previousAssignee: existing.assigned_to as string | null,
+    nextAssignee: input.assigned_to ?? null,
+  });
+
+  return c.json(withApiStatus(updated), 200);
+});
+
+/**
+ * Whether the upfront success fee for this hire has been paid.
+ *
+ * Returns an error message when the hire must be blocked, or null to proceed.
+ * Uses the service role: the caller is authorised for the application, but
+ * core.success_fees is a billing table they have no direct read grant on.
+ */
+async function checkUpfrontFeeSettled(
+  organizationId: string | null,
+  applicationId: string,
+  workerUserId: string,
+): Promise<string | null> {
+  if (!organizationId) {
+    return "Unable to determine organization for success fee verification.";
+  }
+
+  const { data, error } = await getServiceClient()
+    .schema("core")
+    .from("success_fees")
+    .select("id")
+    .eq("organization_id", organizationId)
+    .eq("application_id", applicationId)
+    .eq("worker_user_id", workerUserId)
+    .eq("status", "upfront_paid")
+    .maybeSingle();
+
+  if (error) {
+    console.error(
+      JSON.stringify({
+        severity: "error",
+        component: "employer_applications_success_fee",
+        message: "Failed to verify upfront success fee",
+        application_id: applicationId,
+        db_error: error.message,
+      }),
+    );
+    // Fail closed. An unverifiable payment state must not become a free hire.
+    return "Unable to verify the upfront success fee. Try again.";
+  }
+
+  return data
+    ? null
+    : "Upfront success fee payment is required before marking this hire.";
+}
+
+interface ActivityFacts {
+  statusChanged: boolean;
+  currentStatus: string;
+  nextStatus: string;
+  assignedToChanged: boolean;
+  previousAssignee: string | null;
+  nextAssignee: string | null;
+}
+
+/**
+ * Record what just happened on the application.
+ *
+ * Best-effort: a failure here must not fail the request, because the write it
+ * describes has already committed. Returning 500 after a successful update
+ * would tell the caller their change was rejected when it was not — the client
+ * would roll the card back on a board that no longer matches the database.
+ * Logged loudly instead.
+ *
+ * Nothing wrote to this table before, which is why `stageHistory` was hardcoded
+ * empty in the office UI and time-to-hire could never compute (#531).
+ */
+async function recordActivity(
+  organizationId: string | null,
+  applicationId: string,
+  actorUserId: string,
+  facts: ActivityFacts,
+): Promise<void> {
+  if (!organizationId) return;
+
+  const rows: Array<Record<string, unknown>> = [];
+
+  if (facts.statusChanged) {
+    rows.push({
+      application_id: applicationId,
+      organization_id: organizationId,
+      actor_user_id: actorUserId,
+      event_type: "status_changed",
+      details: { from: facts.currentStatus, to: facts.nextStatus },
+    });
+  }
+
+  if (facts.assignedToChanged) {
+    rows.push({
+      application_id: applicationId,
+      organization_id: organizationId,
+      actor_user_id: actorUserId,
+      event_type: "assignment_changed",
+      details: { from: facts.previousAssignee, to: facts.nextAssignee },
+    });
+  }
+
+  if (rows.length === 0) return;
+
+  try {
+    const { error } = await getServiceClient()
+      .schema("core")
+      .from("application_activity")
+      .insert(rows);
+
+    if (error) {
+      console.error(
+        JSON.stringify({
+          severity: "error",
+          component: "employer_applications_activity",
+          message: "Failed to record application activity",
+          application_id: applicationId,
+          db_error: error.message,
+        }),
+      );
+    }
+  } catch (err) {
+    console.error(
+      JSON.stringify({
+        severity: "error",
+        component: "employer_applications_activity",
+        message: "Threw while recording application activity",
+        application_id: applicationId,
+        error: String(err),
+      }),
+    );
+  }
+}
 
 export default app;

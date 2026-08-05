@@ -86,18 +86,19 @@ export const applicationUpdateSchema = z.object({
   is_complete: z.boolean().optional(),
   notes: z.record(z.string(), z.unknown()).optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
-  status: z
-    .enum([
-      'pending',
-      'reviewing',
-      'inquired',
-      'interview',
-      'offer',
-      'hired',
-      'rejected',
-      'withdrawn',
-    ])
-    .optional(),
+  // NO `status` HERE, deliberately.
+  //
+  // This backs PATCH /v1/applications/{id}, the *applicant's* endpoint — it
+  // authorises on `application.user_id === auth user`. While `status` was
+  // accepted, an applicant could PATCH their own application straight to
+  // `hired`: they own the row, and the only other guard was that the current
+  // status be `new` or `screen`, which is exactly where a fresh application
+  // sits. Reproduced against a live local API before removing it.
+  //
+  // The applicant's one legitimate status change is withdrawal, which has its
+  // own endpoint (POST /v1/applications/{id}/withdraw). Employer-side moves
+  // belong to PATCH /v1/employer/applications/{id}, which authorises on
+  // organisation access and validates the transition.
 })
 
 /**
@@ -141,6 +142,14 @@ export const applicationSubmitSchema = applicationCreateSchema
   })
   .extend({
     is_complete: z.literal(true),
+  })
+  // Mirrors the package copy. Without this the legacy tRPC `submit` procedure
+  // accepted a submission with no resume, while the client form — which
+  // validates against the package schema — refused one. Server and client
+  // disagreed about what a complete application is.
+  .refine((data) => data.attachments?.resume !== undefined, {
+    message: 'Resume is required to submit application',
+    path: ['attachments', 'resume'],
   })
 
 /**
