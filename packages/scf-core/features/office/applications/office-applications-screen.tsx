@@ -6,6 +6,7 @@ import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
 import { ATSMetricsDashboard } from './components/ATSMetricsDashboard'
 import type { ApplicationsListItem } from './hooks/useApplications'
 import { useApplications } from './hooks/useApplications'
+import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
 import { STATUS_MAP } from './hooks/useApplicationStatusChange'
 import { colors } from '@scaffald/ui/tokens'
 
@@ -66,6 +67,20 @@ export const OfficeApplicationsScreen = ({
     job_id: filters.jobId ?? undefined,
     min_score: filters.minScore > 0 ? filters.minScore : undefined,
   })
+
+  // The job filter's options. `jobs={[]}` was hardcoded, so "Filter by Job" was
+  // a permanently empty dropdown. Only open jobs — filtering a pipeline by a
+  // closed req is not a case worth the extra rows.
+  const jobsQuery = useOfficeListJobs({ status: 'open', limit: 100 })
+  const jobOptions = useMemo(
+    () =>
+      (jobsQuery.data?.jobs ?? []).map((job) => ({
+        id: job.id,
+        title: job.title,
+        company: job.organization?.name ?? '',
+      })),
+    [jobsQuery.data]
+  )
 
   /**
    * Map the employer API's rows onto the shape the kanban components expect.
@@ -276,7 +291,7 @@ export const OfficeApplicationsScreen = ({
       </Row>
 
       {/* Filters - Note: needs jobs list from API */}
-      <ApplicationsFilters filters={filters} onFiltersChange={setFilters} jobs={[]} />
+      <ApplicationsFilters filters={filters} onFiltersChange={setFilters} jobs={jobOptions} />
 
       {/* Content */}
       {viewMode === 'metrics' ? (
