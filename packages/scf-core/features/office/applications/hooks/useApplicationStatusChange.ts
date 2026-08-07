@@ -23,6 +23,7 @@ export const STATUS_MAP: Record<ApplicationStatus, ApiApplicationStatus> = {
   offer: 'offer',
   hired: 'hired',
   rejected: 'rejected',
+  withdrawn: 'withdrawn',
 }
 
 interface StatusChangeParams {
@@ -84,6 +85,10 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
         offer: ['hired', 'rejected'],
         hired: [], // Terminal state
         rejected: [], // Terminal state
+        // Also terminal, and never an employer move — withdrawal is the
+        // candidate's, via POST /v1/applications/{id}/withdraw. The server's
+        // table says the same.
+        withdrawn: [],
       }
 
       return validTransitions[from]?.includes(to) || false

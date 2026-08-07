@@ -48,17 +48,39 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   interview: 'Interview',
   offer: 'Offer',
   hired: 'Hired',
-  rejected: 'Rejected',
+  rejected: 'Closed',
+  withdrawn: 'Closed',
+}
+
+/**
+ * Which column a status is drawn in.
+ *
+ * `withdrawn` shares the terminal column with `rejected` rather than adding an
+ * eighth — nobody works a withdrawn candidate, so it does not earn board width.
+ * The card carries a badge, and `app.status` stays `withdrawn`, so metrics and
+ * EEO counts can tell a candidate who pulled out from one the employer turned
+ * down (#533).
+ */
+const COLUMN_FOR_STATUS: Record<ApplicationStatus, ApplicationStatus> = {
+  new: 'new',
+  screen: 'screen',
+  inquired: 'inquired',
+  interview: 'interview',
+  offer: 'offer',
+  hired: 'hired',
+  rejected: 'rejected',
+  withdrawn: 'rejected',
 }
 
 const getStatusColors = (theme: 'light' | 'dark'): Record<ApplicationStatus, string> => ({
   new: colors.bg[theme].default,
-  screen: theme === "light" ? colors.yellow[50] : colors.yellow[900],
-  inquired: theme === "light" ? colors.purple[50] : colors.purple[900],
-  interview: theme === "light" ? colors.error[50] : colors.error[900],
-  offer: theme === "light" ? colors.green[50] : colors.green[900],
-  hired: theme === "light" ? colors.green[700] : colors.green[300],
-  rejected: theme === "light" ? colors.error[50] : colors.error[900],
+  screen: theme === 'light' ? colors.yellow[50] : colors.yellow[900],
+  inquired: theme === 'light' ? colors.purple[50] : colors.purple[900],
+  interview: theme === 'light' ? colors.error[50] : colors.error[900],
+  offer: theme === 'light' ? colors.green[50] : colors.green[900],
+  hired: theme === 'light' ? colors.green[700] : colors.green[300],
+  rejected: theme === 'light' ? colors.error[50] : colors.error[900],
+  withdrawn: theme === 'light' ? colors.error[50] : colors.error[900],
 })
 
 interface ApplicationsKanbanBoardProps {
@@ -179,7 +201,9 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
   const groupedApplications = useMemo(() => {
     return STATUSES.reduce(
       (acc, status) => {
-        acc[status] = applications.filter((app) => app.status === status)
+        // Group by column, not by status, so withdrawn lands with rejected
+        // while keeping its own status on the card.
+        acc[status] = applications.filter((app) => COLUMN_FOR_STATUS[app.status] === status)
         return acc
       },
       {} as Record<ApplicationStatus, MockApplication[]>
@@ -230,7 +254,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
           gap={12}
           padding="sm"
           style={{
-            backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+            backgroundColor: theme === 'light' ? colors.blue[50] : colors.blue[900],
             borderBottomWidth: 1,
             borderBottomColor: colors.border[theme].default,
           }}
@@ -356,13 +380,14 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                     )}
                     d ago
                   </Text>
-                  {((activeApplication.attachments.resume ? 1 : 0) +
+                  {(activeApplication.attachments.resume ? 1 : 0) +
                     (activeApplication.attachments.coverLetter ? 1 : 0) +
-                    (activeApplication.attachments.portfolio ? 1 : 0)) > 0 && (
+                    (activeApplication.attachments.portfolio ? 1 : 0) >
+                    0 && (
                     <Text style={{ color: colors.text[theme].secondary, fontSize: 12 }}>
-                      {((activeApplication.attachments.resume ? 1 : 0) +
+                      {(activeApplication.attachments.resume ? 1 : 0) +
                         (activeApplication.attachments.coverLetter ? 1 : 0) +
-                        (activeApplication.attachments.portfolio ? 1 : 0))}{' '}
+                        (activeApplication.attachments.portfolio ? 1 : 0)}{' '}
                       attachments
                     </Text>
                   )}
@@ -474,13 +499,7 @@ function DroppableColumn({
   const { isOver, setNodeRef } = useDroppable({ id, data: { type: 'column' } })
   return (
     <View ref={setNodeRef as Ref<View>} style={isOver ? { opacity: 0.9 } : undefined}>
-      <KanbanColumn
-        id={id}
-        title={title}
-        count={count}
-        color={color}
-        emptyMessage={emptyMessage}
-      >
+      <KanbanColumn id={id} title={title} count={count} color={color} emptyMessage={emptyMessage}>
         {children}
       </KanbanColumn>
     </View>
@@ -519,8 +538,28 @@ function DraggableCard({
       <KanbanCard id={id} isDragging={false}>
         <Pressable onPress={kanbanCardProps.onView}>
           <Stack gap={8} padding="sm">
-            <Text style={{ color: colors.text[theme].primary }}>{kanbanCardProps.applicantName}</Text>
+            <Text style={{ color: colors.text[theme].primary }}>
+              {kanbanCardProps.applicantName}
+            </Text>
             <Text style={{ color: colors.text[theme].secondary }}>{kanbanCardProps.jobTitle}</Text>
+            {/* The terminal column holds both rejected and withdrawn, so the
+                card has to say which. Without it the two are indistinguishable
+                on the board even though the data now keeps them apart. */}
+            {kanbanCardProps.status === 'withdrawn' && (
+              <Stack
+                style={{
+                  alignSelf: 'flex-start',
+                  paddingHorizontal: 8,
+                  paddingVertical: 2,
+                  borderRadius: 10,
+                  backgroundColor: colors.bg[theme].subtle,
+                }}
+              >
+                <Text style={{ fontSize: 11, color: colors.text[theme].secondary }}>
+                  Withdrawn by candidate
+                </Text>
+              </Stack>
+            )}
             <Row gap={8} justify="space-between">
               <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
                 {kanbanCardProps.durationDays}d ago

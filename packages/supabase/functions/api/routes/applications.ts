@@ -983,6 +983,14 @@ app.openapi(withdrawApplicationRoute, async (c) => {
  * Webhook trigger helper
  * Sends application events to configured webhook URLs
  */
+/**
+ * Deliver an application event to the organisation's configured webhooks.
+ *
+ * The payload carries the **API** status vocabulary, matching what the REST
+ * responses return. It used to emit the row verbatim, so a consumer polling
+ * GET /v1/applications/{id} saw `pending` while the webhook for the same row
+ * said `new` — one field, one resource, two vocabularies (#541).
+ */
 async function triggerWebhook(
   event: string,
   application: Record<string, unknown>,
@@ -1019,7 +1027,7 @@ async function triggerWebhook(
     const webhookPayload = {
       event,
       timestamp: new Date().toISOString(),
-      data: application,
+      data: withApiStatus(application),
     };
 
     for (const webhook of webhooks) {
