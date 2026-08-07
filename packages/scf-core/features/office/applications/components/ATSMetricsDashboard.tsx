@@ -78,10 +78,7 @@ function daysBetween(start: string, end: string): number {
   return Math.max(0, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)))
 }
 
-export function ATSMetricsDashboard({
-  applications,
-  isLoading = false,
-}: ATSMetricsDashboardProps) {
+export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetricsDashboardProps) {
   const { theme } = useThemeContext()
   const [dateRange, setDateRange] = useState<number>(30)
 
@@ -102,6 +99,10 @@ export function ATSMetricsDashboard({
       offer: 0,
       hired: 0,
       rejected: 0,
+      // Counted separately from rejected on purpose: a candidate who
+      // pulled out is not one the employer turned down, and conflating
+      // them skews both conversion and EEO adverse-impact ratios (#533).
+      withdrawn: 0,
     }
     for (const app of filteredApps) {
       counts[app.status] = (counts[app.status] || 0) + 1
@@ -114,7 +115,14 @@ export function ATSMetricsDashboard({
     const total = filteredApps.length
     if (total === 0) return []
 
-    const funnelOrder: ApplicationStatus[] = ['new', 'screen', 'inquired', 'interview', 'offer', 'hired']
+    const funnelOrder: ApplicationStatus[] = [
+      'new',
+      'screen',
+      'inquired',
+      'interview',
+      'offer',
+      'hired',
+    ]
     const cumulative: Array<{ stage: string; count: number; rate: number }> = []
 
     for (let i = 0; i < funnelOrder.length; i++) {
@@ -216,9 +224,7 @@ export function ATSMetricsDashboard({
 
   // ─── Summary Stats ─────────────────────────────────
   const totalApps = filteredApps.length
-  const activeApps = filteredApps.filter(
-    (a) => !['hired', 'rejected'].includes(a.status)
-  ).length
+  const activeApps = filteredApps.filter((a) => !['hired', 'rejected'].includes(a.status)).length
   const hiredCount = stageDistribution.hired
   const rejectedCount = stageDistribution.rejected
   const hireRate = totalApps > 0 ? Math.round((hiredCount / totalApps) * 100) : 0
@@ -375,7 +381,14 @@ export function ATSMetricsDashboard({
                       />
                     </Stack>
                   </Stack>
-                  <Text style={{ width: 50, textAlign: 'right', color: colors.text[theme].secondary, fontSize: 12 }}>
+                  <Text
+                    style={{
+                      width: 50,
+                      textAlign: 'right',
+                      color: colors.text[theme].secondary,
+                      fontSize: 12,
+                    }}
+                  >
                     {item.rate}%
                   </Text>
                 </Row>
@@ -411,7 +424,14 @@ export function ATSMetricsDashboard({
                   <Text style={{ color: colors.text[theme].primary, fontSize: 13 }}>
                     {item.count}
                   </Text>
-                  <Text style={{ width: 40, textAlign: 'right', color: colors.text[theme].tertiary, fontSize: 12 }}>
+                  <Text
+                    style={{
+                      width: 40,
+                      textAlign: 'right',
+                      color: colors.text[theme].tertiary,
+                      fontSize: 12,
+                    }}
+                  >
                     {item.percentage}%
                   </Text>
                 </Row>
@@ -422,9 +442,7 @@ export function ATSMetricsDashboard({
 
         {/* Time-to-Hire (Issue #92) */}
         <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-          <Text style={{ marginBottom: 12, color: colors.text[theme].primary }}>
-            Time to Hire
-          </Text>
+          <Text style={{ marginBottom: 12, color: colors.text[theme].primary }}>Time to Hire</Text>
           {timeToHireStats.count === 0 ? (
             <Text style={{ color: colors.text[theme].tertiary }}>
               No completed hires to analyze yet.
@@ -444,10 +462,7 @@ export function ATSMetricsDashboard({
                   Distribution
                 </Text>
                 {timeToHireStats.distribution.map((bucket) => {
-                  const maxBucket = Math.max(
-                    ...timeToHireStats.distribution.map((b) => b.count),
-                    1
-                  )
+                  const maxBucket = Math.max(...timeToHireStats.distribution.map((b) => b.count), 1)
                   const barWidth = Math.max((bucket.count / maxBucket) * 100, 4)
                   return (
                     <Row key={bucket.label} gap={8} align="center">
@@ -507,13 +522,13 @@ function MetricTile({
       <Stack gap={4}>
         <Row gap={6} align="center">
           {icon}
-          <Text style={{ color: colors.text[theme].tertiary, fontSize: 11, textTransform: 'uppercase' }}>
+          <Text
+            style={{ color: colors.text[theme].tertiary, fontSize: 11, textTransform: 'uppercase' }}
+          >
             {label}
           </Text>
         </Row>
-        <Text style={{ color: colors.text[theme].primary, fontSize: 22 }}>
-          {value}
-        </Text>
+        <Text style={{ color: colors.text[theme].primary, fontSize: 22 }}>{value}</Text>
         {subtitle && (
           <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>{subtitle}</Text>
         )}
@@ -544,7 +559,9 @@ function MiniStat({
         minWidth: 80,
       }}
     >
-      <Text style={{ color: colors.text[theme].tertiary, fontSize: 10, textTransform: 'uppercase' }}>
+      <Text
+        style={{ color: colors.text[theme].tertiary, fontSize: 10, textTransform: 'uppercase' }}
+      >
         {label}
       </Text>
       <Text style={{ color: colors.text[theme].primary, fontSize: 14 }}>{value}</Text>

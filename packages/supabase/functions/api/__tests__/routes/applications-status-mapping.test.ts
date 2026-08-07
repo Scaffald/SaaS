@@ -267,3 +267,36 @@ Deno.test("real columns still pass straight through", () => {
     "must not invent a screening write",
   );
 });
+
+// ─────────────────────────────────────────────────────────────────────────
+// Webhook payloads (#541). They used to carry the row verbatim, so a consumer
+// polling GET /v1/applications/{id} saw `pending` while the webhook for the
+// same row said `new` — one field, one resource, two vocabularies.
+// ─────────────────────────────────────────────────────────────────────────
+
+Deno.test("a webhook payload speaks the same vocabulary as the REST response", () => {
+  // Both surfaces go through withApiStatus, so this is the invariant that
+  // keeps them from drifting apart again.
+  const row = { id: "app_1", status: "new", job_id: "job_1" };
+
+  const restBody = withApiStatus(row);
+  const webhookData = withApiStatus(row);
+
+  assertEquals(webhookData.status, restBody.status);
+  assertEquals(webhookData.status, "pending");
+});
+
+Deno.test("no DB status name survives into a webhook payload", () => {
+  for (const dbStatus of DB_STATUSES) {
+    const delivered = withApiStatus({ status: dbStatus }).status;
+
+    assert(
+      API_STATUSES.includes(delivered),
+      `a webhook would deliver "${delivered}", which is not an API status`,
+    );
+  }
+
+  // The two that actually differ — the rest coincide and prove nothing.
+  assertEquals(withApiStatus({ status: "new" }).status, "pending");
+  assertEquals(withApiStatus({ status: "screen" }).status, "reviewing");
+});

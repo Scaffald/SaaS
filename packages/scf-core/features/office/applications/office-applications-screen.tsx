@@ -115,9 +115,10 @@ export const OfficeApplicationsScreen = ({
       const job = app.job
       const candidate = app.candidate
 
-      // `withdrawn` is folded into `rejected` only because the board has no
-      // column for it. That conflation is wrong for funnel and EEO counts and
-      // is tracked separately (#533).
+      // `withdrawn` stays distinct from `rejected`. Collapsing them made every
+      // funnel conversion and EEO adverse-impact count wrong, since a candidate
+      // who pulled out was counted as one the employer turned down (#533). The
+      // board draws them in one terminal column; the data keeps them apart.
       const statusMap: Record<string, ApplicationStatus> = {
         pending: 'new',
         reviewing: 'screen',
@@ -126,7 +127,7 @@ export const OfficeApplicationsScreen = ({
         offer: 'offer',
         hired: 'hired',
         rejected: 'rejected',
-        withdrawn: 'rejected',
+        withdrawn: 'withdrawn',
       }
 
       const formatAnswer = (v: string | boolean | string[] | undefined): string =>

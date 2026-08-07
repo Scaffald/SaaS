@@ -46,6 +46,7 @@ export const STAGE_LABELS: Record<ApplicationStatus | 'all', string> = {
   offer: 'Offer',
   hired: 'Hired',
   rejected: 'Rejected',
+  withdrawn: 'Withdrawn',
 }
 
 /** Built-in default templates for each stage */
@@ -121,10 +122,7 @@ export const DEFAULT_TEMPLATES: MessageTemplate[] = [
 /**
  * Substitute template variables with actual values
  */
-export function applyTemplateVariables(
-  template: string,
-  values: Record<string, string>
-): string {
+export function applyTemplateVariables(template: string, values: Record<string, string>): string {
   let result = template
   for (const [key, value] of Object.entries(values)) {
     result = result.replace(new RegExp(key.replace(/[{}]/g, '\\$&'), 'g'), value)

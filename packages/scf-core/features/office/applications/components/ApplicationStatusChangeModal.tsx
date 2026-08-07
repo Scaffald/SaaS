@@ -42,6 +42,7 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   offer: 'Offer',
   hired: 'Hired',
   rejected: 'Rejected',
+  withdrawn: 'Withdrawn',
 }
 
 export const ApplicationStatusChangeModal = ({
@@ -284,18 +285,20 @@ export const ApplicationStatusChangeModal = ({
             {!successFeeStatusQuery.isLoading && successFeeStatus?.status === 'upfront_paid' && (
               <Card
                 padding="sm"
-                style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
-                borderColor={theme === "light" ? colors.green[300] : colors.green[700]}
+                style={{
+                  backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
+                }}
+                borderColor={theme === 'light' ? colors.green[300] : colors.green[700]}
                 borderWidth={1}
               >
-                <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
+                <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>
                   Upfront fee paid on{' '}
                   {successFeeStatus.upfrontPaidAt
                     ? new Date(successFeeStatus.upfrontPaidAt).toLocaleDateString()
                     : 'recently'}
                   .
                 </Text>
-                <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
+                <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>
                   You can now mark this candidate as hired.
                 </Text>
               </Card>
@@ -340,7 +343,12 @@ export const ApplicationStatusChangeModal = ({
         <Stack gap={8}>
           <Text>
             {isRejection ? 'Reason for rejection' : 'Notes (optional)'}
-            {isRejection && <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}> *</Text>}
+            {isRejection && (
+              <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                {' '}
+                *
+              </Text>
+            )}
           </Text>
           <TextArea
             data-testid="status-change-reason-input"
@@ -354,7 +362,10 @@ export const ApplicationStatusChangeModal = ({
             style={{ minHeight: 120 }}
           />
           {isRejection && !reason.trim() && (
-            <Text data-testid="reason-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+            <Text
+              data-testid="reason-error"
+              style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+            >
               Rejection reason is required
             </Text>
           )}
@@ -514,14 +525,19 @@ function HireSummaryCard({
     return (
       <Card
         padding="sm"
-        style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900] }}
-        borderColor={theme === "light" ? colors.yellow[300] : colors.yellow[700]}
+        style={{ backgroundColor: theme === 'light' ? colors.yellow[50] : colors.yellow[900] }}
+        borderColor={theme === 'light' ? colors.yellow[300] : colors.yellow[700]}
         borderWidth={1}
       >
-        <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
+        <Text style={{ color: theme === 'light' ? colors.yellow[700] : colors.yellow[300] }}>
           Add pay range information to this job before marking the hire.
         </Text>
-        <Text style={{ marginTop: 4, color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
+        <Text
+          style={{
+            marginTop: 4,
+            color: theme === 'light' ? colors.yellow[700] : colors.yellow[300],
+          }}
+        >
           We use the job&apos;s pay range to calculate success fees and payment schedules.
         </Text>
       </Card>
@@ -558,7 +574,11 @@ function HireSummaryCard({
         {isProcessing && (
           <Text style={{ color: colors.text[theme].secondary }}>Creating payment intent...</Text>
         )}
-        {paymentError && <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{paymentError}</Text>}
+        {paymentError && (
+          <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+            {paymentError}
+          </Text>
+        )}
         {isStatusLoading && (
           <Text style={{ color: colors.text[theme].secondary }}>
             Checking latest payment status…

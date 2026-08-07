@@ -15,6 +15,13 @@ export type ApplicationStatus =
   | 'offer'
   | 'hired'
   | 'rejected'
+  /**
+   * The candidate pulled out. Distinct from `rejected`, which is the
+   * employer's decision — the two were collapsed, which made funnel
+   * conversion and EEO adverse-impact counts wrong (#533). The board groups
+   * them into one terminal column with a badge; the data keeps them apart.
+   */
+  | 'withdrawn'
 
 export interface MockApplication {
   id: string
