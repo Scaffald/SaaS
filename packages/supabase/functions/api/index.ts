@@ -13,6 +13,7 @@ import teamsRouter from "./routes/teams.ts";
 import connectionsRouter from "./routes/connections.ts";
 import followsRouter from "./routes/follows.ts";
 import schedulingRouter from "./routes/scheduling.ts";
+import employerEeoRouter from "./routes/employer-eeo.ts";
 import employerSchedulingRouter from "./routes/employer-scheduling.ts";
 import engagementRouter from "./routes/engagement.ts";
 import notificationsRouter from "./routes/notifications.ts";
@@ -133,6 +134,7 @@ app.route("/v1/teams", teamsRouter); // Teams management
 app.route("/v1/connections", connectionsRouter); // User connections/networking
 app.route("/v1/follows", followsRouter); // User follows
 app.route("/v1/scheduling", schedulingRouter); // Interview self-scheduling
+app.route("/v1/employer/eeo-report", employerEeoRouter); // Aggregate EEO, counts only
 app.route("/v1/employer/scheduling", employerSchedulingRouter); // Hiring-side slots + links
 app.route("/v1/engagement", engagementRouter); // Engagement tracking/analytics
 app.route("/v1/notifications", notificationsRouter); // User notifications
