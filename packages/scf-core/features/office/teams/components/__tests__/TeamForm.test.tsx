@@ -31,16 +31,6 @@ const handleSubmitSpy = vi.hoisted(() => vi.fn());
 vi.mock("../../hooks/useTeamFormOptions", () => teamFormOptionsMock);
 
 // Component now uses '@scaffald/sdk/react' for team mutations.
-vi.mock("@scaffald/sdk/react", () => ({
-  useCreateTeam: createTeamMock.useMutation,
-  useUpdateTeam: updateTeamMock.useMutation,
-}));
-
-vi.mock("@scaffald/ui", async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
-  useToast: () => toastMock,
-}));
-
 vi.mock("expo-router", async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
   useRouter: () => routerMock,
@@ -363,6 +353,12 @@ vi.mock("@scaffald/ui", async () => {
 
   return {
     ...actual,
+    // Merged in from a second vi.mock("@scaffald/ui") that used to sit above.
+    // Two registrations for one module race. When the other one won, this
+    // file lost every component stub — including the Button that carries
+    // testID="team-form-submit" — which is what made TeamForm fail
+    // intermittently in a batch run while passing in isolation (#542).
+    useToast: () => toastMock,
     Button: ButtonBase,
     Input,
     TextArea,
@@ -375,12 +371,6 @@ vi.mock("@scaffald/ui", async () => {
     Select: SelectBase,
   };
 });
-
-vi.mock("lucide-react-native", async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
-  Check: () => <span data-testid="check-icon" />,
-  ChevronDown: () => <span data-testid="chevron-icon" />,
-}));
 
 const DEFAULT_WAIT_TIMEOUT = 1500;
 

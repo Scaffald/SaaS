@@ -48,8 +48,6 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
   }
 })
 
-vi.mock('@scaffald/ui', () => ({ useToast: () => toastMock }))
-
 vi.mock('expo-router', () => ({ useRouter: () => routerMock }))
 
 vi.mock('@scf/core/utils/supabase/client', () => ({
@@ -127,76 +125,6 @@ vi.mock('react-hook-form', () => {
     },
   }
 })
-
-vi.mock('@scaffald/ui', () => ({
-  Button: ({
-    children,
-    onPress,
-    disabled,
-    testID,
-  }: {
-    children: ReactNode
-    onPress?: () => void
-    disabled?: boolean
-    testID?: string
-  }) => (
-    <button type="button" data-testid={testID} disabled={disabled} onClick={onPress}>
-      {children}
-    </button>
-  ),
-  Text: ({ children }: { children: ReactNode }) => <span>{children}</span>,
-  AddressAutocomplete: ({
-    value,
-    onChange,
-    onAddressSelect,
-  }: {
-    value?: string
-    onChange: (value: string) => void
-    onAddressSelect: (result: Record<string, unknown>) => void
-  }) => (
-    <div>
-      <input
-        data-testid="address-autocomplete"
-        value={value ?? ''}
-        onChange={(event) => onChange(event.target.value)}
-      />
-      <button
-        type="button"
-        onClick={() =>
-          onAddressSelect({
-            formattedAddress: '123 Main St',
-            locality: 'Charlotte',
-            stateAbbreviation: 'NC',
-            postalCode: '28202',
-            country: 'USA',
-          })
-        }
-      >
-        select-address
-      </button>
-    </div>
-  ),
-  ResponsiveSelect: ({
-    value,
-    onValueChange,
-    options,
-    placeholder,
-  }: {
-    value?: string | null
-    onValueChange: (value: string) => void
-    options: Array<{ value: string; label: string }>
-    placeholder?: string
-  }) => (
-    <select value={value ?? ''} onChange={(event) => onValueChange(event.target.value)}>
-      {placeholder && <option value="">{placeholder}</option>}
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  ),
-}))
 
 const selectState = { onChange: (_value: string) => {} }
 
@@ -294,6 +222,65 @@ vi.mock('@scaffald/ui', async () => {
 
   return {
     ...actual,
+    // useToast, AddressAutocomplete and ResponsiveSelect are merged in from
+    // two further vi.mock('@scaffald/ui') registrations that used to sit
+    // above. Three registrations for one module do not combine — one factory
+    // wins, nondeterministically — which is the defect behind #542. This file
+    // is still excluded in packages/scf-core/vitest.config.ts for an unrelated
+    // reason (its render path loops forever), so the merge below is checked by
+    // typecheck and lint but has not been run.
+    useToast: () => toastMock,
+  AddressAutocomplete: ({
+    value,
+    onChange,
+    onAddressSelect,
+  }: {
+    value?: string
+    onChange: (value: string) => void
+    onAddressSelect: (result: Record<string, unknown>) => void
+  }) => (
+    <div>
+      <input
+        data-testid="address-autocomplete"
+        value={value ?? ''}
+        onChange={(event) => onChange(event.target.value)}
+      />
+      <button
+        type="button"
+        onClick={() =>
+          onAddressSelect({
+            formattedAddress: '123 Main St',
+            locality: 'Charlotte',
+            stateAbbreviation: 'NC',
+            postalCode: '28202',
+            country: 'USA',
+          })
+        }
+      >
+        select-address
+      </button>
+    </div>
+  ),
+  ResponsiveSelect: ({
+    value,
+    onValueChange,
+    options,
+    placeholder,
+  }: {
+    value?: string | null
+    onValueChange: (value: string) => void
+    options: Array<{ value: string; label: string }>
+    placeholder?: string
+  }) => (
+    <select value={value ?? ''} onChange={(event) => onValueChange(event.target.value)}>
+      {placeholder && <option value="">{placeholder}</option>}
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  ),
     Select,
     Input,
     Label,
