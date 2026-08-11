@@ -10,7 +10,7 @@ import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { Avatar, Button, Spinner, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import type { MockApplication } from '../../mock-data/ats-mock-data'
+import type { ATSApplication } from '../types'
 import { ApplicationDetailsTab } from './ApplicationDetailsTab'
 import { CandidateProfileTab } from './CandidateProfileTab'
 import { InquiryTab } from './InquiryTab'
@@ -61,7 +61,7 @@ const mapInquiryToFormValues = (inquiry: Record<string, any>): InquiryCreateInpu
  * queries below no longer need an `open` flag to stay idle. Mounting is the
  * gate.
  */
-export const CandidateDetailContent = ({ application }: { application: MockApplication }) => {
+export const CandidateDetailContent = ({ application }: { application: ATSApplication }) => {
   const { theme } = useThemeContext()
   const [activeTab, setActiveTab] = useState<
     'profile' | 'application' | 'notes' | 'messages' | 'inquiry' | 'activity'
@@ -312,7 +312,7 @@ export const CandidateDetailContent = ({ application }: { application: MockAppli
           </Tabs.Item>
           <Tabs.Item value="notes">
             <Tabs.Trigger containerStyle={{ flex: 1 }}>
-              Notes ({application.notes.length})
+              Notes
             </Tabs.Trigger>
           </Tabs.Item>
           <Tabs.Item value="messages">

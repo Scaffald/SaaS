@@ -5,7 +5,7 @@
  * @see Issue #89
  */
 
-import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
+import type { ApplicationStatus } from '../types'
 
 export interface MessageTemplate {
   id: string

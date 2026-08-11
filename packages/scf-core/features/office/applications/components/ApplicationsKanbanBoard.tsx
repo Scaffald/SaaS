@@ -25,7 +25,7 @@ import {
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
-import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
+import type { ApplicationStatus, ATSApplication } from '../types'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { CandidateDetailModal } from './CandidateDetailModal'
@@ -84,13 +84,13 @@ const getStatusColors = (theme: 'light' | 'dark'): Record<ApplicationStatus, str
 })
 
 interface ApplicationsKanbanBoardProps {
-  applications: MockApplication[]
+  applications: ATSApplication[]
 }
 
 export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoardProps) => {
   const { theme } = useThemeContext()
   const STATUS_COLORS = getStatusColors(theme)
-  const [selectedApplication, setSelectedApplication] = useState<MockApplication | null>(null)
+  const [selectedApplication, setSelectedApplication] = useState<ATSApplication | null>(null)
   const [selectedApplicationIds, setSelectedApplicationIds] = useState<Set<string>>(new Set())
   const [showBulkInquiry, setShowBulkInquiry] = useState(false)
   const [showComparison, setShowComparison] = useState(false)
@@ -108,7 +108,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
     () =>
       Array.from(selectedApplicationIds)
         .map((id) => applications.find((app) => app.id === id))
-        .filter((app): app is MockApplication => !!app && app.status === 'inquired'),
+        .filter((app): app is ATSApplication => !!app && app.status === 'inquired'),
     [selectedApplicationIds, applications]
   )
 
@@ -206,7 +206,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
         acc[status] = applications.filter((app) => COLUMN_FOR_STATUS[app.status] === status)
         return acc
       },
-      {} as Record<ApplicationStatus, MockApplication[]>
+      {} as Record<ApplicationStatus, ATSApplication[]>
     )
   }, [applications])
 
@@ -520,7 +520,6 @@ function DraggableCard({
     score?: number
     status: ApplicationStatus
     attachmentCount: number
-    commentCount: number
     durationDays: number
     isSelected: boolean
     onToggleSelection: () => void
@@ -581,9 +580,9 @@ interface StatusColumnProps {
   status: ApplicationStatus
   label: string
   color: string
-  applications: MockApplication[]
+  applications: ATSApplication[]
   selectedApplicationIds: Set<string>
-  onSelectApplication: (application: MockApplication) => void
+  onSelectApplication: (application: ATSApplication) => void
   onToggleSelection: (applicationId: string) => void
 }
 
@@ -629,7 +628,6 @@ const StatusColumn = ({
               score: app.score,
               status: app.status,
               attachmentCount,
-              commentCount: app.notes.length,
               durationDays,
               isSelected: selectedApplicationIds.has(app.id),
               onToggleSelection: () => onToggleSelection(app.id),

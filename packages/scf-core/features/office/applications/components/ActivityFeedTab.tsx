@@ -24,7 +24,7 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import type { MockApplication } from '../../mock-data/ats-mock-data'
+import type { ATSApplication } from '../types'
 
 /** Activity event types for the feed */
 interface ActivityEvent {
@@ -44,7 +44,7 @@ interface ActivityEvent {
 }
 
 /** Build activity events from application data */
-function buildActivityFeed(application: MockApplication): ActivityEvent[] {
+function buildActivityFeed(application: ATSApplication): ActivityEvent[] {
   const events: ActivityEvent[] = []
 
   // Stage history → status changes
@@ -62,34 +62,11 @@ function buildActivityFeed(application: MockApplication): ActivityEvent[] {
     })
   }
 
-  // Notes → note_added events
-  for (const note of application.notes) {
-    events.push({
-      id: `note_${note.id}`,
-      type: 'note_added',
-      actor: note.author,
-      timestamp: note.createdAt,
-      details: {
-        preview: note.content.substring(0, 100),
-        rating: String(note.rating),
-      },
-    })
-  }
-
-  // Messages → message_sent events
-  for (const msg of application.messages) {
-    events.push({
-      id: `msg_${msg.id}`,
-      type: 'message_sent',
-      actor: msg.senderName,
-      timestamp: msg.sentAt,
-      details: {
-        direction: msg.sender,
-        preview: msg.content.substring(0, 80),
-      },
-    })
-  }
-
+  // Notes and messages used to be folded in here from `application.notes`
+  // and `application.messages`. Neither was ever populated — the transform set
+  // both to `[]`, and NotesTab/MessagesTab fetch their own data — so the two
+  // loops contributed nothing while making the feed look more complete than it
+  // was. What remains is what this object actually carries (#536).
   // Application creation
   events.push({
     id: 'applied',
@@ -154,7 +131,7 @@ function getEventDescription(event: ActivityEvent): string {
 }
 
 interface ActivityFeedTabProps {
-  application: MockApplication
+  application: ATSApplication
   isLoading?: boolean
 }
 

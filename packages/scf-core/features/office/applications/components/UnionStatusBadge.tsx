@@ -8,10 +8,10 @@
 import { Award, HardHat, Shield } from 'lucide-react-native'
 import { Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import type { MockApplication } from '../../mock-data/ats-mock-data'
+import type { ATSApplication } from '../types'
 
 interface UnionStatusBadgeProps {
-  unionStatus: NonNullable<MockApplication['unionStatus']>
+  unionStatus: NonNullable<ATSApplication['unionStatus']>
   compact?: boolean
 }
 

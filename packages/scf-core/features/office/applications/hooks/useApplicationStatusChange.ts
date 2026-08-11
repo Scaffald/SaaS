@@ -2,7 +2,7 @@ import { useUpdateEmployerApplicationMutation } from '@scf/core/utils/applicatio
 import type { Application } from '@scaffald/sdk/resources/applications'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
-import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
+import type { ApplicationStatus } from '../types'
 
 type ApiApplicationStatus = Application['status']
 

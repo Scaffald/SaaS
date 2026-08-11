@@ -21,7 +21,7 @@ import {
 } from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
 import { PaymentIntentForm } from '../../../payments/components/PaymentIntentForm'
-import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
+import type { ApplicationStatus, ATSApplication } from '../types'
 
 interface ApplicationStatusChangeModalProps {
   open: boolean
@@ -31,7 +31,7 @@ interface ApplicationStatusChangeModalProps {
   fromStatus: ApplicationStatus
   toStatus: ApplicationStatus
   isLoading?: boolean
-  application?: MockApplication
+  application?: ATSApplication
 }
 
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
@@ -416,7 +416,7 @@ interface HireInputs {
   hireStartDate: string
 }
 
-function deriveHireInputs(application?: MockApplication | null): HireInputs | null {
+function deriveHireInputs(application?: ATSApplication | null): HireInputs | null {
   if (!application) return null
 
   const organizationId = application.job.organizationId || application.organizationId

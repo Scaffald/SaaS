@@ -1,6 +1,6 @@
 import { Button, H2, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
-import type { ApplicationStatus } from '../mock-data/ats-mock-data'
+import type { ApplicationStatus } from './types'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
 import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
 import { ATSMetricsDashboard } from './components/ATSMetricsDashboard'
