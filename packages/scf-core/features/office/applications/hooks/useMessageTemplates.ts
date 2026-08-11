@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useMemo, useState } from 'react'
-import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
+import type { ApplicationStatus } from '../types'
 import {
   DEFAULT_TEMPLATES,
   type MessageTemplate,

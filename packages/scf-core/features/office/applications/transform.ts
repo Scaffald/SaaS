@@ -16,11 +16,11 @@
  *   attachment_metadata  not attachments
  *   screening_answers.*  not flat current_location / years_experience / …
  *
- * `MockApplication` is still the domain type these components share; renaming
+ * `ATSApplication` is still the domain type these components share; renaming
  * it is #536.
  */
 
-import type { ApplicationStatus, MockApplication } from '../mock-data/ats-mock-data'
+import type { ApplicationStatus, ATSApplication } from './types'
 import type { ApplicationsListItem } from './hooks/useApplications'
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -47,7 +47,7 @@ function formatPayRange(minCents?: number | null, maxCents?: number | null, type
   return `${label}${suffix}`
 }
 
-export function toATSApplication(app: ApplicationsListItem): MockApplication {
+export function toATSApplication(app: ApplicationsListItem): ATSApplication {
   const screening = (app.screening_answers ?? {}) as {
     current_location?: string
     willing_to_relocate?: boolean
@@ -93,11 +93,10 @@ export function toATSApplication(app: ApplicationsListItem): MockApplication {
   return {
     id: app.id,
     status: statusMap[app.status] ?? 'new',
-    source: app.source as MockApplication['source'],
+    source: app.source as ATSApplication['source'],
     appliedAt: app.created_at,
     updatedAt: app.updated_at ?? app.created_at,
     score: app.score_total ?? 0,
-    autoRejected: false,
     screeningAnswers: {
       currentLocation: screening.current_location ?? '',
       willingToRelocate: screening.willing_to_relocate ?? false,
@@ -109,9 +108,7 @@ export function toATSApplication(app: ApplicationsListItem): MockApplication {
       question: qa.question ?? '',
       answer: formatAnswer(qa.answer),
     })),
-    attachments: (app.attachment_metadata ?? {}) as MockApplication['attachments'],
-    notes: [],
-    messages: [],
+    attachments: (app.attachment_metadata ?? {}) as ATSApplication['attachments'],
     // Real transitions from core.application_activity. This was hardcoded
     // `[]`, which made time-to-hire and funnel conversion structurally
     // zero no matter what the pipeline actually did (#531).

@@ -1,10 +1,10 @@
 import { Download } from 'lucide-react-native'
 import { Button, Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import type { MockApplication } from '../../mock-data/ats-mock-data'
+import type { ATSApplication } from '../types'
 import { colors } from '@scaffald/ui/tokens'
 
 interface ApplicationDetailsTabProps {
-  application: MockApplication
+  application: ATSApplication
 }
 
 export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProps) => {

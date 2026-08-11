@@ -1,9 +1,9 @@
 import { Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import type { MockApplication } from '../../mock-data/ats-mock-data'
+import type { ATSApplication } from '../types'
 import { colors } from '@scaffald/ui/tokens'
 
 interface CandidateProfileTabProps {
-  candidate: MockApplication['candidate']
+  candidate: ATSApplication['candidate']
   contactInfo?: {
     email?: string | null
     phone?: string | null
@@ -66,7 +66,12 @@ export const CandidateProfileTab = ({
       <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ marginBottom: 12 }}>Skills</Text>
         <Stack gap={12}>
-          {candidate.skills.map((skill, index) => (
+          {/* Not carried by the employer payload, so an empty card used to
+              read as "this candidate has no skills" (#536). */}
+          {(candidate.skills ?? []).length === 0 && (
+            <Text style={{ opacity: 0.6 }}>Not included in this view.</Text>
+          )}
+          {(candidate.skills ?? []).map((skill, index) => (
             <Row key={`skill-${skill.name}-${index}`} justify="space-between" align="center">
               <Text>{skill.name}</Text>
               <Stack
@@ -109,7 +114,12 @@ export const CandidateProfileTab = ({
       <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ marginBottom: 12 }}>Certifications</Text>
         <Stack gap={12}>
-          {candidate.certifications.map((cert, index) => (
+          {/* Not carried by the employer payload, so an empty card used to
+              read as "this candidate has no certifications" (#536). */}
+          {(candidate.certifications ?? []).length === 0 && (
+            <Text style={{ opacity: 0.6 }}>Not included in this view.</Text>
+          )}
+          {(candidate.certifications ?? []).map((cert, index) => (
             <Stack key={`cert-${cert.name}-${index}`} gap={4}>
               <Text>{cert.name}</Text>
               <Row gap={8}>
@@ -127,13 +137,18 @@ export const CandidateProfileTab = ({
       <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ marginBottom: 12 }}>Work Experience</Text>
         <Stack gap={16}>
-          {candidate.experience.map((exp, index) => (
+          {/* Not carried by the employer payload, so an empty card used to
+              read as "this candidate has no work history" (#536). */}
+          {(candidate.experience ?? []).length === 0 && (
+            <Text style={{ opacity: 0.6 }}>Not included in this view.</Text>
+          )}
+          {(candidate.experience ?? []).map((exp, index) => (
             <Stack key={`exp-${exp.company}-${exp.title}-${index}`} gap={8}>
               <Text>{exp.title}</Text>
               <Text style={{ opacity: 0.8 }}>{exp.company}</Text>
               <Text style={{ opacity: 0.6 }}>{exp.duration}</Text>
               <Text style={{ marginTop: 4 }}>{exp.description}</Text>
-              {index < candidate.experience.length - 1 && (
+              {index < (candidate.experience ?? []).length - 1 && (
                 <Stack
                   height={1}
                   style={{ backgroundColor: colors.bg[theme].muted, marginTop: 8 }}

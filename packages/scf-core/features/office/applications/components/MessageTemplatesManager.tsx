@@ -19,7 +19,7 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
+import type { ApplicationStatus } from '../types'
 import type { MessageTemplate } from './message-templates'
 import { STAGE_LABELS, TEMPLATE_VARIABLES } from './message-templates'
 

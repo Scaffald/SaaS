@@ -1,5 +1,5 @@
 import { Button, ResponsiveSelect, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
+import type { ApplicationStatus } from '../types'
 import { colors } from '@scaffald/ui/tokens'
 
 interface ApplicationsFiltersProps {

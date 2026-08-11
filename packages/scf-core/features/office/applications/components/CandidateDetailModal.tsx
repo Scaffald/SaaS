@@ -1,12 +1,12 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import type { MockApplication } from '../../mock-data/ats-mock-data'
+import type { ATSApplication } from '../types'
 import { Button, ResponsiveModal, Row } from '@scaffald/ui'
 import { ExternalLink } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { CandidateDetailContent } from './CandidateDetailContent'
 
 interface CandidateDetailModalProps {
-  application: MockApplication | null
+  application: ATSApplication | null
   open: boolean
   onClose: () => void
 }

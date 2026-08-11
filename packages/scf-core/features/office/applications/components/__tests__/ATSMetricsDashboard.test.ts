@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { MockApplication } from '../../../mock-data/ats-mock-data'
+import type { ATSApplication } from '../../types'
 import { hiredAtFrom, timeToHireDays } from '../ATSMetricsDashboard'
 
 /**
@@ -12,7 +12,7 @@ import { hiredAtFrom, timeToHireDays } from '../ATSMetricsDashboard'
  * `[]`, so the metric was structurally zero regardless of the pipeline (#531).
  */
 
-type StageChange = MockApplication['stageHistory'][number]
+type StageChange = ATSApplication['stageHistory'][number]
 
 function change(toStage: string, changedAt: string): StageChange {
   return {
@@ -23,13 +23,13 @@ function change(toStage: string, changedAt: string): StageChange {
   }
 }
 
-function application(overrides: Partial<MockApplication>): MockApplication {
+function application(overrides: Partial<ATSApplication>): ATSApplication {
   return {
     appliedAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-06-01T00:00:00Z',
     stageHistory: [],
     ...overrides,
-  } as MockApplication
+  } as ATSApplication
 }
 
 describe('hiredAtFrom', () => {

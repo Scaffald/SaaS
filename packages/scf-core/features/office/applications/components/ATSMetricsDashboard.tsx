@@ -22,7 +22,7 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
+import type { ApplicationStatus, ATSApplication } from '../types'
 
 /** Pipeline stage display config */
 const PIPELINE_STAGES: Array<{
@@ -67,7 +67,7 @@ const SOURCE_COLORS: Record<HireSource, string> = {
 }
 
 interface ATSMetricsDashboardProps {
-  applications: MockApplication[]
+  applications: ATSApplication[]
   isLoading?: boolean
 }
 
@@ -90,7 +90,7 @@ function daysBetween(start: string, end: string): number {
  * lives, and it was what time-to-hire measured.
  */
 export function hiredAtFrom(
-  stageHistory: MockApplication['stageHistory'] | undefined
+  stageHistory: ATSApplication['stageHistory'] | undefined
 ): string | null {
   const hires = (stageHistory ?? []).filter((change) => change.toStage === 'hired')
   if (hires.length === 0) return null
@@ -102,7 +102,7 @@ export function hiredAtFrom(
 }
 
 /** Days from application to hire, or null when the hire is not recorded. */
-export function timeToHireDays(app: MockApplication): number | null {
+export function timeToHireDays(app: ATSApplication): number | null {
   const hiredAt = hiredAtFrom(app.stageHistory)
   return hiredAt ? daysBetween(app.appliedAt, hiredAt) : null
 }
