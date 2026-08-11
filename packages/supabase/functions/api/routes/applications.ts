@@ -123,21 +123,47 @@ export function withApiStatus<T extends { status?: unknown }>(
  * vocabularies spell them identically.
  */
 /**
- * The five screening answers the schema exposes as top-level fields.
+ * Which request fields are real columns on core.applications.
  *
- * They are not columns — they live inside the `screening_answers` JSONB. The
- * create handler folds them in correctly; the update handler passed them
- * through as columns, so `PATCH {"years_experience": 9}` failed with
- * "Could not find the 'years_experience' column". The schema advertised five
- * fields that could never be updated.
+ * An allow-list, not a deny-list. applicationUpdateSchema accepts twelve
+ * fields and only two of them — `screening_answers` and `completed_steps` —
+ * are columns. The rest reached `.update()` verbatim and PostgREST rejected
+ * the whole request:
+ *
+ *   Could not find the 'is_complete' column of 'applications'
+ *
+ * #546 fixed the five flat screening answers by name. That was the same bug
+ * with a narrower blast radius: `custom_question_answers`, `attachments`,
+ * `is_complete`, `notes` and `metadata` were still broken. Enumerating what is
+ * real means the next schema field added without a column fails loudly at the
+ * boundary rather than at PostgREST.
  */
+const APPLICATION_COLUMNS = new Set([
+  "screening_answers",
+  "completed_steps",
+  "status",
+  "updated_at",
+]);
+
+/** Top-level fields that belong inside the screening_answers JSONB. */
 const FLAT_SCREENING_FIELDS = [
   "current_location",
   "willing_to_relocate",
   "years_experience",
   "is_authorized_to_work",
   "earliest_start_date",
+  "custom_question_answers",
 ] as const;
+
+/**
+ * Request fields with nowhere to go.
+ *
+ * `is_complete` is a submission signal — it drives scoring, and is not stored.
+ * `notes` and `metadata` are accepted by the schema and persisted by nothing,
+ * on create or update. Dropped explicitly so the intent is visible rather than
+ * looking like an oversight.
+ */
+const NON_PERSISTED_FIELDS = new Set(["is_complete", "notes", "metadata"]);
 
 export function buildApplicationUpdatePayload(
   input: Record<string, unknown> & { status?: ApiStatus },
@@ -149,15 +175,13 @@ export function buildApplicationUpdatePayload(
 
   const payload: Record<string, unknown> = { updated_at: now };
 
-  // Anything that is not a flat screening field is a real column.
+  // `attachments` is the request name; the column is `attachment_metadata`.
+  if (rest.attachments !== undefined) {
+    payload.attachment_metadata = rest.attachments;
+  }
+
   for (const [key, value] of Object.entries(rest)) {
-    if (
-      !FLAT_SCREENING_FIELDS.includes(
-        key as typeof FLAT_SCREENING_FIELDS[number],
-      )
-    ) {
-      payload[key] = value;
-    }
+    if (APPLICATION_COLUMNS.has(key)) payload[key] = value;
   }
 
   const flatAnswers: Record<string, unknown> = {};
@@ -181,14 +205,16 @@ export function buildApplicationUpdatePayload(
 
   // Status no longer reaches here from the applicant schema — it was removed
   // so an applicant could not promote themselves (#530). The mapping stays
-  // because this helper is the one place that owns the vocabulary boundary,
-  // and a caller passing status must never write an API-surface name.
+  // because this helper is the one place that owns the vocabulary boundary.
   if (apiStatus !== undefined) {
     payload.status = STATUS_API_TO_DB[apiStatus];
   }
 
   return payload;
 }
+
+/** Fields the update schema accepts but cannot store. Exported for tests. */
+export const NON_PERSISTED_APPLICATION_FIELDS = NON_PERSISTED_FIELDS;
 
 // Job summary embedded in application responses
 const jobSummarySchema = z
@@ -552,6 +578,11 @@ app.openapi(createApplicationRoute, async (c) => {
     );
   }
 
+  // Score only a finished submission. A draft has nothing meaningful to score.
+  if (input.is_complete) {
+    await scoreAndScreen(application.id as string);
+  }
+
   // Trigger webhook for application.created event
   await triggerWebhook("application.created", application);
 
@@ -818,6 +849,17 @@ app.openapi(updateApplicationRoute, async (c) => {
     return c.json({ error: error.message }, 500);
   }
 
+  // The other way an application gets submitted.
+  //
+  // Gated on the request alone, not on a transition: `is_complete` is not a
+  // column on core.applications — the schema accepts it and the insert drops
+  // it — so there is no stored previous value to compare against. Same class
+  // of phantom field as the flat screening answers in #546. Re-scoring on a
+  // repeat submit is cheap and idempotent, so that is the safe reading.
+  if (input.is_complete) {
+    await scoreAndScreen(id);
+  }
+
   // Trigger webhook for application.updated event
   await triggerWebhook("application.updated", application);
 
@@ -992,6 +1034,67 @@ app.openapi(withdrawApplicationRoute, async (c) => {
  * GET /v1/applications/{id} saw `pending` while the webhook for the same row
  * said `new` — one field, one resource, two vocabularies (#541).
  */
+/**
+ * Score a submitted application, then apply the job's auto-rejection rule.
+ *
+ * Migrations 151 and 152 have provided `core.calculate_application_score` and
+ * `core.auto_reject_application` since they were written, and nothing has ever
+ * called them. 151 also installs a trigger, but it fires on
+ * `current_step = 'review'` and nothing writes `applications.current_step` —
+ * so no application has ever been scored. Verified: 21 rows locally, 0 with a
+ * score and 0 with a current_step.
+ *
+ * Calling the functions explicitly rather than setting `current_step` to reach
+ * the trigger. Relying on the side effect of an unrelated column is how this
+ * got lost in the first place.
+ *
+ * SECURITY DEFINER on both, and the RPCs are called with the service role: the
+ * applicant must not be able to influence their own score, and the score write
+ * touches columns the applicant cannot update.
+ *
+ * Best-effort. A submission that scores late is recoverable; a submission
+ * rejected because scoring failed is not, so a failure here is logged and the
+ * application stands unscored.
+ */
+async function scoreAndScreen(applicationId: string): Promise<void> {
+  const client = getWebhookClient();
+
+  const { error: scoreError } = await client
+    .schema("core")
+    .rpc("calculate_application_score", { p_application_id: applicationId });
+
+  if (scoreError) {
+    console.error(
+      JSON.stringify({
+        severity: "error",
+        component: "application_scoring",
+        outcome: "score_failed",
+        application_id: applicationId,
+        db_error: scoreError.message,
+      }),
+    );
+    // No score means auto-rejection has nothing to threshold against, and
+    // rejecting on a missing score would be worse than not rejecting.
+    return;
+  }
+
+  const { error: rejectError } = await client
+    .schema("core")
+    .rpc("auto_reject_application", { p_application_id: applicationId });
+
+  if (rejectError) {
+    console.error(
+      JSON.stringify({
+        severity: "error",
+        component: "application_scoring",
+        outcome: "auto_reject_failed",
+        application_id: applicationId,
+        db_error: rejectError.message,
+      }),
+    );
+  }
+}
+
 /**
  * Service-role client for webhook work.
  *
