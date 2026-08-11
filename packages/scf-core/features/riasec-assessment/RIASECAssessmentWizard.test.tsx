@@ -51,9 +51,29 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-query')>()
   return {
     ...actual,
+    // Merged from 2 vi.mock('@scaffald/ui') registrations that used to sit
+    // in this file. Two registrations for one module do not combine —
+    // one factory wins, nondeterministically — so whichever lost took
+    // its stubs with it and the file failed at random (#566).
     useQueryClient: () => ({
       invalidateQueries: () => mockInvalidate(),
     }),
+    Button: ({ children, onPress, disabled, ...props }: {
+      children: React.ReactNode
+      onPress?: () => void
+      disabled?: boolean
+      [key: string]: unknown
+    }) => (
+      <button onClick={onPress} disabled={disabled} {...props}>
+        {children}
+      </button>
+    ),
+    Stack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+      <div {...props}>{children}</div>
+    ),
+    ThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    useThemeContext: () => ({ theme: 'light' as const }),
+    useToast: () => ({ show: () => {} }),
   }
 })
 
@@ -111,29 +131,6 @@ vi.mock('@scf/core/features/career-assessment/components/RiasecQuickAssessment',
 }))
 
 // Mock Button
-vi.mock('@scaffald/ui', async () => {
-  const actual = await vi.importActual('@scaffald/ui')
-  const React = await import('react')
-  return {
-    ...actual,
-    Button: ({ children, onPress, disabled, ...props }: {
-      children: React.ReactNode
-      onPress?: () => void
-      disabled?: boolean
-      [key: string]: unknown
-    }) => (
-      <button onClick={onPress} disabled={disabled} {...props}>
-        {children}
-      </button>
-    ),
-    Stack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
-      <div {...props}>{children}</div>
-    ),
-    ThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    useThemeContext: () => ({ theme: 'light' as const }),
-    useToast: () => ({ show: () => {} }),
-  }
-})
 
 describe('RIASECAssessmentWizard', () => {
   beforeEach(() => {

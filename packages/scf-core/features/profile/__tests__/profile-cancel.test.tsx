@@ -3,12 +3,6 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock all profile form components to test cancel behavior pattern
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({
-    show: vi.fn(),
-  }),
-}))
-
 vi.mock('@scf/core/utils/api', () => ({
   api: {
     useContext: () => ({
@@ -63,7 +57,13 @@ vi.mock('react-hook-form', () => {
   }
 })
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
+  // Consts and stubs merged in from two further vi.mock('@scaffald/ui')
+  // registrations that used to sit above. Three registrations for one module
+  // do not combine — one factory wins, nondeterministically — so whichever
+  // lost took its stubs with it and this file failed at random (#566).
   const React = require('react') as typeof import('react')
   const Button = ({
     children,
@@ -102,26 +102,21 @@ vi.mock('@scaffald/ui', () => {
       </div>
     ) : null
 
+
   return {
+    ...actual,
+    useToast: () => ({ show: vi.fn() }),
     Button: Button,
     DashboardWidget: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     ConfirmationDialog,
-  }
-})
-
-vi.mock('@scaffald/ui', async () => {
-  const actual = await vi.importActual('@scaffald/ui')
-  return {
-    ...actual,
     Stack: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Row: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
-  Input: ({ value, onChangeText }: { value?: string; onChangeText?: (v: string) => void }) => (
-    <input value={value} onChange={(e) => onChangeText?.(e.target.value)} />
-  ),
+    Row: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
+    Input: ({ value, onChangeText }: { value?: string; onChangeText?: (v: string) => void }) => (
+      <input value={value} onChange={(e) => onChangeText?.(e.target.value)} />
+    ),
   }
 })
-
 describe('Profile Cancel Button Pattern', () => {
   beforeEach(() => {
     vi.clearAllMocks()

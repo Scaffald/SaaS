@@ -9,12 +9,6 @@ vi.mock('expo-router', () => ({
   }),
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({
-    show: vi.fn(),
-  }),
-}))
-
 vi.mock('@scf/core/utils/api', () => ({
   api: {
     userProfile: {
@@ -83,7 +77,16 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@scaffald/ui', () => ({
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+  return {
+    ...actual,
+    // useToast, ResponsiveModal and Spinner merged in from two further
+    // vi.mock('@scaffald/ui') registrations that used to sit above. Three
+    // registrations for one module do not combine — one factory wins,
+    // nondeterministically — so whichever lost took its stubs with it and this
+    // file failed at random (#566).
+    useToast: () => ({ show: vi.fn() }),
   ResponsiveModal: (props: { children: ReactNode; open: boolean; title: string }) =>
     props.open ? (
       <div data-testid="responsive-modal">
@@ -92,12 +95,6 @@ vi.mock('@scaffald/ui', () => ({
       </div>
     ) : null,
   Spinner: () => <div>Loading...</div>,
-}))
-
-vi.mock('@scaffald/ui', async () => {
-  const actual = await vi.importActual('@scaffald/ui')
-  return {
-    ...actual,
     Stack: (props: { children: ReactNode }) => <div>{props.children}</div>,
   Row: (props: { children: ReactNode }) => <div>{props.children}</div>,
   Text: (props: { children: ReactNode }) => <span>{props.children}</span>,

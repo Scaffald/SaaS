@@ -7,7 +7,9 @@ const selectHandler = vi.fn()
 const closeHandler = vi.fn()
 
 // Beyond UI mock before imports
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const mapStyleProps = (props: Record<string, unknown>) => {
     const style: Record<string, unknown> = { ...(props.style as Record<string, unknown> | undefined) }
     const passthrough: Record<string, unknown> = {}
@@ -56,17 +58,15 @@ vi.mock('@scaffald/ui', () => {
   }
 
   return {
+    ...actual,
+    // Merged from 2 vi.mock('@scaffald/ui') registrations that used to sit
+    // in this file. Two registrations for one module do not combine —
+    // one factory wins, nondeterministically — so whichever lost took
+    // its stubs with it and the file failed at random (#566).
     AnimatePresence: (props: { children: ReactNode }) => <>{props.children}</>,
     Row: MockXStack,
     Stack: MockYStack,
     Text: (props: { children: ReactNode }) => <span>{props.children}</span>,
-  }
-})
-
-vi.mock('@scaffald/ui', async () => {
-  const actual = await vi.importActual('@scaffald/ui')
-  return {
-    ...actual,
     AddressAutocomplete: (props: {
     onChange: (value: string) => void
     onAddressSelect: (result: {
@@ -92,6 +92,7 @@ vi.mock('@scaffald/ui', async () => {
   ),
   }
 })
+
 
 vi.mock('lucide-react-native', () => ({
   AlertCircle: () => <span data-testid="alert-icon" />,

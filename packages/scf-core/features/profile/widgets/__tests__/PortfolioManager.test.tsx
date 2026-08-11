@@ -9,12 +9,6 @@ global.confirm = mockConfirm
 
 // Mock toast
 const mockShow = vi.fn()
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({
-    show: mockShow,
-  }),
-}))
-
 // Mock API
 const mockPortfolioItems = [
   {
@@ -115,71 +109,6 @@ vi.mock('@scf/core/utils/supabase/storage', () => ({
 }))
 
 // Mock UI components
-vi.mock('@scaffald/ui', () => ({
-  Button: ({
-    children,
-    onPress,
-    icon,
-    disabled,
-    ...rest
-  }: {
-    children?: ReactNode
-    onPress?: () => void
-    icon?: ReactNode
-    disabled?: boolean
-  } & Record<string, unknown>) => (
-    <button type="button" onClick={onPress} disabled={disabled} {...rest}>
-      {icon}
-      {children}
-    </button>
-  ),
-  ImageUpload: ({
-    value,
-    onChange,
-    ...rest
-  }: {
-    value?: string
-    onChange?: (uri: string | null) => void
-  } & Record<string, unknown>) => (
-    <div data-testid="image-upload" data-value={value} {...rest}>
-      <input
-        type="file"
-        data-testid="image-upload-input"
-        onChange={(e) => {
-          if (onChange && e.target.files?.[0]) {
-            onChange(URL.createObjectURL(e.target.files[0]))
-          }
-        }}
-      />
-    </div>
-  ),
-  RichTextEditor: ({
-    value,
-    onChange,
-    placeholder,
-    ...rest
-  }: {
-    value?: unknown
-    onChange?: (content: unknown) => void
-    placeholder?: string
-  } & Record<string, unknown>) => (
-    <textarea
-      data-testid="rich-text-editor"
-      value={typeof value === 'string' ? value : ''}
-      onChange={(e) => onChange?.(e.target.value)}
-      placeholder={placeholder}
-      {...rest}
-    />
-  ),
-  extractPlainText: (content: unknown) => {
-    if (typeof content === 'string') return content
-    return 'Rich text description'
-  },
-  plainTextToTipTap: (text: string) => ({
-    type: 'doc',
-    content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
-  }),
-}))
 
 // Mock profile components
 vi.mock('../components', () => ({
@@ -294,6 +223,75 @@ vi.mock('@scaffald/ui', async () => {
 
   return {
     ...actual,
+    // useToast and the Button/Input/Modal stubs are merged in from two
+    // further vi.mock('@scaffald/ui') registrations that used to sit above.
+    // Three registrations for one module do not combine — one factory wins,
+    // nondeterministically. vitest.config.ts blamed those duplicates for this
+    // file failing to transform at all (#566).
+    useToast: () => ({ show: mockShow }),
+  Button: ({
+    children,
+    onPress,
+    icon,
+    disabled,
+    ...rest
+  }: {
+    children?: ReactNode
+    onPress?: () => void
+    icon?: ReactNode
+    disabled?: boolean
+  } & Record<string, unknown>) => (
+    <button type="button" onClick={onPress} disabled={disabled} {...rest}>
+      {icon}
+      {children}
+    </button>
+  ),
+  ImageUpload: ({
+    value,
+    onChange,
+    ...rest
+  }: {
+    value?: string
+    onChange?: (uri: string | null) => void
+  } & Record<string, unknown>) => (
+    <div data-testid="image-upload" data-value={value} {...rest}>
+      <input
+        type="file"
+        data-testid="image-upload-input"
+        onChange={(e) => {
+          if (onChange && e.target.files?.[0]) {
+            onChange(URL.createObjectURL(e.target.files[0]))
+          }
+        }}
+      />
+    </div>
+  ),
+  RichTextEditor: ({
+    value,
+    onChange,
+    placeholder,
+    ...rest
+  }: {
+    value?: unknown
+    onChange?: (content: unknown) => void
+    placeholder?: string
+  } & Record<string, unknown>) => (
+    <textarea
+      data-testid="rich-text-editor"
+      value={typeof value === 'string' ? value : ''}
+      onChange={(e) => onChange?.(e.target.value)}
+      placeholder={placeholder}
+      {...rest}
+    />
+  ),
+  extractPlainText: (content: unknown) => {
+    if (typeof content === 'string') return content
+    return 'Rich text description'
+  },
+  plainTextToTipTap: (text: string) => ({
+    type: 'doc',
+    content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
+  }),
     Stack: Stack,
     Row: Stack,
     Text,
