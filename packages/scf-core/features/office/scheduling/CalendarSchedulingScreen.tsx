@@ -8,7 +8,7 @@
  * @see Issue #88 - Candidate Self-Scheduling
  */
 
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
   Button,
   Card,
@@ -39,9 +39,16 @@ import {
   MapPin,
   Copy,
 } from 'lucide-react-native'
-import { ScrollView } from 'react-native'
+import { Platform, Pressable, ScrollView } from 'react-native'
 import { StatusBadge } from '@scf/core/components/ui'
 import { SampleDataNotice } from '@scf/core/features/office/components/SampleDataNotice'
+import {
+  useCreateInterviewSlotMutation,
+  useCreateSchedulingLinkMutation,
+  useEmployerInterviewSlots,
+  useEmployerSchedulingLinks,
+} from '@scf/core/utils/scheduling-sdk-hooks'
+import { useEmployerApplications } from '@scf/core/utils/applications-sdk-hooks'
 
 // ============================================================================
 // Types
@@ -89,20 +96,23 @@ interface SchedulingLink {
 // ============================================================================
 
 /**
- * Nothing on this screen is real. The tables landed in migration
- * 146_ats_multi_location_scheduling.sql (core.interview_slots,
- * interview_availability, interview_bookings) and both the API route and the
- * SDK resource exist, but no hook here calls them.
+ * Calendar connections and availability windows are still sample data.
  *
- * The lists below are the smaller half of the problem. The larger half is that
- * every action is inert — "Propose Time" opens a form whose submit button only
- * closes the modal, so a user can believe they scheduled an interview with a
- * candidate who will never hear about it. Until #540 wires this up, the write
- * paths stay disabled rather than silently discarding input.
+ * Interview slots and self-scheduling links are now real: they read and write
+ * `/v1/employer/scheduling`, added in Scaffald/SaaS#561. The flag narrowed
+ * rather than disappeared, because the two remaining panels are not a missing
+ * CRUD endpoint — `core.calendar_connections` stores
+ * `access_token_encrypted` / `refresh_token_encrypted` /
+ * `provider_account_id` for Google and Outlook, which is an OAuth integration.
+ * Availability windows feed slot *generation*, which does not exist yet
+ * either.
  *
- * Deleting this constant is the last step of #540.
+ * So the notice moved onto the Calendar Connections tab instead of the whole
+ * screen, and those two write paths stay disabled rather than silently
+ * discarding input. Deleting this constant is the last step of the calendar
+ * integration, not of #540.
  */
-const USES_SAMPLE_DATA: boolean = true
+const CALENDAR_USES_SAMPLE_DATA: boolean = true
 
 const MOCK_CONNECTIONS: CalendarConnection[] = [
   {
@@ -157,49 +167,22 @@ const MOCK_AVAILABILITY: AvailabilityWindow[] = [
   },
 ]
 
-const MOCK_SLOTS: InterviewSlot[] = [
-  {
-    id: '1',
-    application_id: 'app-1',
-    slot_start: '2026-03-12T10:00:00Z',
-    slot_end: '2026-03-12T10:30:00Z',
-    location_type: 'video',
-    status: 'proposed',
-    candidate_name: 'John D.',
-  },
-  {
-    id: '2',
-    application_id: 'app-2',
-    slot_start: '2026-03-12T14:00:00Z',
-    slot_end: '2026-03-12T14:45:00Z',
-    location_type: 'phone',
-    status: 'confirmed',
-    candidate_name: 'Sarah M.',
-  },
-  {
-    id: '3',
-    application_id: 'app-3',
-    slot_start: '2026-03-13T09:00:00Z',
-    slot_end: '2026-03-13T10:00:00Z',
-    location_type: 'in_person',
-    status: 'booked',
-    candidate_name: 'Mike R.',
-  },
-]
-
-const MOCK_LINKS: SchedulingLink[] = [
-  {
-    id: '1',
-    token: 'abc123def456',
-    application_id: 'app-1',
-    expires_at: '2026-03-20T00:00:00Z',
-    is_active: true,
-    current_bookings: 0,
-    max_bookings: 1,
-  },
-]
-
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+/**
+ * Public URL a candidate uses to redeem a scheduling link.
+ *
+ * The mock rendered `schedule.scaffald.com/<token>`, which is not a host that
+ * exists — a recruiter who copied it would have sent a dead link. The real
+ * route is `/schedule/[token]` (apps/scaffald/app/(protected)/schedule).
+ */
+function schedulingUrl(token: string): string {
+  const origin =
+    Platform.OS === 'web' && typeof window !== 'undefined'
+      ? window.location.origin
+      : 'https://scaffald.com'
+  return `${origin}/schedule/${token}`
+}
 
 // ============================================================================
 // Sub-Components
@@ -348,6 +331,81 @@ function InterviewSlotCard({ slot }: { slot: InterviewSlot }) {
   )
 }
 
+/**
+ * Pick the application a slot or link attaches to.
+ *
+ * A plain filtered list rather than a Dropdown: this renders inside a Modal,
+ * where an absolutely-positioned menu is unreliable on React Native, and the
+ * set is small enough to scroll.
+ */
+function ApplicationPicker({
+  applications,
+  selectedId,
+  onSelect,
+  isLoading,
+}: {
+  applications: Array<{ id: string; label: string; sublabel: string }>
+  selectedId: string | null
+  onSelect: (id: string) => void
+  isLoading: boolean
+}) {
+  const { theme } = useThemeContext()
+  const [search, setSearch] = useState('')
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return applications
+    return applications.filter(
+      (a) => a.label.toLowerCase().includes(q) || a.sublabel.toLowerCase().includes(q)
+    )
+  }, [applications, search])
+
+  return (
+    <Stack gap={8}>
+      <Input placeholder="Search for an application..." value={search} onChangeText={setSearch} />
+      <ScrollView style={{ maxHeight: 160 }} nestedScrollEnabled>
+        <Stack gap={4}>
+          {isLoading && (
+            <Text style={{ color: colors.text[theme].tertiary, fontSize: 13 }}>
+              Loading applications…
+            </Text>
+          )}
+          {!isLoading && filtered.length === 0 && (
+            <Text style={{ color: colors.text[theme].tertiary, fontSize: 13 }}>
+              {applications.length === 0
+                ? 'No applications yet — there is nobody to schedule with.'
+                : 'No applications match that search.'}
+            </Text>
+          )}
+          {filtered.map((app) => (
+            <Pressable key={app.id} onPress={() => onSelect(app.id)}>
+              <Row
+                gap={8}
+                align="center"
+                padding="sm"
+                style={{
+                  borderRadius: 8,
+                  backgroundColor:
+                    selectedId === app.id ? colors.bg[theme].selected : colors.bg[theme].subtle,
+                }}
+              >
+                <Stack style={{ flex: 1 }} gap={2}>
+                  <Text style={{ color: colors.text[theme].primary, fontSize: 13 }}>
+                    {app.label}
+                  </Text>
+                  <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+                    {app.sublabel}
+                  </Text>
+                </Stack>
+              </Row>
+            </Pressable>
+          ))}
+        </Stack>
+      </ScrollView>
+    </Stack>
+  )
+}
+
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -357,28 +415,220 @@ export function CalendarSchedulingScreen() {
   const [activeTab, setActiveTab] = useState('connections')
   const [showAddSlotModal, setShowAddSlotModal] = useState(false)
   const [showCreateLinkModal, setShowCreateLinkModal] = useState(false)
+  const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null)
+
+  // Organisation-wide: no application_id. See useEmployerInterviewSlots.
+  const slotsQuery = useEmployerInterviewSlots()
+  const linksQuery = useEmployerSchedulingLinks()
+
+  /**
+   * Applications, for two reasons: the modals need something to attach a slot
+   * or link to, and the slot rows need a candidate name. The scheduling rows
+   * carry `application_id` and nothing else about the person — the name lives
+   * on the application — so it is resolved here rather than denormalised into
+   * the scheduling tables.
+   */
+  const applicationsQuery = useEmployerApplications({ limit: 100 })
+  const applications = applicationsQuery.data?.data ?? []
+
+  const candidateNameByApplication = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const app of applications) {
+      const candidate = app.candidate as { first_name?: string; last_name?: string } | undefined
+      const name = [candidate?.first_name, candidate?.last_name].filter(Boolean).join(' ').trim()
+      if (name) map.set(app.id, name)
+    }
+    return map
+  }, [applications])
+
+  const slots: InterviewSlot[] = useMemo(
+    () =>
+      (slotsQuery.data ?? []).map((slot) => ({
+        id: slot.id,
+        application_id: slot.application_id,
+        slot_start: slot.slot_start,
+        slot_end: slot.slot_end,
+        location_type: slot.location_type,
+        // `no_show` exists in the database but not in this screen's union. It
+        // reads as a finished interview here rather than an upcoming one.
+        status: slot.status === 'no_show' ? 'completed' : slot.status,
+        candidate_name: candidateNameByApplication.get(slot.application_id),
+      })),
+    [slotsQuery.data, candidateNameByApplication]
+  )
+
+  const links: SchedulingLink[] = useMemo(
+    () =>
+      (linksQuery.data ?? []).map((link) => ({
+        id: link.id,
+        token: link.token,
+        application_id: link.application_id,
+        expires_at: link.expires_at,
+        is_active: link.is_active,
+        current_bookings: link.current_bookings ?? 0,
+        max_bookings: link.max_bookings ?? 1,
+      })),
+    [linksQuery.data]
+  )
 
   const slotCounts = useMemo(
     () => ({
-      upcoming: MOCK_SLOTS.filter(
-        (slot) => slot.status !== 'cancelled' && slot.status !== 'completed'
-      ).length,
-      confirmed: MOCK_SLOTS.filter((slot) => slot.status === 'confirmed').length,
-      completed: MOCK_SLOTS.filter((slot) => slot.status === 'completed').length,
+      upcoming: slots.filter((slot) => slot.status !== 'cancelled' && slot.status !== 'completed')
+        .length,
+      confirmed: slots.filter((slot) => slot.status === 'confirmed').length,
+      completed: slots.filter((slot) => slot.status === 'completed').length,
     }),
-    []
+    [slots]
   )
+
+  const createSlot = useCreateInterviewSlotMutation()
+  const createLink = useCreateSchedulingLinkMutation()
+
+  const applicationOptions = useMemo(
+    () =>
+      applications.map((app) => {
+        const job = app.job as { title?: string } | undefined
+        return {
+          id: app.id,
+          label: candidateNameByApplication.get(app.id) ?? 'Candidate',
+          sublabel: job?.title ?? 'Application',
+        }
+      }),
+    [applications, candidateNameByApplication]
+  )
+
+  // ── Propose Time form ────────────────────────────────────────────────────
+  const [slotApplicationId, setSlotApplicationId] = useState<string | null>(null)
+  const [slotStart, setSlotStart] = useState('')
+  const [slotDuration, setSlotDuration] = useState('30')
+  const [slotLocationType, setSlotLocationType] = useState<'video' | 'phone' | 'in_person'>('video')
+  const [slotMeetingLink, setSlotMeetingLink] = useState('')
+  const [slotNotes, setSlotNotes] = useState('')
+  const [slotError, setSlotError] = useState<string | null>(null)
+
+  const resetSlotForm = useCallback(() => {
+    setSlotApplicationId(null)
+    setSlotStart('')
+    setSlotDuration('30')
+    setSlotLocationType('video')
+    setSlotMeetingLink('')
+    setSlotNotes('')
+    setSlotError(null)
+  }, [])
+
+  const submitSlot = useCallback(() => {
+    setSlotError(null)
+
+    if (!slotApplicationId) {
+      setSlotError('Choose an application first.')
+      return
+    }
+
+    const startMs = Date.parse(slotStart)
+    if (Number.isNaN(startMs)) {
+      setSlotError('Enter a start time, e.g. 2026-09-01 10:00.')
+      return
+    }
+
+    const minutes = Number.parseInt(slotDuration, 10)
+    if (!Number.isFinite(minutes) || minutes <= 0) {
+      setSlotError('Duration must be a positive number of minutes.')
+      return
+    }
+
+    createSlot.mutate(
+      {
+        application_id: slotApplicationId,
+        slot_start: new Date(startMs).toISOString(),
+        slot_end: new Date(startMs + minutes * 60_000).toISOString(),
+        // The employer's own zone, which is what they typed the time in.
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+        location_type: slotLocationType,
+        ...(slotMeetingLink.trim() ? { meeting_link: slotMeetingLink.trim() } : {}),
+        ...(slotNotes.trim() ? { notes: slotNotes.trim() } : {}),
+      },
+      {
+        onSuccess: () => {
+          setShowAddSlotModal(false)
+          resetSlotForm()
+        },
+        onError: (error) => setSlotError(error.message),
+      }
+    )
+  }, [
+    createSlot,
+    slotApplicationId,
+    slotStart,
+    slotDuration,
+    slotLocationType,
+    slotMeetingLink,
+    slotNotes,
+    resetSlotForm,
+  ])
+
+  // ── Create Link form ─────────────────────────────────────────────────────
+  const [linkApplicationId, setLinkApplicationId] = useState<string | null>(null)
+  const [linkExpiryDays, setLinkExpiryDays] = useState('7')
+  const [linkMaxBookings, setLinkMaxBookings] = useState('1')
+  const [linkError, setLinkError] = useState<string | null>(null)
+
+  const resetLinkForm = useCallback(() => {
+    setLinkApplicationId(null)
+    setLinkExpiryDays('7')
+    setLinkMaxBookings('1')
+    setLinkError(null)
+  }, [])
+
+  const submitLink = useCallback(() => {
+    setLinkError(null)
+
+    if (!linkApplicationId) {
+      setLinkError('Choose an application first.')
+      return
+    }
+
+    const days = Number.parseInt(linkExpiryDays, 10)
+    if (!Number.isFinite(days) || days <= 0) {
+      setLinkError('Expiration must be a positive number of days.')
+      return
+    }
+
+    const max = Number.parseInt(linkMaxBookings, 10)
+    if (!Number.isFinite(max) || max <= 0) {
+      setLinkError('Max bookings must be at least 1.')
+      return
+    }
+
+    createLink.mutate(
+      {
+        application_id: linkApplicationId,
+        expires_at: new Date(Date.now() + days * 86_400_000).toISOString(),
+        max_bookings: max,
+      },
+      {
+        onSuccess: () => {
+          setShowCreateLinkModal(false)
+          resetLinkForm()
+        },
+        onError: (error) => setLinkError(error.message),
+      }
+    )
+  }, [createLink, linkApplicationId, linkExpiryDays, linkMaxBookings, resetLinkForm])
+
+  const copyLink = useCallback((link: SchedulingLink) => {
+    const url = schedulingUrl(link.token)
+    // Clipboard is web-only here. React Native's Clipboard module is a separate
+    // dependency this package does not carry, so rather than pretend, the
+    // button is only offered where it works.
+    if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
+      void navigator.clipboard.writeText(url)
+      setCopiedLinkId(link.id)
+    }
+  }, [])
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <Stack gap={16}>
-        {USES_SAMPLE_DATA && (
-          <SampleDataNotice
-            title="Sample data — scheduling is not connected"
-            description="These calendars, availability windows, interview slots and links are placeholders. Nothing here is saved, and no candidate is contacted."
-          />
-        )}
-
         {/* Header */}
         <Row justify="space-between" align="center">
           <Stack gap={2}>
@@ -393,7 +643,6 @@ export function CalendarSchedulingScreen() {
             size="sm"
             variant="filled"
             iconStart={Plus}
-            disabled={USES_SAMPLE_DATA}
             onPress={() => setShowAddSlotModal(true)}
           >
             Propose Time
@@ -406,6 +655,13 @@ export function CalendarSchedulingScreen() {
             <Tabs.Trigger>Calendar Connections</Tabs.Trigger>
             <Tabs.Content>
               <Stack gap={16} style={{ paddingTop: 16 }}>
+                {CALENDAR_USES_SAMPLE_DATA && (
+                  <SampleDataNotice
+                    title="Sample data — no calendar is connected"
+                    description="These calendars and availability windows are placeholders. Connecting Google or Outlook needs an OAuth integration that does not exist yet, so nothing here is saved. Interview slots and scheduling links, on the other tabs, are real."
+                  />
+                )}
+
                 {/* Connected Calendars */}
                 <DashboardWidget>
                   <DashboardWidgetHeader title="Connected Calendars" />
@@ -420,7 +676,7 @@ export function CalendarSchedulingScreen() {
                       size="sm"
                       variant="outline"
                       iconStart={Plus}
-                      disabled={USES_SAMPLE_DATA}
+                      disabled={CALENDAR_USES_SAMPLE_DATA}
                       onPress={() => {}}
                     >
                       Connect Google
@@ -429,7 +685,7 @@ export function CalendarSchedulingScreen() {
                       size="sm"
                       variant="outline"
                       iconStart={Plus}
-                      disabled={USES_SAMPLE_DATA}
+                      disabled={CALENDAR_USES_SAMPLE_DATA}
                       onPress={() => {}}
                     >
                       Connect Outlook
@@ -455,7 +711,7 @@ export function CalendarSchedulingScreen() {
                     size="sm"
                     variant="outline"
                     iconStart={Plus}
-                    disabled={USES_SAMPLE_DATA}
+                    disabled={CALENDAR_USES_SAMPLE_DATA}
                     onPress={() => {}}
                   >
                     Add Availability
@@ -477,7 +733,6 @@ export function CalendarSchedulingScreen() {
                         size="sm"
                         variant="outline"
                         iconStart={Plus}
-                        disabled={USES_SAMPLE_DATA}
                         onPress={() => setShowAddSlotModal(true)}
                       >
                         Propose Time
@@ -485,16 +740,30 @@ export function CalendarSchedulingScreen() {
                     }
                   />
                   <Stack gap={6}>
-                    {MOCK_SLOTS.map((slot) => (
+                    {slotsQuery.isLoading && (
+                      <Text style={{ color: colors.text[theme].tertiary, fontSize: 13 }}>
+                        Loading interviews…
+                      </Text>
+                    )}
+                    {slotsQuery.isError && (
+                      <Text style={{ color: colors.fg[theme].error, fontSize: 13 }}>
+                        Could not load interviews. {(slotsQuery.error as Error)?.message ?? ''}
+                      </Text>
+                    )}
+                    {!slotsQuery.isLoading && !slotsQuery.isError && slots.length === 0 && (
+                      <Text style={{ color: colors.text[theme].tertiary, fontSize: 13 }}>
+                        No interviews proposed yet. Use Propose Time to offer a candidate a slot.
+                      </Text>
+                    )}
+                    {slots.map((slot) => (
                       <InterviewSlotCard key={slot.id} slot={slot} />
                     ))}
                   </Stack>
                 </DashboardWidget>
 
                 {/* Stats. Previously hardcoded "3" / "1" / "12" — the first two
-                    happened to match MOCK_SLOTS, and "12 completed" was invented
-                    outright. Derived so they stay honest once #540 supplies real
-                    slots. */}
+                    happened to match the mock slots, and "12 completed" was
+                    invented outright. Now derived from the real ones. */}
                 <Row gap={12}>
                   <Card variant="glass" style={{ flex: 1 }} padding="md">
                     <Stack align="center" gap={4}>
@@ -561,7 +830,6 @@ export function CalendarSchedulingScreen() {
                         size="sm"
                         variant="outline"
                         iconStart={Link2}
-                        disabled={USES_SAMPLE_DATA}
                         onPress={() => setShowCreateLinkModal(true)}
                       >
                         Create Link
@@ -574,44 +842,70 @@ export function CalendarSchedulingScreen() {
                     Send candidates a link to choose their preferred interview time
                   </Text>
                   <Stack gap={8}>
-                    {MOCK_LINKS.map((link) => (
-                      <Row
-                        key={link.id}
-                        gap={12}
-                        align="center"
-                        padding="md"
-                        style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 10 }}
-                      >
-                        <Link2 size={18} color={colors.icon[theme].default} />
-                        <Stack style={{ flex: 1 }} gap={2}>
-                          <Text
-                            style={{
-                              color: colors.text[theme].primary,
-                              fontSize: 13,
-                              fontFamily: 'monospace',
-                            }}
-                          >
-                            schedule.scaffald.com/{link.token.slice(0, 8)}...
-                          </Text>
-                          <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
-                            Expires {new Date(link.expires_at).toLocaleDateString()} ·{' '}
-                            {link.current_bookings}/{link.max_bookings} booked
-                          </Text>
-                        </Stack>
-                        <StatusBadge variant={link.is_active ? 'success' : 'default'}>
-                          {link.is_active ? 'Active' : 'Expired'}
-                        </StatusBadge>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          iconStart={Copy}
-                          disabled={USES_SAMPLE_DATA}
-                          onPress={() => {}}
+                    {linksQuery.isLoading && (
+                      <Text style={{ color: colors.text[theme].tertiary, fontSize: 13 }}>
+                        Loading links…
+                      </Text>
+                    )}
+                    {linksQuery.isError && (
+                      <Text style={{ color: colors.fg[theme].error, fontSize: 13 }}>
+                        Could not load links. {(linksQuery.error as Error)?.message ?? ''}
+                      </Text>
+                    )}
+                    {!linksQuery.isLoading && !linksQuery.isError && links.length === 0 && (
+                      <Text style={{ color: colors.text[theme].tertiary, fontSize: 13 }}>
+                        No scheduling links yet. Create one to let a candidate pick their own time.
+                      </Text>
+                    )}
+                    {links.map((link) => {
+                      // An expired link is still `is_active` in the database —
+                      // the flag is the employer's kill switch, not the clock.
+                      // Showing "Active" past the expiry misrepresents a link
+                      // the candidate can no longer redeem.
+                      const expired = Date.parse(link.expires_at) < Date.now()
+                      const usable = link.is_active && !expired
+                      return (
+                        <Row
+                          key={link.id}
+                          gap={12}
+                          align="center"
+                          padding="md"
+                          style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 10 }}
                         >
-                          Copy
-                        </Button>
-                      </Row>
-                    ))}
+                          <Link2 size={18} color={colors.icon[theme].default} />
+                          <Stack style={{ flex: 1 }} gap={2}>
+                            <Text
+                              style={{
+                                color: colors.text[theme].primary,
+                                fontSize: 13,
+                                fontFamily: 'monospace',
+                              }}
+                            >
+                              {schedulingUrl(link.token)}
+                            </Text>
+                            <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+                              {candidateNameByApplication.get(link.application_id) ?? 'Candidate'} ·{' '}
+                              {expired ? 'Expired' : 'Expires'}{' '}
+                              {new Date(link.expires_at).toLocaleDateString()} ·{' '}
+                              {link.current_bookings}/{link.max_bookings} booked
+                            </Text>
+                          </Stack>
+                          <StatusBadge variant={usable ? 'success' : 'default'}>
+                            {usable ? 'Active' : expired ? 'Expired' : 'Disabled'}
+                          </StatusBadge>
+                          {Platform.OS === 'web' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              iconStart={Copy}
+                              onPress={() => copyLink(link)}
+                            >
+                              {copiedLinkId === link.id ? 'Copied' : 'Copy'}
+                            </Button>
+                          )}
+                        </Row>
+                      )
+                    })}
                   </Stack>
                 </DashboardWidget>
 
@@ -665,7 +959,14 @@ export function CalendarSchedulingScreen() {
         </Tabs>
 
         {/* Add Slot Modal */}
-        <Modal visible={showAddSlotModal} onClose={() => setShowAddSlotModal(false)} width={480}>
+        <Modal
+          visible={showAddSlotModal}
+          onClose={() => {
+            setShowAddSlotModal(false)
+            resetSlotForm()
+          }}
+          width={480}
+        >
           <ModalHeader title="Propose Interview Time" />
           <ModalContent>
             <Stack gap={16}>
@@ -673,9 +974,26 @@ export function CalendarSchedulingScreen() {
                 <Text
                   style={{ color: colors.text[theme].primary, fontSize: 14, fontWeight: '500' }}
                 >
+                  Candidate
+                </Text>
+                <ApplicationPicker
+                  applications={applicationOptions}
+                  selectedId={slotApplicationId}
+                  onSelect={setSlotApplicationId}
+                  isLoading={applicationsQuery.isLoading}
+                />
+              </Stack>
+              <Stack gap={4}>
+                <Text
+                  style={{ color: colors.text[theme].primary, fontSize: 14, fontWeight: '500' }}
+                >
                   Date & Time
                 </Text>
-                <Input placeholder="Select date and time" onChangeText={() => {}} />
+                <Input
+                  placeholder="2026-09-01 10:00"
+                  value={slotStart}
+                  onChangeText={setSlotStart}
+                />
               </Stack>
               <Stack gap={4}>
                 <Text
@@ -683,7 +1001,12 @@ export function CalendarSchedulingScreen() {
                 >
                   Duration (minutes)
                 </Text>
-                <Input placeholder="30" keyboardType="numeric" onChangeText={() => {}} />
+                <Input
+                  placeholder="30"
+                  keyboardType="numeric"
+                  value={slotDuration}
+                  onChangeText={setSlotDuration}
+                />
               </Stack>
               <Stack gap={4}>
                 <Text
@@ -692,13 +1015,28 @@ export function CalendarSchedulingScreen() {
                   Location Type
                 </Text>
                 <Row gap={8}>
-                  <Button size="sm" variant="outline" iconStart={Video} onPress={() => {}}>
+                  <Button
+                    size="sm"
+                    variant={slotLocationType === 'video' ? 'filled' : 'outline'}
+                    iconStart={Video}
+                    onPress={() => setSlotLocationType('video')}
+                  >
                     Video
                   </Button>
-                  <Button size="sm" variant="outline" iconStart={Phone} onPress={() => {}}>
+                  <Button
+                    size="sm"
+                    variant={slotLocationType === 'phone' ? 'filled' : 'outline'}
+                    iconStart={Phone}
+                    onPress={() => setSlotLocationType('phone')}
+                  >
                     Phone
                   </Button>
-                  <Button size="sm" variant="outline" iconStart={MapPin} onPress={() => {}}>
+                  <Button
+                    size="sm"
+                    variant={slotLocationType === 'in_person' ? 'filled' : 'outline'}
+                    iconStart={MapPin}
+                    onPress={() => setSlotLocationType('in_person')}
+                  >
                     In Person
                   </Button>
                 </Row>
@@ -709,7 +1047,11 @@ export function CalendarSchedulingScreen() {
                 >
                   Meeting Link
                 </Text>
-                <Input placeholder="https://meet.google.com/..." onChangeText={() => {}} />
+                <Input
+                  placeholder="https://meet.google.com/..."
+                  value={slotMeetingLink}
+                  onChangeText={setSlotMeetingLink}
+                />
               </Stack>
               <Stack gap={4}>
                 <Text
@@ -721,21 +1063,37 @@ export function CalendarSchedulingScreen() {
                   placeholder="Optional notes for the candidate"
                   multiline
                   numberOfLines={3}
-                  onChangeText={() => {}}
+                  value={slotNotes}
+                  onChangeText={setSlotNotes}
                 />
               </Stack>
+              {slotError && (
+                <Text style={{ color: colors.fg[theme].error, fontSize: 13 }}>{slotError}</Text>
+              )}
             </Stack>
           </ModalContent>
           <ModalActions
-            primaryAction={{ label: 'Propose Time', onPress: () => setShowAddSlotModal(false) }}
-            secondaryAction={{ label: 'Cancel', onPress: () => setShowAddSlotModal(false) }}
+            primaryAction={{
+              label: createSlot.isPending ? 'Proposing…' : 'Propose Time',
+              onPress: submitSlot,
+            }}
+            secondaryAction={{
+              label: 'Cancel',
+              onPress: () => {
+                setShowAddSlotModal(false)
+                resetSlotForm()
+              },
+            }}
           />
         </Modal>
 
         {/* Create Link Modal */}
         <Modal
           visible={showCreateLinkModal}
-          onClose={() => setShowCreateLinkModal(false)}
+          onClose={() => {
+            setShowCreateLinkModal(false)
+            resetLinkForm()
+          }}
           width={480}
         >
           <ModalHeader title="Create Scheduling Link" />
@@ -747,15 +1105,25 @@ export function CalendarSchedulingScreen() {
                 >
                   Application
                 </Text>
-                <Input placeholder="Search for an application..." onChangeText={() => {}} />
+                <ApplicationPicker
+                  applications={applicationOptions}
+                  selectedId={linkApplicationId}
+                  onSelect={setLinkApplicationId}
+                  isLoading={applicationsQuery.isLoading}
+                />
               </Stack>
               <Stack gap={4}>
                 <Text
                   style={{ color: colors.text[theme].primary, fontSize: 14, fontWeight: '500' }}
                 >
-                  Link Expiration
+                  Link Expiration (days)
                 </Text>
-                <Input placeholder="7 days" onChangeText={() => {}} />
+                <Input
+                  placeholder="7"
+                  keyboardType="numeric"
+                  value={linkExpiryDays}
+                  onChangeText={setLinkExpiryDays}
+                />
               </Stack>
               <Stack gap={4}>
                 <Text
@@ -763,13 +1131,30 @@ export function CalendarSchedulingScreen() {
                 >
                   Max Bookings
                 </Text>
-                <Input placeholder="1" keyboardType="numeric" onChangeText={() => {}} />
+                <Input
+                  placeholder="1"
+                  keyboardType="numeric"
+                  value={linkMaxBookings}
+                  onChangeText={setLinkMaxBookings}
+                />
               </Stack>
+              {linkError && (
+                <Text style={{ color: colors.fg[theme].error, fontSize: 13 }}>{linkError}</Text>
+              )}
             </Stack>
           </ModalContent>
           <ModalActions
-            primaryAction={{ label: 'Create Link', onPress: () => setShowCreateLinkModal(false) }}
-            secondaryAction={{ label: 'Cancel', onPress: () => setShowCreateLinkModal(false) }}
+            primaryAction={{
+              label: createLink.isPending ? 'Creating…' : 'Create Link',
+              onPress: submitLink,
+            }}
+            secondaryAction={{
+              label: 'Cancel',
+              onPress: () => {
+                setShowCreateLinkModal(false)
+                resetLinkForm()
+              },
+            }}
           />
         </Modal>
       </Stack>
