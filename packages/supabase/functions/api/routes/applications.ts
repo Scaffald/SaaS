@@ -4,6 +4,7 @@ import {
   applicationCreateSchema,
   applicationUpdateSchema,
 } from "../../_shared/application-schemas.ts";
+import { createClient } from "@supabase/supabase-js";
 import {
   PIPELINE_ROLES,
   resolveApplicationOrgAccess,
@@ -552,7 +553,7 @@ app.openapi(createApplicationRoute, async (c) => {
   }
 
   // Trigger webhook for application.created event
-  await triggerWebhook("application.created", application, c);
+  await triggerWebhook("application.created", application);
 
   return c.json(withApiStatus(application), 201);
 });
@@ -818,7 +819,7 @@ app.openapi(updateApplicationRoute, async (c) => {
   }
 
   // Trigger webhook for application.updated event
-  await triggerWebhook("application.updated", application, c);
+  await triggerWebhook("application.updated", application);
 
   return c.json(withApiStatus(application), 200);
 });
@@ -974,7 +975,7 @@ app.openapi(withdrawApplicationRoute, async (c) => {
   }
 
   // Trigger webhook for application.withdrawn event
-  await triggerWebhook("application.withdrawn", application, c);
+  await triggerWebhook("application.withdrawn", application);
 
   return c.json(withApiStatus(application), 200);
 });
@@ -991,20 +992,80 @@ app.openapi(withdrawApplicationRoute, async (c) => {
  * GET /v1/applications/{id} saw `pending` while the webhook for the same row
  * said `new` — one field, one resource, two vocabularies (#541).
  */
-async function triggerWebhook(
+/**
+ * Service-role client for webhook work.
+ *
+ * public.webhooks is gated by `webhooks_select_policy`, which requires a
+ * role_assignments row scoped to the organisation for auth.uid(). The events
+ * here are triggered by the *applicant* — who by definition holds no such row —
+ * so on the caller's RLS client the lookup returns empty and delivery silently
+ * never happens. Whether an organisation is notified about its own application
+ * is not a function of the actor's permissions.
+ */
+function getWebhookClient() {
+  const url = Deno.env.get("SUPABASE_URL") ?? "";
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  return createClient(url, key);
+}
+
+/**
+ * Write one row to public.webhook_deliveries.
+ *
+ * Extracted so the column names live in one place — the two call sites had
+ * drifted from the schema in the same way, and from each other.
+ *
+ * Best-effort: the HTTP delivery has already happened, so a failure to record
+ * it must not propagate. Logged loudly instead, because a silent failure here
+ * is exactly how the broken table reference stayed hidden.
+ */
+// deno-lint-ignore no-explicit-any
+async function recordDelivery(supabase: any, row: {
+  webhook_id: string;
+  event_type: string;
+  event_id: string;
+  event_data: unknown;
+  request_body: unknown;
+  status: "success" | "failed";
+  response_status_code?: number;
+  response_body?: string;
+  error_message?: string;
+}): Promise<void> {
+  const { error } = await supabase
+    .schema("public")
+    .from("webhook_deliveries")
+    .insert({
+      ...row,
+      delivered_at: new Date().toISOString(),
+      completed_at: new Date().toISOString(),
+    });
+
+  if (error) {
+    console.error(
+      JSON.stringify({
+        severity: "error",
+        component: "webhook_delivery",
+        outcome: "record_failed",
+        event: row.event_type,
+        webhook_id: row.webhook_id,
+        db_error: error.message,
+      }),
+    );
+  }
+}
+
+export async function triggerWebhook(
   event: string,
   application: Record<string, unknown>,
-  c: {
-    get: (key: string) => unknown;
-    json: (data: unknown, status?: number) => Response;
-  },
 ) {
-  // Get webhook configuration for the organization
-  const supabase = c.get("supabase");
-
+  // No Hono context: every query below deliberately uses the service client,
+  // so the caller's identity is irrelevant. Exported so the employer write
+  // path can emit too — a recruiter moving a candidate is the event an
+  // organisation most wants to hear about, and it was emitting nothing.
   try {
     // Fetch organization's webhook configuration
-    const { data: job } = await supabase
+    const webhookClient = getWebhookClient();
+
+    const { data: job } = await webhookClient
       .schema("core")
       .from("jobs")
       .select("organization_id")
@@ -1013,13 +1074,34 @@ async function triggerWebhook(
 
     if (!job) return;
 
-    const { data: webhooks } = await supabase
-      .schema("core")
-      .from("webhook_configurations")
-      .select("*")
+    // core.webhook_configurations never existed — not in any migration, not in
+    // any environment. The real table is public.webhooks (migration 225), and
+    // its flag is `is_active`, not `enabled`. Because the error was discarded
+    // below, every delivery since this was written looked like "this org has no
+    // webhooks" (#555).
+    const { data: webhooks, error: lookupError } = await webhookClient
+      .schema("public")
+      .from("webhooks")
+      .select("id, url, secret, events")
       .eq("organization_id", job.organization_id)
-      .eq("enabled", true)
+      .eq("is_active", true)
       .contains("events", [event]);
+
+    if (lookupError) {
+      // Log rather than discard. Swallowing this is what hid the broken table
+      // reference for the lifetime of the feature.
+      console.error(
+        JSON.stringify({
+          severity: "error",
+          component: "webhook_delivery",
+          outcome: "lookup_failed",
+          event,
+          organization_id: job.organization_id,
+          db_error: lookupError.message,
+        }),
+      );
+      return;
+    }
 
     if (!webhooks || webhooks.length === 0) return;
 
@@ -1067,18 +1149,21 @@ async function triggerWebhook(
 
         // Log webhook delivery (table is the durable record; logs are the
         // alerting surface).
-        await supabase
-          .schema("core")
-          .from("webhook_deliveries")
-          .insert({
-            webhook_id: webhook.id,
-            event,
-            payload: webhookPayload,
-            status: response.ok ? "delivered" : "failed",
-            http_status: response.status,
-            response_body: responseBody,
-            delivered_at: new Date().toISOString(),
-          });
+        // Column names are the ones public.webhook_deliveries actually has.
+        // The previous shape would have failed on every count: wrong schema,
+        // `event`/`payload` are not columns, the NOT NULL `event_id` and
+        // `request_body` were absent, and "delivered" is not in the status
+        // CHECK constraint (pending|success|failed|retrying|cancelled).
+        await recordDelivery(webhookClient, {
+          webhook_id: webhook.id,
+          event_type: event,
+          event_id: application.id as string,
+          event_data: webhookPayload,
+          request_body: webhookPayload,
+          status: response.ok ? "success" : "failed",
+          response_status_code: response.status,
+          response_body: responseBody.slice(0, 4000),
+        });
       } catch (error) {
         const errorMessage = error instanceof Error
           ? error.message
@@ -1097,17 +1182,15 @@ async function triggerWebhook(
         );
 
         // Log failed delivery
-        await supabase
-          .schema("core")
-          .from("webhook_deliveries")
-          .insert({
-            webhook_id: webhook.id,
-            event,
-            payload: webhookPayload,
-            status: "failed",
-            error_message: errorMessage,
-            delivered_at: new Date().toISOString(),
-          });
+        await recordDelivery(webhookClient, {
+          webhook_id: webhook.id,
+          event_type: event,
+          event_id: application.id as string,
+          event_data: webhookPayload,
+          request_body: webhookPayload,
+          status: "failed",
+          error_message: errorMessage,
+        });
       }
     }
   } catch (error) {

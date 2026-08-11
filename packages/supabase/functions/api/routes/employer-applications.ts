@@ -31,6 +31,7 @@ import { checkTransition } from "../lib/application-transitions.ts";
 import {
   API_STATUSES,
   STATUS_API_TO_DB,
+  triggerWebhook,
   withApiStatus,
 } from "./applications.ts";
 
@@ -485,6 +486,12 @@ app.openapi(updateEmployerApplicationRoute, async (c) => {
       500,
     );
   }
+
+  // Emit the event the organisation actually cares about. This endpoint has
+  // never fired a webhook — a recruiter moving a candidate through the
+  // pipeline produced nothing, while an applicant editing their own screening
+  // answers produced `application.updated` (#555).
+  await triggerWebhook("application.updated", updated);
 
   await recordActivity(access.organizationId, id, user.id, {
     statusChanged,
