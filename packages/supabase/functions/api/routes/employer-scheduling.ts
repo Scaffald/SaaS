@@ -21,6 +21,7 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
 import { authMiddleware, requireAuth } from "../middleware/auth.ts";
 import {
+  listAccessibleOrganizationIds,
   PIPELINE_ROLES,
   resolveApplicationOrgAccess,
 } from "../lib/application-access.ts";
@@ -154,6 +155,45 @@ async function authorise(c: any, applicationId: string) {
   };
 }
 
+/**
+ * Resolve the scope of a list request.
+ *
+ * The office scheduling screen is organisation-wide — "Upcoming Interviews"
+ * spans every open application, not one — so `application_id` is optional.
+ * With it, authorise that single application; without it, list across every
+ * organisation the caller can act for.
+ *
+ * Returns `{ orgIds: [] }` rather than a 403 when the caller has no
+ * organisations: a personal account should see an empty schedule, not an error.
+ */
+// deno-lint-ignore no-explicit-any
+async function resolveListScope(c: any, applicationId?: string) {
+  const user = c.get("user");
+
+  if (!user) {
+    return {
+      response: c.json(
+        { error: "Unauthorized", message: "Authentication required" },
+        401,
+      ),
+    };
+  }
+
+  if (applicationId) {
+    const auth = await authorise(c, applicationId);
+    if (auth.response) return { response: auth.response };
+    return { applicationId, orgIds: null, response: null };
+  }
+
+  const orgIds = await listAccessibleOrganizationIds(
+    c.get("supabase"),
+    user.id,
+    { allowedRoles: PIPELINE_ROLES },
+  );
+
+  return { applicationId: null, orgIds, response: null };
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 // Interview slots
 // ─────────────────────────────────────────────────────────────────────────
@@ -165,7 +205,7 @@ const listSlotsRoute = createRoute({
   summary: "List proposed interview slots for an application",
   middleware: requireAuth,
   request: {
-    query: z.object({ application_id: z.string().uuid() }),
+    query: z.object({ application_id: z.string().uuid().optional() }),
   },
   responses: {
     200: {
@@ -194,15 +234,24 @@ const listSlotsRoute = createRoute({
 
 app.openapi(listSlotsRoute, async (c) => {
   const { application_id } = c.req.valid("query");
-  const auth = await authorise(c, application_id);
-  if (auth.response) return auth.response;
+  const scope = await resolveListScope(c, application_id);
+  if (scope.response) return scope.response;
 
-  const { data, error } = await adminClient()
+  if (scope.orgIds && scope.orgIds.length === 0) {
+    return c.json({ data: [] }, 200);
+  }
+
+  let query = adminClient()
     .schema("core")
     .from("interview_slots")
     .select(SLOT_COLUMNS)
-    .eq("application_id", application_id)
     .order("slot_start", { ascending: true });
+
+  query = scope.applicationId
+    ? query.eq("application_id", scope.applicationId)
+    : query.in("organization_id", scope.orgIds as string[]);
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("Error listing interview slots:", error);
@@ -313,7 +362,7 @@ const listLinksRoute = createRoute({
   summary: "List self-scheduling links for an application",
   middleware: requireAuth,
   request: {
-    query: z.object({ application_id: z.string().uuid() }),
+    query: z.object({ application_id: z.string().uuid().optional() }),
   },
   responses: {
     200: {
@@ -338,15 +387,24 @@ const listLinksRoute = createRoute({
 
 app.openapi(listLinksRoute, async (c) => {
   const { application_id } = c.req.valid("query");
-  const auth = await authorise(c, application_id);
-  if (auth.response) return auth.response;
+  const scope = await resolveListScope(c, application_id);
+  if (scope.response) return scope.response;
 
-  const { data, error } = await adminClient()
+  if (scope.orgIds && scope.orgIds.length === 0) {
+    return c.json({ data: [] }, 200);
+  }
+
+  let query = adminClient()
     .schema("core")
     .from("scheduling_links")
     .select(LINK_COLUMNS)
-    .eq("application_id", application_id)
     .order("created_at", { ascending: false });
+
+  query = scope.applicationId
+    ? query.eq("application_id", scope.applicationId)
+    : query.in("organization_id", scope.orgIds as string[]);
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("Error listing scheduling links:", error);
