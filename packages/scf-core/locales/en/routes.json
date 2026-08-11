@@ -138,7 +138,8 @@
   "office": {
     "applications": {
       "inquiry": "Inquiry Detail",
-      "title": "Applications"
+      "title": "Applications",
+      "detail": "Candidate Detail"
     },
     "ats": {
       "checks": {

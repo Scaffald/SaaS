@@ -76,6 +76,26 @@ export function useEmployerApplications(
   })
 }
 
+/**
+ * One application from the hiring side.
+ *
+ * The employer counterpart to `useApplication`, which returns the applicant's
+ * projection and carries no candidate. This returns the same row shape the
+ * list does, so the detail route and a kanban card share one transform (#537).
+ */
+export function useEmployerApplication(id: string | undefined, options?: { enabled?: boolean }) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['applications', 'employer-retrieve', id],
+    queryFn: async () => {
+      if (!client || !id) throw new Error('Missing client or id')
+      return client.applications.retrieveForOrganization(id)
+    },
+    enabled: !!client && !!id && options?.enabled !== false,
+    staleTime: 60 * 1000,
+  })
+}
+
 /** List current user's applications */
 export function useApplications(params?: ListApplicationsParams, options?: { enabled?: boolean }) {
   const client = useScaffaldJobsClient()
