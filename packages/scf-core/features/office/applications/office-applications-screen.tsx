@@ -162,12 +162,17 @@ export const OfficeApplicationsScreen = ({
           answer: formatAnswer(qa.answer),
         })),
         attachments: (app.attachment_metadata ?? {}) as MockApplication['attachments'],
-        // Populated by #531 once stage transitions are recorded; the API does
-        // not return them yet, and pretending otherwise is what made the
-        // metrics dashboard silently compute zeroes.
         notes: [],
         messages: [],
-        stageHistory: [],
+        // Real transitions from core.application_activity. This was hardcoded
+        // `[]`, which made time-to-hire and funnel conversion structurally
+        // zero no matter what the pipeline actually did (#531).
+        stageHistory: (app.stage_history ?? []).map((change) => ({
+          fromStage: (change.from_status as ApplicationStatus | null) ?? null,
+          toStage: change.to_status as ApplicationStatus,
+          changedBy: change.actor_user_id ?? '',
+          changedAt: change.changed_at,
+        })),
         candidate: {
           id: candidate?.id ?? app.user_id,
           name: candidate?.display_name ?? candidate?.username ?? 'Unknown',

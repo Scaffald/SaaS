@@ -78,6 +78,35 @@ function daysBetween(start: string, end: string): number {
   return Math.max(0, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)))
 }
 
+/**
+ * When the hire was actually recorded.
+ *
+ * Returns null when no `hired` transition exists, which is the honest answer
+ * for a record that predates the activity log — callers decide what to do
+ * rather than being handed a plausible wrong date.
+ *
+ * `updatedAt` is not this. It moves on any edit — a note, an assignment, a
+ * screening tweak — so it drifts further from the hire the longer the record
+ * lives, and it was what time-to-hire measured.
+ */
+export function hiredAtFrom(
+  stageHistory: MockApplication['stageHistory'] | undefined
+): string | null {
+  const hires = (stageHistory ?? []).filter((change) => change.toStage === 'hired')
+  if (hires.length === 0) return null
+
+  // Last one wins: a re-hire after a reversal is the hire that counts.
+  return hires.reduce((latest, change) =>
+    Date.parse(change.changedAt) > Date.parse(latest.changedAt) ? change : latest
+  ).changedAt
+}
+
+/** Days from application to hire, or null when the hire is not recorded. */
+export function timeToHireDays(app: MockApplication): number | null {
+  const hiredAt = hiredAtFrom(app.stageHistory)
+  return hiredAt ? daysBetween(app.appliedAt, hiredAt) : null
+}
+
 export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetricsDashboardProps) {
   const { theme } = useThemeContext()
   const [dateRange, setDateRange] = useState<number>(30)
@@ -190,7 +219,10 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
       return { average: 0, median: 0, min: 0, max: 0, count: 0, distribution: [] }
     }
 
-    const durations = hiredApps.map((app) => daysBetween(app.appliedAt, app.updatedAt))
+    // Falls back to updatedAt only for hires that predate the activity log.
+    const durations = hiredApps.map(
+      (app) => timeToHireDays(app) ?? daysBetween(app.appliedAt, app.updatedAt)
+    )
 
     durations.sort((a, b) => a - b)
     const sum = durations.reduce((s, d) => s + d, 0)
