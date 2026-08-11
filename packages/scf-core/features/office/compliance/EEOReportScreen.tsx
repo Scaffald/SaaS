@@ -9,6 +9,7 @@
 
 import { useState, useMemo } from 'react'
 import { ScrollView, Pressable } from 'react-native'
+import { useEEOReport } from '@scf/core/utils/compliance-sdk-hooks'
 import { Button, Card, H2, Row, Stack, Tabs, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import {
@@ -20,288 +21,89 @@ import {
   ShieldCheck,
   Users,
 } from 'lucide-react-native'
-import { SampleDataNotice } from '@scf/core/features/office/components/SampleDataNotice'
 
 // ============================================================================
 // Types
 // ============================================================================
 
-type ReportPeriod = 'q1' | 'q2' | 'q3' | 'q4' | 'ytd'
-type EEOCategory =
-  | 'hispanic'
-  | 'white'
-  | 'black'
-  | 'asian'
-  | 'native_american'
-  | 'pacific_islander'
-  | 'two_or_more'
+/**
+ * Period presets, resolved to the date range the API filters on.
+ *
+ * Quarters are calendar quarters of the current year; YTD runs from 1 January
+ * to today. Computed at render rather than module load so the report does not
+ * silently keep reporting last year after a new year starts.
+ */
+function periodRange(period: ReportPeriod): { start: string; end: string } {
+  const now = new Date()
+  const year = now.getUTCFullYear()
+  const iso = (d: Date) => d.toISOString().slice(0, 10)
 
-interface EEOCategoryData {
-  category: EEOCategory
-  label: string
-  applications: number
-  interviewed: number
-  offers: number
-  hired: number
-  selectionRate: number
+  if (period === 'ytd') {
+    return { start: `${year}-01-01`, end: iso(now) }
+  }
+  const quarter = Number(period.slice(1))
+  const startMonth = (quarter - 1) * 3
+  return {
+    start: iso(new Date(Date.UTC(year, startMonth, 1))),
+    end: iso(new Date(Date.UTC(year, startMonth + 3, 0))),
+  }
 }
-
-interface JobGroupData {
-  jobGroup: string
-  jobCode: string
-  totalApplications: number
-  totalHired: number
-  categories: EEOCategoryData[]
-}
-
-// ============================================================================
-// Mock Data
-// ============================================================================
 
 /**
- * Every figure on this screen is fabricated. The real EEO fields landed in
- * migration 305_privacy_eeo_project_hiring.sql but nothing reads them yet.
+ * Chart colours per category.
  *
- * Until that wiring exists (#535), the screen must not present itself as a
- * compliance record: an EEO report is an artifact people file, and invented
- * adverse-impact ratios are worse than no ratios at all.
- *
- * Deleting this constant is the last step of #535 — the type error it raises
- * points at every place that still needs real data.
+ * Includes `declined`, which the two inline maps this replaces did not: it is
+ * a real value in the database's CHECK constraint and appears in every
+ * dimension, so it was previously rendering with an undefined background.
+ * `categoryColor` falls back rather than returning undefined, because a value
+ * outside the vocabulary means the constraint was bypassed and the bar should
+ * still be visible.
  */
-const USES_SAMPLE_DATA: boolean = true
-
-const MOCK_JOB_GROUPS: JobGroupData[] = [
-  {
-    jobGroup: 'Construction Laborers',
-    jobCode: '47-2061',
-    totalApplications: 245,
-    totalHired: 38,
-    categories: [
-      {
-        category: 'hispanic',
-        label: 'Hispanic/Latino',
-        applications: 89,
-        interviewed: 52,
-        offers: 18,
-        hired: 15,
-        selectionRate: 16.9,
-      },
-      {
-        category: 'white',
-        label: 'White',
-        applications: 78,
-        interviewed: 48,
-        offers: 12,
-        hired: 10,
-        selectionRate: 12.8,
-      },
-      {
-        category: 'black',
-        label: 'Black/African American',
-        applications: 42,
-        interviewed: 22,
-        offers: 7,
-        hired: 6,
-        selectionRate: 14.3,
-      },
-      {
-        category: 'asian',
-        label: 'Asian',
-        applications: 18,
-        interviewed: 10,
-        offers: 3,
-        hired: 3,
-        selectionRate: 16.7,
-      },
-      {
-        category: 'native_american',
-        label: 'Native American',
-        applications: 8,
-        interviewed: 4,
-        offers: 2,
-        hired: 2,
-        selectionRate: 25.0,
-      },
-      {
-        category: 'pacific_islander',
-        label: 'Pacific Islander',
-        applications: 5,
-        interviewed: 3,
-        offers: 1,
-        hired: 1,
-        selectionRate: 20.0,
-      },
-      {
-        category: 'two_or_more',
-        label: 'Two or More',
-        applications: 5,
-        interviewed: 3,
-        offers: 1,
-        hired: 1,
-        selectionRate: 20.0,
-      },
-    ],
-  },
-  {
-    jobGroup: 'Electricians',
-    jobCode: '47-2111',
-    totalApplications: 156,
-    totalHired: 22,
-    categories: [
-      {
-        category: 'hispanic',
-        label: 'Hispanic/Latino',
-        applications: 48,
-        interviewed: 28,
-        offers: 8,
-        hired: 7,
-        selectionRate: 14.6,
-      },
-      {
-        category: 'white',
-        label: 'White',
-        applications: 62,
-        interviewed: 38,
-        offers: 9,
-        hired: 8,
-        selectionRate: 12.9,
-      },
-      {
-        category: 'black',
-        label: 'Black/African American',
-        applications: 28,
-        interviewed: 14,
-        offers: 4,
-        hired: 4,
-        selectionRate: 14.3,
-      },
-      {
-        category: 'asian',
-        label: 'Asian',
-        applications: 10,
-        interviewed: 6,
-        offers: 1,
-        hired: 1,
-        selectionRate: 10.0,
-      },
-      {
-        category: 'native_american',
-        label: 'Native American',
-        applications: 4,
-        interviewed: 2,
-        offers: 1,
-        hired: 1,
-        selectionRate: 25.0,
-      },
-      {
-        category: 'pacific_islander',
-        label: 'Pacific Islander',
-        applications: 2,
-        interviewed: 1,
-        offers: 0,
-        hired: 0,
-        selectionRate: 0,
-      },
-      {
-        category: 'two_or_more',
-        label: 'Two or More',
-        applications: 2,
-        interviewed: 1,
-        offers: 1,
-        hired: 1,
-        selectionRate: 50.0,
-      },
-    ],
-  },
-  {
-    jobGroup: 'Construction Managers',
-    jobCode: '11-9021',
-    totalApplications: 89,
-    totalHired: 8,
-    categories: [
-      {
-        category: 'hispanic',
-        label: 'Hispanic/Latino',
-        applications: 22,
-        interviewed: 14,
-        offers: 3,
-        hired: 2,
-        selectionRate: 9.1,
-      },
-      {
-        category: 'white',
-        label: 'White',
-        applications: 38,
-        interviewed: 26,
-        offers: 4,
-        hired: 4,
-        selectionRate: 10.5,
-      },
-      {
-        category: 'black',
-        label: 'Black/African American',
-        applications: 16,
-        interviewed: 8,
-        offers: 1,
-        hired: 1,
-        selectionRate: 6.3,
-      },
-      {
-        category: 'asian',
-        label: 'Asian',
-        applications: 8,
-        interviewed: 5,
-        offers: 1,
-        hired: 1,
-        selectionRate: 12.5,
-      },
-      {
-        category: 'native_american',
-        label: 'Native American',
-        applications: 2,
-        interviewed: 1,
-        offers: 0,
-        hired: 0,
-        selectionRate: 0,
-      },
-      {
-        category: 'pacific_islander',
-        label: 'Pacific Islander',
-        applications: 1,
-        interviewed: 0,
-        offers: 0,
-        hired: 0,
-        selectionRate: 0,
-      },
-      {
-        category: 'two_or_more',
-        label: 'Two or More',
-        applications: 2,
-        interviewed: 1,
-        offers: 0,
-        hired: 0,
-        selectionRate: 0,
-      },
-    ],
-  },
-]
-
-const GENDER_SUMMARY = {
-  male: { applications: 380, hired: 52, rate: 13.7 },
-  female: { applications: 85, hired: 12, rate: 14.1 },
-  nonBinary: { applications: 15, hired: 2, rate: 13.3 },
-  declined: { applications: 10, hired: 2, rate: 20.0 },
+const CATEGORY_COLORS: Record<string, string> = {
+  hispanic: '#3b82f6',
+  white: '#6366f1',
+  black: '#8b5cf6',
+  asian: '#ec4899',
+  native_american: '#f59e0b',
+  pacific_islander: '#10b981',
+  two_or_more: '#64748b',
+  declined: '#94a3b8',
 }
 
-const VETERAN_SUMMARY = {
-  protectedVeteran: { applications: 45, hired: 8, rate: 17.8 },
-  nonVeteran: { applications: 405, hired: 56, rate: 13.8 },
-  declined: { applications: 40, hired: 4, rate: 10.0 },
+function categoryColor(category: string): string {
+  return CATEGORY_COLORS[category] ?? '#94a3b8'
 }
 
-// ============================================================================
-// Helper Components
+/** Display labels for the database's category vocabulary. */
+const CATEGORY_LABELS: Record<string, string> = {
+  hispanic: 'Hispanic or Latino',
+  white: 'White',
+  black: 'Black or African American',
+  asian: 'Asian',
+  native_american: 'American Indian or Alaska Native',
+  pacific_islander: 'Native Hawaiian or Pacific Islander',
+  two_or_more: 'Two or More Races',
+  male: 'Male',
+  female: 'Female',
+  non_binary: 'Non-Binary',
+  protected_veteran: 'Protected Veteran',
+  non_veteran: 'Non-Veteran',
+  yes: 'With Disability',
+  no: 'Without Disability',
+  declined: 'Declined to State',
+  uncategorized: 'Uncategorized',
+}
+
+function categoryLabel(category: string): string {
+  return CATEGORY_LABELS[category] ?? category
+}
+
+/** Percentage, or an em dash when the value is genuinely absent. */
+function formatRate(rate: number | null): string {
+  return rate === null ? '—' : `${(rate * 100).toFixed(1)}%`
+}
+
+type ReportPeriod = 'q1' | 'q2' | 'q3' | 'q4' | 'ytd'
 // ============================================================================
 
 function MetricCard({
@@ -338,8 +140,22 @@ function MetricCard({
   )
 }
 
-function AdverseImpactBadge({ ratio }: { ratio: number }) {
+/**
+ * `ratio === null` means the four-fifths ratio could not be computed — no
+ * applicants, nobody hired anywhere, or a cell suppressed for being too small.
+ *
+ * It is rendered as "—", never as 0%. The previous version took a plain
+ * `number` and divided unconditionally upstream, so an organisation that had
+ * hired nobody produced `0/0` and this badge rendered `NaN% ✓ Pass` — a false
+ * all-clear on a document people file.
+ */
+function AdverseImpactBadge({ ratio }: { ratio: number | null }) {
   const { theme } = useThemeContext()
+
+  if (ratio === null) {
+    return <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>—</Text>
+  }
+
   const isFlagged = ratio < 0.8
   return (
     <Stack
@@ -369,6 +185,37 @@ function AdverseImpactBadge({ ratio }: { ratio: number }) {
   )
 }
 
+/**
+ * Adverse-impact flags across every dimension.
+ *
+ * Exported so the count can be asserted directly: reading it out of the metric
+ * tile means matching a bare number in the DOM, which passes by accident.
+ *
+ * Two things this gets right that the previous version did not. It looks at
+ * ethnicity — the tile used to count only the three gender ratios, so a flag
+ * in the dimension an EEO-1 exists for never reached the summary. And a null
+ * ratio is not a flag: null means the comparison could not be made, not that
+ * it was made and failed.
+ */
+export function countAdverseImpactFlags(
+  report:
+    | {
+        jobGroups: Array<{ categories: Array<{ impactRatio: number | null }> }>
+        gender: Array<{ impactRatio: number | null }>
+        veteranStatus: Array<{ impactRatio: number | null }>
+        disabilityStatus: Array<{ impactRatio: number | null }>
+      }
+    | undefined
+): number {
+  if (!report) return 0
+  return [
+    ...report.jobGroups.flatMap((group) => group.categories),
+    ...report.gender,
+    ...report.veteranStatus,
+    ...report.disabilityStatus,
+  ].filter((category) => category.impactRatio !== null && category.impactRatio < 0.8).length
+}
+
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -376,6 +223,13 @@ function AdverseImpactBadge({ ratio }: { ratio: number }) {
 export function EEOReportScreen() {
   const { theme } = useThemeContext()
   const [period, setPeriod] = useState<ReportPeriod>('ytd')
+
+  const range = useMemo(() => periodRange(period), [period])
+  const reportQuery = useEEOReport({
+    period_start: range.start,
+    period_end: range.end,
+  })
+  const report = reportQuery.data
 
   const periods: Array<{ value: ReportPeriod; label: string }> = [
     { value: 'q1', label: 'Q1' },
@@ -385,46 +239,76 @@ export function EEOReportScreen() {
     { value: 'ytd', label: 'YTD' },
   ]
 
-  // Compute totals
-  const totals = useMemo(() => {
-    let applications = 0
-    let hired = 0
-    for (const group of MOCK_JOB_GROUPS) {
-      applications += group.totalApplications
-      hired += group.totalHired
-    }
-    return { applications, hired, jobGroups: MOCK_JOB_GROUPS.length }
-  }, [])
+  const jobGroups = report?.jobGroups ?? []
+  const genderRows = report?.gender ?? []
+  const veteranRows = report?.veteranStatus ?? []
+  const totals = report?.totals ?? {
+    applications: 0,
+    hired: 0,
+    withdrawn: 0,
+    jobGroups: 0,
+    selfIdentified: 0,
+  }
 
-  // Compute adverse impact (4/5ths rule)
-  const adverseImpactAnalysis = useMemo(() => {
-    const maxRate = Math.max(
-      GENDER_SUMMARY.male.rate,
-      GENDER_SUMMARY.female.rate,
-      GENDER_SUMMARY.nonBinary.rate
-    )
-    return {
-      maleRatio: GENDER_SUMMARY.male.rate / maxRate,
-      femaleRatio: GENDER_SUMMARY.female.rate / maxRate,
-      nonBinaryRatio: GENDER_SUMMARY.nonBinary.rate / maxRate,
-    }
-  }, [])
+  /**
+   * Overall hire rate. Guarded: with no applicants this was
+   * `(0 / 0) * 100` and rendered "NaN% rate".
+   */
+  const hireRate = totals.applications > 0 ? totals.hired / totals.applications : null
 
-  // The summary tile used to hardcode "0". It agreed with the ratios only by
-  // coincidence, and would have kept reading 0 once real data landed.
-  const adverseImpactFlagCount = useMemo(
-    () => Object.values(adverseImpactAnalysis).filter((ratio) => ratio < 0.8).length,
-    [adverseImpactAnalysis]
-  )
+  /**
+   * Flags across every dimension, not just gender.
+   *
+   * The tile previously counted only the three gender ratios, so adverse
+   * impact against an ethnicity — the dimension the EEO-1 exists for — never
+   * reached the summary. A null ratio is not a flag: it means the comparison
+   * could not be made.
+   */
+  const adverseImpactFlagCount = useMemo(() => countAdverseImpactFlags(report), [report])
 
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={24} style={{ paddingBottom: 40 }}>
-        {USES_SAMPLE_DATA && (
-          <SampleDataNotice
-            title="Sample data — not a compliance record"
-            description="Every figure on this page is illustrative placeholder data, including the adverse-impact ratios. Do not file, export, or cite these numbers."
-          />
+        {reportQuery.isError && (
+          <Card variant="glass" padding="md">
+            <Text style={{ color: colors.fg[theme].error }}>
+              Could not load the report. {(reportQuery.error as Error)?.message ?? ''}
+            </Text>
+          </Card>
+        )}
+
+        {/* Coverage. Self-identification is voluntary, so the ratios below are
+            computed over whoever chose to answer — which is frequently a small
+            fraction of applicants. Stating the denominator is the difference
+            between a statistic and a number. */}
+        {report && (
+          <Card variant="glass" padding="md">
+            <Row gap={12} align="center">
+              <ShieldCheck
+                size={20}
+                color={
+                  report.coverage.selfIdentified === 0
+                    ? colors.fg[theme].warning
+                    : colors.fg[theme].success
+                }
+              />
+              <Stack flex={1} gap={2}>
+                <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>
+                  {report.coverage.selfIdentified} of {report.coverage.totalApplications} applicants
+                  self-identified
+                </Text>
+                <Text style={{ fontSize: 13, color: colors.text[theme].tertiary }}>
+                  {report.coverage.selfIdentified === 0
+                    ? 'No EEO self-identification has been collected, so this report has nothing to summarise. The figures below are real and read zero.'
+                    : `Self-identification is voluntary. Groups smaller than ${report.minCellSize} applicants are suppressed so individuals cannot be identified.`}
+                  {report.coverage.uncategorizedJobs > 0 &&
+                    ` ${report.coverage.uncategorizedJobs} job${
+                      report.coverage.uncategorizedJobs === 1 ? '' : 's'
+                    } have no EEO job category and roll up as Uncategorized.`}
+                </Text>
+              </Stack>
+            </Row>
+          </Card>
         )}
 
         {/* Header */}
@@ -435,31 +319,16 @@ export function EEOReportScreen() {
               Equal Employment Opportunity and OFCCP applicant flow reporting
             </Text>
           </Stack>
-          {/* Export is the vector by which fabricated figures leave this screen
-              and turn into a document someone might file. Disabled until the
-              numbers are real (#535). */}
-          <Button variant="outline" size="sm" iconStart={Download} disabled={USES_SAMPLE_DATA}>
-            {USES_SAMPLE_DATA ? 'Export unavailable' : 'Export Report'}
+          {/* The figures are real now, but there is still no export
+              implementation — this button never had an onPress. Leaving it
+              enabled would produce a control that silently does nothing on a
+              screen whose whole purpose is producing a filing. */}
+          <Button variant="outline" size="sm" iconStart={Download} disabled>
+            Export coming soon
           </Button>
         </Row>
 
         {/* Compliance Status Banner */}
-        {!USES_SAMPLE_DATA && (
-          <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].selected }}>
-            <Row gap={12} align="center">
-              <ShieldCheck size={24} color={colors.fg[theme].success} />
-              <Stack flex={1}>
-                <Text style={{ fontWeight: '600', color: colors.fg[theme].success }}>
-                  Compliance Status: Active
-                </Text>
-                <Text style={{ fontSize: 13, color: colors.fg[theme].success }}>
-                  All EEO-1 data collection is enabled. Next filing deadline: September 30, 2026
-                </Text>
-              </Stack>
-            </Row>
-          </Card>
-        )}
-
         {/* Period Selector */}
         <Row gap={8}>
           {periods.map((p) => (
@@ -498,7 +367,7 @@ export function EEOReportScreen() {
           <MetricCard
             label="Total Hired"
             value={totals.hired}
-            sublabel={`${((totals.hired / totals.applications) * 100).toFixed(1)}% rate`}
+            sublabel={hireRate === null ? 'no applicants' : `${(hireRate * 100).toFixed(1)}% rate`}
             icon={Users}
           />
           <MetricCard
@@ -521,8 +390,17 @@ export function EEOReportScreen() {
             <Tabs.Trigger containerStyle={{ flex: 1 }}>EEO-1 Summary</Tabs.Trigger>
             <Tabs.Content>
               <Stack gap={16} paddingTop={16}>
-                {MOCK_JOB_GROUPS.map((group) => (
-                  <Card key={group.jobCode} variant="glass" padding="md">
+                {jobGroups.length === 0 && (
+                  <Card variant="glass" padding="md">
+                    <Text style={{ color: colors.text[theme].tertiary }}>
+                      {reportQuery.isLoading
+                        ? 'Loading…'
+                        : 'No applicant has self-identified in this period, so there is nothing to tabulate.'}
+                    </Text>
+                  </Card>
+                )}
+                {jobGroups.map((group) => (
+                  <Card key={group.jobGroup} variant="glass" padding="md">
                     <Stack gap={12}>
                       <Row justify="space-between" align="center">
                         <Stack>
@@ -533,11 +411,10 @@ export function EEOReportScreen() {
                               color: colors.text[theme].primary,
                             }}
                           >
-                            {group.jobGroup}
+                            {categoryLabel(group.jobGroup)}
                           </Text>
                           <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>
-                            SOC {group.jobCode} • {group.totalApplications} applicants •{' '}
-                            {group.totalHired} hired
+                            {group.totalApplications} applicants • {group.totalHired} hired
                           </Text>
                         </Stack>
                       </Row>
@@ -599,6 +476,23 @@ export function EEOReportScreen() {
                           >
                             Rate
                           </Text>
+                          {/* The four-fifths ratio was computed for ethnicity
+                              and then never shown — the summary tile counted
+                              the flag but the table it came from had no column
+                              for it, so nobody could see which group was
+                              flagged. This is the dimension an EEO-1 exists
+                              for. */}
+                          <Text
+                            style={{
+                              flex: 1,
+                              fontSize: 11,
+                              fontWeight: '600',
+                              color: colors.text[theme].tertiary,
+                              textAlign: 'center',
+                            }}
+                          >
+                            4/5ths
+                          </Text>
                         </Row>
 
                         {group.categories.map((cat) => (
@@ -615,7 +509,12 @@ export function EEOReportScreen() {
                             <Text
                               style={{ flex: 2, fontSize: 13, color: colors.text[theme].primary }}
                             >
-                              {cat.label}
+                              {categoryLabel(cat.category)}
+                              {cat.suppressed && (
+                                <Text style={{ fontSize: 11, color: colors.text[theme].tertiary }}>
+                                  {'  '}(suppressed)
+                                </Text>
+                              )}
                             </Text>
                             <Text
                               style={{
@@ -655,8 +554,11 @@ export function EEOReportScreen() {
                                 textAlign: 'center',
                               }}
                             >
-                              {cat.selectionRate.toFixed(1)}%
+                              {formatRate(cat.selectionRate)}
                             </Text>
+                            <Stack style={{ flex: 1, alignItems: 'center' }}>
+                              <AdverseImpactBadge ratio={cat.impactRatio} />
+                            </Stack>
                           </Row>
                         ))}
                       </Stack>
@@ -750,25 +652,12 @@ export function EEOReportScreen() {
                         4/5ths
                       </Text>
                     </Row>
-                    {[
-                      {
-                        label: 'Male',
-                        data: GENDER_SUMMARY.male,
-                        ratio: adverseImpactAnalysis.maleRatio,
-                      },
-                      {
-                        label: 'Female',
-                        data: GENDER_SUMMARY.female,
-                        ratio: adverseImpactAnalysis.femaleRatio,
-                      },
-                      {
-                        label: 'Non-Binary',
-                        data: GENDER_SUMMARY.nonBinary,
-                        ratio: adverseImpactAnalysis.nonBinaryRatio,
-                      },
-                    ].map((row) => (
+                    {/* Every declared gender, including "Declined to State".
+                        The mock listed three and dropped declined entirely,
+                        which hid people who are in the denominator. */}
+                    {genderRows.map((row) => (
                       <Row
-                        key={row.label}
+                        key={row.category}
                         gap={0}
                         style={{
                           paddingVertical: 6,
@@ -778,7 +667,12 @@ export function EEOReportScreen() {
                         }}
                       >
                         <Text style={{ flex: 2, fontSize: 13, color: colors.text[theme].primary }}>
-                          {row.label}
+                          {categoryLabel(row.category)}
+                          {row.suppressed && (
+                            <Text style={{ fontSize: 11, color: colors.text[theme].tertiary }}>
+                              {'  '}(suppressed)
+                            </Text>
+                          )}
                         </Text>
                         <Text
                           style={{
@@ -788,7 +682,7 @@ export function EEOReportScreen() {
                             textAlign: 'center',
                           }}
                         >
-                          {row.data.applications}
+                          {row.applications}
                         </Text>
                         <Text
                           style={{
@@ -798,7 +692,7 @@ export function EEOReportScreen() {
                             textAlign: 'center',
                           }}
                         >
-                          {row.data.hired}
+                          {row.hired}
                         </Text>
                         <Text
                           style={{
@@ -808,10 +702,10 @@ export function EEOReportScreen() {
                             textAlign: 'center',
                           }}
                         >
-                          {row.data.rate.toFixed(1)}%
+                          {formatRate(row.selectionRate)}
                         </Text>
                         <Stack style={{ flex: 1, alignItems: 'center' }}>
-                          <AdverseImpactBadge ratio={row.ratio} />
+                          <AdverseImpactBadge ratio={row.impactRatio} />
                         </Stack>
                       </Row>
                     ))}
@@ -826,13 +720,9 @@ export function EEOReportScreen() {
                     >
                       Veteran Status Analysis
                     </Text>
-                    {[
-                      { label: 'Protected Veteran', data: VETERAN_SUMMARY.protectedVeteran },
-                      { label: 'Non-Veteran', data: VETERAN_SUMMARY.nonVeteran },
-                      { label: 'Declined to State', data: VETERAN_SUMMARY.declined },
-                    ].map((row) => (
+                    {veteranRows.map((row) => (
                       <Row
-                        key={row.label}
+                        key={row.category}
                         gap={0}
                         style={{
                           paddingVertical: 6,
@@ -842,7 +732,12 @@ export function EEOReportScreen() {
                         }}
                       >
                         <Text style={{ flex: 2, fontSize: 13, color: colors.text[theme].primary }}>
-                          {row.label}
+                          {categoryLabel(row.category)}
+                          {row.suppressed && (
+                            <Text style={{ fontSize: 11, color: colors.text[theme].tertiary }}>
+                              {'  '}(suppressed)
+                            </Text>
+                          )}
                         </Text>
                         <Text
                           style={{
@@ -852,7 +747,7 @@ export function EEOReportScreen() {
                             textAlign: 'center',
                           }}
                         >
-                          {row.data.applications}
+                          {row.applications}
                         </Text>
                         <Text
                           style={{
@@ -862,7 +757,7 @@ export function EEOReportScreen() {
                             textAlign: 'center',
                           }}
                         >
-                          {row.data.hired}
+                          {row.hired}
                         </Text>
                         <Text
                           style={{
@@ -872,7 +767,7 @@ export function EEOReportScreen() {
                             textAlign: 'center',
                           }}
                         >
-                          {row.data.rate.toFixed(1)}%
+                          {formatRate(row.selectionRate)}
                         </Text>
                       </Row>
                     ))}
@@ -901,12 +796,12 @@ export function EEOReportScreen() {
                   </Row>
                 </Card>
 
-                {MOCK_JOB_GROUPS.map((group) => {
+                {jobGroups.map((group) => {
                   const stages = ['Applied', 'Interviewed', 'Offered', 'Hired'] as const
                   const stageKeys = ['applications', 'interviewed', 'offers', 'hired'] as const
 
                   return (
-                    <Card key={group.jobCode} variant="glass" padding="md">
+                    <Card key={group.jobGroup} variant="glass" padding="md">
                       <Stack gap={12}>
                         <Text
                           style={{
@@ -915,7 +810,7 @@ export function EEOReportScreen() {
                             color: colors.text[theme].primary,
                           }}
                         >
-                          {group.jobGroup} — Applicant Flow
+                          {categoryLabel(group.jobGroup)} — Applicant Flow
                         </Text>
 
                         {/* Pipeline bars */}
@@ -948,15 +843,6 @@ export function EEOReportScreen() {
                                   const value = cat[key]
                                   if (value === 0) return null
                                   const pct = (value / total) * 100
-                                  const categoryColors: Record<EEOCategory, string> = {
-                                    hispanic: '#3b82f6',
-                                    white: '#6366f1',
-                                    black: '#8b5cf6',
-                                    asian: '#ec4899',
-                                    native_american: '#f59e0b',
-                                    pacific_islander: '#10b981',
-                                    two_or_more: '#64748b',
-                                  }
 
                                   return (
                                     <Stack
@@ -964,7 +850,7 @@ export function EEOReportScreen() {
                                       style={{
                                         width: `${pct}%`,
                                         height: '100%',
-                                        backgroundColor: categoryColors[cat.category],
+                                        backgroundColor: categoryColor(cat.category),
                                         justifyContent: 'center',
                                         alignItems: 'center',
                                       }}
@@ -987,15 +873,6 @@ export function EEOReportScreen() {
                         {/* Legend */}
                         <Row gap={12} style={{ flexWrap: 'wrap', marginTop: 4 }}>
                           {group.categories.map((cat) => {
-                            const categoryColors: Record<EEOCategory, string> = {
-                              hispanic: '#3b82f6',
-                              white: '#6366f1',
-                              black: '#8b5cf6',
-                              asian: '#ec4899',
-                              native_american: '#f59e0b',
-                              pacific_islander: '#10b981',
-                              two_or_more: '#64748b',
-                            }
                             return (
                               <Row key={cat.category} gap={4} align="center">
                                 <Stack
@@ -1003,11 +880,11 @@ export function EEOReportScreen() {
                                     width: 8,
                                     height: 8,
                                     borderRadius: 4,
-                                    backgroundColor: categoryColors[cat.category],
+                                    backgroundColor: categoryColor(cat.category),
                                   }}
                                 />
                                 <Text style={{ fontSize: 11, color: colors.text[theme].tertiary }}>
-                                  {cat.label}
+                                  {categoryLabel(cat.category)}
                                 </Text>
                               </Row>
                             )
