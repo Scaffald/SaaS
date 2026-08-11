@@ -82,7 +82,17 @@ jobs:
           # Without this, transient failures fall through to "clean" because none
           # of the drift-pattern greps below match a generic error string.
           if [ "$exit_code" -ne 0 ]; then
-            echo "::error::${{ matrix.env.name }}: 'supabase db push --dry-run' exited with status $exit_code. Audit result is untrusted — investigate before assuming sync."
+            # The CLI exits non-zero on real drift as well as on infrastructure
+            # failures, and this guard runs before the pattern checks below — so
+            # name the known cause here rather than sending everyone to
+            # "investigate". Out-of-order drift is the common one: skipping a
+            # migration while later ones are applied puts it permanently before
+            # the last applied version.
+            if echo "$output" | grep -q "Found local migration files to be inserted before the last migration"; then
+              echo "::error::${{ matrix.env.name }}: out-of-order drift — a migration listed above was skipped while later ones were applied. On dev this is currently 337_notification_cron_vault.sql, which cannot be applied until the two Vault secrets exist (see issue #564). Resolve that rather than re-running."
+            else
+              echo "::error::${{ matrix.env.name }}: 'supabase db push --dry-run' exited with status $exit_code. Audit result is untrusted — investigate before assuming sync."
+            fi
             exit 1
           fi
 
