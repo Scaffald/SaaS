@@ -17,10 +17,6 @@ vi.mock('@scf/core/utils/teams-sdk-hooks', () => ({
   useRemoveTeamMemberMutation: (...args: unknown[]) => mockUseMutation(...args),
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({ show: mockShow }),
-}))
-
 vi.mock('expo-router', () => ({
   useRouter: () => ({ push: mockPush }),
 }))
@@ -104,6 +100,11 @@ vi.mock('@scaffald/ui', async () => {
     AlertDialog,
     Spinner,
     useMedia: () => ({ sm: false }),
+    // Merged in from a second vi.mock('@scaffald/ui') that used to sit above.
+    // Two registrations for one module race: whichever factory lost, the
+    // component was missing either useToast or useThemeContext, which is why
+    // this file failed roughly one run in three (#542).
+    useToast: () => ({ show: mockShow }),
   }
 })
 

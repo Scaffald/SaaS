@@ -14,7 +14,9 @@ const mockUseUtils = vi.fn(() => ({
   },
 }))
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
@@ -73,6 +75,13 @@ vi.mock('@scaffald/ui', () => {
   const styled = vi.fn(() => ({ attrs: vi.fn(() => vi.fn(() => null)) }))
 
   return {
+    // `...actual` and useToast are merged in from a second
+    // vi.mock('@scaffald/ui') that used to sit further down this file. Two
+    // registrations for one module race: this one had the component stubs but
+    // no useThemeContext, the other had useThemeContext but no stubs, so
+    // whichever lost took the file down (#542).
+    ...actual,
+    useToast: () => ({ show: vi.fn() }),
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     Stack: Stack,
     Row: Stack,
@@ -102,14 +111,6 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
     // Wrap in an arrow to defer the mockUseUtils lookup until call time
     // (vi.mock is hoisted above the const declaration).
     useQueryClient: () => mockUseUtils(),
-  }
-})
-
-vi.mock('@scaffald/ui', async () => {
-  const actual = await vi.importActual('@scaffald/ui')
-  return {
-    ...actual,
-    useToast: () => ({ show: vi.fn() }),
   }
 })
 
