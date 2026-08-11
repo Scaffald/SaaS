@@ -73,6 +73,19 @@ const employerApplicationSchema = z
     is_shortlisted: z.boolean().nullable(),
     screening_answers: z.record(z.string(), z.unknown()).nullable(),
     attachment_metadata: z.record(z.string(), z.unknown()).nullable(),
+    stage_history: z
+      .array(
+        z.object({
+          from_status: z.string().nullable(),
+          to_status: z.string(),
+          actor_user_id: z.string().uuid().nullable(),
+          changed_at: z.string(),
+        }),
+      )
+      .openapi({
+        description:
+          "Ordered stage transitions from core.application_activity. Time-to-hire and funnel conversion are computed from this; before it was returned the office UI hardcoded it empty and both metrics were structurally zero (#531).",
+      }),
     candidate: z
       .object({
         id: z.string().uuid(),
@@ -297,6 +310,8 @@ app.openapi(listEmployerApplicationsRoute, async (c) => {
   const rows = (data ?? []).map((row: Record<string, unknown>) =>
     withApiStatus(row)
   );
+
+  await attachStageHistory(rows);
 
   return c.json(
     {
@@ -549,6 +564,71 @@ async function checkUpfrontFeeSettled(
   return data
     ? null
     : "Upfront success fee payment is required before marking this hire.";
+}
+
+/**
+ * Attach each application's stage transitions, in order.
+ *
+ * Read with the service role deliberately. core.application_activity's RLS is
+ * keyed on *team* membership while pipeline access is an *org* role, so on the
+ * caller's client an org admin who is not on a team would silently get an empty
+ * history — and empty history is exactly the state that made time-to-hire and
+ * funnel conversion structurally zero. The caller has already been authorised
+ * for these applications by the org filter above.
+ *
+ * One query for the whole page rather than one per row.
+ *
+ * Best-effort: metrics degrade to what they were before rather than failing the
+ * list, but the failure is logged instead of looking like "no transitions".
+ */
+async function attachStageHistory(
+  rows: Array<Record<string, unknown>>,
+): Promise<void> {
+  for (const row of rows) row.stage_history = [];
+  if (rows.length === 0) return;
+
+  const ids = rows.map((row) => row.id as string);
+
+  const { data, error } = await getServiceClient()
+    .schema("core")
+    .from("application_activity")
+    .select("application_id, event_type, details, actor_user_id, created_at")
+    .in("application_id", ids)
+    .eq("event_type", "status_changed")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error(
+      JSON.stringify({
+        severity: "error",
+        component: "employer_applications_stage_history",
+        message: "Failed to read stage history; metrics will read as empty",
+        db_error: error.message,
+      }),
+    );
+    return;
+  }
+
+  const byApplication = new Map<string, Array<Record<string, unknown>>>();
+
+  for (const event of (data ?? []) as Array<Record<string, unknown>>) {
+    const details = (event.details ?? {}) as { from?: string; to?: string };
+    if (!details.to) continue;
+
+    const applicationId = event.application_id as string;
+    const list = byApplication.get(applicationId) ?? [];
+    list.push({
+      from_status: details.from ?? null,
+      to_status: details.to,
+      actor_user_id: event.actor_user_id ?? null,
+      changed_at: event.created_at,
+    });
+    byApplication.set(applicationId, list);
+  }
+
+  for (const row of rows) {
+    row.stage_history = byApplication.get(row.id as string) ?? [];
+  }
 }
 
 interface ActivityFacts {
