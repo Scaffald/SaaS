@@ -66,7 +66,11 @@ export default defineConfig({
 
   // Run your local dev server before starting the tests
   webServer: {
-    command: 'pnpm expo start:web',
+    // `pnpm expo start:web` was not a thing: there is no `start:web` script,
+    // and the expo CLI has no such command — it printed usage and exited
+    // non-zero, which is the "Process from config.webServer was not able to
+    // start" the nightly job died on. The script that serves web is `web`.
+    command: 'pnpm web',
     url: 'http://localhost:8081',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000, // 2 minutes to start
