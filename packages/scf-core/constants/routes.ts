@@ -1195,6 +1195,17 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: false,
       icon: ClipboardCheck,
+      // Per-application candidate detail. Previously the ATS declared a
+      // `/office/ats/:id` DETAIL route with no file behind it, while candidate
+      // detail existed only as a modal on the kanban board — so it had no URL
+      // at all (#537). This is the real route, alongside the existing
+      // INQUIRY child rather than under /office/ats.
+      DETAIL: {
+        path: '/office/applications/:applicationId',
+        titleKey: 'routes.office.applications.detail',
+        protected: true,
+        exact: true,
+      },
       INQUIRY: {
         path: '/office/applications/:applicationId/inquiry',
         titleKey: 'routes.office.applications.inquiry',

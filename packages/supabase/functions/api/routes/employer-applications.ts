@@ -325,6 +325,121 @@ app.openapi(listEmployerApplicationsRoute, async (c) => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────
+// GET /v1/employer/applications/{id}
+// ─────────────────────────────────────────────────────────────────────────
+
+/**
+ * One application, from the hiring side.
+ *
+ * `GET /v1/applications/{id}` already serves employers, but it returns the
+ * *applicant's* projection: job and organisation embedded, and no candidate.
+ * The office UI needs the same row shape the list returns — candidate identity
+ * and stage history included — so that a detail view and a kanban card can be
+ * built from one transform rather than two that drift.
+ *
+ * Added for the per-application detail route (#537): candidate detail existed
+ * only as a modal, so it could not be linked, shared or reached with the back
+ * button.
+ */
+const getEmployerApplicationRoute = createRoute({
+  method: "get",
+  path: "/{id}",
+  tags: ["Applications"],
+  summary: "Get one application from the hiring side",
+  middleware: requireAuth,
+  request: {
+    params: z.object({ id: z.string().uuid() }),
+  },
+  responses: {
+    200: {
+      description: "Application",
+      content: { "application/json": { schema: employerApplicationSchema } },
+    },
+    401: {
+      description: "Unauthorized",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+    403: {
+      description: "No access to this application",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+    404: {
+      description: "Not found",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+});
+
+app.openapi(getEmployerApplicationRoute, async (c) => {
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { id } = c.req.valid("param");
+
+  if (!user) {
+    return c.json(
+      { error: "Unauthorized", message: "Authentication required" },
+      401,
+    );
+  }
+
+  const access = await resolveApplicationOrgAccess(supabase, user.id, id, {
+    allowedRoles: PIPELINE_ROLES,
+  });
+
+  // 404 before 403 on a missing row, so a stranger cannot probe which
+  // application ids exist.
+  if (!access.found) {
+    return c.json(
+      { error: "Not Found", message: "Application not found" },
+      404,
+    );
+  }
+
+  if (!access.hasOrgAccess) {
+    return c.json(
+      {
+        error: "Forbidden",
+        message: "You do not have access to this application",
+      },
+      403,
+    );
+  }
+
+  // Service role for the read itself: the same team-vs-org mismatch as the
+  // list path (#544). Authorisation happened above, against the organisation.
+  const { data, error } = await getServiceClient()
+    .schema("core")
+    .from("applications")
+    .select(LIST_SELECT)
+    .eq("id", id)
+    .single();
+
+  if (error || !data) {
+    console.error(
+      JSON.stringify({
+        severity: "error",
+        component: "employer_application_get",
+        message: "Failed to read application after authorising it",
+        db_error: error?.message ?? "no row",
+      }),
+    );
+    return c.json(
+      { error: "Not Found", message: "Application not found" },
+      404,
+    );
+  }
+
+  const row = withApiStatus(data as Record<string, unknown>) as Record<
+    string,
+    unknown
+  >;
+  await attachStageHistory([row]);
+
+  return c.json(row, 200);
+});
+
+// ─────────────────────────────────────────────────────────────────────────
 // PATCH /v1/employer/applications/{id}
 // ─────────────────────────────────────────────────────────────────────────
 

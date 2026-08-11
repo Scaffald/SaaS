@@ -115,7 +115,8 @@
   "office": {
     "applications": {
       "inquiry": "Inquiry Detail",
-      "title": "Applications"
+      "title": "Applications",
+      "detail": "Détail du candidat"
     },
     "ats": {
       "checks": {
