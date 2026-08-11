@@ -3,7 +3,8 @@ import { dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 /**
- * No office test file may register `vi.mock()` twice for the same module.
+ * No test file in this package may register `vi.mock()` twice for the same
+ * module.
  *
  * This is what made the office suite fail roughly one run in three on an
  * unchanged tree (#542). Two `vi.mock` calls for one module do not merge —
@@ -30,7 +31,12 @@ import { describe, expect, it } from 'vitest'
  * PortfolioGallery and TeamCommentThread.
  *
  * Fix by merging into one factory that spreads `...actual` and returns every
- * stub, not by deleting one of them.
+ * stub, not by deleting one of them — each registration usually provides
+ * something the others do not, so deleting one silently drops it.
+ *
+ * Widened from `features/office/` to the whole package in #566, which fixed
+ * eight more files with the same defect. Two of them held three registrations
+ * each.
  */
 
 /**
@@ -39,8 +45,8 @@ import { describe, expect, it } from 'vitest'
  * Not `import.meta.url`: the jsdom environment does not hand this file a
  * `file://` URL, so `fileURLToPath` throws ERR_INVALID_URL_SCHEME.
  */
-const OFFICE_DIR = (() => {
-  const target = join('packages', 'scf-core', 'features', 'office')
+const PACKAGE_DIR = (() => {
+  const target = join('packages', 'scf-core')
   let dir = process.cwd()
   for (;;) {
     const candidate = resolve(dir, target)
@@ -77,19 +83,19 @@ function duplicateMocks(source: string): string[] {
   return [...counts.entries()].filter(([, n]) => n > 1).map(([mod]) => mod)
 }
 
-describe('office test files', () => {
-  const files = testFilesUnder(OFFICE_DIR)
+describe('scf-core test files', () => {
+  const files = testFilesUnder(PACKAGE_DIR)
 
   it('finds test files to check', () => {
     // Guards the guard: a broken walk would make every assertion below vacuous.
-    expect(files.length).toBeGreaterThan(5)
+    expect(files.length).toBeGreaterThan(50)
   })
 
   it('never registers vi.mock twice for the same module', () => {
     const offenders = files
       .map((file) => ({ file, dupes: duplicateMocks(readFileSync(file, 'utf8')) }))
       .filter(({ dupes }) => dupes.length > 0)
-      .map(({ file, dupes }) => `${file.replace(OFFICE_DIR, '')} → ${dupes.join(', ')}`)
+      .map(({ file, dupes }) => `${file.replace(PACKAGE_DIR, '')} → ${dupes.join(', ')}`)
 
     expect(offenders).toEqual([])
   })

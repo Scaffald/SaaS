@@ -44,12 +44,6 @@ vi.mock('expo-router', () => ({
 }))
 
 // Mock toast
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({
-    show: mockShow,
-  }),
-}))
-
 // Component now uses '@scf/core/utils/user-profiles-sdk-hooks'.useUserProfilePreview.
 vi.mock('@scf/core/utils/user-profiles-sdk-hooks', () => ({
   useUserProfilePreview: (...args: unknown[]) => mockUseQuery(...args),
@@ -73,6 +67,11 @@ vi.mock('@scf/core/constants/routes', () => ({
 // Beyond UI mock
 vi.mock('@scaffald/ui', async () => {
   const actual = await vi.importActual('@scaffald/ui')
+
+  // useToast merged in from a second vi.mock('@scaffald/ui') that used to sit
+  // above. Two registrations for one module do not combine — one factory wins,
+  // nondeterministically — so whichever lost took its exports with it and this
+  // file failed at random (#566).
 
   const Stack = ({
     children,
@@ -151,6 +150,7 @@ vi.mock('@scaffald/ui', async () => {
 
   return {
     ...actual,
+    useToast: () => ({ show: mockShow }),
     Stack: Stack,
     Row: Stack,
     Button,
@@ -194,12 +194,17 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      const { container } = render(
+      render(
         <UserProfilePanel userId="user-123" open={false} onOpenChange={mockOnOpenChange} />,
         { wrapper: TestQueryWrapper },
       )
 
-      expect(container.firstChild).toBeNull()
+      // Asserted against the panel, not `container.firstChild`. TestQueryWrapper
+      // renders a SafeAreaProvider, so the container always has a child div no
+      // matter what the component returns — the old assertion could only pass
+      // when something upstream threw. The duplicate-mock race (#566) was
+      // making that happen intermittently.
+      expect(screen.queryByTestId('profile-panel-card')).not.toBeInTheDocument()
     })
 
     it('returns null when userId is null', () => {
@@ -208,12 +213,12 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      const { container } = render(
+      render(
         <UserProfilePanel userId={null} open={true} onOpenChange={mockOnOpenChange} />,
         { wrapper: TestQueryWrapper },
       )
 
-      expect(container.firstChild).toBeNull()
+      expect(screen.queryByTestId('profile-panel-card')).not.toBeInTheDocument()
     })
 
     it('renders when open is true and userId is provided', () => {

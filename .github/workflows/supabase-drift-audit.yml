@@ -14,6 +14,20 @@ on:
   schedule:
     - cron: '0 5 * * *'  # 05:00 UTC nightly — after EU deploys, before US standup
   workflow_dispatch:
+  # Migration-only PRs previously got no database CI at all, which is how three
+  # grant gaps and one dropped column shipped (#559). A PR that touches
+  # migrations now runs the same audit.
+  #
+  # Note what a PR can and cannot assert. A PR *adding* a migration is
+  # supposed to be unapplied everywhere — failing on "would push" would make
+  # this check permanently red on exactly the PRs it exists to guard. So on
+  # pull_request the job asserts only the two real drift signals: remote
+  # versions missing from the repo, and local migrations that would be
+  # inserted before the last applied one. The "not yet applied" check stays
+  # nightly, where it means something.
+  pull_request:
+    paths:
+      - 'packages/supabase/migrations/**'
 
 permissions:
   contents: read
@@ -88,8 +102,14 @@ jobs:
           fi
 
           if echo "$output" | grep -q "Would push these migrations"; then
-            echo "::warning::${{ matrix.env.name }}: local migrations are not yet applied to remote. List above."
-            exit 1
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              # Expected on a PR that adds a migration. Surfaced, not failed —
+              # see the note on the `pull_request` trigger above.
+              echo "::notice::${{ matrix.env.name }}: this PR adds migrations not yet applied here. Expected on a PR; they must be applied before it can be considered shipped."
+            else
+              echo "::warning::${{ matrix.env.name }}: local migrations are not yet applied to remote. List above."
+              exit 1
+            fi
           fi
 
           echo "${{ matrix.env.name }}: clean — local and remote history in sync."

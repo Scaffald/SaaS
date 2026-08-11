@@ -49,9 +49,32 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-query')>()
   return {
     ...actual,
+    // Merged from 2 vi.mock('@scaffald/ui') registrations that used to sit
+    // in this file. Two registrations for one module do not combine —
+    // one factory wins, nondeterministically — so whichever lost took
+    // its stubs with it and the file failed at random (#566).
     useQueryClient: () => ({
       invalidateQueries: () => mockInvalidate(),
     }),
+    Button: ({ children, onPress, disabled, ...props }: {
+      children: React.ReactNode
+      onPress?: () => void
+      disabled?: boolean
+      [key: string]: unknown
+    }) => (
+      <button onClick={onPress} disabled={disabled} {...props}>
+        {children}
+      </button>
+    ),
+    Text: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+      <span {...props}>{children}</span>
+    ),
+    Row: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+      <div {...props}>{children}</div>
+    ),
+    Stack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+      <div {...props}>{children}</div>
+    ),
   }
 })
 
@@ -113,32 +136,6 @@ vi.mock('@scf/core/features/career-assessment/components/OccupationSearch', () =
 }))
 
 // Mock Button and UI components
-vi.mock('@scaffald/ui', async () => {
-  const actual = await vi.importActual('@scaffald/ui')
-  const React = await import('react')
-  return {
-    ...actual,
-    Button: ({ children, onPress, disabled, ...props }: {
-      children: React.ReactNode
-      onPress?: () => void
-      disabled?: boolean
-      [key: string]: unknown
-    }) => (
-      <button onClick={onPress} disabled={disabled} {...props}>
-        {children}
-      </button>
-    ),
-    Text: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
-      <span {...props}>{children}</span>
-    ),
-    Row: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
-      <div {...props}>{children}</div>
-    ),
-    Stack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
-      <div {...props}>{children}</div>
-    ),
-  }
-})
 
 vi.mock('lucide-react-native', async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),

@@ -44,7 +44,9 @@ vi.mock('lucide-react-native', async (importOriginal) => ({
   Users: () => <span data-testid="users" />,
 }))
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   interface StackProps {
     children?: ReactNode
     [key: string]: unknown
@@ -68,9 +70,20 @@ vi.mock('@scaffald/ui', () => {
   )
 
   return {
+    ...actual,
+    // Merged from 2 vi.mock('@scaffald/ui') registrations that used to sit
+    // in this file. Two registrations for one module do not combine —
+    // one factory wins, nondeterministically — so whichever lost took
+    // its stubs with it and the file failed at random (#566).
     Text,
     Row: Stack,
     Stack: Stack,
+    DashboardWidget: ({ children }: { children?: ReactNode }) => (
+    <div data-testid="dashboard-widget">{children}</div>
+  ),
+  spacing: {
+    md: 16,
+  },
   }
 })
 
@@ -111,18 +124,6 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@scaffald/ui', async () => {
-  const actual = await vi.importActual('@scaffald/ui')
-  return {
-    ...actual,
-    DashboardWidget: ({ children }: { children?: ReactNode }) => (
-    <div data-testid="dashboard-widget">{children}</div>
-  ),
-  spacing: {
-    md: 16,
-  },
-  }
-})
 
 describe('ResumeImportWidget', () => {
   beforeEach(() => {

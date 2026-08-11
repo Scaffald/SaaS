@@ -104,10 +104,12 @@ merged.test.exclude = [
   // Rewritten: merged duplicate @scaffald/ui mock so ResponsiveSelect stub
   // wins. Second vi.mock for same module was overriding the first.
   // 'packages/scf-core/features/office/applications/components/__tests__/ApplicationsFilters.test.tsx',
-  // TODO: 3 duplicate vi.mock('@scaffald/ui', ...) calls in one file with
-  // complex inline TS intersection types ({ ... } & Record<string, unknown>)
-  // confuse esbuild's transform and emit a SyntaxError before any test runs.
-  // Merge the mocks into one and simplify the inline types.
+  // The three duplicate vi.mock('@scaffald/ui') calls this exclusion used to
+  // blame are merged into one factory (#566). Re-enabling it showed that was
+  // not the only problem: the file still fails to transform, on an unrelated
+  // unresolvable import — `expo-router/react-navigation` reached via
+  // provider/theme/UniversalThemeProvider.tsx. So it stays excluded, for a
+  // reason that is now accurate.
   'packages/scf-core/features/profile/widgets/__tests__/PortfolioManager.test.tsx',
   // Tests that mock old tRPC API but component uses SDK hooks directly
   // Re-enabled: mock onet-sdk-hooks.useOccupationStatus + getAllByText for
