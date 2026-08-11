@@ -255,13 +255,16 @@ Deno.test("an explicit screening_answers object still works, and flat wins", () 
 });
 
 Deno.test("real columns still pass straight through", () => {
+  // This asserted `payload.is_complete === true`, treating it as a column. It
+  // is not one, and passing it through is what made every submit-via-PATCH
+  // fail — so the test was encoding the bug. Corrected rather than deleted.
   const payload = buildApplicationUpdatePayload(
     { completed_steps: ["screening"], is_complete: true },
     NOW,
   );
 
   assertEquals(payload.completed_steps, ["screening"]);
-  assertEquals(payload.is_complete, true);
+  assert(!("is_complete" in payload), "is_complete is not a column");
   assert(
     !("screening_answers" in payload),
     "must not invent a screening write",
@@ -299,4 +302,71 @@ Deno.test("no DB status name survives into a webhook payload", () => {
   // The two that actually differ — the rest coincide and prove nothing.
   assertEquals(withApiStatus({ status: "new" }).status, "pending");
   assertEquals(withApiStatus({ status: "screen" }).status, "reviewing");
+});
+
+// ─────────────────────────────────────────────────────────────────────────
+// Phantom fields (#534, widening #546).
+//
+// applicationUpdateSchema accepts twelve fields; only screening_answers and
+// completed_steps are columns. #546 mapped the five flat screening answers by
+// name, which left custom_question_answers, attachments, is_complete, notes
+// and metadata still reaching .update() and failing the whole request:
+//
+//   Could not find the 'is_complete' column of 'applications'
+//
+// Verified against the live schema: 9 of the 12 are not columns.
+// ─────────────────────────────────────────────────────────────────────────
+
+Deno.test("is_complete never reaches the update payload", () => {
+  // It is a submission signal that drives scoring, not a stored field. While
+  // it was passed through, every submit-via-PATCH failed.
+  const payload = buildApplicationUpdatePayload({ is_complete: true }, NOW);
+
+  assert(!("is_complete" in payload), "is_complete is not a column");
+  assertEquals(payload.updated_at, NOW);
+});
+
+Deno.test("notes and metadata are dropped rather than written", () => {
+  const payload = buildApplicationUpdatePayload(
+    { notes: { a: 1 }, metadata: { b: 2 } },
+    NOW,
+  );
+
+  assert(!("notes" in payload));
+  assert(!("metadata" in payload));
+});
+
+Deno.test("attachments is written under its real column name", () => {
+  const payload = buildApplicationUpdatePayload(
+    { attachments: { resume: { path: "r.pdf" } } },
+    NOW,
+  );
+
+  assert(!("attachments" in payload), "the column is attachment_metadata");
+  assertEquals(payload.attachment_metadata, { resume: { path: "r.pdf" } });
+});
+
+Deno.test("custom_question_answers is folded into screening_answers", () => {
+  const payload = buildApplicationUpdatePayload(
+    { custom_question_answers: [{ question: "Why?", answer: "Because" }] },
+    NOW,
+  );
+
+  assert(!("custom_question_answers" in payload));
+  assertEquals(
+    (payload.screening_answers as Record<string, unknown>)
+      .custom_question_answers,
+    [{ question: "Why?", answer: "Because" }],
+  );
+});
+
+Deno.test("nothing outside the known columns ever reaches the payload", () => {
+  // The allow-list is the point: a schema field added without a column must
+  // fail at this boundary, not at PostgREST with the whole request rejected.
+  const payload = buildApplicationUpdatePayload(
+    { totally_invented_field: "x", another_one: 1, completed_steps: ["a"] },
+    NOW,
+  );
+
+  assertEquals(Object.keys(payload).sort(), ["completed_steps", "updated_at"]);
 });
