@@ -1,5 +1,6 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
+import { updateGeneralSchema } from "../lib/general-info-schema.ts";
 import { authMiddleware, requireAuth } from "../middleware/auth.ts";
 import { rateLimiter } from "../middleware/rate-limiter.ts";
 
@@ -363,18 +364,38 @@ app.get("/general", requireAuth, async (c) => {
     );
   }
   const { data: authUser } = await supabase.auth.getUser(userToken);
-  const { data: profile } = await supabase
+
+  // maybeSingle, not single: a user with no core.profile row yet is a normal
+  // state, not an error. And both errors are checked — before #588 they were
+  // dropped on the floor, so a grant gap or an RLS denial returned 200 with
+  // every field blank, which the client rendered as an editable empty form and
+  // then happily saved back over the real data (#580).
+  const { data: profile, error: profileError } = await supabase
     .schema("core")
     .from("users")
     .select("avatar_path, about")
     .eq("id", user.id)
-    .single();
-  const { data: privateData } = await supabase
+    .maybeSingle();
+  if (profileError) {
+    return c.json({
+      error: "Failed to load profile",
+      message: profileError.message,
+    }, 500);
+  }
+
+  const { data: privateData, error: privateError } = await supabase
     .schema("core")
     .from("profile")
     .select("first_name, last_name, address, phone")
     .eq("user_id", user.id)
-    .single();
+    .maybeSingle();
+  if (privateError) {
+    return c.json({
+      error: "Failed to load profile",
+      message: privateError.message,
+    }, 500);
+  }
+
   const phone = privateData?.phone ?? authUser?.user?.phone ?? "";
   return c.json({
     first_name: privateData?.first_name ?? "",
@@ -396,7 +417,34 @@ app.patch("/general", requireAuth, async (c) => {
       401,
     );
   }
-  const input = (await c.req.json()) as Record<string, unknown>;
+  let rawBody: unknown;
+  try {
+    rawBody = await c.req.json();
+  } catch {
+    return c.json({
+      error: "Invalid request",
+      message: "Body must be valid JSON",
+    }, 400);
+  }
+
+  const parsed = updateGeneralSchema.safeParse(rawBody);
+  if (!parsed.success) {
+    return c.json({
+      error: "Invalid request",
+      message: "One or more fields are invalid",
+      details: parsed.error.issues.map((issue) => ({
+        field: issue.path.join("."),
+        message: issue.message,
+      })),
+    }, 400);
+  }
+  const input = parsed.data;
+
+  // An empty patch is a no-op, not a licence to write nothing over everything.
+  if (Object.keys(input).length === 0) {
+    return c.json({ success: true }, 200);
+  }
+
   if (input.avatar_path !== undefined || input.about !== undefined) {
     const profileUpdate: Record<string, unknown> = {
       updated_at: new Date().toISOString(),
