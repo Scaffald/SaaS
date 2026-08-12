@@ -161,6 +161,16 @@ export function useImportData() {
     metadata: data ?? null,
     isLoading,
     isError,
+    /**
+     * The query succeeded and there is simply nothing to review.
+     *
+     * `GET /v1/profiles/import/data` returns a bare `null` for a user who has
+     * never uploaded a resume, which is a perfectly normal state — but the
+     * screen treated a null payload as a failure and told the user "We couldn't
+     * load your import data" with a Retry button that could only ever produce
+     * the same null (#589).
+     */
+    isEmpty: !isLoading && !isError && importData === null,
     refetch,
   };
 }
