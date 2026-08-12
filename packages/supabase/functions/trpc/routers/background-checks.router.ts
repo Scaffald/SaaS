@@ -272,7 +272,13 @@ const BACKGROUND_CHECK_BUCKET_ID = 'background-check-documents'
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5
 const SIGNED_DOWNLOAD_URL_TTL_SECONDS = 60 * 60
 const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024
-const STRIPE_API_VERSION = '2025-11-17.clover'
+// Pinned deliberately: this integration is written against the 2025-11-17
+// response shapes. stripe@20.4.1 types `apiVersion` as `LatestApiVersion`
+// (2026-02-25.clover), so pinning any earlier version is a type error even
+// though the Stripe API supports it — hence the cast. Moving the runtime
+// version is a behavioural change against a live payment provider and belongs
+// with the SDK upgrade in #454, not with a build fix.
+const STRIPE_API_VERSION = '2025-11-17.clover' as Stripe.LatestApiVersion
 const SHARED_BACKGROUND_CHECK_DISCOUNT = 0.25
 const mockStripePaymentIntents = new Map<string, { amount: number; currency: string }>()
 
