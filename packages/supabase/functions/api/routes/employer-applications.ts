@@ -410,13 +410,18 @@ app.openapi(getEmployerApplicationRoute, async (c) => {
     );
   }
 
+  // 404, not 403, and deliberately so.
+  //
+  // The lookup now runs above RLS, so a real id is always "found" — which
+  // means a 403 here would tell a stranger that an application exists and
+  // simply is not theirs. Before the readClient change, RLS hid the row and
+  // this path happened to 404 for the wrong reason. Keeping the 404 preserves
+  // the property the route always intended: the caller cannot distinguish
+  // "not yours" from "not a real id".
   if (!access.hasOrgAccess) {
     return c.json(
-      {
-        error: "Forbidden",
-        message: "You do not have access to this application",
-      },
-      403,
+      { error: "Not Found", message: "Application not found" },
+      404,
     );
   }
 
@@ -542,13 +547,18 @@ app.openapi(updateEmployerApplicationRoute, async (c) => {
     );
   }
 
+  // 404, not 403, and deliberately so.
+  //
+  // The lookup now runs above RLS, so a real id is always "found" — which
+  // means a 403 here would tell a stranger that an application exists and
+  // simply is not theirs. Before the readClient change, RLS hid the row and
+  // this path happened to 404 for the wrong reason. Keeping the 404 preserves
+  // the property the route always intended: the caller cannot distinguish
+  // "not yours" from "not a real id".
   if (!access.hasOrgAccess) {
     return c.json(
-      {
-        error: "Forbidden",
-        message: "You do not have access to this application",
-      },
-      403,
+      { error: "Not Found", message: "Application not found" },
+      404,
     );
   }
 
