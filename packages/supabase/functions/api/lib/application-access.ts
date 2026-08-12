@@ -53,6 +53,25 @@ export interface ResolveAccessOptions {
    * already narrow. Pass an explicit list for anything touching applicant PII.
    */
   allowedRoles?: string[];
+  /**
+   * Client used to *look up* the application row, when that differs from the
+   * one used for the caller's own reads.
+   *
+   * The lookup exists only to answer "who is this application's applicant, and
+   * which organisation posted the job" so the decision below can be made. Doing
+   * it through the request's RLS client conflates two questions: RLS on
+   * `core.applications` recognises the organisation *owner*, so an org `admin`
+   * — exactly who PIPELINE_ROLES admits — found no row and every caller
+   * reported 404. Measured on dev: an application visible in
+   * `GET /v1/employer/applications` returned 404 from
+   * `GET /v1/employer/applications/{id}` for the same user.
+   *
+   * Passing a service-role client here does not widen access. The decision is
+   * unchanged — `isApplicant` and `hasOrgAccess` are computed exactly as
+   * before, and callers still choose what to return. It only stops RLS
+   * silently answering a question it was not asked (#544).
+   */
+  readClient?: SupabaseLike;
 }
 
 /** Shape the access query needs. Kept loose: this runs under Deno with an
@@ -76,7 +95,7 @@ export async function resolveApplicationOrgAccess(
   applicationId: string,
   options: ResolveAccessOptions = {},
 ): Promise<ApplicationAccess> {
-  const { data: application } = await supabase
+  const { data: application } = await (options.readClient ?? supabase)
     .schema("core")
     .from("applications")
     .select(ACCESS_SELECT)
