@@ -136,16 +136,15 @@ async function authorise(c: any, applicationId: string) {
     };
   }
 
+  // 404, not 403 — see the note in employer-applications.ts. The lookup runs
+  // above RLS, so a 403 here would confirm an application id exists.
   if (!access.hasOrgAccess) {
     return {
       organizationId: null,
       userId: null,
       response: c.json(
-        {
-          error: "Forbidden",
-          message: "You do not have access to this application",
-        },
-        403,
+        { error: "Not Found", message: "Application not found" },
+        404,
       ),
     };
   }
