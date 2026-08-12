@@ -75,7 +75,10 @@ else
   echo -e "${YELLOW}⚠️  DATABASE_URL not set — skipping SQL seed (will be run by seed-all.ts verify step)${NC}"
 fi
 
-# Run the TypeScript seed (reference data only — CSI, universities, certs, O*NET, news)
+# Run the TypeScript seed (reference data only — CSI, universities, certs, O*NET, news).
+# seed-all defaults to reference-only; demo data requires --with-demo. Until that
+# default existed this step also seeded demo worker trade skills, which made the
+# "NEVER included for prod" list above untrue.
 echo ""
 echo -e "${BLUE}2/2 Running reference data seeds (CSI, universities, certs, O*NET, news)...${NC}"
 pnpm --filter @scf/supabase seed || true
