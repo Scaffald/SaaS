@@ -26,7 +26,10 @@ export const USE_SDK_FOR_JOBS =
  * QueryClientProvider is added to the tree.
  */
 export function ScaffaldJobsSdkProviderFromSession({ children }: { children: ReactNode }) {
-  const { session, isLoading } = useSessionContext()
+  // isLoading is no longer read: the cache-recovery effect below keys off the
+  // access token itself, which covers both the initial load and every later
+  // refresh, where the loading flag only ever covered the first (#579).
+  const { session } = useSessionContext()
   const baseUrl = useMemo(getSupabaseApiBaseUrl, [])
   const anonKey = useMemo(getSupabaseAnonKey, [])
   // Re-use the QueryClient already in the tree — avoids a duplicate QueryClientProvider.
@@ -50,44 +53,28 @@ export function ScaffaldJobsSdkProviderFromSession({ children }: { children: Rea
     return { baseUrl, apiKey: 'dummy' }
   }, [session?.access_token, baseUrl, anonKey])
 
-  // When session loading completes, invalidate SDK queries so any that ran with dummy auth refetch.
-  const wasLoadingRef = useRef(isLoading)
+  // Any change to the access token means everything already in the cache was
+  // fetched with a credential that is no longer current — either the anon/dummy
+  // fallback above during the loading window, or a token that has since been
+  // refreshed. Invalidate unconditionally and let react-query refetch whatever
+  // is actually mounted.
+  //
+  // This used to key off the isLoading true->false transition and filter by a
+  // hand-maintained list of ten query-key prefixes. Both halves failed (#579):
+  // a token that expired while the tab was open never produced a transition, and
+  // scf-core registers 30+ key roots, so /profiles/employment, /resume/has-uploaded,
+  // /profiles/import/data and the rest stayed 401 for the life of the page. An
+  // allow-list that has to be updated every time a hook is added will drift
+  // again; not having one cannot.
+  const previousTokenRef = useRef<string | undefined>(undefined)
   useEffect(() => {
-    if (wasLoadingRef.current && !isLoading) {
-      wasLoadingRef.current = false
-      const sdkQueryKeyPrefixes = [
-        'jobs',
-        'applications',
-        'profiles',
-        'industries',
-        'organizations',
-        'teams',
-        'prerequisites',
-        'apiKeys',
-        'webhooks',
-        'notifications',
-      ]
-      queryClient.invalidateQueries({
-        predicate: (query) => {
-          const key = query.queryKey
-          if (!Array.isArray(key)) return false
-          // Some SDK hooks key their queries as [resource, ...] (e.g. 'profiles'),
-          // others wrap them as ['scaffald', resource, ...] (e.g. 'notifications',
-          // 'apiKeys') — check both shapes so queries fetched with dummy/anon auth
-          // during the session-loading window actually get refetched once the
-          // real session is ready, regardless of which shape the hook uses.
-          const [first, second] = key
-          if (typeof first === 'string' && sdkQueryKeyPrefixes.includes(first)) return true
-          return (
-            first === 'scaffald' &&
-            typeof second === 'string' &&
-            sdkQueryKeyPrefixes.includes(second)
-          )
-        },
-      })
-    }
-    if (isLoading) wasLoadingRef.current = true
-  }, [isLoading, queryClient])
+    const token = session?.access_token?.trim() || undefined
+    if (previousTokenRef.current === token) return
+    previousTokenRef.current = token
+    // Sign-out is handled by clearAllAuthStorage, which resets the whole cache.
+    if (!token) return
+    void queryClient.invalidateQueries()
+  }, [session?.access_token, queryClient])
 
   // Always render ScaffaldProvider so the tree structure never changes.
   // Switching between <>{children}</> and <ScaffaldProvider> causes the entire
