@@ -22,6 +22,15 @@ const lucideReactNativeMockPath = resolve(
   workspaceRoot,
   "tests/infrastructure/vitest/mocks/lucide-react-native.ts",
 );
+// The mock has existed since it was written but was never aliased, so any test
+// rendering an SVG component died at collection with "Unexpected token
+// 'typeof'" — react-native-svg's untransformed source. A file that fails to
+// collect reports zero passed and zero failed, so this looked like the test
+// simply not existing (#593).
+const reactNativeSvgMockPath = resolve(
+  workspaceRoot,
+  "tests/infrastructure/vitest/mocks/react-native-svg.tsx",
+);
 const expoUpdatesMockPath = resolve(
   workspaceRoot,
   "tests/infrastructure/vitest/mocks/expo-updates.ts",
@@ -62,6 +71,10 @@ export default defineConfig({
       {
         find: "lucide-react-native",
         replacement: lucideReactNativeMockPath,
+      },
+      {
+        find: "react-native-svg",
+        replacement: reactNativeSvgMockPath,
       },
       {
         find: "expo-updates",

@@ -8,6 +8,7 @@ import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardS
 
 const useProfileWizardMock = vi.fn()
 const useWizardAutoSaveMock = vi.fn()
+const commitToProfileMock = vi.fn(async () => ({ committed: [], failed: [] }))
 
 vi.mock('../hooks/useProfileWizard', () => ({
   useProfileWizard: (initialStep?: ProfileWizardStepId) => useProfileWizardMock(initialStep),
@@ -15,6 +16,15 @@ vi.mock('../hooks/useProfileWizard', () => ({
 
 vi.mock('../hooks/useWizardAutoSave', () => ({
   useWizardAutoSave: (options: unknown) => useWizardAutoSaveMock(options),
+}))
+
+// Mocked so this file does not pull the SDK-hook barrel — and through it
+// @scf/core/provider -> UniversalThemeProvider -> expo-router/react-navigation,
+// which does not resolve under vitest. The commit path has its own unit tests
+// in utils/__tests__/wizard-to-profile.test.ts; what this file asserts is that
+// ProfileWizard calls it on the final step.
+vi.mock('../hooks/useCommitWizardToProfile', () => ({
+  useCommitWizardToProfile: () => commitToProfileMock,
 }))
 
 vi.mock('../components/WizardStartScreen', () => ({
