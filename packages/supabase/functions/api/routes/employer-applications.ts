@@ -240,7 +240,17 @@ app.openapi(listEmployerApplicationsRoute, async (c) => {
   // Scope by the jobs those organisations posted. Resolving job ids first keeps
   // the org filter on a column PostgREST can index, rather than filtering on an
   // embedded resource after the fact.
-  let jobQuery = supabase
+  //
+  // Service role, not the request client. Authorisation already happened above
+  // against the organisation; reading through RLS here silently re-decides it
+  // on a different axis. `core.applications`' policies recognise the
+  // organisation *owner*, so a user holding an org `admin` role assignment —
+  // exactly who PIPELINE_ROLES is meant to admit — passed the authorisation
+  // check and then read zero rows. Measured on the same 12 applications: the
+  // owner saw 12, an org admin saw 0, and the board rendered "0 total
+  // applications" for them. Same escape hatch, and the same reason, as
+  // attachStageHistory below and the EEO and scheduling routes (#544).
+  let jobQuery = getServiceClient()
     .schema("core")
     .from("jobs")
     .select("id")
@@ -269,7 +279,8 @@ app.openapi(listEmployerApplicationsRoute, async (c) => {
     );
   }
 
-  let applicationQuery = supabase
+  // Service role for the same reason as the jobs query above.
+  let applicationQuery = getServiceClient()
     .schema("core")
     .from("applications")
     .select(LIST_SELECT, { count: "exact" })
