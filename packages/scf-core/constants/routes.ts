@@ -296,6 +296,12 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: true,
     },
+    WIZARD: {
+      path: '/profile/wizard',
+      titleKey: 'routes.dashboard.profile.overview',
+      protected: true,
+      exact: true,
+    },
     GENERAL: {
       path: '/profile/general',
       titleKey: 'routes.dashboard.profile.general',

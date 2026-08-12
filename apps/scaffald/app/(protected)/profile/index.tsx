@@ -16,7 +16,8 @@ import {
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import { Button, Row, Stack } from '@scaffald/ui'
-import { MessageSquarePlus, Share2 } from 'lucide-react-native'
+import { MessageSquarePlus, Share2, Wand2 } from 'lucide-react-native'
+import { useRouter } from 'expo-router'
 import { useState } from 'react'
 
 /**
@@ -25,6 +26,7 @@ import { useState } from 'react'
  */
 export default function ProfileIndexScreen() {
   const { user } = useUser()
+  const router = useRouter()
   const [shareOpen, setShareOpen] = useState(false)
   const [requestReviewOpen, setRequestReviewOpen] = useState(false)
   const { data: profile } = useGeneralInfoWidget()
@@ -44,6 +46,16 @@ export default function ProfileIndexScreen() {
                 sees on their own profile. Modal handles the empty-slug
                 case with a CTA to /dashboard/settings. */}
             <Row justify="flex-end" gap={8} wrap>
+              {/* The guided setup path. It existed as a full feature with no
+                  route rendering it, so nobody could reach it (#584). */}
+              <Button
+                variant="outline"
+                iconStart={Wand2}
+                onPress={() => router.push(ROUTES.PROFILE.WIZARD.path)}
+                accessibilityLabel="Open guided profile setup"
+              >
+                Guided setup
+              </Button>
               <Button
                 variant="outline"
                 iconStart={MessageSquarePlus}
