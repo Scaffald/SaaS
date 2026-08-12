@@ -396,6 +396,9 @@ app.openapi(getEmployerApplicationRoute, async (c) => {
 
   const access = await resolveApplicationOrgAccess(supabase, user.id, id, {
     allowedRoles: PIPELINE_ROLES,
+    // The row lookup runs above RLS — see ResolveAccessOptions.readClient.
+    // Without this an org admin 404s on an application their own list returns.
+    readClient: getServiceClient(),
   });
 
   // 404 before 403 on a missing row, so a stranger cannot probe which
@@ -525,6 +528,9 @@ app.openapi(updateEmployerApplicationRoute, async (c) => {
 
   const access = await resolveApplicationOrgAccess(supabase, user.id, id, {
     allowedRoles: PIPELINE_ROLES,
+    // The row lookup runs above RLS — see ResolveAccessOptions.readClient.
+    // Without this an org admin 404s on an application their own list returns.
+    readClient: getServiceClient(),
   });
 
   // 404 before 403 on a missing row, so a stranger cannot probe which

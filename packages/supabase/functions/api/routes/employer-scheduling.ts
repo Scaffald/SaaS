@@ -120,7 +120,9 @@ async function authorise(c: any, applicationId: string) {
     supabase,
     user.id,
     applicationId,
-    { allowedRoles: PIPELINE_ROLES },
+    // readClient: the lookup runs above RLS, so an org admin is not 404'd on an
+    // application they are authorised for. See ResolveAccessOptions.
+    { allowedRoles: PIPELINE_ROLES, readClient: adminClient() },
   );
 
   if (!access.found) {
