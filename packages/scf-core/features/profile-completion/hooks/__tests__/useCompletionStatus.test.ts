@@ -29,7 +29,7 @@ vi.mock('@scf/core/utils/useUser', () => ({
   useUser: () => ({ user: mockUser }),
 }))
 
-vi.mock('../constants/sectionMetadata', () => ({
+vi.mock('../../constants/sectionMetadata', () => ({
   resolveSectionMetadata: (sectionId: string) => ({
     id: sectionId,
     title: `${sectionId} Title`,

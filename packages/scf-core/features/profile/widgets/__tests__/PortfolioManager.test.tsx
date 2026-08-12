@@ -111,7 +111,7 @@ vi.mock('@scf/core/utils/supabase/storage', () => ({
 // Mock UI components
 
 // Mock profile components
-vi.mock('../components', () => ({
+vi.mock('../../components', () => ({
   ProfileFormPanel: ({ children }: { children?: ReactNode }) => (
     <div data-testid="profile-form-panel">{children}</div>
   ),

@@ -91,7 +91,13 @@ vi.mock('../components/ProgressIndicator', () => ({
 }))
 
 // Create mocks for each step component (must be inline due to vi.mock hoisting)
-vi.mock('../components/steps/GeneralStep', () => ({
+// GeneralInfoStep, not GeneralStep. This mock named a module that does not
+// exist, and vi.mock for a path nothing imports is silently a no-op — so the
+// real step component loaded, pulled StepNavigation and the @scaffald/ui theme
+// chain, and left the worker with a handle it never released. That one file
+// hung the whole scf-core suite: 143 files, ~900s and an OOM with it, 36s and
+// exit 0 without it (#504).
+vi.mock('../components/steps/GeneralInfoStep', () => ({
   GeneralInfoStep: ({
     onContinue,
     onSaveForLater,
