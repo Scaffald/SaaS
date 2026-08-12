@@ -102,3 +102,22 @@ Deno.test("reports the offending field so the client can point at it", () => {
   assert(!result.success);
   assertEquals(result.error.issues[0].path, ["last_name"]);
 });
+
+// #585: headline is what the Identity component of the completion score keys
+// off, and until it was added here no editor in the app could set it.
+Deno.test("accepts a headline", () => {
+  const result = updateGeneralSchema.safeParse({
+    headline: "Journeyman Electrician, commercial fit-outs",
+  });
+  assert(result.success);
+});
+
+Deno.test("accepts a cleared headline", () => {
+  assert(updateGeneralSchema.safeParse({ headline: "" }).success);
+  assert(updateGeneralSchema.safeParse({ headline: null }).success);
+});
+
+Deno.test("rejects a headline over 120 characters", () => {
+  const result = updateGeneralSchema.safeParse({ headline: "a".repeat(121) });
+  assert(!result.success);
+});

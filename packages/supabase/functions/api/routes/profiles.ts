@@ -373,7 +373,7 @@ app.get("/general", requireAuth, async (c) => {
   const { data: profile, error: profileError } = await supabase
     .schema("core")
     .from("users")
-    .select("avatar_path, about")
+    .select("avatar_path, about, headline")
     .eq("id", user.id)
     .maybeSingle();
   if (profileError) {
@@ -403,6 +403,7 @@ app.get("/general", requireAuth, async (c) => {
     avatar_path: profile?.avatar_path ?? "",
     email: authUser?.user?.email ?? "",
     phone,
+    headline: profile?.headline ?? "",
     about: profile?.about ?? null,
     address: privateData?.address ?? null,
   }, 200);
@@ -445,7 +446,10 @@ app.patch("/general", requireAuth, async (c) => {
     return c.json({ success: true }, 200);
   }
 
-  if (input.avatar_path !== undefined || input.about !== undefined) {
+  if (
+    input.avatar_path !== undefined || input.about !== undefined ||
+    input.headline !== undefined
+  ) {
     const profileUpdate: Record<string, unknown> = {
       updated_at: new Date().toISOString(),
     };
@@ -453,6 +457,7 @@ app.patch("/general", requireAuth, async (c) => {
       profileUpdate.avatar_path = input.avatar_path;
     }
     if (input.about !== undefined) profileUpdate.about = input.about;
+    if (input.headline !== undefined) profileUpdate.headline = input.headline;
     const { error } = await supabase.schema("core").from("users").update(
       profileUpdate,
     ).eq("id", user.id);

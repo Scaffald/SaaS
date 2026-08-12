@@ -115,10 +115,18 @@ app.openapi(getStatusRoute, async (c) => {
       .select("headline")
       .eq("id", user.id)
       .maybeSingle(),
-    supabase.schema("core").from("user_skills").select("id").eq(
-      "user_id",
-      user.id,
-    ),
+    // csi/onet only. core.user_skills holds three taxonomies and the
+    // soft-skills self-assessment alone writes 25 rows, so an unfiltered count
+    // let that questionnaire satisfy the ">= 3 skills" component with zero
+    // trade skills — marcus.rivera@example.test scored 100% while the Skills
+    // widget on his profile read "No skills added yet" (#585). Kept in step
+    // with core.v_profile_completion_scores (migration 345).
+    supabase
+      .schema("core")
+      .from("user_skills")
+      .select("id")
+      .eq("user_id", user.id)
+      .in("skill_taxonomy", ["csi", "onet"]),
     supabase
       .schema("core")
       .from("user_certifications")
