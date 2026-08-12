@@ -26,11 +26,12 @@ export function ProfileEmploymentLeft() {
     data: employmentData,
     isLoading: isLoadingEmployment,
   } = useEmployment();
-  const updateMutation = useEmploymentUpdateMutationWithSync({
-    onSuccess: () => {
-      // Optional: subtle success feedback; errors always shown via mutation onError
-    },
-  });
+  // No overrides: errors surface through the hook's own onError toast, and the
+  // hook owns the invalidation. This used to pass an empty `onSuccess` as a
+  // place to hang that comment, which — because options were merged by object
+  // spread — replaced the hook's onSuccess and deleted the only working
+  // invalidation on the page (#586).
+  const updateMutation = useEmploymentUpdateMutationWithSync();
 
   const isSaving = updateMutation.isPending || isSyncing;
 

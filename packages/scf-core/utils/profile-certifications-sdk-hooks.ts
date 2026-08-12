@@ -31,6 +31,7 @@ import type {
   DeleteCertificationResponse,
 } from '@scaffald/sdk'
 import { useScaffaldJobsClient } from '@scf/core/provider'
+import { profileQueryKeys } from '@scf/core/utils/profile-query-keys'
 
 /**
  * Get top-level certifications with search
@@ -42,7 +43,7 @@ export function useTopLevelCertifications(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'certifications', 'top-level', params],
+    queryKey: profileQueryKeys.certificationsTopLevel(params),
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
       return client.certifications.getTopLevelCertifications(params)
@@ -63,7 +64,7 @@ export function useCertificationChildren(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'certifications', 'children', params.parent_id],
+    queryKey: profileQueryKeys.certificationsChildren(params.parent_id),
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
       return client.certifications.getCertificationChildren(params)
@@ -83,7 +84,7 @@ export function useUserCertificationTree(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'certifications', 'tree'],
+    queryKey: profileQueryKeys.certificationsTree(),
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
       return client.certifications.getUserCertificationTree()
@@ -208,7 +209,7 @@ export function useCertifications(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'certifications'],
+    queryKey: profileQueryKeys.certifications(),
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
       return client.certifications.getCertifications()

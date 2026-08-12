@@ -25,6 +25,8 @@ import {
   resetProfileSyncError,
   startProfileSync,
 } from '@scf/core/features/profile/utils/profile-sync-store'
+import { profileQueryKeys } from '@scf/core/utils/profile-query-keys'
+import { composeMutationOptions } from '@scf/core/utils/compose-mutation-options'
 
 /**
  * Get current authenticated user info (id, email)
@@ -35,7 +37,7 @@ export function useCurrentUser(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'current'],
+    queryKey: profileQueryKeys.current(),
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
       return client.profiles.getCurrentUser()
@@ -55,7 +57,7 @@ export function useGeneralInfo(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'general'],
+    queryKey: profileQueryKeys.general(),
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
       return client.profiles.getGeneralInfo()
@@ -93,7 +95,7 @@ export function useProfileBySlug(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'slug', slug],
+    queryKey: profileQueryKeys.slugFor(slug),
     queryFn: async () => {
       if (!client || !slug) throw new Error('Missing client or slug')
       return client.profiles.getProfileBySlug(slug)
@@ -114,7 +116,7 @@ export function useCheckSlugAvailability(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'slug', 'check', slug],
+    queryKey: profileQueryKeys.slugCheck(slug),
     queryFn: async () => {
       if (!client || !slug) throw new Error('Missing client or slug')
       return client.profiles.checkSlugAvailability(slug)
@@ -151,7 +153,7 @@ export function useSlugHistory(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'slug', 'history'],
+    queryKey: profileQueryKeys.slugHistory(),
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
       return client.profiles.getSlugHistory()
@@ -175,44 +177,50 @@ export function useUpdateGeneralInfoMutationWithSync(
   const queryClient = useQueryClient()
   const toast = useToast()
 
-  return useUpdateGeneralInfoMutation({
-    async onMutate(input: UpdateGeneralInfoParams): Promise<UpdateGeneralInfoContext> {
-      resetProfileSyncError()
-      startProfileSync()
-      await queryClient.cancelQueries({ queryKey: ['profiles', 'general'] })
-      const previousGeneral = queryClient.getQueryData<GeneralInfo>(['profiles', 'general'])
-      queryClient.setQueryData(
-        ['profiles', 'general'],
-        (current: GeneralInfo | undefined): GeneralInfo =>
-          ({ ...(current ?? {}), ...input }) as GeneralInfo
-      )
-      return { previousGeneral }
-    },
-    onError(error: Error, _variables: UpdateGeneralInfoParams, _context: unknown) {
-      const ctx = _context as UpdateGeneralInfoContext | undefined
-      if (ctx?.previousGeneral) {
-        queryClient.setQueryData(['profiles', 'general'], ctx.previousGeneral)
-      }
-      failProfileSync()
-      toast.show({
-        title: 'Error',
-        message: error.message || 'Failed to save profile. Please try again.',
-        variant: 'error',
-      })
-    },
-    onSuccess() {
-      toast.show({
-        title: 'Profile Updated',
-        message: 'Your profile has been saved successfully!',
-        variant: 'success',
-      })
-    },
-    async onSettled(_data: { success: boolean } | undefined, error: unknown) {
-      if (!error) completeProfileSync()
-      await invalidateProfileQueries(queryClient)
-    },
-    ...overrides,
-  })
+  // composeMutationOptions, not object spread: a caller passing its own
+  // onSuccess used to *replace* the handler below rather than add to it (#586).
+  return useUpdateGeneralInfoMutation(
+    composeMutationOptions(
+      {
+        async onMutate(input: UpdateGeneralInfoParams): Promise<UpdateGeneralInfoContext> {
+          resetProfileSyncError()
+          startProfileSync()
+          await queryClient.cancelQueries({ queryKey: profileQueryKeys.general() })
+          const previousGeneral = queryClient.getQueryData<GeneralInfo>(profileQueryKeys.general())
+          queryClient.setQueryData(
+            profileQueryKeys.general(),
+            (current: GeneralInfo | undefined): GeneralInfo =>
+              ({ ...(current ?? {}), ...input }) as GeneralInfo
+          )
+          return { previousGeneral }
+        },
+        onError(error: Error, _variables: UpdateGeneralInfoParams, _context: unknown) {
+          const ctx = _context as UpdateGeneralInfoContext | undefined
+          if (ctx?.previousGeneral) {
+            queryClient.setQueryData(profileQueryKeys.general(), ctx.previousGeneral)
+          }
+          failProfileSync()
+          toast.show({
+            title: 'Error',
+            message: error.message || 'Failed to save profile. Please try again.',
+            variant: 'error',
+          })
+        },
+        onSuccess() {
+          toast.show({
+            title: 'Profile Updated',
+            message: 'Your profile has been saved successfully!',
+            variant: 'success',
+          })
+        },
+        async onSettled(_data: { success: boolean } | undefined, error: unknown) {
+          if (!error) completeProfileSync()
+          await invalidateProfileQueries(queryClient)
+        },
+      },
+      overrides
+    )
+  )
 }
 
 /**
