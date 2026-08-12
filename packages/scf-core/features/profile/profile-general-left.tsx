@@ -337,6 +337,36 @@ export function ProfileGeneralLeft() {
           </Stack>
         </Row>
 
+        {/* Headline — one line, shown on the profile header, community posts and
+            search results. Worth 20 points of Profile Strength via the Identity
+            component, which until #585 no editor could satisfy. */}
+        <Stack gap={8}>
+          <Text>Headline</Text>
+          <Controller
+            name="headline"
+            control={control}
+            render={({ field }) => (
+              <Input
+                placeholder="e.g. Journeyman Electrician, commercial fit-outs"
+                value={field.value ?? ""}
+                onChangeText={field.onChange}
+                accessibilityLabel="Headline"
+                aria-invalid={!!errors.headline}
+                aria-describedby={errors.headline ? "headline-error" : undefined}
+              />
+            )}
+          />
+          {errors.headline ? (
+            <Text id="headline-error" style={{ color: "#ef4444" }} role="alert">
+              {errors.headline.message}
+            </Text>
+          ) : (
+            <Text style={{ color: "#414e62" }}>
+              A short summary of what you do. Shown next to your name.
+            </Text>
+          )}
+        </Stack>
+
         {/* About Section - Rich Text Editor */}
         <Stack gap={8}>
           <Text>About</Text>

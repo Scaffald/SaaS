@@ -31,6 +31,9 @@ export const updateGeneralSchema = z
   .object({
     first_name: z.string().min(1).max(50),
     last_name: z.string().min(1).max(50),
+    // Scored by the Identity component of core.v_profile_completion_scores, and
+    // until #585 there was no editor anywhere that could set it (#585).
+    headline: z.string().max(120).nullable(),
     // TipTap sends JSONContent; older rows hold plain strings. Both are stored
     // as-is, so both have to be accepted.
     about: z.union([z.string().max(1500), z.record(z.unknown())]).nullable(),

@@ -13,6 +13,11 @@ export const generalProfileSchema = z.object({
   first_name: z.string().min(1, 'First name is required').max(50, 'First name too long'),
   last_name: z.string().min(1, 'Last name is required').max(50, 'Last name too long'),
 
+  // Headline — the one-line role summary shown on the profile header, community
+  // posts and search results. Worth 20 points of Profile Strength via the
+  // Identity component, and until #585 no editor in the app could set it.
+  headline: z.string().max(120, 'Headline must be 120 characters or less').nullable().optional(),
+
   // About section - accepts both string (legacy) and JSONContent (TipTap format)
   about: z
     .union([
@@ -54,6 +59,7 @@ export const generalProfileDefaults: GeneralProfileFormData = {
   avatar_path: '',
   first_name: '',
   last_name: '',
+  headline: '',
   about: null,
   phone: '',
   email: '',
