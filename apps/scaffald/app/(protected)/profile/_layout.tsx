@@ -19,6 +19,7 @@ export default function ProfileLayout() {
     >
       <DrawerLayout protectionComponent={null}>
         <Stack.Screen name="index" options={{ title: 'Profile Overview' }} />
+        <Stack.Screen name="wizard" options={{ title: 'Guided Setup' }} />
         <Stack.Screen name="general/index" options={{ title: 'General Info' }} />
         <Stack.Screen name="resume/index" options={{ title: 'Resume' }} />
         <Stack.Screen name="resume/review" options={{ title: 'Resume Review' }} />

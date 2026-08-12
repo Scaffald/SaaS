@@ -7,6 +7,7 @@ import {
   Spinner,
   Text,
   Stack,
+  useToast,
 } from "@scaffald/ui";
 import {
   useProfileWizard,
@@ -28,6 +29,7 @@ import type {
 } from "./steps/types";
 import { WizardStartScreen } from "./WizardStartScreen";
 import { WizardSuccessModal } from "./WizardSuccessModal";
+import { useCommitWizardToProfile } from "../hooks/useCommitWizardToProfile";
 
 interface ProfileWizardProps {
   onSuccess?: () => void;
@@ -127,6 +129,9 @@ export function ProfileWizard({
     isError,
   } = useProfileWizard(initialStep);
 
+  const commitToProfile = useCommitWizardToProfile();
+  const toast = useToast();
+
   const [stepSnapshots, setStepSnapshots] = useState<
     Partial<Record<ProfileWizardStepId, StepSnapshot>>
   >({});
@@ -217,9 +222,28 @@ export function ProfileWizard({
       step: ProfileWizardStepId,
       payload: WizardStepPayloads[ProfileWizardStepId]
     ) => {
-      await saveStep({ step, data: payload });
+      const progress = await saveStep({ step, data: payload });
 
       if (step === PROFILE_WIZARD_STEPS[PROFILE_WIZARD_STEPS.length - 1]) {
+        // Commit to the real profile BEFORE marking the wizard complete, so a
+        // failed write cannot leave the user with a "done" wizard and an empty
+        // profile. Finishing the wizard used to write only wizard progress into
+        // core.preferences and never touch the profile at all (#584).
+        const result = await commitToProfile(
+          progress?.stepData ?? { [step]: payload }
+        );
+
+        if (result.failed.length > 0) {
+          toast.show({
+            title: "Some details didn't save",
+            message: `${result.failed
+              .map((f) => f.section)
+              .join(", ")} couldn't be saved. Your other answers were kept — open your profile to finish those sections.`,
+            variant: "error",
+            duration: 10000,
+          });
+        }
+
         await completeWizard();
         setShowSuccess(true);
         onSuccess?.();
@@ -227,7 +251,7 @@ export function ProfileWizard({
         goNext();
       }
     },
-    [saveStep, goNext, completeWizard, onSuccess]
+    [saveStep, goNext, completeWizard, onSuccess, commitToProfile, toast]
   );
 
   const handleSaveForLater = useCallback(
