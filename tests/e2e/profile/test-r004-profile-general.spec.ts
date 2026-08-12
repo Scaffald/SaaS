@@ -2,12 +2,12 @@ import { expect, type Page, test } from '@playwright/test'
 import { signInAsTestUser } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 import { ensureProfileComplete } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/profile'
 
-test.describe('Regular • /profile/general', () => {
+test.describe('Regular • /profile/resume (General Information)', () => {
   test('navigates and shows profile general UI', async ({ page }: { page: Page }) => {
     await signInAsTestUser(page)
     await ensureProfileComplete(page)
-    await page.goto('/profile/general', { waitUntil: 'domcontentloaded' })
-    expect(page.url()).toContain('/profile/general')
+    await page.goto('/profile/resume', { waitUntil: 'domcontentloaded' })
+    expect(page.url()).toContain('/profile/resume')
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
       .catch(() => {})
@@ -23,7 +23,7 @@ test.describe('Regular • /profile/general', () => {
   }) => {
     await signInAsTestUser(page)
     await ensureProfileComplete(page)
-    await page.goto('/profile/general', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/resume', { waitUntil: 'domcontentloaded' })
 
     const editorContainer = page.locator('.rich-text-editor-container').first()
     await expect(editorContainer).toBeVisible()

@@ -121,7 +121,7 @@ test.describe('Profile education management', () => {
   })
 
   test('edits catalog entry to manual with custom degree and saves', async ({ page }) => {
-    await page.goto('/profile/education')
+    await page.goto('/profile/experience')
 
     await expect(
       page.getByRole('heading', { name: 'Education Background', exact: true })
@@ -151,7 +151,7 @@ test.describe('Profile education management', () => {
   })
 
   test('shows validation summary when attempting to save empty entry', async ({ page }) => {
-    await page.goto('/profile/education')
+    await page.goto('/profile/experience')
 
     await page.getByRole('button', { name: 'Add Education' }).click()
     await page.getByRole('button', { name: 'Save Changes' }).click()
