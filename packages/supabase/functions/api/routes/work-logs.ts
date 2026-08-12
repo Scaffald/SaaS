@@ -61,6 +61,67 @@ const timeEntriesToDb = (entries: SdkTimeEntry[]) =>
 const visibilityToDb = (visibility: string | undefined): string =>
   visibility === "organization" ? "private" : (visibility || "private");
 
+/** Shapes for the public feed's joined select. */
+interface PhotoRow {
+  id: string;
+  work_log_id: string;
+  caption: string | null;
+  file_path: string | null;
+  thumbnail_path: string | null;
+}
+
+interface PublicPhoto {
+  id: string;
+  caption: string | null;
+  signedUrl: string | null;
+  thumbnailSignedUrl: string | null;
+}
+
+interface PublicFeedRow {
+  id: string;
+  project_id: string | null;
+  log_date: string | null;
+  show_date_range_on_profile: boolean | null;
+  verified_at: string | null;
+  projects:
+    | { name: string | null; organizations: unknown }
+    | Array<{ name: string | null; organizations: unknown }>
+    | null;
+}
+
+/**
+ * PostgREST returns an embedded to-one relation as an object on some versions
+ * and a one-element array on others; both shapes reach this handler.
+ */
+// deno-lint-ignore no-explicit-any
+function firstOf<T>(value: any): T | null {
+  if (!value) return null;
+  return Array.isArray(value) ? (value[0] ?? null) : value;
+}
+
+/** How long a public-profile photo link stays valid. */
+const PUBLIC_PHOTO_URL_TTL_SECONDS = 60 * 60;
+
+async function signProfilePhoto(
+  adminClient: SupabaseClientLike,
+  photo: PhotoRow,
+): Promise<PublicPhoto> {
+  const sign = async (path: string | null) => {
+    if (!path) return null;
+    const { data } = await adminClient.storage
+      .from(WORK_LOG_PHOTO_BUCKET)
+      .createSignedUrl(path, PUBLIC_PHOTO_URL_TTL_SECONDS);
+    return data?.signedUrl ?? null;
+  };
+  return {
+    id: photo.id,
+    caption: photo.caption,
+    signedUrl: await sign(photo.file_path),
+    thumbnailSignedUrl: await sign(photo.thumbnail_path ?? photo.file_path),
+  };
+}
+
+
 /**
  * Resolve a work log the caller may access: their own or a collaborator log
  * (via RLS), falling back to service-role + org-membership check for org
@@ -699,6 +760,128 @@ app.openapi(
     });
   },
 );
+
+/**
+ * GET /v1/work-logs/public-feed
+ *
+ * The "Verified work history" strip on a public profile
+ * (WorkLogPortfolioWidget, rendered by app/(public)/users/[slug].tsx). The route
+ * did not exist, so that section was broken on every public profile — and
+ * because GET /{workLogId} caught the path first, it failed as
+ * "Invalid uuid: workLogId" rather than a 404, which is why it never read as a
+ * missing endpoint (#447).
+ *
+ * Declared above GET /{workLogId} on purpose: for two routes of the same method
+ * this router matches in declaration order, so a literal registered after a
+ * sibling /{param} is unreachable. GET /v1/work-logs/projects sits above it for
+ * the same reason.
+ *
+ * Everything here is public to anyone with the profile URL, so the filters are
+ * the publication rule rather than a caller convenience:
+ *
+ *   status = verified          a self-asserted log is not work history, and
+ *                              WorkLogDetailScreen refuses the toggle without
+ *                              it — re-checked here because a client-side gate
+ *                              is not a rule
+ *   show_on_profile            the worker opted this log in
+ *   photos.show_on_profile     and opted each photo in separately
+ *
+ * Deliberately NOT filtered on `visibility`: that column is org-scope sharing
+ * (private|public within the org), and the profile toggle never writes it — see
+ * handleShowOnProfileToggle, which sends showOnProfile alone. Requiring both
+ * would leave the feed permanently empty no matter what the worker turned on.
+ *
+ * show_date_range_on_profile is honoured by nulling logDate — the widget renders
+ * "Date hidden by worker" for it, so a worker can show the work without dating
+ * it.
+ */
+app.openapi(
+  createRoute({
+    method: "get",
+    path: "/public-feed",
+    tags: ["Work Logs"],
+    summary: "Public work-log feed for a profile",
+    request: {
+      query: z.object({
+        userId: z.string().uuid(),
+        limit: z.coerce.number().int().min(1).max(50).optional(),
+      }),
+    },
+    responses: {
+      200: {
+        description: "Public work logs, newest first",
+        content: { "application/json": { schema: z.array(z.any()) } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const user = c.get("user");
+    const { userId, limit } = c.req.valid("query");
+    if (!user) return c.json({ error: "Unauthorized" }, 401);
+
+    // Service client: the reader is not the owner, and core.work_logs' RLS is
+    // scoped to owners, collaborators and org members. The filters above are
+    // what makes reading someone else's logs safe here.
+    const adminClient = getServiceClient();
+    const { data, error } = await adminClient
+      .schema("core")
+      .from("work_logs")
+      .select(
+        "id, project_id, log_date, show_date_range_on_profile, verified_at, projects:project_id (name, organizations:organization_id (name))",
+      )
+      .eq("user_id", userId)
+      .eq("show_on_profile", true)
+      .eq("status", "verified")
+      .order("log_date", { ascending: false })
+      .limit(limit ?? 20);
+
+    if (error) {
+      return c.json(
+        { error: "Failed to load public feed", message: error.message },
+        500,
+      );
+    }
+
+    const rows = data ?? [];
+    if (rows.length === 0) return c.json([]);
+
+    // One query for every log's photos rather than one per log.
+    const { data: photoRows } = await adminClient
+      .schema("core")
+      .from("work_log_photos")
+      .select("id, work_log_id, caption, file_path, thumbnail_path")
+      .in("work_log_id", rows.map((r: { id: string }) => r.id))
+      .eq("show_on_profile", true)
+      .order("display_order", { ascending: true })
+      .order("created_at", { ascending: true });
+
+    const photosByLog = new Map<string, PublicPhoto[]>();
+    for (const photo of (photoRows ?? []) as PhotoRow[]) {
+      const signed = await signProfilePhoto(adminClient, photo);
+      const bucket = photosByLog.get(photo.work_log_id) ?? [];
+      bucket.push(signed);
+      photosByLog.set(photo.work_log_id, bucket);
+    }
+
+    return c.json(rows.map((row: PublicFeedRow) => {
+      const project = firstOf(row.projects);
+      const organization = project ? firstOf(project.organizations) : null;
+      const showDate = row.show_date_range_on_profile !== false;
+      return {
+        id: row.id,
+        projectId: row.project_id,
+        projectName: project?.name ?? null,
+        organizationName: organization?.name ?? null,
+        logDate: showDate ? row.log_date : null,
+        showDateOnProfile: showDate,
+        verifiedAt: row.verified_at,
+        photos: photosByLog.get(row.id) ?? [],
+      };
+    }));
+  },
+);
+
 
 /**
  * GET /v1/work-logs/:workLogId
@@ -2187,6 +2370,92 @@ app.openapi(
     }
 
     return c.json({ success: true });
+  },
+);
+
+/**
+ * PATCH /v1/work-logs/{workLogId}/profile-visibility
+ *
+ * The toggle on WorkLogDetailScreen. Owner-only: whether a log appears on a
+ * public profile is the worker's decision, not a collaborator's or an org
+ * admin's, so this deliberately does not use resolveAccessibleWorkLog.
+ */
+app.openapi(
+  createRoute({
+    method: "patch",
+    path: "/{workLogId}/profile-visibility",
+    tags: ["Work Logs"],
+    summary: "Show or hide a work log on your public profile",
+    request: {
+      params: z.object({ workLogId: z.string().uuid() }),
+      body: {
+        content: {
+          "application/json": {
+            schema: z.object({
+              showOnProfile: z.boolean(),
+              showDateRangeOnProfile: z.boolean().optional(),
+            }).strip(),
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "Updated work log",
+        content: { "application/json": { schema: z.any() } },
+      },
+      404: {
+        description: "Not the caller's work log",
+        content: {
+          "application/json": {
+            schema: z.object({
+              error: z.string(),
+              message: z.string().optional(),
+            }),
+          },
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { workLogId } = c.req.valid("param");
+    const body = c.req.valid("json");
+    if (!user) return c.json({ error: "Unauthorized" }, 401);
+
+    const patch: Record<string, unknown> = {
+      show_on_profile: body.showOnProfile,
+      updated_at: new Date().toISOString(),
+    };
+    if (body.showDateRangeOnProfile !== undefined) {
+      patch.show_date_range_on_profile = body.showDateRangeOnProfile;
+    }
+
+    const { data, error } = await supabase
+      .schema("core")
+      .from("work_logs")
+      .update(patch)
+      .eq("id", workLogId)
+      .eq("user_id", user.id)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      return c.json(
+        { error: "Failed to update visibility", message: error.message },
+        500,
+      );
+    }
+    if (!data) {
+      return c.json(
+        { error: "Not found", message: "No work log with that id is yours" },
+        404,
+      );
+    }
+
+    return c.json(data);
   },
 );
 

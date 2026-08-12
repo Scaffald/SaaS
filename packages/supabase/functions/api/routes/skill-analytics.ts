@@ -7,10 +7,13 @@
  * ReviewsWidget. No router was ever mounted at this prefix, so all nine calls
  * 404'd and every one of those widgets showed its error state (#447).
  *
- * Literal paths are declared before /{id} ones. A missing literal gets captured
- * by a param route and comes back as a validation error about a param the
- * caller never sent — see GET /v1/work-logs/public-feed, which reports
- * "Invalid uuid: workLogId" for exactly that reason.
+ * Literal paths are declared before the /{id} ones of the same method. This
+ * router matches in declaration order, so a literal registered after a sibling
+ * /{param} is unreachable: it gets captured by the param route and comes back
+ * as a validation error about a param the caller never sent. GET
+ * /v1/work-logs/public-feed reported "Invalid uuid: workLogId" for exactly that
+ * reason until it was moved above GET /{workLogId} (verified against a live
+ * stack — moving it was the whole fix).
  */
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";

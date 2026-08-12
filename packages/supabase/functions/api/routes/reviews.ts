@@ -302,10 +302,11 @@ app.openapi(
 // the review wizard 404'd (#447). core.reviews and its five child tables were
 // already in place; this wires them up.
 //
-// Literal paths are registered before /{reviewId}/* on purpose. A missing
-// literal route gets swallowed by a param route and surfaces as a validation
-// error about a param the caller never sent — that is exactly how
-// GET /v1/work-logs/public-feed reports "Invalid uuid: workLogId" today.
+// Literal paths are registered before /{reviewId}/* of the same method on
+// purpose: this router matches in declaration order, so a literal declared
+// after a sibling param route is unreachable and surfaces as a validation
+// error about a param the caller never sent. GET /v1/work-logs/public-feed
+// reported "Invalid uuid: workLogId" for exactly that reason.
 // ============================================================================
 
 const NOT_FOUND = {
