@@ -24,7 +24,7 @@ import {
   X,
 } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Controller, type Resolver, useFieldArray, useForm } from "react-hook-form";
+import { Controller, type Resolver, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { H4, Input, Spinner, Text, TextArea, Row, Stack } from "@scaffald/ui";
 import { Pressable } from "react-native";
 import { useUnsavedChangesPrompt } from "@scf/core/utils/platform";
@@ -58,6 +58,7 @@ type ExperienceEntry = {
   updated_at?: string;
 };
 import { useExperienceEdit } from "./contexts/experience-edit-context";
+import { calculateTotalExperience } from "./utils/experience-duration";
 import { useAdaptiveProfileSync } from "./utils/profile-sync-store";
 
 type ExperienceEntries = NonNullable<
@@ -229,33 +230,17 @@ export function ProfileExperienceLeft() {
     append(createNewExperienceEntry());
   };
 
-  // Calculate total years of experience
-  const totalExperience = useMemo(() => {
-    const entries = watch("experience_entries") || [];
-    let totalMonths = 0;
-
-    for (const entry of entries) {
-      if (!entry.start_date || typeof entry.start_date !== "string") continue;
-
-      const start = new Date(entry.start_date);
-      const end =
-        entry.is_current ||
-        !entry.end_date ||
-        typeof entry.end_date !== "string"
-          ? new Date()
-          : new Date(entry.end_date);
-
-      const months =
-        (end.getFullYear() - start.getFullYear()) * 12 +
-        (end.getMonth() - start.getMonth());
-      totalMonths += Math.max(0, months);
-    }
-
-    const years = Math.floor(totalMonths / 12);
-    const remainingMonths = totalMonths % 12;
-
-    return { years, months: remainingMonths };
-  }, [watch]);
+  // useWatch, not watch(): react-hook-form's `watch` is referentially stable, so
+  // `useMemo(..., [watch])` computed once per mount and never again. The form is
+  // populated by reset() in an effect *after* first render, so this read ran
+  // against experienceProfileDefaults and reported "0 years 0 months" for the
+  // life of the component — including for users with a full work history, and
+  // it never moved when entries were added or edited (#590).
+  const watchedEntries = useWatch({ control, name: "experience_entries" });
+  const totalExperience = useMemo(
+    () => calculateTotalExperience(watchedEntries),
+    [watchedEntries]
+  );
 
   // Show loading state
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useId } from 'react'
 import type { ViewStyle } from 'react-native'
 import { Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg'
 
@@ -43,11 +43,12 @@ export const ScaffaldLogo = ({
   const isSquare = width === height
   const viewBox = isSquare ? '0 0 100 100' : '0 0 609 99'
 
-  // Generate unique gradient ID for each logo instance
-  const gradientId = useMemo(
-    () => `logo-gradient-${Math.random().toString(36).substring(2, 11)}`,
-    []
-  )
+  // Unique per instance, and — critically — identical on the server and the
+  // client. This was `Math.random()`, which guaranteed the SSR markup and the
+  // hydrated markup disagreed on the gradient id, so React discarded the tree
+  // and re-rendered the whole page on every load (#582). The logo sits in the
+  // app shell, so that fired on every SSR route, not just one screen.
+  const gradientId = `logo-gradient-${useId().replace(/:/g, '')}`
 
   return (
     <Svg width={width} height={height} viewBox={viewBox} style={style}>
