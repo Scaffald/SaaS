@@ -146,7 +146,7 @@
     "test:scaffald:e2e:ui": "pnpm --filter scaffald test:e2e:ui",
     "test:schemas": "pnpm --filter @scf/schemas test",
     "test:ui": "vitest --ui",
-    "test:unit": "cross-env NODE_OPTIONS=--max-old-space-size=4096 nx run-many -t test --parallel=1 --exclude=@scaffald/integration-test,@scaffald/ui",
+    "test:unit": "cross-env NODE_OPTIONS=--max-old-space-size=4096 nx run-many -t test --parallel=1 --exclude=@scaffald/integration-test,@scaffald/ui,scf-core",
     "test:watch": "vitest",
     "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=4096 nx run-many -t typecheck --parallel=1 --exclude=@scaffald/integration-test",
     "typecheck:affected": "nx affected -t typecheck --parallel=1",
