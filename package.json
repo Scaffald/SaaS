@@ -114,7 +114,7 @@
     "supa:seed:dev": "pnpm env-dev pnpm --filter @scf/supabase seed",
     "supa:seed:preview": "pnpm env-preview pnpm --filter @scf/supabase seed",
     "supa:seed:prod": "./scripts/seed-prod-safe.sh production",
-    "supa:seed:prod:full": "pnpm env-prod pnpm --filter @scf/supabase seed",
+    "supa:seed:prod:full": "pnpm env-prod pnpm --filter @scf/supabase seed -- --with-demo",
     "supa:start:full": "ENABLE_MAILPIT_OVERRIDE=true ./scripts/supabase-start.sh",
     "test": "pnpm test:unit && pnpm test:api",
     "test:affected": "nx affected -t test",

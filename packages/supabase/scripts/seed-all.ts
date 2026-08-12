@@ -552,6 +552,18 @@ async function seedWorkerTradeSkills(): Promise<boolean> {
   }
 }
 
+/**
+ * Demo data is opt-in.
+ *
+ * seed-all is invoked against production by scripts/seed-prod-safe.sh, whose
+ * header promises "ONLY idempotent reference data seeds — never demo users,
+ * orgs, or posts". It called this file unconditionally, and this file seeded
+ * demo worker skills, so that promise was not kept. Defaulting to reference-only
+ * means a caller has to ask for demo data rather than remember to exclude it.
+ */
+const INCLUDE_DEMO_DATA =
+  process.argv.includes('--with-demo') || process.env.SEED_WITH_DEMO === 'true'
+
 async function main() {
   console.log('🌱 Starting Database Seeding...\n')
 
@@ -609,9 +621,17 @@ async function main() {
   // Verify certifications
   await verifyCertifications()
 
-  // Needs the CSI codes from step 1. Everything else about these profiles is
-  // handled by seeds/014_seed-worker-profiles.sql during `db reset`.
-  await seedWorkerTradeSkills()
+  // Demo data, not reference data: this writes core.user_skills rows for three
+  // hardcoded demo worker UUIDs. Opt-in, and off by default, because
+  // scripts/seed-prod-safe.sh calls this file and advertises itself as
+  // reference-only — it ran this step regardless, so the safety rail did not
+  // hold. Anything new that calls seed-all is now safe unless it asks not to be.
+  if (INCLUDE_DEMO_DATA) {
+    await seedWorkerTradeSkills()
+  } else {
+    console.log('\n⏭️  Skipping demo worker trade skills (reference-only run).')
+    console.log('   Pass --with-demo or SEED_WITH_DEMO=true to include them.')
+  }
 
   // Seed jobs
   console.log(`\n${'='.repeat(50)}`)
