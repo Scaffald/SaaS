@@ -393,25 +393,33 @@ setup('authenticate as super admin', async ({ page }) => {
     expiresAt: safeSession.expires_at,
   }
 
-  // Set localStorage BEFORE page loads using addInitScript
+  // Navigate first, then write localStorage on that origin — the same shape
+  // the admin and user setups use.
+  //
+  // This used to use addInitScript, which has two problems. It runs on *every*
+  // origin the page loads, so the session landed in the Stripe iframes
+  // (js.stripe.com, m.stripe.network) and not on localhost — the saved storage
+  // state ended up with no `sb-*-auth-token` for the app's own origin at all.
+  // And it wrote a wrapped `{ currentSession, expiresAt }` payload, where
+  // supabase-js stores the session flat: access_token, token_type, expires_in,
+  // expires_at, refresh_token, user. Either alone is enough to make the state
+  // unusable (#577).
   const storageKey = getStorageKey()
-  await page.addInitScript(
-    ({ storageKey, payload, user }) => {
-      try {
-        window.localStorage.setItem(storageKey, JSON.stringify(payload))
-        window.localStorage.setItem('supabase.auth.token', JSON.stringify(payload))
-        window.localStorage.setItem('supabase.auth.user', JSON.stringify(user))
-        console.log('[SETUP] Browser session initialized in localStorage')
-      } catch (error) {
-        console.error('[SETUP] Failed to populate localStorage', error)
-      }
+
+  await page.goto(`${APP_BASE_URL}/`)
+  await page.waitForLoadState('domcontentloaded')
+
+  await page.evaluate(
+    ({ storageKey, session, wrapped, user }) => {
+      window.localStorage.setItem(storageKey, JSON.stringify(session))
+      window.localStorage.setItem('supabase.auth.token', JSON.stringify(wrapped))
+      window.localStorage.setItem('supabase.auth.user', JSON.stringify(user))
     },
-    { storageKey, payload, user: plainUser }
+    { storageKey, session: safeSession, wrapped: payload, user: plainUser }
   )
 
   console.log('✓ Browser session initialized')
 
-  // Navigate to dashboard (localStorage will be set before page loads)
   await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'networkidle', timeout: 30000 })
 
   // Verify we're authenticated (not redirected to /auth)
