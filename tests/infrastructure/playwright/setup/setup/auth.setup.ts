@@ -10,10 +10,19 @@ const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:5
 const APP_BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:8081'
 
 /**
- * Normalize hostname for localStorage key (matches auth.ts helper)
+ * The localStorage key supabase-js stores its session under.
+ *
+ * supabase-js derives this from the *first hostname label* — the project ref
+ * for a hosted URL (`abc123.supabase.co` -> `sb-abc123-auth-token`), and `127`
+ * for local (`http://127.0.0.1:54321` -> `sb-127-auth-token`).
+ *
+ * This used to replace every `.` and `:` in the full host instead, producing
+ * `sb-127-0-0-1-54321-auth-token`. That is a key the client never reads, so
+ * every storage state written here held a perfectly valid session that the app
+ * could not see — specs authenticated, then rendered the login screen (#577).
  */
 function normaliseHost(url: string): string {
-  return new URL(url).host.replace(/[.:]/g, '-')
+  return new URL(url).hostname.split('.')[0]
 }
 
 /**
@@ -76,7 +85,7 @@ setup('authenticate as admin', async ({ page }) => {
         // Use IP address format (127) instead of localhost for consistency with working files
         const hostname = window.location.hostname
         // Convert localhost to 127, or use hostname as-is
-        const normalizedHost = hostname === 'localhost' ? '127' : hostname.replace(/\./g, '-')
+        const normalizedHost = hostname === 'localhost' ? '127' : hostname.split('.')[0]
         authKey = `sb-${normalizedHost}-auth-token`
       }
 
@@ -230,7 +239,7 @@ setup('authenticate as user', async ({ page }) => {
         // Use IP address format (127) instead of localhost for consistency with working files
         const hostname = window.location.hostname
         // Convert localhost to 127, or use hostname as-is
-        const normalizedHost = hostname === 'localhost' ? '127' : hostname.replace(/\./g, '-')
+        const normalizedHost = hostname === 'localhost' ? '127' : hostname.split('.')[0]
         authKey = `sb-${normalizedHost}-auth-token`
       }
 
