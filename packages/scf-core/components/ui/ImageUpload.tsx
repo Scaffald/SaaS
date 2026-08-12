@@ -1,7 +1,7 @@
 import { supabase } from '@scf/core/utils/supabase/client'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { AlertCircle, Image as ImageIcon, Trash2, Upload } from 'lucide-react-native'
-import { type ChangeEvent, useCallback, useRef, useState } from 'react'
+import { type ChangeEvent, useCallback, useId, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import { Button, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useFilePicker } from '@scaffald/ui'
@@ -71,7 +71,10 @@ export function ImageUpload({
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string>()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const fileInputId = useRef(`image-upload-input-${Math.random().toString(36).substring(2, 9)}`)
+  // useId, not Math.random(): this id lands in the DOM as an input id and a
+  // label's htmlFor, so a random value differs between the server render and
+  // the client and breaks hydration the same way #582 did in ScaffaldLogo.
+  const fileInputId = useRef(`image-upload-input-${useId().replace(/:/g, '')}`)
 
   const validateFile = useCallback(
     (file: File): string | null => {
