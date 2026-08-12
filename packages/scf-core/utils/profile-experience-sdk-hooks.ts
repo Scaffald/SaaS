@@ -22,6 +22,8 @@ import {
   resetProfileSyncError,
   startProfileSync,
 } from '@scf/core/features/profile/utils/profile-sync-store'
+import { profileQueryKeys } from '@scf/core/utils/profile-query-keys'
+import { composeMutationOptions } from '@scf/core/utils/compose-mutation-options'
 
 /**
  * Get user's experience entries
@@ -32,7 +34,7 @@ export function useExperience(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'experience'],
+    queryKey: profileQueryKeys.experience(),
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
       return client.experience.getExperience()
@@ -52,7 +54,7 @@ export function useExperienceSummary(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'experience', 'summary'],
+    queryKey: profileQueryKeys.experienceSummary(),
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
       return client.experience.getExperienceSummary()
@@ -94,50 +96,56 @@ export function useSaveExperienceMutationWithSync(
   const queryClient = useQueryClient()
   const toast = useToast()
 
-  return useSaveExperienceMutation({
-    async onMutate(input: SaveExperienceParams): Promise<SaveExperienceContext> {
-      resetProfileSyncError()
-      startProfileSync()
-      await Promise.all([
-        queryClient.cancelQueries({ queryKey: ['profiles', 'experience'] }),
-        queryClient.cancelQueries({ queryKey: ['profiles', 'experience', 'summary'] }),
-      ])
-      const previousExperience = queryClient.getQueryData<ExperienceEntry[]>(['profiles', 'experience'])
-      const previousSummary = queryClient.getQueryData<ExperienceSummary>(['profiles', 'experience', 'summary'])
-      queryClient.setQueryData(['profiles', 'experience'], input.experience_entries as ExperienceEntry[])
-      queryClient.setQueryData(['profiles', 'experience', 'summary'], {
-        career_level: (input.career_level ?? null) as string | null,
-      })
-      return { previousExperience, previousSummary }
-    },
-    onError(error: Error, _variables: SaveExperienceParams, _context: unknown) {
-      const ctx = _context as SaveExperienceContext | undefined
-      if (ctx?.previousExperience) {
-        queryClient.setQueryData(['profiles', 'experience'], ctx.previousExperience)
-      }
-      if (ctx?.previousSummary) {
-        queryClient.setQueryData(['profiles', 'experience', 'summary'], ctx.previousSummary)
-      }
-      failProfileSync()
-      toast.show({
-        title: 'Error',
-        message: error.message || 'Failed to save experience. Please try again.',
-        variant: 'error',
-      })
-    },
-    onSuccess() {
-      toast.show({
-        title: 'Experience Saved',
-        message: 'Your work experience has been updated successfully!',
-        variant: 'success',
-      })
-    },
-    async onSettled(_data: SaveExperienceResponse | undefined, error: unknown) {
-      if (!error) completeProfileSync()
-      await invalidateProfileQueries(queryClient)
-    },
-    ...overrides,
-  })
+  // composeMutationOptions, not object spread: a caller passing its own
+  // onSuccess used to *replace* the handler below rather than add to it (#586).
+  return useSaveExperienceMutation(
+    composeMutationOptions(
+      {
+        async onMutate(input: SaveExperienceParams): Promise<SaveExperienceContext> {
+          resetProfileSyncError()
+          startProfileSync()
+          await Promise.all([
+            queryClient.cancelQueries({ queryKey: profileQueryKeys.experience() }),
+            queryClient.cancelQueries({ queryKey: profileQueryKeys.experienceSummary() }),
+          ])
+          const previousExperience = queryClient.getQueryData<ExperienceEntry[]>(profileQueryKeys.experience())
+          const previousSummary = queryClient.getQueryData<ExperienceSummary>(profileQueryKeys.experienceSummary())
+          queryClient.setQueryData(profileQueryKeys.experience(), input.experience_entries as ExperienceEntry[])
+          queryClient.setQueryData(profileQueryKeys.experienceSummary(), {
+            career_level: (input.career_level ?? null) as string | null,
+          })
+          return { previousExperience, previousSummary }
+        },
+        onError(error: Error, _variables: SaveExperienceParams, _context: unknown) {
+          const ctx = _context as SaveExperienceContext | undefined
+          if (ctx?.previousExperience) {
+            queryClient.setQueryData(profileQueryKeys.experience(), ctx.previousExperience)
+          }
+          if (ctx?.previousSummary) {
+            queryClient.setQueryData(profileQueryKeys.experienceSummary(), ctx.previousSummary)
+          }
+          failProfileSync()
+          toast.show({
+            title: 'Error',
+            message: error.message || 'Failed to save experience. Please try again.',
+            variant: 'error',
+          })
+        },
+        onSuccess() {
+          toast.show({
+            title: 'Experience Saved',
+            message: 'Your work experience has been updated successfully!',
+            variant: 'success',
+          })
+        },
+        async onSettled(_data: SaveExperienceResponse | undefined, error: unknown) {
+          if (!error) completeProfileSync()
+          await invalidateProfileQueries(queryClient)
+        },
+      },
+      overrides
+    )
+  )
 }
 
 /**

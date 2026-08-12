@@ -21,6 +21,8 @@ import {
 } from '@scf/core/features/profile/utils/profile-sync-store'
 import type { EmploymentProfileFormData } from '@scf/supabase/client-types'
 import { profileEmploymentDefaults } from '@scf/supabase/client-types'
+import { profileQueryKeys } from '@scf/core/utils/profile-query-keys'
+import { composeMutationOptions } from '@scf/core/utils/compose-mutation-options'
 
 /**
  * Get employment preferences
@@ -31,7 +33,7 @@ export function useEmployment(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'employment'],
+    queryKey: profileQueryKeys.employment(),
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
       return client.employment.getEmployment()
@@ -77,63 +79,69 @@ export function useEmploymentUpdateMutationWithSync(
   const queryClient = useQueryClient()
   const toast = useToast()
 
-  return useUpdateEmploymentMutation({
-    async onMutate(
-      input: UpdateEmploymentParams
-    ): Promise<EmploymentMutationContext> {
-      resetProfileSyncError()
-      startProfileSync()
-      await queryClient.cancelQueries({ queryKey: ['profiles', 'employment'] })
-      const previousEmployment = queryClient.getQueryData<
-        EmploymentProfileFormData
-      >(['profiles', 'employment'])
-      queryClient.setQueryData(
-        ['profiles', 'employment'],
-        (
-          current: EmploymentProfileFormData | undefined
-        ): EmploymentProfileFormData =>
-          ({
-            ...(current ?? profileEmploymentDefaults),
-            ...input,
-          }) as EmploymentProfileFormData
-      )
-      return { previousEmployment }
-    },
-    onError(
-      error: Error,
-      _variables: UpdateEmploymentParams,
-      _context: unknown
-    ) {
-      const ctx = _context as EmploymentMutationContext | undefined
-      if (ctx?.previousEmployment) {
-        queryClient.setQueryData(
-          ['profiles', 'employment'],
-          ctx.previousEmployment
-        )
-      }
-      failProfileSync()
-      toast.show({
-        title: 'Error',
-        message:
-          error.message ||
-          'Failed to save employment preferences. Please try again.',
-        variant: 'error',
-      })
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ['profiles', 'employment'],
-      })
-    },
-    onSettled: async (
-      _data: UpdateEmploymentResponse | undefined,
-      error: unknown
-    ) => {
-      if (!error) {
-        completeProfileSync()
-      }
-      await invalidateProfileQueries(queryClient)
-    },
-    ...overrides,
-  })
+  // composeMutationOptions, not object spread: a caller passing its own
+  // onSuccess used to *replace* the handler below rather than add to it (#586).
+  return useUpdateEmploymentMutation(
+    composeMutationOptions(
+      {
+        async onMutate(
+          input: UpdateEmploymentParams
+        ): Promise<EmploymentMutationContext> {
+          resetProfileSyncError()
+          startProfileSync()
+          await queryClient.cancelQueries({ queryKey: profileQueryKeys.employment() })
+          const previousEmployment = queryClient.getQueryData<
+            EmploymentProfileFormData
+          >(profileQueryKeys.employment())
+          queryClient.setQueryData(
+            profileQueryKeys.employment(),
+            (
+              current: EmploymentProfileFormData | undefined
+            ): EmploymentProfileFormData =>
+              ({
+                ...(current ?? profileEmploymentDefaults),
+                ...input,
+              }) as EmploymentProfileFormData
+          )
+          return { previousEmployment }
+        },
+        onError(
+          error: Error,
+          _variables: UpdateEmploymentParams,
+          _context: unknown
+        ) {
+          const ctx = _context as EmploymentMutationContext | undefined
+          if (ctx?.previousEmployment) {
+            queryClient.setQueryData(
+              profileQueryKeys.employment(),
+              ctx.previousEmployment
+            )
+          }
+          failProfileSync()
+          toast.show({
+            title: 'Error',
+            message:
+              error.message ||
+              'Failed to save employment preferences. Please try again.',
+            variant: 'error',
+          })
+        },
+        onSuccess: async () => {
+          await queryClient.invalidateQueries({
+            queryKey: profileQueryKeys.employment(),
+          })
+        },
+        onSettled: async (
+          _data: UpdateEmploymentResponse | undefined,
+          error: unknown
+        ) => {
+          if (!error) {
+            completeProfileSync()
+          }
+          await invalidateProfileQueries(queryClient)
+        },
+      },
+      overrides
+    )
+  )
 }

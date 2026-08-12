@@ -22,6 +22,8 @@ import {
   resetProfileSyncError,
   startProfileSync,
 } from '@scf/core/features/profile/utils/profile-sync-store'
+import { profileQueryKeys } from '@scf/core/utils/profile-query-keys'
+import { composeMutationOptions } from '@scf/core/utils/compose-mutation-options'
 
 /**
  * Get user's education entries
@@ -32,7 +34,7 @@ export function useEducation(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'education'],
+    queryKey: profileQueryKeys.education(),
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
       return client.education.getEducation()
@@ -52,7 +54,7 @@ export function useEducationLevel(
   const client = useScaffaldJobsClient()
 
   return useQuery({
-    queryKey: ['profiles', 'education', 'level'],
+    queryKey: profileQueryKeys.educationLevel(),
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
       return client.education.getEducationLevel()
@@ -94,50 +96,56 @@ export function useSaveEducationMutationWithSync(
   const queryClient = useQueryClient()
   const toast = useToast()
 
-  return useSaveEducationMutation({
-    async onMutate(input: SaveEducationParams): Promise<SaveEducationContext> {
-      resetProfileSyncError()
-      startProfileSync()
-      await Promise.all([
-        queryClient.cancelQueries({ queryKey: ['profiles', 'education'] }),
-        queryClient.cancelQueries({ queryKey: ['profiles', 'education', 'level'] }),
-      ])
-      const previousEducation = queryClient.getQueryData<EducationEntry[]>(['profiles', 'education'])
-      const previousLevel = queryClient.getQueryData<EducationLevel>(['profiles', 'education', 'level'])
-      queryClient.setQueryData(['profiles', 'education'], (input.education_entries ?? []) as EducationEntry[])
-      queryClient.setQueryData(['profiles', 'education', 'level'], {
-        education_level: input.education_level ?? null,
-      })
-      return { previousEducation, previousLevel }
-    },
-    onError(error: Error, _variables: SaveEducationParams, _context: unknown) {
-      const ctx = _context as SaveEducationContext | undefined
-      if (ctx?.previousEducation) {
-        queryClient.setQueryData(['profiles', 'education'], ctx.previousEducation)
-      }
-      if (ctx?.previousLevel) {
-        queryClient.setQueryData(['profiles', 'education', 'level'], ctx.previousLevel)
-      }
-      failProfileSync()
-      toast.show({
-        title: 'Error',
-        message: error.message || 'Failed to save education entry. Please try again.',
-        variant: 'error',
-      })
-    },
-    onSuccess() {
-      toast.show({
-        title: 'Education Saved',
-        message: 'Your education history has been updated successfully!',
-        variant: 'success',
-      })
-    },
-    async onSettled(_data: SaveEducationResponse | undefined, error: unknown) {
-      if (!error) completeProfileSync()
-      await invalidateProfileQueries(queryClient)
-    },
-    ...overrides,
-  })
+  // composeMutationOptions, not object spread: a caller passing its own
+  // onSuccess used to *replace* the handler below rather than add to it (#586).
+  return useSaveEducationMutation(
+    composeMutationOptions(
+      {
+        async onMutate(input: SaveEducationParams): Promise<SaveEducationContext> {
+          resetProfileSyncError()
+          startProfileSync()
+          await Promise.all([
+            queryClient.cancelQueries({ queryKey: profileQueryKeys.education() }),
+            queryClient.cancelQueries({ queryKey: profileQueryKeys.educationLevel() }),
+          ])
+          const previousEducation = queryClient.getQueryData<EducationEntry[]>(profileQueryKeys.education())
+          const previousLevel = queryClient.getQueryData<EducationLevel>(profileQueryKeys.educationLevel())
+          queryClient.setQueryData(profileQueryKeys.education(), (input.education_entries ?? []) as EducationEntry[])
+          queryClient.setQueryData(profileQueryKeys.educationLevel(), {
+            education_level: input.education_level ?? null,
+          })
+          return { previousEducation, previousLevel }
+        },
+        onError(error: Error, _variables: SaveEducationParams, _context: unknown) {
+          const ctx = _context as SaveEducationContext | undefined
+          if (ctx?.previousEducation) {
+            queryClient.setQueryData(profileQueryKeys.education(), ctx.previousEducation)
+          }
+          if (ctx?.previousLevel) {
+            queryClient.setQueryData(profileQueryKeys.educationLevel(), ctx.previousLevel)
+          }
+          failProfileSync()
+          toast.show({
+            title: 'Error',
+            message: error.message || 'Failed to save education entry. Please try again.',
+            variant: 'error',
+          })
+        },
+        onSuccess() {
+          toast.show({
+            title: 'Education Saved',
+            message: 'Your education history has been updated successfully!',
+            variant: 'success',
+          })
+        },
+        async onSettled(_data: SaveEducationResponse | undefined, error: unknown) {
+          if (!error) completeProfileSync()
+          await invalidateProfileQueries(queryClient)
+        },
+      },
+      overrides
+    )
+  )
 }
 
 /**

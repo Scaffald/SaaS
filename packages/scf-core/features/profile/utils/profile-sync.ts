@@ -1,34 +1,17 @@
+import { PROFILE_INVALIDATION_ROOTS } from '@scf/core/utils/profile-query-keys'
 import type { QueryClient } from '@tanstack/react-query'
 
+/**
+ * Invalidate everything a profile edit can affect.
+ *
+ * The roots come from the same factory the hooks register their queries with —
+ * see profile-query-keys.ts for why that indirection is not ceremony. This
+ * helper previously listed its own `['scaffald', 'profiles', …]` literals while
+ * the hooks used `['profiles', …]`, so nine of eleven keys matched no query at
+ * all and saving a profile section revalidated nothing (#581).
+ */
 export async function invalidateProfileQueries(queryClient: QueryClient): Promise<void> {
-  const tasks: Array<Promise<unknown>> = [
-    // General profile
-    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'general'] }),
-
-    // Employment
-    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'employment'] }),
-
-    // Education
-    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'education'] }),
-    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'education-level'] }),
-
-    // Experience
-    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'experience'] }),
-    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'experience-summary'] }),
-
-    // Skills (multi-taxonomy)
-    queryClient.invalidateQueries({ queryKey: ['scaffald', 'skills', 'multi-taxonomy'] }),
-    queryClient.invalidateQueries({ queryKey: ['scaffald', 'skills', 'legacy'] }),
-
-    // Certifications
-    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'certifications'] }),
-    queryClient.invalidateQueries({
-      queryKey: ['scaffald', 'profiles', 'certifications', 'top-level'],
-    }),
-
-    // User profile (comprehensive view)
-    queryClient.invalidateQueries({ queryKey: ['scaffald', 'user-profiles'] }),
-  ]
-
-  await Promise.allSettled(tasks)
+  await Promise.allSettled(
+    PROFILE_INVALIDATION_ROOTS.map((queryKey) => queryClient.invalidateQueries({ queryKey }))
+  )
 }
