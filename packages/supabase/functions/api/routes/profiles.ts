@@ -1195,7 +1195,13 @@ app.openapi(getOrganizationRoute, async (c) => {
   const supabase = c.get("supabase");
   const { slug } = c.req.valid("param");
 
-  // Get organization profile
+  // Get organization profile.
+  //
+  // This select used to ask for industry, size, location and founded_year and
+  // filter on is_public — none of which exist on core.organizations, so the
+  // route answered 500 "column organizations.industry does not exist" for every
+  // slug and had never returned a profile. The real columns are industry_id
+  // (FK to core.industries) and visibility.
   const { data: organization, error } = await supabase
     .schema("core")
     .from("organizations")
@@ -1206,14 +1212,12 @@ app.openapi(getOrganizationRoute, async (c) => {
       description,
       logo_url,
       website,
-      industry,
-      size,
-      location,
-      founded_year,
-      created_at
+      address,
+      created_at,
+      industry:industry_id (id, slug, name)
     `)
     .eq("slug", slug)
-    .eq("is_public", true)
+    .eq("visibility", "public")
     .single();
 
   if (error) {
@@ -1237,13 +1241,15 @@ app.openapi(getOrganizationRoute, async (c) => {
     );
   }
 
-  // Get count of published jobs
+  // Get count of open jobs
   const { count } = await supabase
     .schema("core")
     .from("jobs")
     .select("*", { count: "exact", head: true })
     .eq("organization_id", organization.id)
-    .eq("status", "published");
+    // core.jobs.status is CHECK (draft|open|paused|closed) — "published" is not
+    // a permitted value, so this counted 0 for every employer.
+    .eq("status", "open");
 
   return c.json(
     {
@@ -1351,13 +1357,14 @@ app.openapi(getEmployerRoute, async (c) => {
     );
   }
 
-  // Get count of active jobs
+  // Get count of open jobs
   const { count } = await supabase
     .schema("core")
     .from("jobs")
     .select("*", { count: "exact", head: true })
     .eq("employer_id", employer.id)
-    .eq("status", "published");
+    // See above: "published" is not a value core.jobs.status can hold.
+    .eq("status", "open");
 
   return c.json(
     {
