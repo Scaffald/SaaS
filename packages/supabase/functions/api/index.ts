@@ -19,6 +19,7 @@ import engagementRouter from "./routes/engagement.ts";
 import notificationsRouter from "./routes/notifications.ts";
 import userProfilesRouter from "./routes/user-profiles.ts";
 import skillsRouter from "./routes/skills.ts";
+import skillAnalyticsRouter from "./routes/skill-analytics.ts";
 import experienceRouter from "./routes/experience.ts";
 import employmentRouter from "./routes/employment.ts";
 import educationRouter from "./routes/education.ts";
@@ -140,6 +141,7 @@ app.route("/v1/engagement", engagementRouter); // Engagement tracking/analytics
 app.route("/v1/notifications", notificationsRouter); // User notifications
 app.route("/v1/user-profiles", userProfilesRouter); // User profile data
 app.route("/v1/profiles/skills", skillsRouter); // Skills management (soft/hard/multi-taxonomy)
+app.route("/v1/skills", skillAnalyticsRouter); // Snapshots + evidence (skills-analytics widgets)
 app.route("/v1/profiles/experience", experienceRouter); // Work experience
 app.route("/v1/profiles/employment", employmentRouter); // Employment preferences
 app.route("/v1/profiles/education", educationRouter); // Education history
