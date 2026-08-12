@@ -3,6 +3,10 @@
 -- Seeds demo AccountSwitcher users with completed prerequisites
 -- so they skip the /onboarding step.
 --
+-- Also covers the three accounts tests/infrastructure/playwright/setup/setup/
+-- auth.setup.ts authenticates as, so the Playwright setup project can produce
+-- its storage-state files and specs can reach protected routes (#575).
+--
 -- 1. Creates auth.users entries for the 4 unseeded demo accounts
 -- 2. Populates core.profile (first_name, last_name, address, geo)
 -- 3. Sets core.users.industry_id (construction)
@@ -117,6 +121,19 @@ WITH demo_profiles AS (
      '{"street":"123 Main Street","city":"Clare","state":"MI","zip":"48617","country":"United States"}'::jsonb,
      -84.7697, 43.8197),
 
+    -- The two accounts auth.setup.ts authenticates as, beyond zach. Without
+    -- an address they fail the prerequisites check on hasAddress and land on
+    -- /onboarding, which blocked the whole Playwright setup project (#575).
+    ('ewongagent@gmail.com',
+     'Eric', 'Wong',
+     '{"street":"200 Market Street","city":"Charlotte","state":"NC","zip":"28202","country":"United States"}'::jsonb,
+     -80.8431, 35.2271),
+
+    ('lexis.salah@eths.education.com',
+     'Lexis', 'Salah',
+     '{"street":"88 Elm Street","city":"Evanston","state":"IL","zip":"60201","country":"United States"}'::jsonb,
+     -87.6877, 42.0451),
+
     -- Zach Servideo – Ipswich, MA
     ('zach@unicorn.love',
      'Zach', 'Servideo',
@@ -173,6 +190,8 @@ FROM core.industries i
 JOIN auth.users au ON au.email IN (
   'clay@unicorn.love',
   'zach@unicorn.love',
+  'ewongagent@gmail.com',
+  'lexis.salah@eths.education.com',
   'bloxhambuilding@gmail.com',
   'brian.carter@wizard.construction',
   'marcus.rivera@example.test',
@@ -195,6 +214,8 @@ WITH demo_prefs AS (
     -- Brian: employer
     ('brian.carter@wizard.construction', ARRAY['employer']),
     -- Workers: Marcus, Jake, Carlos
+    ('ewongagent@gmail.com',          ARRAY['employer']),
+    ('lexis.salah@eths.education.com', ARRAY['worker']),
     ('marcus.rivera@example.test',    ARRAY['worker']),
     ('jake.hendricks@example.test',   ARRAY['worker']),
     ('carlos.gutierrez@example.test', ARRAY['worker'])
@@ -209,8 +230,22 @@ SET
   -- leaves demo users stuck on /onboarding. See scripts/audit/README.md.
   accepted_privacy_policy_at = NOW(),
   accepted_terms_of_service_at = NOW(),
-  privacy_policy_version = '1.0',
-  terms_of_service_version = '1.0'
+  -- Read from core.legal_documents rather than hardcoded.
+  --
+  -- These were '1.0' while migration 342 publishes 'v1.0', and the check is a
+  -- string equality (`acceptedVersion !== doc.version`). So every demo user
+  -- has been legally stale since 342 landed — past /onboarding but bounced to
+  -- /legal-update, which is why no seeded account could reach a protected
+  -- route (#575). Deriving it means the next version bump cannot desync the
+  -- seed again.
+  privacy_policy_version = (
+    SELECT version FROM core.legal_documents
+    WHERE doc_type = 'privacy_policy' AND is_current LIMIT 1
+  ),
+  terms_of_service_version = (
+    SELECT version FROM core.legal_documents
+    WHERE doc_type = 'terms_of_service' AND is_current LIMIT 1
+  )
 FROM demo_prefs dp
 JOIN auth.users au ON au.email = dp.email
 WHERE pref.user_id = au.id;

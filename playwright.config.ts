@@ -23,12 +23,13 @@ export default defineConfig({
     "**/console-audit.spec.ts", // Console audit – writes docs/console-audit.md
     "**/profile-audit-magiclink.spec.ts", // Profile audit (magic link + Mailpit)
     "**/test-supabase-hardening-regression.spec.ts", // Supabase hardening regression
-    // The office specs are deliberately still absent. #553 sequences this as
-    // "fix the setup project, then add specs one at a time, confirming each is
-    // green". The setup fix below is done; the kanban spec is not green yet —
-    // it authenticates via tests/.auth/super-admin.json and still lands on the
-    // public marketing page, because no seeded user is past the onboarding and
-    // legal-acceptance gates. Adding it now would ship a known-red selection.
+    // Office specs are still absent, and #575 was not the last blocker.
+    // Seeded accounts now get past onboarding and legal acceptance, so the
+    // specs reach the app — but ApplicationsKanbanBoard renders no testID,
+    // data-testid or nativeID at all, while kanban-helpers.ts waits on
+    // [data-column], [data-status] and kanban-column-*. Those selectors match
+    // nothing, so the spec cannot pass on any data. Adding it here would ship
+    // a known-red selection.
   ],
 
   // Exclude debug/exploration/example files permanently
