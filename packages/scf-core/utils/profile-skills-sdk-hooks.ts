@@ -322,30 +322,13 @@ export function useUpdatePrimaryIndustryMutation(
 // LEGACY SKILLS HOOKS (Backwards Compatibility)
 // ============================================================================
 
-export function useSkillsLegacy(
-  options?: Omit<UseQueryOptions<GetSkillsLegacyResponse, Error>, 'queryKey' | 'queryFn'>
-) {
-  const client = useScaffaldJobsClient()
-  return useQuery({
-    queryKey: ['scaffald', 'skills', 'legacy'],
-    queryFn: async () => {
-      if (!client) throw new Error('Scaffald client not available')
-      return client.skills.getSkillsLegacy()
-    },
-    enabled: !!client && options?.enabled !== false,
-    ...options,
-  })
-}
+// useSkillsLegacy / useUpdateSkillsLegacyMutation were removed here. They called
+// GET and PATCH /v1/profiles/skills/legacy, which return 404 — that route has
+// never been registered on the api function. The only consumer was SkillsWidget,
+// which is now on useSkillsWidget({ userId }); see #603 for why that also fixed
+// the widget showing the *viewer's* skills on someone else's profile.
+//
+// The corresponding SDK methods (client.skills.getSkillsLegacy /
+// updateSkillsLegacy) still exist in the @scaffald/sdk submodule and are now
+// unreferenced; removing them needs its own PR + pointer bump there.
 
-export function useUpdateSkillsLegacyMutation(
-  options?: UseMutationOptions<SuccessResponse, Error, UpdateSkillsLegacyParams>
-) {
-  const client = useScaffaldJobsClient()
-  return useMutation({
-    mutationFn: async (params: UpdateSkillsLegacyParams) => {
-      if (!client) throw new Error('Scaffald client not available')
-      return client.skills.updateSkillsLegacy(params)
-    },
-    ...options,
-  })
-}

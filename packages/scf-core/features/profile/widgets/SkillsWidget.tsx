@@ -1,8 +1,6 @@
 import { ROUTES } from "@scf/core/constants/routes";
-import {
-  useSoftSkills,
-  useSkillsLegacy,
-} from "@scf/core/utils/profile-skills-sdk-hooks";
+import { useSoftSkills } from "@scf/core/utils/profile-skills-sdk-hooks";
+import { useSkillsWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
 import {
   SoftSkillsCategoryTabs,
   type SoftSkillCategory,
@@ -79,7 +77,7 @@ export function SkillsWidget({
     error,
     refetch,
     isFetching,
-  } = useSkillsLegacy({
+  } = useSkillsWidget(userId ? { userId } : undefined, {
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
@@ -172,7 +170,8 @@ export function SkillsWidget({
     );
   }
 
-  const skills = (data?.skills || []) as unknown as EnrichedUserSkill[];
+  // useSkillsWidget returns SkillWidgetEntry[], which is this shape — no cast.
+  const skills: EnrichedUserSkill[] = data ?? [];
   const showCompact = variant === "compact";
 
   // Group skills by taxonomy
