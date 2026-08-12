@@ -63,7 +63,7 @@ vi.mock('@scf/core/utils/supabase/client', () => ({
   },
 }))
 
-vi.mock('./OrganizationLocationsInput', () => ({
+vi.mock('../OrganizationLocationsInput', () => ({
   OrganizationLocationsInput: ({ onChange }: { onChange: (value: unknown) => void }) => (
     <button
       type="button"
