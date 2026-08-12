@@ -2,12 +2,12 @@ import { expect, type Page, test } from '@playwright/test'
 import { signInAsTestUser } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 import { ensureProfileComplete } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/profile'
 
-test.describe('Regular • /profile/employment', () => {
+test.describe('Regular • /profile/resume (Employment Preferences)', () => {
   test('navigates and shows profile employment UI', async ({ page }: { page: Page }) => {
     await signInAsTestUser(page)
     await ensureProfileComplete(page)
-    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
-    expect(page.url()).toContain('/profile/employment')
+    await page.goto('/profile/resume', { waitUntil: 'domcontentloaded' })
+    expect(page.url()).toContain('/profile/resume')
     // Wait for loading to complete (or timeout gracefully)
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -25,7 +25,7 @@ test.describe('Regular • /profile/employment', () => {
   }) => {
     await signInAsTestUser(page)
     await ensureProfileComplete(page)
-    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/resume', { waitUntil: 'domcontentloaded' })
 
     await page.waitForSelector('text=Open to travel', { state: 'visible' })
 

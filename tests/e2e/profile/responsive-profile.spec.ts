@@ -28,12 +28,12 @@ const viewports = [
 
 // Profile form sections to test
 const profileSections = [
-  { path: '/profile/general', name: 'General' },
-  { path: '/profile/employment', name: 'Employment' },
-  { path: '/profile/education', name: 'Education' },
+  { path: '/profile/resume', name: 'General' },
+  { path: '/profile/resume', name: 'Employment' },
+  { path: '/profile/experience', name: 'Education' },
   { path: '/profile/experience', name: 'Experience' },
   { path: '/profile/skills', name: 'Skills' },
-  { path: '/profile/certifications', name: 'Certifications' },
+  { path: '/profile/skills', name: 'Certifications' },
 ]
 
 test.describe('Responsive Profile Editing', () => {

@@ -92,6 +92,7 @@ jobs:
             --config=functions/api/deno.json \
             --coverage=coverage \
             --junit-path=./test-results/junit.xml \
+            functions/api/__tests__/lib/*.test.ts \
             functions/api/__tests__/routes/*.test.ts
         env:
           SUPABASE_URL: http://127.0.0.1:54321

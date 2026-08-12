@@ -23,6 +23,26 @@ export default defineConfig({
     "**/console-audit.spec.ts", // Console audit – writes docs/console-audit.md
     "**/profile-audit-magiclink.spec.ts", // Profile audit (magic link + Mailpit)
     "**/test-supabase-hardening-regression.spec.ts", // Supabase hardening regression
+    // The 26 specs under tests/e2e/profile/ are NOT here yet, and that is a
+    // deliberate two-step (#592).
+    //
+    // Step one, done: they targeted a URL space the app no longer serves.
+    // Seven pointed at /profile/general, /profile/employment,
+    // /profile/education and /profile/certifications — all redirect stubs since
+    // the nine-screens-to-four consolidation — and asserted
+    // `expect(page.url()).toContain(<old path>)`, which the redirect makes
+    // false. They now visit the live routes.
+    //
+    // Step two, outstanding: one verified green run. Turning them on requires
+    // Supabase up, the api function served, the dev server warm and the seeded
+    // workers present; the environment this was fixed in had no Docker, so they
+    // have been corrected but not executed. Adding them unrun would ship the
+    // same "known-red selection" this file already warns about below.
+    //
+    // To finish: `pnpm supa start`, `pnpm supa functions serve api`, `pnpm web`,
+    // then `pnpm exec playwright test tests/e2e/profile --project=chromium`.
+    // Green run -> add "**/tests/e2e/profile/*.spec.ts" here.
+
     // Office specs are still absent, and #575 was not the last blocker.
     // Seeded accounts now get past onboarding and legal acceptance, so the
     // specs reach the app — but ApplicationsKanbanBoard renders no testID,

@@ -45,23 +45,34 @@ PROFILE_AUDIT_EMAIL=your-test-user@example.com pnpm exec playwright test tests/e
 
 ## Routes covered
 
-- `/dashboard/profile` (index)
-- `/dashboard/profile/general`
-- `/dashboard/profile/employment`
-- `/dashboard/profile/skills`
-- `/dashboard/profile/certifications`
-- `/dashboard/profile/import-review`
-- `/dashboard/profile/education`
-- `/dashboard/profile/experience`
-- `/dashboard/profile/id-verification`
-- `/dashboard/profile/resume`
-- `/dashboard/profile/resume/review`
-- `/dashboard/profile/background-check`
-- `/dashboard/profile/background-check/initiate`
-- `/dashboard/settings`
-- `/dashboard/settings/general`
-- `/dashboard/settings/security`
-- `/dashboard/settings/notifications`
+The profile IA was consolidated from nine screens to four; six old paths are now
+redirect stubs. These are the live routes, and the ones this audit visits:
+
+- `/profile` (overview)
+- `/profile/resume` — General Information, Employment Preferences, Resume Import
+- `/profile/skills` — Skills, Certifications
+- `/profile/experience` — Work Experience, Education
+- `/profile/verification` — ID Verification, Background Check
+- `/profile/resume/review` — resume import wizard
+- `/profile/background-check`, `/profile/background-check/initiate`
+- `/dashboard/settings`, `/dashboard/settings/general`,
+  `/dashboard/settings/security`, `/dashboard/settings/notifications`
+
+Redirect stubs, kept working for old links but not worth auditing directly —
+they resolve to the routes above:
+
+| stub | resolves to |
+|---|---|
+| `/profile/general` | `/profile/resume` |
+| `/profile/employment` | `/profile/resume` |
+| `/profile/import-review` | `/profile/resume` |
+| `/profile/education` | `/profile/experience` |
+| `/profile/certifications` | `/profile/skills` |
+| `/profile/id-verification` | `/profile/verification` |
+
+This list previously named `/dashboard/profile/*`, a URL space the app has never
+served under that prefix, and half its entries were screens that no longer exist
+(#592).
 
 ## Using the results to fix issues
 

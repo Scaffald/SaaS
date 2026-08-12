@@ -2,12 +2,12 @@ import { expect, type Page, test } from '@playwright/test'
 import { signInAsTestUser } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 import { ensureProfileComplete } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/profile'
 
-test.describe('Regular • /profile/certifications', () => {
+test.describe('Regular • /profile/skills (Certifications)', () => {
   test('navigates and shows profile certifications UI', async ({ page }: { page: Page }) => {
     await signInAsTestUser(page)
     await ensureProfileComplete(page)
-    await page.goto('/profile/certifications', { waitUntil: 'domcontentloaded' })
-    expect(page.url()).toContain('/profile/certifications')
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
+    expect(page.url()).toContain('/profile/skills')
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
       .catch(() => {})
@@ -23,7 +23,7 @@ test.describe('Regular • /profile/certifications', () => {
   }) => {
     await signInAsTestUser(page)
     await ensureProfileComplete(page)
-    await page.goto('/profile/certifications', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page.waitForSelector('text=Custom Certifications', { timeout: 10000 })
     await page.getByRole('button', { name: /Add Custom Certification/i }).click()
