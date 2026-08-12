@@ -23,6 +23,12 @@ export default defineConfig({
     "**/console-audit.spec.ts", // Console audit – writes docs/console-audit.md
     "**/profile-audit-magiclink.spec.ts", // Profile audit (magic link + Mailpit)
     "**/test-supabase-hardening-regression.spec.ts", // Supabase hardening regression
+    // The office specs are deliberately still absent. #553 sequences this as
+    // "fix the setup project, then add specs one at a time, confirming each is
+    // green". The setup fix below is done; the kanban spec is not green yet —
+    // it authenticates via tests/.auth/super-admin.json and still lands on the
+    // public marketing page, because no seeded user is past the onboarding and
+    // legal-acceptance gates. Adding it now would ship a known-red selection.
   ],
 
   // Exclude debug/exploration/example files permanently
@@ -72,11 +78,19 @@ export default defineConfig({
   // Phase 1: Start with chromium only for stability
   // Expand to multi-viewport in Phase 4
   projects: [
-    // Setup project - runs first to create auth state files
+    // Setup project - runs first to create auth state files.
+    //
+    // `testDir` pointed at ./tests/e2e, but auth.setup.ts lives under
+    // tests/infrastructure/playwright/setup/. The project therefore selected
+    // nothing and tests/.auth/*.json was never produced, so every spec doing
+    // `test.use({ storageState: "tests/.auth/super-admin.json" })` would fail
+    // at startup on a fresh checkout (#553). It selected nothing silently,
+    // which is why this went unnoticed: a project that matches no files is not
+    // an error.
     {
       name: "setup",
       testMatch: /.*\.setup\.ts/,
-      testDir: "./tests/e2e",
+      testDir: "./tests/infrastructure/playwright/setup",
     },
     // Primary browser - desktop Chrome
     {
