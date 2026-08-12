@@ -69,9 +69,13 @@ describe('RIASECAssessmentWidget', () => {
       isLoading: false,
     })
 
-    const { container } = renderWithProviders(<RIASECAssessmentWidget />)
+    renderWithProviders(<RIASECAssessmentWidget />)
 
-    expect(container.firstChild).toBeNull()
+    // Assert the widget itself is absent, not that the container is empty.
+    // renderWithProviders wraps in BeyondUIThemeWrapper, which renders a real
+    // element, so container.firstChild is that wrapper and can never be null —
+    // this assertion failed whether or not the widget rendered (#593).
+    expect(screen.queryByTestId('dashboard-widget')).toBeNull()
   })
 
   // TODO: same duplicate-text issue — "Loading..." appears multiple times.
