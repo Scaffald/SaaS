@@ -6,6 +6,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { authMiddleware } from "../middleware/auth.ts";
+import { loadSkillLookups, toSkillWidgetEntry } from "../lib/skill-lookups.ts";
 
 const app = new OpenAPIHono();
 app.use("*", authMiddleware);
@@ -305,7 +306,15 @@ app.openapi(skillsRoute, async (c) => {
     );
   }
 
-  return c.json(data || []);
+  // Resolve names and display codes. This used to return the raw user_skills
+  // rows, which carry only a taxonomy discriminator and a foreign key — no
+  // `name`, no `displayCode` — despite the SDK type for this endpoint
+  // (SkillWidgetEntry) declaring both. Any consumer rendering `label` got an
+  // empty string (#603).
+  const rows = data || [];
+  const lookups = await loadSkillLookups(supabase, rows);
+
+  return c.json(rows.map((row: unknown) => toSkillWidgetEntry(row, lookups)));
 });
 
 /**

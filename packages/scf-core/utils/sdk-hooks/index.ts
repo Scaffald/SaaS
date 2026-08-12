@@ -111,8 +111,6 @@ export {
   useUpdateSkillMultiTaxonomyMutation,
   useRemoveSkillMultiTaxonomyMutation,
   useUpdatePrimaryIndustryMutation,
-  useSkillsLegacy,
-  useUpdateSkillsLegacyMutation,
 } from '../profile-skills-sdk-hooks'
 
 export * from '../profile-views-sdk-hooks'
