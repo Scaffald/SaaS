@@ -5,6 +5,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { authMiddleware } from "../middleware/auth.ts";
+import { canReadOrgInternals } from "../lib/org-access.ts";
 
 const app = new OpenAPIHono();
 app.use("*", authMiddleware);
@@ -696,5 +697,141 @@ app.openapi(
     return c.json({ organization });
   },
 );
+
+/**
+ * GET /v1/organizations/{id}/open-jobs-count
+ *
+ * The "N open jobs" figure on the employer preview modal, the profile hover
+ * card and the employer detail pane (all three reachable from /workers/map and
+ * /employers/{id}). The route did not exist, so every one of them fell back to
+ * its `return 0` branch (#447).
+ *
+ * "open" is literally core.jobs.status = 'open'. Note that the two job counts
+ * in profiles.ts asked for status = 'published', which the table's CHECK
+ * constraint does not even permit (draft|open|paused|closed) — those are fixed
+ * in the same change. Counting the wrong status is indistinguishable from an
+ * employer having no jobs, which is why it went unnoticed.
+ *
+ * Readable by any signed-in user: an open job is public, and the discover map
+ * shows this count for organizations the viewer has no relationship with.
+ */
+app.openapi(
+  createRoute({
+    method: "get",
+    path: "/{id}/open-jobs-count",
+    tags: ["Organizations"],
+    summary: "Count an organization's open jobs",
+    request: { params: z.object({ id: z.string().uuid() }) },
+    responses: {
+      200: {
+        description: "Open job count",
+        content: {
+          "application/json": {
+            schema: z.object({
+              count: z.number(),
+              organizationId: z.string(),
+            }),
+          },
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { id } = c.req.valid("param");
+
+    if (!user) return c.json({ error: "Unauthorized" }, 401);
+
+    const { count, error } = await supabase
+      .schema("core")
+      .from("jobs")
+      .select("*", { count: "exact", head: true })
+      .eq("organization_id", id)
+      .eq("status", "open");
+
+    if (error) {
+      return c.json(
+        { error: "Failed to count open jobs", message: error.message },
+        500,
+      );
+    }
+
+    return c.json({ count: count ?? 0, organizationId: id });
+  },
+);
+
+/**
+ * GET /v1/organizations/{id}/background-checks
+ *
+ * OrganizationBackgroundChecksPage, mounted at /office/ats/checks. The route did
+ * not exist, so that page has never loaded data (#447).
+ *
+ * Gated on canReadOrgInternals: these rows carry consent timestamps, adverse
+ * action dates and findings about named individuals. A 404 rather than a 403 for
+ * a non-member, so the endpoint does not confirm that an org id exists.
+ */
+app.openapi(
+  createRoute({
+    method: "get",
+    path: "/{id}/background-checks",
+    tags: ["Organizations"],
+    summary: "List an organization's background checks",
+    request: {
+      params: z.object({ id: z.string().uuid() }),
+      query: z.object({
+        status: z.string().optional(),
+        limit: z.coerce.number().int().min(1).max(200).optional(),
+      }),
+    },
+    responses: {
+      200: {
+        description: "Background checks, newest first",
+        content: { "application/json": { schema: z.array(z.any()) } },
+      },
+      404: {
+        description: "No such organization, or not visible to the caller",
+        content: { "application/json": { schema: errorResponseSchema } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { id } = c.req.valid("param");
+    const { status, limit } = c.req.valid("query");
+
+    if (!user) return c.json({ error: "Unauthorized" }, 401);
+
+    const access = await canReadOrgInternals(supabase, id, user.id);
+    if (!access.found || !access.allowed) {
+      return c.json({ error: "Organization not found" }, 404);
+    }
+
+    let query = supabase
+      .schema("core")
+      .from("background_checks")
+      .select("*")
+      .eq("organization_id", id)
+      .order("created_at", { ascending: false })
+      .limit(limit ?? 100);
+
+    if (status) query = query.eq("status", status);
+
+    const { data, error } = await query;
+
+    if (error) {
+      return c.json(
+        { error: "Failed to fetch background checks", message: error.message },
+        500,
+      );
+    }
+
+    return c.json(data ?? []);
+  },
+);
+
 
 export default app;
