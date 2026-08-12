@@ -39,7 +39,7 @@ interface SelectedState {
 
 export function ImportReviewScreen() {
   const { theme } = useThemeContext();
-  const { importData, metadata, isLoading, isError, refetch } = useImportData();
+  const { importData, metadata, isLoading, isError, isEmpty, refetch } = useImportData();
   const [selectedItems, setSelectedItems] = useState<SelectedState>({});
   const [activeSection, setActiveSection] = useState<string>("experience");
   const [isImporting, setIsImporting] = useState(false);
@@ -130,6 +130,21 @@ export function ImportReviewScreen() {
       <Stack gap={16} padding="md" align="center">
         <Loader2 size={32} color={colors.text[theme].secondary} />
         <Text style={{ color: colors.text[theme].secondary }}>Retrieving imported data...</Text>
+      </Stack>
+    );
+  }
+
+  // Nothing to review is not a failure. A user who has never uploaded a resume
+  // used to get a red "We couldn't load your import data" with a Retry button
+  // that could only ever produce the same empty result (#589).
+  if (isEmpty) {
+    return (
+      <Stack gap={8} padding="md" align="center">
+        <Info size={28} color={colors.text[theme].secondary} />
+        <Text style={{ color: colors.text[theme].secondary, textAlign: "center" }}>
+          Nothing to review yet. Upload a resume above and the details we find
+          will appear here for you to confirm.
+        </Text>
       </Stack>
     );
   }

@@ -5,11 +5,7 @@ import { ProfileEmploymentRight } from '@scf/core/features/profile/profile-emplo
 import { ProfileGeneralLeft } from '@scf/core/features/profile/profile-general-left'
 import { ProfileGeneralRight } from '@scf/core/features/profile/profile-general-right'
 import { ImportReviewScreen } from '@scf/core/features/profile-import/components/ImportReviewScreen'
-import {
-  ResumeImportWidget,
-  ResumeUploadButton,
-  ResumeUploadModal,
-} from '@scf/core/features/resume'
+import { ResumeUploadButton, ResumeUploadModal } from '@scf/core/features/resume'
 import { useHasUploadedResume } from '@scf/core/utils/resume-sdk-hooks'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
@@ -96,8 +92,7 @@ function ResumeImportContent() {
       ) : (
         <Stack gap={12}>
           <ResumeUploadButton onPress={() => setModalOpen(true)} size="md" />
-          <Text color="gray">Or use the dashboard widget to import from your home screen:</Text>
-          <ResumeImportWidget />
+          <Text color="gray">Accepted formats: PDF, DOC, DOCX. You can re-import at any time.</Text>
         </Stack>
       )}
 
