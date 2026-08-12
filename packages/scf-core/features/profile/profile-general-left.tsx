@@ -38,6 +38,7 @@ import {
   generalProfileDefaults,
   generalProfileSchema,
 } from "./config";
+import { buildGeneralInfoPatch } from "./utils/general-info-patch";
 import { invalidateProfileQueries } from "./utils/profile-sync";
 import {
   completeProfileSync,
@@ -60,7 +61,13 @@ export function ProfileGeneralLeft() {
   const isSyncing = syncStatus === "syncing";
 
   // Fetch and update profile data using SDK
-  const { data: profileData, isLoading: isLoadingProfile } = useGeneralInfo();
+  const {
+    data: profileData,
+    isLoading: isLoadingProfile,
+    isError: isProfileError,
+    error: profileError,
+    refetch: refetchProfile,
+  } = useGeneralInfo();
   const toast = useToast();
   const updateProfileMutation = useUpdateGeneralInfoMutationWithSync();
 
@@ -100,7 +107,7 @@ export function ProfileGeneralLeft() {
   const {
     control,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, dirtyFields },
     watch,
     reset,
     setValue,
@@ -149,44 +156,33 @@ export function ProfileGeneralLeft() {
     }
   }, [phoneValue, clearErrors]);
 
-  // Debug: Log form state changes
-  useEffect(() => {
-    console.log("📊 Form state updated:", {
-      isDirty,
-      hasErrors: Object.keys(errors).length > 0,
-      errorCount: Object.keys(errors).length,
-      errors: errors,
-    });
-  }, [isDirty, errors]);
-
   useUnsavedChangesPrompt(isDirty);
 
   const onSubmit = async (data: GeneralProfileFormData) => {
-    console.log("🟢 Form submission started");
-    console.log("📋 Form data:", JSON.stringify(data, null, 2));
-    console.log("✅ Form validation passed");
+    // Send only what the user actually changed — see buildGeneralInfoPatch for
+    // why submitting the whole object was destructive (#580).
+    const changed = buildGeneralInfoPatch(data, dirtyFields);
+
+    if (Object.keys(changed).length === 0) return;
+
 
     setIsLoading(true);
     try {
-      await updateProfileMutation.mutateAsync(data);
-      console.log("✅ Profile updated successfully");
-    } catch (error) {
-      console.error("❌ Profile update failed:", error);
+      await updateProfileMutation.mutateAsync(changed);
     } finally {
+      // Errors surface through the mutation's onError toast; swallowing them
+      // here would double-report.
       setIsLoading(false);
     }
   };
 
-  const onError = (validationErrors: typeof errors) => {
-    console.log("❌ Form validation failed");
-    console.log(
-      "📋 Validation errors:",
-      JSON.stringify(validationErrors, null, 2)
-    );
-    console.log("📊 Form state:", {
-      isDirty,
-      isValid: Object.keys(validationErrors).length === 0,
-      errorCount: Object.keys(validationErrors).length,
+  // Validation failures used to be console.logged only, so a rejected submit
+  // looked to the user like the button had simply done nothing.
+  const onInvalid = () => {
+    toast.show({
+      title: "Check your details",
+      message: "Some fields need fixing before this can be saved.",
+      variant: "error",
     });
   };
 
@@ -195,6 +191,26 @@ export function ProfileGeneralLeft() {
       <Stack gap={16} padding="md">
         <SkeletonForm fields={6} />
       </Stack>
+    );
+  }
+
+  // A failed load must not render an editable empty form. Every input would sit
+  // at its default, and the first edit would submit blanks over real data.
+  if (isProfileError) {
+    return (
+      <DashboardWidget>
+        <Stack gap={12} padding="md" align="center">
+          <Text weight="semibold">Couldn't load your profile</Text>
+          <Text style={{ color: "#414e62", textAlign: "center" }}>
+            {profileError instanceof Error && profileError.message
+              ? profileError.message
+              : "Check your connection and try again."}
+          </Text>
+          <Button variant="outline" onPress={() => void refetchProfile()}>
+            Retry
+          </Button>
+        </Stack>
+      </DashboardWidget>
     );
   }
 
@@ -236,8 +252,10 @@ export function ProfileGeneralLeft() {
                   });
                 }
               } else {
-                // Clear avatar
-                setValue("avatar_path", "");
+                // shouldDirty, or Save stays disabled and the avatar can never
+                // be removed — react-hook-form's setValue does not dirty the
+                // form by default, and there is no other clear path (#591).
+                setValue("avatar_path", "", { shouldDirty: true });
               }
             }}
             size={120}
@@ -376,6 +394,14 @@ export function ProfileGeneralLeft() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 editable={false}
+                // `editable={false}` alone does not reach the DOM on web — the
+                // rendered input came back readOnly:false, disabled:false, so it
+                // was focusable and typable while looking disabled (#591).
+                readOnly
+                aria-readonly="true"
+                aria-label="Email address, read-only"
+                focusable={false}
+                tabIndex={-1}
                 style={{ opacity: 0.7 }}
               />
             )}
@@ -411,7 +437,7 @@ export function ProfileGeneralLeft() {
           <Button
             variant="filled"
             color="primary"
-            onPress={handleSubmit(onSubmit, onError)}
+            onPress={handleSubmit(onSubmit, onInvalid)}
             disabled={!isDirty || isLoading || Object.keys(errors).length > 0}
             style={{
               opacity:
