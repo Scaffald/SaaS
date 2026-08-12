@@ -184,4 +184,36 @@ FROM (VALUES
 ) AS v(email, address, locations, education_level)
 WHERE p.user_id = (SELECT id FROM auth.users a WHERE a.email = v.email);
 
+-- ---------------------------------------------------------
+-- Assert the trade-skill insert actually matched
+-- ---------------------------------------------------------
+-- The CSI insert above joins data.masterformat by code_key. That table was
+-- empty in every local environment until 000_seed-csi-masterformat.sql existed,
+-- so the join matched zero rows and the seed reported success while silently
+-- planting none of the six skills its own header advertises.
+--
+-- That is precisely the failure mode this file's header warns about — "an empty
+-- state and a broken query look identical" — and it is how #583 stayed hidden:
+-- marcus scored 100% completion with a Skills widget reading "No skills added
+-- yet". A seed that claims to create data must fail when it does not.
+DO $$
+DECLARE n INTEGER;
+BEGIN
+  SELECT count(*) INTO n
+  FROM core.user_skills s
+  JOIN auth.users u ON u.id = s.user_id
+  WHERE s.skill_taxonomy = 'csi'
+    AND u.email IN (
+      'marcus.rivera@example.test',
+      'carlos.gutierrez@example.test',
+      'jake.hendricks@example.test'
+    );
+
+  IF n < 5 THEN
+    RAISE EXCEPTION
+      'Seeded % csi skills for the demo workers, expected 5. data.masterformat has % rows — if that is 0, 000_seed-csi-masterformat.sql did not run.',
+      n, (SELECT count(*) FROM data.masterformat);
+  END IF;
+END $$;
+
 COMMIT;
