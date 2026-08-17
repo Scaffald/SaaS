@@ -23,7 +23,7 @@ catalog:
   # bump needs a cross-repo PR + pointer bump first. See #510.
   '@biomejs/biome': ~2.4.9
   '@expo/metro-runtime': ~56.0.12
-  '@hookform/resolvers': ~5.5.7
+  '@hookform/resolvers': ~5.8.0
   '@react-native-async-storage/async-storage': 2.2.0
   '@react-native-community/netinfo': 12.0.1
   '@react-native-google-signin/google-signin': ~16.1.2
@@ -33,7 +33,7 @@ catalog:
   # public EXPO_PUBLIC_MAPBOX_TOKEN (pk.), which 403s, and MAPBOX_DOWNLOADS_TOKEN
   # is set in no env file and in no EAS environment. Bumping this breaks the iOS
   # build at `pod install`. See #509 — provision the token first.
-  '@rnmapbox/maps': ~10.1.45
+  '@rnmapbox/maps': ~10.3.5
   # Pinned at 2.86, in lockstep with the pnpm override of the same name (an
   # override outranks this entry — #453; lint:overrides now enforces the pair).
   # The BUILD-TIME blocker that froze this pin is fixed: the client is
@@ -93,14 +93,14 @@ catalog:
   expo-web-browser: ~56.0.5
   fast-xml-parser: ~5.10.1
   i18n-js: ^4.4.3
-  mapbox-gl: ~3.27.0
+  mapbox-gl: ~3.28.1
   moti: ~0.30.0
   msw: 2.12.14
   openapi-typescript: ~7.4.4
   react: 19.2.3
   react-dom: ^19.2.3
   react-dropzone: ~15.0.0
-  react-hook-form: ~7.83.0
+  react-hook-form: ~7.85.0
   react-native: 0.85.3
   react-native-action-sheet: ~2.2.0
   react-native-chart-kit: ~6.12.0
@@ -119,9 +119,9 @@ catalog:
   react-native-webview: 13.16.1
   react-refresh: ~0.18.0
   serve: ~14.2.5
-  supabase: 2.110.0
+  supabase: 2.114.0
   superjson: ~2.2.6
-  swr: ~2.4.2
+  swr: ~2.5.1
   tsup: ~8.5.1
   tsx: ~4.19.3
   typescript: ~5.9.3
@@ -129,7 +129,7 @@ catalog:
   # bypassed the catalog), 4.0.18 (ai-pipeline via this entry) and 4.1.7 (root).
   vitest: ~4.1.10
   zod: ~4.1.13
-  zustand: ~5.0.14
+  zustand: ~5.0.15
 
 ignoredBuiltDependencies:
   - esbuild
