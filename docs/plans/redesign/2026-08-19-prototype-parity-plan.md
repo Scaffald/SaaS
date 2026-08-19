@@ -181,13 +181,17 @@ Five phases. Phases 0–2 are safe under either decision and can start now.
   keep the capture script so it can be re-run when the prototype moves.
 - Re-run `shots-current/` with Docker up, logged in as each of the seed roles,
   to produce true before/after pairs for the ~12 screens that exist in both.
-- Push the local `Scaffald App.dc.html` to `Scaffald/Prototype@main` — per
-  `github.md`, the repo still holds the 13 Aug build (168 KB vs 677 KB local),
-  so the reference lives only on this laptop right now. **This is the one item
-  here with a real bus factor.**
+- ~~Push the local `Scaffald App.dc.html` to `Scaffald/Prototype@main`.~~
+  **Not needed — checked 2026-08-19.** `github.md`'s sync note claims the repo
+  still holds the 13 Aug build (168 KB) against the local 677 KB, but that note
+  is stale: `Scaffald/Prototype@main` and the local `main` are the *same commit*
+  (0 ahead, 0 behind after a fetch) and the file is 772,808 bytes on both. The
+  reference was never laptop-only, so there is no bus factor here. Treat
+  `github.md`'s "Last sync" block as unreliable and re-check it rather than
+  trusting it.
 
 **Acceptance:** every prototype screen has a versioned PNG; the repo and the
-laptop agree on what the prototype is.
+laptop agree on what the prototype is. ✅ Both hold.
 
 ### Phase 1 — Tokens (2–3 days, `packages/ui`)
 

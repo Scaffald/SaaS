@@ -1,4 +1,13 @@
-import { Button, H2, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import {
+  Button,
+  ListToolbar,
+  Row,
+  ScreenHeader,
+  Spinner,
+  Stack,
+  Text,
+  useThemeContext,
+} from '@scaffald/ui'
 import { useMemo, useState } from 'react'
 import type { ApplicationStatus } from './types'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
@@ -23,6 +32,7 @@ export const OfficeApplicationsScreen = ({
 }: OfficeApplicationsScreenProps = {}) => {
   const { theme } = useThemeContext()
   const [viewMode, setViewMode] = useState<OfficeApplicationsView>(initialView)
+  const [tipCollapsed, setTipCollapsed] = useState(false)
   const [filters, setFilters] = useState<{
     jobId: string | null
     status: ApplicationStatus | null
@@ -120,32 +130,40 @@ export const OfficeApplicationsScreen = ({
 
   return (
     <Stack flex={1} padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
-      {/* Header */}
-      <Row justify="space-between" align="center" marginBottom={16}>
-        <Stack>
-          <H2>Applications</H2>
-          <Text style={{ color: colors.text[theme].secondary }}>
-            {filteredApplications.length} total applications
-          </Text>
-        </Stack>
-
-        <Row gap={8}>
-          <Button
-            size="sm"
-            onPress={() => setViewMode('kanban')}
-            variant={viewMode === 'kanban' ? 'outline' : undefined}
-          >
-            Kanban
-          </Button>
-          <Button
-            size="sm"
-            onPress={() => setViewMode('metrics')}
-            variant={viewMode === 'metrics' ? 'outline' : undefined}
-          >
-            Metrics
-          </Button>
-        </Row>
-      </Row>
+      {/* Header — the shared ScreenHeader, so this screen reads the same as
+          every other one. The count moved out of the subtitle and into the
+          toolbar's result slot, which owns the "{n} {noun}" template. */}
+      <ScreenHeader
+        kicker="Employer view — applicant workflow"
+        title="Applications"
+        tip="Move candidates between stages with the arrows — the worker sees each move as honest progress, not silence."
+        collapsed={tipCollapsed}
+        onToggleCollapsed={() => setTipCollapsed((v) => !v)}
+        style={{ marginBottom: 16 }}
+        actions={
+          <Row gap={8}>
+            <Button
+              size="sm"
+              onPress={() => setViewMode('kanban')}
+              variant={viewMode === 'kanban' ? 'outline' : undefined}
+            >
+              Kanban
+            </Button>
+            <Button
+              size="sm"
+              onPress={() => setViewMode('metrics')}
+              variant={viewMode === 'metrics' ? 'outline' : undefined}
+            >
+              Metrics
+            </Button>
+          </Row>
+        }
+      >
+        <ListToolbar
+          resultCount={filteredApplications.length}
+          resultNoun="application"
+        />
+      </ScreenHeader>
 
       {/* Filters - Note: needs jobs list from API */}
       <ApplicationsFilters filters={filters} onFiltersChange={setFilters} jobs={jobOptions} />
