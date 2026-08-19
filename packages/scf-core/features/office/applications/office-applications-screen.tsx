@@ -12,6 +12,7 @@ import { useMemo, useState } from 'react'
 import type { ApplicationStatus } from './types'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
 import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
+import { ApplicationsLanes } from './components/ApplicationsLanes'
 import { ATSMetricsDashboard } from './components/ATSMetricsDashboard'
 import { useApplications } from './hooks/useApplications'
 import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
@@ -19,7 +20,8 @@ import { STATUS_MAP } from './hooks/useApplicationStatusChange'
 import { toATSApplication } from './transform'
 import { colors } from '@scaffald/ui/tokens'
 
-export type OfficeApplicationsView = 'kanban' | 'metrics'
+/** `lanes` is the default — see ApplicationsLanes for why it beats the board. */
+export type OfficeApplicationsView = 'lanes' | 'kanban' | 'metrics'
 
 export interface OfficeApplicationsScreenProps {
   /** Which view to open on. `/office/ats/metrics` passes 'metrics' — it used
@@ -28,7 +30,7 @@ export interface OfficeApplicationsScreenProps {
 }
 
 export const OfficeApplicationsScreen = ({
-  initialView = 'kanban',
+  initialView = 'lanes',
 }: OfficeApplicationsScreenProps = {}) => {
   const { theme } = useThemeContext()
   const [viewMode, setViewMode] = useState<OfficeApplicationsView>(initialView)
@@ -144,10 +146,17 @@ export const OfficeApplicationsScreen = ({
           <Row gap={8}>
             <Button
               size="sm"
+              onPress={() => setViewMode('lanes')}
+              variant={viewMode === 'lanes' ? 'outline' : undefined}
+            >
+              Lanes
+            </Button>
+            <Button
+              size="sm"
               onPress={() => setViewMode('kanban')}
               variant={viewMode === 'kanban' ? 'outline' : undefined}
             >
-              Kanban
+              Board
             </Button>
             <Button
               size="sm"
@@ -171,6 +180,8 @@ export const OfficeApplicationsScreen = ({
       {/* Content */}
       {viewMode === 'metrics' ? (
         <ATSMetricsDashboard applications={filteredApplications} isLoading={isLoading} />
+      ) : viewMode === 'lanes' ? (
+        <ApplicationsLanes applications={filteredApplications} />
       ) : (
         <ApplicationsKanbanBoard applications={filteredApplications} />
       )}
