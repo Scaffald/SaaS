@@ -77,26 +77,25 @@
  * `size-adjust` compensates for Cormorant's small x-height so a heading does
  * not shrink visually when it falls back to Georgia or to Roboto.
  */
+/* Cormorant Garamond is a variable font, so one 37 KB file covers the whole
+ * weight axis — Google serves the same woff2 for the 400 and 600 faces. */
 @font-face {
   font-family: 'Scaffald Display';
-  src: url('/fonts/CormorantGaramond-Regular.woff2') format('woff2');
-  font-weight: 400;
+  src: url('/fonts/CormorantGaramond-Variable.woff2') format('woff2');
+  font-weight: 300 700;
   font-style: normal;
   font-display: swap;
 }
+/* Metric-adjusted fallback. This MUST be a different family name: a second
+ * @font-face under 'Scaffald Display' with an overlapping weight range wins
+ * the match over the URL face, so the real font is never even requested —
+ * headings silently render as Georgia while looking correct in a screenshot.
+ * Named separately, it sits after the real font in the stack that
+ * getFontFamily() emits, and `size-adjust` keeps the swap from jumping size. */
 @font-face {
-  font-family: 'Scaffald Display';
-  src: url('/fonts/CormorantGaramond-SemiBold.woff2') format('woff2');
-  font-weight: 500 700;
-  font-style: normal;
-  font-display: swap;
-}
-/* Fallback while the WOFF2 files are absent: Georgia keeps the serif intent
- * rather than silently reverting headings to the body sans. */
-@font-face {
-  font-family: 'Scaffald Display';
+  font-family: 'Scaffald Display Fallback';
   src: local('Georgia'), local('Times New Roman');
-  font-weight: 400 700;
+  font-weight: 300 700;
   font-style: normal;
   size-adjust: 92%;
 }
