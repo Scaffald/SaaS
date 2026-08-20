@@ -1,8 +1,7 @@
 import {
-  Button,
   ListToolbar,
-  Row,
   ScreenHeader,
+  SegmentedControl,
   Spinner,
   Stack,
   Text,
@@ -22,6 +21,13 @@ import { colors } from '@scaffald/ui/tokens'
 
 /** `lanes` is the default — see ApplicationsLanes for why it beats the board. */
 export type OfficeApplicationsView = 'lanes' | 'kanban' | 'metrics'
+
+/** Order matters: it is the segmented control's left-to-right order. */
+const VIEW_SEGMENTS: Array<{ view: OfficeApplicationsView; label: string }> = [
+  { view: 'lanes', label: 'Lanes' },
+  { view: 'kanban', label: 'Board' },
+  { view: 'metrics', label: 'Metrics' },
+]
 
 export interface OfficeApplicationsScreenProps {
   /** Which view to open on. `/office/ats/metrics` passes 'metrics' — it used
@@ -142,30 +148,21 @@ export const OfficeApplicationsScreen = ({
         collapsed={tipCollapsed}
         onToggleCollapsed={() => setTipCollapsed((v) => !v)}
         style={{ marginBottom: 16 }}
+        // A segmented control, not three Buttons. The old switch gave the
+        // ACTIVE view `variant="outline"` and left the others on the default
+        // filled variant — so the two views you were not looking at rendered
+        // as the primary action and the one you were on looked disabled.
         actions={
-          <Row gap={8}>
-            <Button
-              size="sm"
-              onPress={() => setViewMode('lanes')}
-              variant={viewMode === 'lanes' ? 'outline' : undefined}
-            >
-              Lanes
-            </Button>
-            <Button
-              size="sm"
-              onPress={() => setViewMode('kanban')}
-              variant={viewMode === 'kanban' ? 'outline' : undefined}
-            >
-              Board
-            </Button>
-            <Button
-              size="sm"
-              onPress={() => setViewMode('metrics')}
-              variant={viewMode === 'metrics' ? 'outline' : undefined}
-            >
-              Metrics
-            </Button>
-          </Row>
+          <SegmentedControl
+            segments={VIEW_SEGMENTS.map((s) => s.label)}
+            selectedIndex={VIEW_SEGMENTS.findIndex((s) => s.view === viewMode)}
+            onSelectionChange={(i) => setViewMode(VIEW_SEGMENTS[i].view)}
+            testID="applications-view-switch"
+            // Explicit width because SegmentedControl's segments are `flex: 1`
+            // inside a container with no intrinsic width — left to the row it
+            // collapsed to 160px and clipped "Metrics" to "Metr…".
+            style={{ width: 260 }}
+          />
         }
       >
         <ListToolbar
