@@ -11,7 +11,7 @@ import {
   Button,
   Card,
   Form,
-  H5,
+  H4,
   Input,
   Paragraph,
   Stack,
@@ -196,16 +196,14 @@ export const LoginScreen = () => {
         style={{ width: '100%', maxWidth: 440 }}
       >
         <Stack gap={spacing[8]} align="flex-start" style={{ width: '100%' }}>
-          <H5
-            serif
-            weight="regular"
-            style={{
-              color: colors.text[theme].primary,
-              fontFamily: 'RobotoSerif_400Regular',
-            }}
-          >
+          {/* H4 (17px), not H5 (14px): this is the card's title, and H5 is the
+              body-size step. The inline `fontFamily` that used to sit here
+              hard-coded `RobotoSerif_400Regular`, which overrode getFontFamily
+              and pinned the screen to the body serif — the display face could
+              never reach it. Let the token system resolve the face. */}
+          <H4 serif weight="regular" style={{ color: colors.text[theme].primary }}>
             {t('auth.login.title')}
-          </H5>
+          </H4>
           <Paragraph size="sm" style={{ color: textTertiary }}>
             {t('auth.login.description')}
           </Paragraph>

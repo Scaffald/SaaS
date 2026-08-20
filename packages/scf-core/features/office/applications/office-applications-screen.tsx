@@ -1,8 +1,17 @@
-import { Button, H2, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import {
+  ListToolbar,
+  ScreenHeader,
+  SegmentedControl,
+  Spinner,
+  Stack,
+  Text,
+  useThemeContext,
+} from '@scaffald/ui'
 import { useMemo, useState } from 'react'
 import type { ApplicationStatus } from './types'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
 import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
+import { ApplicationsLanes } from './components/ApplicationsLanes'
 import { ATSMetricsDashboard } from './components/ATSMetricsDashboard'
 import { useApplications } from './hooks/useApplications'
 import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
@@ -10,7 +19,15 @@ import { STATUS_MAP } from './hooks/useApplicationStatusChange'
 import { toATSApplication } from './transform'
 import { colors } from '@scaffald/ui/tokens'
 
-export type OfficeApplicationsView = 'kanban' | 'metrics'
+/** `lanes` is the default — see ApplicationsLanes for why it beats the board. */
+export type OfficeApplicationsView = 'lanes' | 'kanban' | 'metrics'
+
+/** Order matters: it is the segmented control's left-to-right order. */
+const VIEW_SEGMENTS: Array<{ view: OfficeApplicationsView; label: string }> = [
+  { view: 'lanes', label: 'Lanes' },
+  { view: 'kanban', label: 'Board' },
+  { view: 'metrics', label: 'Metrics' },
+]
 
 export interface OfficeApplicationsScreenProps {
   /** Which view to open on. `/office/ats/metrics` passes 'metrics' — it used
@@ -19,10 +36,11 @@ export interface OfficeApplicationsScreenProps {
 }
 
 export const OfficeApplicationsScreen = ({
-  initialView = 'kanban',
+  initialView = 'lanes',
 }: OfficeApplicationsScreenProps = {}) => {
   const { theme } = useThemeContext()
   const [viewMode, setViewMode] = useState<OfficeApplicationsView>(initialView)
+  const [tipCollapsed, setTipCollapsed] = useState(false)
   const [filters, setFilters] = useState<{
     jobId: string | null
     status: ApplicationStatus | null
@@ -120,32 +138,38 @@ export const OfficeApplicationsScreen = ({
 
   return (
     <Stack flex={1} padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
-      {/* Header */}
-      <Row justify="space-between" align="center" marginBottom={16}>
-        <Stack>
-          <H2>Applications</H2>
-          <Text style={{ color: colors.text[theme].secondary }}>
-            {filteredApplications.length} total applications
-          </Text>
-        </Stack>
-
-        <Row gap={8}>
-          <Button
-            size="sm"
-            onPress={() => setViewMode('kanban')}
-            variant={viewMode === 'kanban' ? 'outline' : undefined}
-          >
-            Kanban
-          </Button>
-          <Button
-            size="sm"
-            onPress={() => setViewMode('metrics')}
-            variant={viewMode === 'metrics' ? 'outline' : undefined}
-          >
-            Metrics
-          </Button>
-        </Row>
-      </Row>
+      {/* Header — the shared ScreenHeader, so this screen reads the same as
+          every other one. The count moved out of the subtitle and into the
+          toolbar's result slot, which owns the "{n} {noun}" template. */}
+      <ScreenHeader
+        kicker="Employer view — applicant workflow"
+        title="Applications"
+        tip="Move candidates between stages with the arrows — the worker sees each move as honest progress, not silence."
+        collapsed={tipCollapsed}
+        onToggleCollapsed={() => setTipCollapsed((v) => !v)}
+        style={{ marginBottom: 16 }}
+        // A segmented control, not three Buttons. The old switch gave the
+        // ACTIVE view `variant="outline"` and left the others on the default
+        // filled variant — so the two views you were not looking at rendered
+        // as the primary action and the one you were on looked disabled.
+        actions={
+          <SegmentedControl
+            segments={VIEW_SEGMENTS.map((s) => s.label)}
+            selectedIndex={VIEW_SEGMENTS.findIndex((s) => s.view === viewMode)}
+            onSelectionChange={(i) => setViewMode(VIEW_SEGMENTS[i].view)}
+            testID="applications-view-switch"
+            // Explicit width because SegmentedControl's segments are `flex: 1`
+            // inside a container with no intrinsic width — left to the row it
+            // collapsed to 160px and clipped "Metrics" to "Metr…".
+            style={{ width: 260 }}
+          />
+        }
+      >
+        <ListToolbar
+          resultCount={filteredApplications.length}
+          resultNoun="application"
+        />
+      </ScreenHeader>
 
       {/* Filters - Note: needs jobs list from API */}
       <ApplicationsFilters filters={filters} onFiltersChange={setFilters} jobs={jobOptions} />
@@ -153,6 +177,8 @@ export const OfficeApplicationsScreen = ({
       {/* Content */}
       {viewMode === 'metrics' ? (
         <ATSMetricsDashboard applications={filteredApplications} isLoading={isLoading} />
+      ) : viewMode === 'lanes' ? (
+        <ApplicationsLanes applications={filteredApplications} />
       ) : (
         <ApplicationsKanbanBoard applications={filteredApplications} />
       )}

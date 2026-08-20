@@ -349,6 +349,177 @@ export const ProgressBarBase = ({
 
 export const ProgressBar = ProgressBarBase
 
+// ---------------------------------------------------------------------------
+// Screen primitives (prototype parity)
+//
+// These mirror the real components' CONTRACTS rather than stubbing them out,
+// because the scf-core screens that compose them are tested through this mock.
+// A stub that ignored `count`/`emptyState` would make a screen's empty-state
+// logic untestable here; a stub that dropped `age` would hide whether a row
+// leads with days-in-stage. The components' own rendering is covered by their
+// tests in packages/ui — this is the seam for composition.
+// ---------------------------------------------------------------------------
+
+export const ScreenHeader = ({
+  kicker,
+  title,
+  tip,
+  collapsed,
+  pager,
+  actions,
+  children,
+}: {
+  kicker?: string
+  title?: string
+  tip?: ReactNode
+  collapsed?: boolean
+  pager?: { index: number; total: number; onNext: () => void }
+  actions?: ReactNode
+  children?: ReactNode
+}) =>
+  createElement(
+    'header',
+    null,
+    kicker ? createElement('p', null, kicker) : null,
+    createElement('h2', null, title),
+    // Honour the collapse contract: a collapsed tip must not be in the tree.
+    tip != null && !collapsed ? createElement('p', null, tip) : null,
+    pager && pager.total > 1
+      ? createElement(
+          'button',
+          { type: 'button', 'aria-label': 'Next tip', onClick: pager.onNext },
+          `${pager.index} / ${pager.total}`,
+        )
+      : null,
+    actions,
+    children,
+  )
+
+export const ListToolbar = ({
+  resultCount,
+  resultNoun = 'result',
+  resultNounPlural,
+  chips,
+  actions,
+  children,
+}: {
+  resultCount?: number
+  resultNoun?: string
+  resultNounPlural?: string
+  chips?: Array<{ id: string; label: string; value?: string; onClear?: () => void }>
+  actions?: ReactNode
+  children?: ReactNode
+}) =>
+  createElement(
+    'div',
+    null,
+    // The one "{n} {noun}" template, mirrored so screens can assert on it.
+    resultCount != null
+      ? createElement(
+          'span',
+          null,
+          `${resultCount} ${
+            resultCount === 1 ? resultNoun : (resultNounPlural ?? `${resultNoun}s`)
+          }`,
+        )
+      : null,
+    ...(chips ?? []).map((chip) =>
+      createElement(
+        'span',
+        { key: chip.id },
+        chip.value ? `${chip.label}: ${chip.value}` : chip.label,
+        chip.onClear
+          ? createElement(
+              'button',
+              {
+                type: 'button',
+                'aria-label': `Remove ${chip.label} filter`,
+                onClick: chip.onClear,
+              },
+              '×',
+            )
+          : null,
+      ),
+    ),
+    actions,
+    children,
+  )
+
+export const MetricBlock = ({
+  label,
+  value,
+  delta,
+}: { label?: string; value?: ReactNode; delta?: ReactNode }) =>
+  // Label before value before delta — the ordering IS the contract.
+  createElement(
+    'div',
+    null,
+    createElement('span', null, label),
+    createElement('span', null, value),
+    delta != null ? createElement('span', null, delta) : null,
+  )
+
+export const MetricRow = createEl('div')
+
+export const LaneGroup = ({
+  title,
+  count,
+  hint,
+  action,
+  children,
+  emptyState,
+}: {
+  title?: string
+  count?: number
+  hint?: string
+  action?: ReactNode
+  children?: ReactNode
+  emptyState?: ReactNode
+}) =>
+  createElement(
+    'section',
+    null,
+    createElement('h3', null, title),
+    count != null ? createElement('span', null, String(count)) : null,
+    hint ? createElement('span', null, hint) : null,
+    action,
+    // Empty state replaces the rows rather than sitting alongside them.
+    count === 0 && emptyState != null ? emptyState : children,
+  )
+
+export const Lane = ({
+  age,
+  title,
+  subtitle,
+  columns,
+  note,
+  actions,
+  onPress,
+  testID,
+}: {
+  age?: string
+  title?: ReactNode
+  subtitle?: ReactNode
+  columns?: ReactNode[]
+  note?: ReactNode
+  actions?: ReactNode
+  onPress?: () => void
+  testID?: string
+}) =>
+  createElement(
+    'div',
+    { 'data-testid': testID, onClick: onPress, role: onPress ? 'button' : undefined },
+    // Age first — a row that does not lead with staleness fails the point.
+    age ? createElement('span', null, age) : null,
+    createElement('span', null, title),
+    subtitle != null ? createElement('span', null, subtitle) : null,
+    ...(columns ?? []).map((col, i) =>
+      createElement('span', { key: `col-${i}` }, col),
+    ),
+    note != null ? createElement('span', null, note) : null,
+    actions,
+  )
+
 // Theme
 export const ThemeProvider = ({ children }: { children?: ReactNode }) =>
   createElement(React.Fragment, null, children)

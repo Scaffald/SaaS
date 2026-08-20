@@ -64,6 +64,42 @@
   font-display: swap;
 }
 
+/* Display face — headings only, web only.
+ *
+ * `getFontFamily(weight, serif, heading)` in @scaffald/ui resolves headings to
+ * 'Scaffald Display' on web and leaves native on Roboto: Cormorant Garamond is
+ * a display face and loses to Roboto at 11-14px on a phone outdoors, which is
+ * the native app's whole context.
+ *
+ * The family name is indirect on purpose — swapping the display face later is
+ * a change to these two rules, not to every component.
+ *
+ * `size-adjust` compensates for Cormorant's small x-height so a heading does
+ * not shrink visually when it falls back to Georgia or to Roboto.
+ */
+/* Cormorant Garamond is a variable font, so one 37 KB file covers the whole
+ * weight axis — Google serves the same woff2 for the 400 and 600 faces. */
+@font-face {
+  font-family: 'Scaffald Display';
+  src: url('/fonts/CormorantGaramond-Variable.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+/* Metric-adjusted fallback. This MUST be a different family name: a second
+ * @font-face under 'Scaffald Display' with an overlapping weight range wins
+ * the match over the URL face, so the real font is never even requested —
+ * headings silently render as Georgia while looking correct in a screenshot.
+ * Named separately, it sits after the real font in the stack that
+ * getFontFamily() emits, and `size-adjust` keeps the swap from jumping size. */
+@font-face {
+  font-family: 'Scaffald Display Fallback';
+  src: local('Georgia'), local('Times New Roman');
+  font-weight: 300 700;
+  font-style: normal;
+  size-adjust: 92%;
+}
+
 /* Raw DOM elements (headings, skip link, marquee) don't inherit RN's font. */
 body {
   font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;

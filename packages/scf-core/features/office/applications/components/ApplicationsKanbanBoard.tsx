@@ -72,11 +72,19 @@ const COLUMN_FOR_STATUS: Record<ApplicationStatus, ApplicationStatus> = {
   withdrawn: 'rejected',
 }
 
+/**
+ * Column tints.
+ *
+ * `interview` used to be `error[50]` — the same red as `rejected` — so
+ * advancing a candidate moved their card into a column that reads as a
+ * warning. It is a progress stage and now tints with the primary ramp like
+ * one. Red is reserved for the terminal column (§12 #6).
+ */
 const getStatusColors = (theme: 'light' | 'dark'): Record<ApplicationStatus, string> => ({
   new: colors.bg[theme].default,
   screen: theme === 'light' ? colors.yellow[50] : colors.yellow[900],
   inquired: theme === 'light' ? colors.purple[50] : colors.purple[900],
-  interview: theme === 'light' ? colors.error[50] : colors.error[900],
+  interview: theme === 'light' ? colors.primary[50] : colors.primary[900],
   offer: theme === 'light' ? colors.green[50] : colors.green[900],
   hired: theme === 'light' ? colors.green[700] : colors.green[300],
   rejected: theme === 'light' ? colors.error[50] : colors.error[900],
