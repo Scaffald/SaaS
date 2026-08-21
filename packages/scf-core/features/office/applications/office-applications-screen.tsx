@@ -1,4 +1,5 @@
 import {
+  Button,
   ListToolbar,
   ScreenHeader,
   SegmentedControl,
@@ -55,7 +56,7 @@ export const OfficeApplicationsScreen = ({
   // (`new`, `screen`, …) and the API takes its own vocabulary (`pending`,
   // `reviewing`, …), so it has to be mapped — the previous code *cast* it,
   // which satisfied the compiler while sending a value the API enum rejects.
-  const { applications, isLoading, isError, error } = useApplications({
+  const { applications, isLoading, isError, error, refetch } = useApplications({
     status: filters.status ? STATUS_MAP[filters.status] : undefined,
     job_id: filters.jobId ?? undefined,
     min_score: filters.minScore > 0 ? filters.minScore : undefined,
@@ -100,41 +101,15 @@ export const OfficeApplicationsScreen = ({
   // current page only, so a paginated board would silently drop matches.
   const filteredApplications = transformedApplications
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <Stack
-        flex={1}
-        align="center"
-        justify="center"
-        style={{ backgroundColor: colors.bg[theme].default }}
-      >
-        <Spinner variant="ios" size="lg" />
-        <Text style={{ marginTop: 16, color: colors.text[theme].secondary }}>
-          Loading applications...
-        </Text>
-      </Stack>
-    )
-  }
-
-  // Error state - error from useApplications may be unknown
+  // Loading and error are NOT early returns any more (§12 #10, #11). They used
+  // to replace the whole screen — header, view switch, filters and all — with
+  // one centred spinner, so the page appeared to vanish while it refreshed and
+  // an employer lost the controls they were mid-way through using. Both now
+  // render inside the content region, below a header that stays put.
   const errorMessage =
     error != null && typeof (error as { message?: string }).message === 'string'
       ? (error as Error).message
       : 'Failed to load applications. Please try again.'
-
-  if (isError) {
-    return (
-      <Stack flex={1} align="center" justify="center" padding="md">
-        <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
-          Error Loading Applications
-        </Text>
-        <Stack align="center">
-          <Text style={{ color: colors.text[theme].secondary, marginTop: 8 }}>{errorMessage}</Text>
-        </Stack>
-      </Stack>
-    )
-  }
 
   return (
     <Stack flex={1} padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
@@ -166,7 +141,10 @@ export const OfficeApplicationsScreen = ({
         }
       >
         <ListToolbar
-          resultCount={filteredApplications.length}
+          // Undefined, not 0, while the query is in flight or failed: the
+          // header stays mounted now, so a literal "0 applications" would be
+          // asserting an empty pipeline before we know anything.
+          resultCount={isLoading || isError ? undefined : filteredApplications.length}
           resultNoun="application"
         />
       </ScreenHeader>
@@ -175,7 +153,31 @@ export const OfficeApplicationsScreen = ({
       <ApplicationsFilters filters={filters} onFiltersChange={setFilters} jobs={jobOptions} />
 
       {/* Content */}
-      {viewMode === 'metrics' ? (
+      {isLoading ? (
+        <Stack flex={1} align="center" justify="center" padding="lg" gap={16}>
+          <Spinner variant="ios" size="lg" />
+          <Text style={{ color: colors.text[theme].secondary }}>Loading applications...</Text>
+        </Stack>
+      ) : isError ? (
+        <Stack flex={1} align="center" justify="center" padding="lg" gap={12}>
+          <Text
+            style={{
+              color: theme === 'light' ? colors.error[700] : colors.error[300],
+              fontWeight: '600',
+            }}
+          >
+            Could not load applications
+          </Text>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
+            {errorMessage}
+          </Text>
+          {/* The error state had no way out at all — the only recovery was a
+              full page reload, which also lost the filters. */}
+          <Button size="sm" variant="outline" onPress={() => refetch()}>
+            Try again
+          </Button>
+        </Stack>
+      ) : viewMode === 'metrics' ? (
         <ATSMetricsDashboard applications={filteredApplications} isLoading={isLoading} />
       ) : viewMode === 'lanes' ? (
         <ApplicationsLanes applications={filteredApplications} />

@@ -1,7 +1,11 @@
 import { InquiryCreateForm } from '@scf/core/features/inquiries/components/InquiryCreateForm'
 import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
 import { useSuccessFeeStatus } from '@scf/core/utils/success-fees-sdk-hooks'
-import { useAssignApplicationMutation, useTeamMembers } from '@scf/core/utils/teams-sdk-hooks'
+import {
+  useAssignApplicationMutation,
+  useTeamComments,
+  useTeamMembers,
+} from '@scf/core/utils/teams-sdk-hooks'
 import { useContactInfo } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquiryCreateInput } from '@scf/schemas'
@@ -9,8 +13,27 @@ import type { TeamMember } from '@scaffald/sdk'
 import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
-import { Avatar, Button, Spinner, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { useApplicationMessages } from '@scf/core/utils/jobs-sdk-hooks'
+import {
+  Avatar,
+  Button,
+  H4,
+  Spinner,
+  Tabs,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
 import type { ATSApplication } from '../types'
+import {
+  canReject as canRejectStatus,
+  countSuffix,
+  initialsOf,
+  nextStageFor,
+} from '../candidate-actions'
+import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
+import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { ApplicationDetailsTab } from './ApplicationDetailsTab'
 import { CandidateProfileTab } from './CandidateProfileTab'
 import { InquiryTab } from './InquiryTab'
@@ -196,6 +219,29 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
     return mapInquiryToFormValues(inquiryData.inquiry)
   }, [inquiryData?.inquiry])
 
+  const { changeStatus, isChanging, pendingChange, confirmChange, cancelChange, setPendingChange } =
+    useApplicationStatusChange()
+
+  const nextStage = nextStageFor(application.status)
+  const canReject = canRejectStatus(application.status)
+
+  // Tab counts (§12 #15). Each tab used to fetch its own data and show no
+  // count, so an employer could not tell there were twelve unread messages
+  // without opening the tab. These are the SAME query keys the tabs use, so
+  // react-query serves both from one cache entry — no extra request.
+  const notesCountQuery = useTeamComments(
+    teamIdForQuery,
+    { applicationId: application.id, limit: 50 },
+    { enabled: Boolean(teamId), staleTime: 30_000 },
+  )
+  const messagesCountQuery = useApplicationMessages(application.id)
+
+  const notesCount = notesCountQuery.data?.comments?.length ?? null
+  // `.data`, not `.messages` — GetMessagesResponse nests the array under data,
+  // which is how MessagesTab reads it too.
+  const messagesCount = messagesCountQuery.data?.data?.length ?? null
+
+
   const handleInquirySuccess = async () => {
     await queryClient.invalidateQueries({ queryKey: ['inquiries', 'detail', application.id] })
     setInquiryMode('view')
@@ -203,15 +249,20 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
 
   return (
     <>
-      {/* Candidate Header */}
+      {/* Candidate Header.
+          The name was missing entirely (§12 #2) — it lived only in the modal
+          chrome, so the route version at /office/applications/[id] had no name
+          anywhere on the page. The avatar was 24px (§12 #3), smaller than the
+          body text beside it. */}
       <Row gap={12} align="center">
         <Avatar
-          size={24}
+          size={48}
           src={application.candidate.photo}
-          initials={application.candidate.name.charAt(0)}
+          initials={initialsOf(application.candidate.name)}
         />
 
         <Stack flex={1}>
+          <H4>{application.candidate.name}</H4>
           <Text style={{ opacity: 0.7 }}>{application.candidate.title}</Text>
           <Text style={{ opacity: 0.6, marginTop: 4 }}>{application.candidate.location}</Text>
         </Stack>
@@ -232,16 +283,51 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
       {/* Union Status Badge (Issue #98) */}
       {application.unionStatus && <UnionStatusBadge unionStatus={application.unionStatus} />}
 
-      {/* Quick Actions */}
+      {/* Quick Actions.
+          All three rendered, pressed, and did nothing (§12 #1) — no handlers
+          at all. Advance now names the ACTUAL next stage rather than always
+          claiming "Interview", which was wrong for four of the seven stages
+          and would have skipped Screening from New. */}
       <Row gap={8}>
-        <Button color="success" style={{ flex: 1 }} size="md">
-          Advance to Interview
-        </Button>
-        <Button color="error" style={{ flex: 1 }} size="md">
-          Reject
-        </Button>
+        {nextStage ? (
+          <Button
+            color="success"
+            style={{ flex: 1 }}
+            size="md"
+            disabled={isChanging}
+            loading={isChanging}
+            onPress={() =>
+              changeStatus({
+                applicationId: application.id,
+                fromStatus: application.status,
+                toStatus: nextStage.status,
+              })
+            }
+          >
+            {`Advance to ${nextStage.label}`}
+          </Button>
+        ) : null}
+        {canReject ? (
+          <Button
+            color="error"
+            style={{ flex: 1 }}
+            size="md"
+            disabled={isChanging}
+            // Rejection is a critical change: it goes through the confirm
+            // modal rather than firing straight at the API.
+            onPress={() =>
+              setPendingChange({
+                applicationId: application.id,
+                fromStatus: application.status,
+                toStatus: 'rejected',
+              })
+            }
+          >
+            Reject
+          </Button>
+        ) : null}
       </Row>
-      <Button style={{ flex: 1 }} size="md">
+      <Button style={{ flex: 1 }} size="md" onPress={() => setActiveTab('messages')}>
         Send Message
       </Button>
       {teamId && currentUser?.id ? (
@@ -312,11 +398,13 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
           </Tabs.Item>
           <Tabs.Item value="notes">
             <Tabs.Trigger containerStyle={{ flex: 1 }}>
-              Notes
+              {`Notes${countSuffix(notesCount)}`}
             </Tabs.Trigger>
           </Tabs.Item>
           <Tabs.Item value="messages">
-            <Tabs.Trigger containerStyle={{ flex: 1 }}>Messages</Tabs.Trigger>
+            <Tabs.Trigger containerStyle={{ flex: 1 }}>
+              {`Messages${countSuffix(messagesCount)}`}
+            </Tabs.Trigger>
           </Tabs.Item>
           <Tabs.Item value="activity">
             <Tabs.Trigger containerStyle={{ flex: 1 }}>Activity</Tabs.Trigger>
@@ -426,6 +514,22 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
           </Stack>
         </Tabs.Content>
       </Tabs>
+
+      {/* Confirmation for critical changes. Rejection and hiring never fire
+          straight at the API — hiring opens the success-fee checkout, and
+          rejection is the one action a candidate sees as final. */}
+      {pendingChange ? (
+        <ApplicationStatusChangeModal
+          open
+          onClose={cancelChange}
+          onConfirm={confirmChange}
+          candidateName={application.candidate.name}
+          fromStatus={pendingChange.fromStatus}
+          toStatus={pendingChange.toStatus}
+          isLoading={isChanging}
+          application={application}
+        />
+      ) : null}
     </>
   )
 }
