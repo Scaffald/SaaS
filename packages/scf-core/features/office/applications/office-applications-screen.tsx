@@ -9,7 +9,13 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
-import type { ApplicationStatus } from './types'
+import {
+  activeFilterCount,
+  clearFilter,
+  EMPTY_FILTERS,
+  filterChips,
+  type ApplicationFilterState,
+} from './filters'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
 import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
 import { ApplicationsLanes } from './components/ApplicationsLanes'
@@ -42,15 +48,8 @@ export const OfficeApplicationsScreen = ({
   const { theme } = useThemeContext()
   const [viewMode, setViewMode] = useState<OfficeApplicationsView>(initialView)
   const [tipCollapsed, setTipCollapsed] = useState(false)
-  const [filters, setFilters] = useState<{
-    jobId: string | null
-    status: ApplicationStatus | null
-    minScore: number
-  }>({
-    jobId: null,
-    status: null,
-    minScore: 0,
-  })
+  const [filters, setFilters] = useState<ApplicationFilterState>(EMPTY_FILTERS)
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   // Filters go to the server. `filters.status` is a kanban stage name
   // (`new`, `screen`, …) and the API takes its own vocabulary (`pending`,
@@ -146,11 +145,29 @@ export const OfficeApplicationsScreen = ({
           // asserting an empty pipeline before we know anything.
           resultCount={isLoading || isError ? undefined : filteredApplications.length}
           resultNoun="application"
+          filtersOpen={filtersOpen}
+          onFiltersOpenChange={setFiltersOpen}
+          activeFilterCount={activeFilterCount(filters)}
+          filterContent={
+            <ApplicationsFilters
+              filters={filters}
+              onFiltersChange={setFilters}
+              jobs={jobOptions}
+            />
+          }
+          chips={filterChips(filters, jobOptions).map((chip) => ({
+            id: chip.id,
+            label: chip.label,
+            value: chip.value,
+            active: true,
+            onPress: () => setFiltersOpen(true),
+            onClear: () => setFilters((f) => clearFilter(f, chip.id)),
+          }))}
+          onClearAll={
+            activeFilterCount(filters) > 0 ? () => setFilters(EMPTY_FILTERS) : undefined
+          }
         />
       </ScreenHeader>
-
-      {/* Filters - Note: needs jobs list from API */}
-      <ApplicationsFilters filters={filters} onFiltersChange={setFilters} jobs={jobOptions} />
 
       {/* Content */}
       {isLoading ? (

@@ -1,18 +1,17 @@
-import { Button, ResponsiveSelect, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import type { ApplicationStatus } from '../types'
+import { ResponsiveSelect, Text, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import type { ApplicationStatus } from '../types'
+import { SCORE_BANDS, STATUS_FILTER_OPTIONS } from '../filters'
+
+export interface ApplicationFilterState {
+  jobId: string | null
+  status: ApplicationStatus | null
+  minScore: number
+}
 
 interface ApplicationsFiltersProps {
-  filters: {
-    jobId: string | null
-    status: ApplicationStatus | null
-    minScore: number
-  }
-  onFiltersChange: (filters: {
-    jobId: string | null
-    status: ApplicationStatus | null
-    minScore: number
-  }) => void
+  filters: ApplicationFilterState
+  onFiltersChange: (filters: ApplicationFilterState) => void
   jobs: Array<{
     id: string
     title: string
@@ -20,90 +19,80 @@ interface ApplicationsFiltersProps {
   }>
 }
 
+/**
+ * The body of the pipeline's "Filters & sort" flyout.
+ *
+ * Was a loose row of selects sitting on the screen beside the board — one of
+ * the two competing filter idioms the prototype's design audit named. It is
+ * now the flyout's content, so this screen presents filters the same way every
+ * other list screen does.
+ *
+ * Two of the controls here did not exist before:
+ *
+ *   §12 #4  the status list was missing `inquired` and `withdrawn`. `inquired`
+ *           is a full column on the board, so a whole stage of the pipeline
+ *           could not be filtered to.
+ *   §12 #5  `minScore` was in state and was sent to the API on every request,
+ *           but nothing rendered it. A dead filter: permanently 0, with no way
+ *           to change it.
+ */
 export const ApplicationsFilters = ({
   filters,
   onFiltersChange,
   jobs,
 }: ApplicationsFiltersProps) => {
   const { theme } = useThemeContext()
+  const labelStyle = { marginBottom: 8, color: colors.text[theme].secondary }
+
   return (
-    <Row
-      gap={12}
-      paddingVertical={12}
-      paddingHorizontal={16}
-      style={{ backgroundColor: colors.bg[theme].subtle }}
-      borderRadius={16}
-      marginBottom={16}
-      wrap
-    >
-      {/* Job Filter */}
-      <Stack width={200}>
-        <Text style={{ marginBottom: 8, opacity: 0.7 }}>
-          Filter by Job
-        </Text>
+    <Stack gap={16} style={{ minWidth: 260 }}>
+      <Stack>
+        <Text style={labelStyle}>Job</Text>
         <ResponsiveSelect
           value={filters.jobId || 'all'}
-          onValueChange={(value) => {
-            onFiltersChange({
-              ...filters,
-              jobId: value === 'all' ? null : value,
-            })
-          }}
-          placeholder="All Jobs"
+          onValueChange={(value) =>
+            onFiltersChange({ ...filters, jobId: value === 'all' ? null : value })
+          }
+          placeholder="All jobs"
           options={[
-            { value: 'all', label: 'All Jobs' },
-            ...jobs.map((job) => ({
-              value: job.id,
-              label: job.title,
-            })),
+            { value: 'all', label: 'All jobs' },
+            ...jobs.map((job) => ({ value: job.id, label: job.title })),
           ]}
         />
       </Stack>
 
-      {/* Status Filter */}
-      <Stack width={200}>
-        <Text style={{ marginBottom: 8, opacity: 0.7 }}>
-          Filter by Status
-        </Text>
+      <Stack>
+        <Text style={labelStyle}>Stage</Text>
         <ResponsiveSelect
           value={filters.status || 'all'}
-          onValueChange={(value) => {
+          onValueChange={(value) =>
             onFiltersChange({
               ...filters,
               status: value === 'all' ? null : (value as ApplicationStatus),
             })
-          }}
-          placeholder="All Statuses"
-          options={[
-            { value: 'all', label: 'All Statuses' },
-            { value: 'new', label: 'New' },
-            { value: 'screen', label: 'Screening' },
-            { value: 'interview', label: 'Interview' },
-            { value: 'offer', label: 'Offer' },
-            { value: 'hired', label: 'Hired' },
-            { value: 'rejected', label: 'Rejected' },
-          ]}
+          }
+          placeholder="All stages"
+          options={STATUS_FILTER_OPTIONS}
         />
       </Stack>
 
-      {/* Clear Filters */}
-      {(filters.jobId || filters.status || filters.minScore > 0) && (
-        <Stack justify="flex-end">
-          <Button
-            size="sm"
-            variant="outline"
-            onPress={() => {
-              onFiltersChange({
-                jobId: null,
-                status: null,
-                minScore: 0,
-              })
-            }}
-          >
-            Clear Filters
-          </Button>
-        </Stack>
-      )}
-    </Row>
+      <Stack>
+        <Text style={labelStyle}>Minimum score</Text>
+        <ResponsiveSelect
+          value={String(filters.minScore ?? 0)}
+          onValueChange={(value) =>
+            onFiltersChange({ ...filters, minScore: Number(value) || 0 })
+          }
+          placeholder="Any score"
+          // Bands rather than a slider: an employer thinks in "80 and up", not
+          // in one-point increments, and a band is far easier to operate by
+          // keyboard than a drag target.
+          options={SCORE_BANDS.map((band) => ({
+            value: String(band.value),
+            label: band.label,
+          }))}
+        />
+      </Stack>
+    </Stack>
   )
 }
