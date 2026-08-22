@@ -13,7 +13,18 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@scaffald/ui'
-import { Button, Card, Spinner, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import {
+  Button,
+  MetricBlock,
+  MetricRow,
+  Spinner,
+  Tabs,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
+import { computeQueueMetrics } from '../check-sla'
 import { colors } from '@scaffald/ui/tokens'
 
 import {
@@ -293,17 +304,19 @@ export function AdminBackgroundChecksPage() {
 
   const summaryStats = useMemo(() => {
     const total = checksQuery.data?.length ?? 0
-    const underReview =
-      checksQuery.data?.filter((check: AdminCheckSummary) => check.status === 'under_review') ?? []
     const pendingDisputes =
       disputesQuery.data?.filter(
         (dispute: AdminDisputeSummary) =>
           dispute.status === 'pending' || dispute.status === 'under_review'
       ) ?? []
+    // The queue's own numbers: what is open, what is late, and how long a case
+    // typically sits. A queue that shows status but not elapsed time tells a
+    // processor what a case IS, not which one to pick up.
+    const queue = computeQueueMetrics(checksQuery.data ?? [])
     return {
       total,
-      underReview: underReview.length,
       pendingDisputes: pendingDisputes.length,
+      ...queue,
     }
   }, [checksQuery.data, disputesQuery.data])
 
@@ -345,37 +358,46 @@ export function AdminBackgroundChecksPage() {
           </Text>
         </Stack>
 
-        <Row gap={12} wrap>
-          <Card
-            padding="sm"
-            style={{ backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default, flexGrow: 1, flexBasis: 160 }}
-            borderWidth={1}
-          >
-            <Text style={{ color: colors.text[t].secondary }}>Active reviews</Text>
-            <Text style={{ color: colors.text[t].secondary }}>{summaryStats.underReview}</Text>
-          </Card>
-          <Card
-            padding="sm"
-            style={{ backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default, flexGrow: 1, flexBasis: 160 }}
-            borderWidth={1}
-          >
-            <Text style={{ color: colors.text[t].secondary }}>Pending disputes</Text>
-            <Text style={{ color: colors.text[t].secondary }}>{summaryStats.pendingDisputes}</Text>
-          </Card>
-          <Card
-            padding="sm"
-            style={{ backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default, flexGrow: 1, flexBasis: 160 }}
-            borderWidth={1}
-          >
-            <Text style={{ color: colors.text[t].secondary }}>Total checks in view</Text>
-            <Text style={{ color: colors.text[t].secondary }}>{summaryStats.total}</Text>
-          </Card>
-        </Row>
+        {/* The queue strip. These were three Cards whose label and value used
+            the SAME colour and size, so the figure did not read as a figure —
+            the "metric labels change position" drift the prototype's audit
+            named. One block now: label above, figure below, delta beneath.
+
+            Over SLA and Due today are new. The queue previously showed what a
+            case IS (its status) but never how long it had been sitting, which
+            is the number that decides what a processor picks up next. */}
+        <MetricRow bordered>
+          <MetricBlock label="Open cases" value={summaryStats.openCount} />
+          <MetricBlock
+            label="Over SLA"
+            value={summaryStats.overSlaCount}
+            emphasis={summaryStats.overSlaCount > 0}
+            tone="attention"
+            delta={summaryStats.overSlaCount > 0 ? 'needs chasing' : undefined}
+          />
+          <MetricBlock
+            label="Due today"
+            value={summaryStats.dueTodayCount}
+            tone={summaryStats.dueTodayCount > 0 ? 'attention' : 'neutral'}
+          />
+          <MetricBlock
+            label="Median days open"
+            // Null, not 0, when nothing is open — an empty queue has no median,
+            // and "0d" would read as "we turn everything around same-day".
+            value={summaryStats.medianDaysOpen == null ? '—' : `${summaryStats.medianDaysOpen}d`}
+          />
+          <MetricBlock label="Pending disputes" value={summaryStats.pendingDisputes} />
+          <MetricBlock label="Total in view" value={summaryStats.total} />
+        </MetricRow>
 
         <Row
           gap={12}
           paddingHorizontal={8}
-          style={{ backgroundColor: colors.bg[t].default, borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
+          style={{
+            backgroundColor: colors.bg[t].default,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border[t].default,
+          }}
         >
           <Tabs
             value={activeTab}
