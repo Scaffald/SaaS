@@ -61,15 +61,29 @@ const ROUTES = [
 const browser = await chromium.launch()
 const results = []
 
-// TODO(dark mode): dark is a first-class theme and theme-dependent colours —
-// chart series especially — are exactly what breaks in only one of them. Two
-// attempts at a dark pass both rendered LIGHT and were removed rather than
-// shipped: Playwright's `colorScheme` does nothing (the app reads its own
-// context, not prefers-color-scheme), and seeding `scaffald-ui-theme` in
-// localStorage did not take either. Whatever drives ThemeProvider on web needs
-// finding first. A pass labelled "dark" that renders light is worse than no
-// pass — it manufactures false confidence in the half of the palette nobody
-// has looked at.
+// There is no dark pass, and it is not an oversight.
+//
+// DARK MODE IS SWITCHED OFF IN THE APP. `useThemeSetting` in
+// packages/scf-core/provider/theme/UniversalThemeProvider.tsx hardcodes:
+//
+//   const resolvedTheme = 'light' as 'light' | 'dark'
+//
+// with the real resolution commented out beneath it, since 78caa00b
+// ("feat: force light mode and hide theme toggle", 2026-04-21). Every other
+// part of the theming stack works — the provider resolves a preference,
+// persists it, and stamps `data-theme` on <html> — but that one line
+// short-circuits all of it.
+//
+// So a dark pass here cannot render dark no matter how the browser or storage
+// is configured, and three earlier attempts at one produced LIGHT screenshots
+// labelled "dark". Restoring it is a one-line change in that file plus a
+// deliberate decision to ship dark mode; until then, a pass that claims to
+// exercise the dark palette is worse than none.
+//
+// Three separate theme keys exist, which is worth knowing if this is revisited:
+//   beyond-ui-theme     ThemeProvider's own default (packages/ui)
+//   scaffald-ui-theme   themeStorage.ts (packages/ui) — nothing reads it
+//   @preferred_theme    UniversalThemeProvider via kvStorage — the app's
 for (const [w, h, tag, scheme] of [
   [1440, 900, 'desktop', 'light'],
   [390, 844, 'mobile', 'light'],
@@ -88,7 +102,10 @@ for (const [w, h, tag, scheme] of [
   await ctx.addInitScript(
     ([key, session, theme]) => {
       window.localStorage.setItem(key, session)
-      window.localStorage.setItem('scaffald-ui-theme', theme)
+      // The app's key, set explicitly rather than relying on
+      // prefers-color-scheme: a stored preference beats the system setting, so
+      // `colorScheme` alone is not enough to guarantee which theme renders.
+      window.localStorage.setItem('@preferred_theme', theme)
     },
     [storageKey, JSON.stringify(data.session), scheme],
   )
@@ -185,6 +202,17 @@ for (const [w, h, tag, scheme] of [
         }
       }
       const bodyText = await page.evaluate(() => document.body.innerText.slice(0, 400))
+      // Assert the theme that actually rendered. A pass labelled "dark" that
+      // renders light manufactures false confidence in exactly the half of the
+      // palette nobody has looked at, so it has to fail visibly.
+      // InnerProvider stamps the RESOLVED theme onto <html data-theme>, which
+      // is the only reliable read: component backgrounds are often transparent
+      // wrappers, so probing a node's computed colour proves nothing. Reported
+      // on every route so that if dark mode is ever re-enabled, a pass that
+      // silently renders light fails visibly rather than passing.
+      const renderedTheme = await page.evaluate(
+        () => document.documentElement.getAttribute('data-theme') ?? 'unset',
+      )
       results.push({
         tag,
         name,
@@ -192,6 +220,7 @@ for (const [w, h, tag, scheme] of [
         redirected: !page.url().includes(path),
         newErrors: consoleErrors.slice(before),
         snippet: bodyText.replace(/\n+/g, ' | ').slice(0, 220),
+        renderedTheme,
       })
       console.log(`✓ ${tag} ${name} -> ${page.url()}`)
     } catch (e) {
@@ -208,6 +237,7 @@ for (const r of results) {
   console.log(
     `${r.tag}/${r.name}: ${r.error ? 'ERROR ' + r.error : (r.redirected ? 'REDIRECTED ' : 'ok ') + (r.newErrors?.length ? r.newErrors.length + ' console errors' : 'no console errors')}`,
   )
+  if (r.renderedTheme) console.log('    theme:', r.renderedTheme)
   if (r.snippet) console.log('   ', r.snippet)
   for (const e of r.newErrors ?? []) console.log('    !', e)
 }
