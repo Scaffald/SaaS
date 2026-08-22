@@ -3,16 +3,16 @@ import { useEngagementMetrics } from '@scf/core/utils/engagement-sdk-hooks'
 import type { EngagementMetrics } from '@scaffald/sdk'
 import {
   DashboardWidget,
+  MetricBlock,
+  MetricRow,
   Row,
   Skeleton,
   SkeletonGroup,
   Stack,
   Text,
-  useResponsive,
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { Platform, View } from 'react-native'
 
 function formatNumber(n: number | undefined | null): string {
   if (n == null) return '0'
@@ -21,107 +21,30 @@ function formatNumber(n: number | undefined | null): string {
   return String(n)
 }
 
-function TrendBadge({ value }: { value: number | undefined | null }) {
-  const { theme } = useThemeContext()
-
-  const v = value ?? 0
-  const isPositive = v > 0
-  const isNeutral = v === 0
-
-  const color = isNeutral
-    ? colors.text[theme].secondary
-    : isPositive
-      ? colors.emerald[600]
-      : colors.error[600]
-
-  return (
-    <Text style={{ fontSize: 12, fontWeight: '700', color }}>
-      {isPositive ? '+' : ''}{v}%
-    </Text>
-  )
+/**
+ * A trend as the metric block's delta line.
+ *
+ * Null when there is no trend to report — the block simply omits the line
+ * rather than rendering a confident "0%".
+ */
+function deltaLabel(trend: number | undefined | null): string | undefined {
+  if (trend == null || trend === 0) return undefined
+  return `${trend > 0 ? '▲' : '▼'} ${Math.abs(trend)}%`
 }
 
 /**
- * Web-only sparkline SVG. Returns null on native.
+ * Direction is not sentiment, but for these three metrics it happens to be:
+ * more views and more search appearances are unambiguously good for a worker.
+ * Stated here rather than assumed inside MetricBlock, which serves metrics
+ * (ghost rate) where up is bad.
  */
-function Sparkline({ path, color }: { path: string; color: string }) {
-  if (Platform.OS !== 'web') return null
-
-  return (
-    <View style={{ height: 32, width: '100%' } as never}>
-      <svg
-        viewBox="0 0 100 20"
-        preserveAspectRatio="none"
-        style={{ width: '100%', height: '100%' } as never}
-        role="img"
-        aria-label="Trend sparkline"
-      >
-        <title>Trend sparkline</title>
-        <path
-          d={path}
-          fill="none"
-          stroke={color}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </View>
-  )
-}
-
-type StatCardProps = {
-  label: string
-  value: string
-  trend: number | undefined | null
-  sparklinePath: string
-}
-
-function StatCard({ label, value, trend, sparklinePath }: StatCardProps) {
-  const { theme } = useThemeContext()
-
-  return (
-    <Stack
-      flex={1}
-      minWidth={140}
-      padding={16}
-      borderRadius={16}
-      gap={4}
-      style={{
-        backgroundColor: colors.bg[theme].subtle,
-        borderWidth: 1,
-        borderColor: colors.border[theme].ghost,
-      }}
-    >
-      <Text
-        style={{
-          fontSize: 12,
-          fontWeight: '600',
-          color: colors.text[theme].secondary,
-        }}
-      >
-        {label}
-      </Text>
-      <Row align="flex-end" justify="space-between">
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: '700',
-            color: colors.text[theme].primary,
-          }}
-        >
-          {value}
-        </Text>
-        <TrendBadge value={trend} />
-      </Row>
-      <Sparkline path={sparklinePath} color={colors.emerald[700]} />
-    </Stack>
-  )
+function deltaTone(trend: number | undefined | null): 'positive' | 'attention' | 'neutral' {
+  if (trend == null || trend === 0) return 'neutral'
+  return trend > 0 ? 'positive' : 'attention'
 }
 
 export function AnalyticsWidget() {
   const { theme } = useThemeContext()
-  const { isMobile } = useResponsive()
   const { data: analytics, isLoading: loadingAnalytics } = useViewAnalytics()
   const { data: metrics, isLoading: loadingMetrics } = useEngagementMetrics({ days: 30 })
 
@@ -171,26 +94,36 @@ export function AnalyticsWidget() {
           View details
         </Text>
       </Row>
-      <Row gap={16} wrap={isMobile}>
-        <StatCard
+      {/* The shared metric block: label above, figure below, delta beneath.
+          Two things were removed here rather than restyled.
+
+          The trends: only Profile views had a real one. Search appearances was
+          `trend={5}` and Post impressions `trend={0}` — hardcoded numbers
+          rendered in the same badge as the live one, so two thirds of the
+          movement on this widget was invented. A metric with no trend now
+          shows no delta, which is honest and reads fine.
+
+          The sparklines: all three were hardcoded SVG path strings, and all
+          three were DIFFERENT — so each metric appeared to have its own
+          history, drawn from nothing. A fabricated trend line is worse than a
+          missing one; it is a specific claim about the past. Gone until the
+          endpoint returns a series. */}
+      <MetricRow>
+        <MetricBlock
           label="Profile views"
           value={formatNumber(analytics?.views30d)}
-          trend={analytics?.trend}
-          sparklinePath="M0,18 Q10,15 20,16 T40,10 T60,12 T80,5 T100,2"
+          delta={deltaLabel(analytics?.trend)}
+          tone={deltaTone(analytics?.trend)}
         />
-        <StatCard
+        <MetricBlock
           label="Search appearances"
           value={formatNumber((metrics as EngagementMetrics | undefined)?.searches)}
-          trend={5}
-          sparklinePath="M0,15 Q20,18 40,12 T80,8 T100,5"
         />
-        <StatCard
+        <MetricBlock
           label="Post impressions"
           value={formatNumber((metrics as EngagementMetrics | undefined)?.profile_views)}
-          trend={0}
-          sparklinePath="M0,10 L20,10 L40,11 L60,9 L80,10 L100,10"
         />
-      </Row>
+      </MetricRow>
     </DashboardWidget>
   )
 }
