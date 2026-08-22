@@ -33,6 +33,7 @@ import {
   useApplicationStatusChange,
 } from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
+import { MoveMenu } from './MoveMenu'
 import { CandidateDetailModal } from './CandidateDetailModal'
 import { colors } from '@scaffald/ui/tokens'
 
@@ -729,23 +730,17 @@ const StatusColumn = ({
                 move a candidate rather than the only one — which is what makes
                 the board usable by keyboard, and usable at all on mobile,
                 where a single stage renders at a time behind a Tabs control
-                and there is no second column on screen to drag to. */}
-            {onMoveApplication && targets.length > 0 ? (
-              <Row gap={4} wrap>
-                {targets.map((target) => (
-                  <Button
-                    key={target}
-                    size="sm"
-                    variant="outline"
-                    onPress={() => onMoveApplication(app.id, target)}
-                    accessibilityLabel={`Move ${app.candidate.name} to ${
-                      moveTargetLabels?.[target] ?? target
-                    }`}
-                  >
-                    {`→ ${moveTargetLabels?.[target] ?? target}`}
-                  </Button>
-                ))}
-              </Row>
+                and there is no second column on screen to drag to.
+                A single menu rather than a button per target: three buttons
+                under every card put thirty-six controls on a twelve-card board.
+                See MoveMenu for why it is not built on `Dropdown`. */}
+            {onMoveApplication && moveTargetLabels ? (
+              <MoveMenu
+                targets={targets}
+                labels={moveTargetLabels}
+                candidateName={app.candidate.name}
+                onMove={(target) => onMoveApplication(app.id, target)}
+              />
             ) : null}
           </Stack>
         )

@@ -152,6 +152,33 @@ for (const [w, h, tag, scheme] of [
               fullPage: false,
             })
             console.log(`  ↳ ${tag} ${view} view captured`)
+
+            // Open the first Move menu and prove it is a real menu, not a
+            // decorative trigger. This is the assertion that matters: the
+            // board's whole non-drag path is one control, and a menu that
+            // renders but does not open would silently undo §12 #12.
+            if (view === 'Board') {
+              const trigger = page.getByRole('button', { name: /^Move .* to another stage$/ }).first()
+              const count = await page.getByRole('button', { name: /^Move .* to another stage$/ }).count()
+              if (count === 0) {
+                console.log(`  ↳ ${tag} MOVE MENU: no triggers found`)
+              } else {
+                await trigger.click({ timeout: 5000 })
+                await page.waitForTimeout(800)
+                const items = await page.getByRole('menuitem').count()
+                console.log(
+                  `  ↳ ${tag} MOVE MENU: ${count} triggers, ${items} menuitem(s) after opening`,
+                )
+                await page.screenshot({
+                  path: `${OUT}/${tag}--auth--ats-move-menu.png`,
+                  fullPage: false,
+                })
+                await page.keyboard.press('Escape')
+                await page.waitForTimeout(400)
+                const afterEscape = await page.getByRole('menuitem').count()
+                console.log(`  ↳ ${tag} MOVE MENU: ${afterEscape} menuitem(s) after Escape`)
+              }
+            }
           } catch {
             console.log(`  ↳ ${tag} ${view} view NOT reachable`)
           }
