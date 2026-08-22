@@ -464,13 +464,69 @@ app.patch(
 // Admin checks, disputes, metrics, access log (for AdminBackgroundChecksPage)
 // ---------------------------------------------------------------------------
 
-function mapWorker(rec: Record<string, unknown> | null) {
+/** Shape the email lookup needs. Kept loose to match the other API libs: this
+ *  runs under Deno with an untyped Supabase client (see #477). */
+// deno-lint-ignore no-explicit-any
+type SupabaseLike = any;
+
+/**
+ * Emails for a set of user ids, from `auth.users`.
+ *
+ * These routes used to select `email` directly off `core.users`, which has no
+ * such column — email lives in `auth.users`. PostgREST reported it as
+ * `column users_1.email does not exist` and every admin background-check
+ * endpoint returned 500, so the admin screening queue could never load a row
+ * (#635).
+ *
+ * Dropping the field would have been the smaller change, but an admin
+ * reviewing a screening needs to be able to contact the subject, and
+ * `AdminCheckWorker` in the SDK declares `email` — so the shape is preserved
+ * and the value fetched from where it actually lives.
+ *
+ * One extra round trip per request rather than per row: ids are collected
+ * first and looked up in a single `in` query. Requires the service-role
+ * client; `auth.users` is not reachable through a request-scoped one.
+ */
+async function emailsByUserId(
+  supabaseAdmin: SupabaseLike,
+  ids: Array<string | null | undefined>,
+): Promise<Map<string, string | null>> {
+  const unique = [...new Set(ids.filter((id): id is string => Boolean(id)))];
+  if (unique.length === 0) return new Map();
+
+  // The Admin Auth API, not a PostgREST query: the `auth` schema is not
+  // exposed through PostgREST, so `.schema("auth").from("users")` fails and
+  // every email comes back null — a quieter version of the same bug.
+  //
+  // `getUserById` per id rather than `listUsers`, which is the pattern in
+  // routes/auth.ts: that one pages through EVERY user in the project to find
+  // one address. Here the ids are already known and bounded by the page size,
+  // so targeted lookups are both cheaper and correct as the user table grows.
+  const entries = await Promise.all(
+    unique.map(async (id) => {
+      const { data, error } = await supabaseAdmin.auth.admin.getUserById(id);
+      if (error) {
+        // A missing email is a degraded row, not a failed request: the queue
+        // is still usable without it, and failing the whole call would
+        // reintroduce exactly the outage this fixes.
+        console.error(`Failed to resolve email for ${id}:`, error.message);
+        return [id, null] as const;
+      }
+      return [id, (data?.user?.email as string | undefined) ?? null] as const;
+    }),
+  );
+
+  return new Map(entries);
+}
+
+function mapWorker(rec: Record<string, unknown> | null, email: string | null = null) {
   if (!rec) return null;
   return {
     id: rec.id ?? null,
     display_name: rec.display_name ?? null,
     username: rec.username ?? null,
-    email: rec.email ?? null,
+    // Passed in, not read off `rec`: `core.users` has no email column (#635).
+    email,
     avatar_path: (rec as { avatar_path?: string | null }).avatar_path ?? null,
   };
 }
@@ -521,9 +577,9 @@ app.get(
       id, status, user_id, organization_id, job_id, requested_by_user_id,
       summary, findings, status_history, created_at, updated_at, invited_at, completed_at, expires_at,
       package:background_check_packages(id, display_name, slug),
-      worker:users!background_checks_user_id_fkey(id, display_name, username, email, avatar_path),
+      worker:users!background_checks_user_id_fkey(id, display_name, username, avatar_path),
       organization:organizations!background_checks_organization_id_fkey(id, name),
-      requester:users!background_checks_requested_by_user_id_fkey(id, display_name, email)
+      requester:users!background_checks_requested_by_user_id_fkey(id, display_name)
     `)
       .order("created_at", { ascending: false })
       .range(input.offset, input.offset + input.limit - 1);
@@ -538,7 +594,13 @@ app.get(
       }, 500);
     }
 
-    const items = (data ?? []).map((row: Record<string, unknown>) => {
+    const rows = (data ?? []) as Array<Record<string, unknown>>;
+    const emails = await emailsByUserId(supabaseAdmin, [
+      ...rows.map((row) => row.user_id as string | null),
+      ...rows.map((row) => row.requested_by_user_id as string | null),
+    ]);
+
+    const items = rows.map((row: Record<string, unknown>) => {
       const worker = row.worker as Record<string, unknown> | null;
       const org = row.organization as Record<string, unknown> | null;
       const requester = row.requester as Record<string, unknown> | null;
@@ -558,13 +620,13 @@ app.get(
         completed_at: row.completed_at ?? null,
         expires_at: row.expires_at ?? null,
         package: mapPackage(row.package as Record<string, unknown> | null),
-        worker: mapWorker(worker),
+        worker: mapWorker(worker, emails.get(row.user_id as string) ?? null),
         organization: mapOrganization(org),
         requester: requester
           ? {
             id: requester.id ?? null,
             display_name: requester.display_name ?? null,
-            email: requester.email ?? null,
+            email: emails.get(row.requested_by_user_id as string) ?? null,
           }
           : null,
       };
@@ -594,7 +656,7 @@ app.get(
       .select(`
       id, status, status_history, package_id, check_type_ids, provider_check_id,
       summary, findings, component_statuses, metadata, created_at, updated_at, expires_at, estimated_completion_date,
-      user:users!background_checks_user_id_fkey(id, display_name, username, email, avatar_path),
+      user:users!background_checks_user_id_fkey(id, display_name, username, avatar_path),
       organization:organizations!background_checks_organization_id_fkey(id, name),
       package:background_check_packages(id, display_name, slug)
     `)
@@ -633,13 +695,19 @@ app.get(
       .order("created_at", { ascending: true });
 
     const rec = checkRecord as Record<string, unknown>;
+    const detailEmails = await emailsByUserId(supabaseAdmin, [
+      rec.user_id as string | null,
+    ]);
     const check = {
       ...rec,
       metadata: rec.metadata && typeof rec.metadata === "object" &&
           !Array.isArray(rec.metadata)
         ? rec.metadata
         : null,
-      worker: mapWorker(rec.user as Record<string, unknown> | null),
+      worker: mapWorker(
+        rec.user as Record<string, unknown> | null,
+        detailEmails.get(rec.user_id as string) ?? null,
+      ),
       organization: mapOrganization(
         rec.organization as Record<string, unknown> | null,
       ),
@@ -934,9 +1002,9 @@ app.get(
       id, background_check_id, user_id, dispute_reason, dispute_details, supporting_documents, status,
       created_at, updated_at, resolved_at, resolved_by_user_id,
       background_check:background_checks(
-        id, status, summary, findings, completed_at, expires_at,
+        id, status, user_id, summary, findings, completed_at, expires_at,
         package:background_check_packages(id, display_name, slug),
-        worker:users!background_checks_user_id_fkey(id, display_name, username, email),
+        worker:users!background_checks_user_id_fkey(id, display_name, username),
         organization:organizations!background_checks_organization_id_fkey(id, name)
       )
     `)
@@ -952,8 +1020,20 @@ app.get(
       }, 500);
     }
 
-    const items = (data ?? []).map((row: Record<string, unknown>) => {
+    const disputeRows = (data ?? []) as Array<Record<string, unknown>>;
+    // The dispute's subject is the check's worker, which the embed carries as
+    // `background_check.user_id`.
+    const disputeEmails = await emailsByUserId(
+      supabaseAdmin,
+      disputeRows.map((row) => {
+        const bc = row.background_check as Record<string, unknown> | null;
+        return (bc?.user_id as string | null) ?? (row.user_id as string | null);
+      }),
+    );
+
+    const items = disputeRows.map((row: Record<string, unknown>) => {
       const bc = row.background_check as Record<string, unknown> | null;
+      const subjectId = (bc?.user_id as string | null) ?? (row.user_id as string | null);
       return {
         id: row.id,
         background_check_id: row.background_check_id,
@@ -975,7 +1055,10 @@ app.get(
             completed_at: bc.completed_at ?? null,
             expires_at: bc.expires_at ?? null,
             package: mapPackage(bc.package as Record<string, unknown> | null),
-            worker: mapWorker(bc.worker as Record<string, unknown> | null),
+            worker: mapWorker(
+              bc.worker as Record<string, unknown> | null,
+              subjectId ? (disputeEmails.get(subjectId) ?? null) : null,
+            ),
             organization: mapOrganization(
               bc.organization as Record<string, unknown> | null,
             ),
@@ -1146,9 +1229,9 @@ app.get(
       background_check:background_checks(
         id, status,
         package:background_check_packages(id, display_name, slug),
-        worker:users!background_checks_user_id_fkey(id, display_name, username, email)
+        worker:users!background_checks_user_id_fkey(id, display_name, username)
       ),
-      actor:users!background_check_access_log_accessed_by_user_id_fkey(id, display_name, username, email)
+      actor:users!background_check_access_log_accessed_by_user_id_fkey(id, display_name, username)
     `)
       .order("accessed_at", { ascending: false })
       .limit(input.limit);

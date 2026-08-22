@@ -156,4 +156,5 @@ COMMIT;
 -- Expected shape once applied:
 --   8 checks, 6 open / 2 terminal
 --   3 over SLA, 1 due today, 2 on time
---   median days open across the 6 open cases: 4
+--   median days open across the 6 open cases: 4.5
+--     (ages 2,3,4,5,6,9 -> (4+5)/2; verified on screen, not predicted)
