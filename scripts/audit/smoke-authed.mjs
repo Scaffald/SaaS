@@ -135,6 +135,28 @@ for (const [w, h, tag, scheme] of [
       await page.waitForTimeout(500)
       const file = `${OUT}/${tag}--auth--${name}.png`
       await page.screenshot({ path: file, fullPage: false })
+
+      // The pipeline's Board and Metrics views are client state behind a
+      // segmented control, not routes — so a route-only sweep never sees them.
+      // The board in particular carries the keyboard/touch move controls and
+      // the closed drop targets, which is exactly the code that has no other
+      // way of being looked at.
+      if (name === 'ats-applications') {
+        for (const view of ['Board', 'Metrics']) {
+          try {
+            const control = page.getByText(view, { exact: true }).first()
+            await control.click({ timeout: 5000 })
+            await page.waitForTimeout(2500)
+            await page.screenshot({
+              path: `${OUT}/${tag}--auth--ats-${view.toLowerCase()}.png`,
+              fullPage: false,
+            })
+            console.log(`  ↳ ${tag} ${view} view captured`)
+          } catch {
+            console.log(`  ↳ ${tag} ${view} view NOT reachable`)
+          }
+        }
+      }
       const bodyText = await page.evaluate(() => document.body.innerText.slice(0, 400))
       results.push({
         tag,
