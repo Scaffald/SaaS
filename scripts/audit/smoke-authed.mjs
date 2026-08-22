@@ -55,6 +55,13 @@ console.log('✓ session minted for', data.user?.email)
 const ROUTES = [
   ['ats-applications', '/office/applications'],
   ['ats-metrics', '/office/ats/metrics'],
+  // The screening queue's SLA strip (#633) lives on the ADMIN page
+  // (/office/ats/admin), not /office/ats/checks — that one is the org-scoped
+  // view behind an organization picker. Seeded by
+  // packages/supabase/seeds/015_seed-background-checks.sql, which spreads case
+  // ages across over-SLA / due-today / on-time / terminal so the strip is
+  // exercised rather than merely populated.
+  ['ats-checks-admin', '/office/ats/admin'],
   ['dashboard', '/dashboard'],
 ]
 
