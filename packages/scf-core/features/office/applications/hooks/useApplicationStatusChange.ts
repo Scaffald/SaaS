@@ -43,6 +43,45 @@ interface UseApplicationStatusChangeReturn {
   cancelChange: () => void
 }
 
+/**
+ * Which stage a candidate may move to, from where.
+ *
+ * Mirrors ALLOWED_TRANSITIONS in the API's application-transitions.ts. Kept
+ * client-side to avoid a round trip for a move the server will refuse anyway —
+ * but it is no longer the only guard, so drifting from the server table costs
+ * a confusing 400 rather than an invalid write.
+ *
+ * This lives at module scope, exported, because it was previously trapped
+ * inside a useCallback inside this hook. Nothing else could ask "what is legal
+ * from here?", which is the root cause of two separate bugs (§12 #12 and #13):
+ * the board could not close illegal drop targets DURING a drag, and no
+ * keyboard or touch path could offer a list of legal moves.
+ */
+export const ALLOWED_TRANSITIONS: Record<ApplicationStatus, ApplicationStatus[]> = {
+  new: ['screen', 'rejected'],
+  screen: ['inquired', 'interview', 'rejected'],
+  inquired: ['interview', 'offer', 'rejected'],
+  interview: ['offer', 'rejected'],
+  offer: ['hired', 'rejected'],
+  hired: [], // Terminal state
+  rejected: [], // Terminal state
+  // Also terminal, and never an employer move — withdrawal is the candidate's,
+  // via POST /v1/applications/{id}/withdraw. The server's table says the same.
+  withdrawn: [],
+}
+
+export function isValidStatusTransition(
+  from: ApplicationStatus,
+  to: ApplicationStatus
+): boolean {
+  return ALLOWED_TRANSITIONS[from]?.includes(to) ?? false
+}
+
+/** Every stage this candidate can legally be moved to right now. */
+export function allowedTargetsFor(from: ApplicationStatus): ApplicationStatus[] {
+  return ALLOWED_TRANSITIONS[from] ?? []
+}
+
 export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn => {
   const [isChanging, setIsChanging] = useState(false)
   const [error, setError] = useState<Error | null>(null)
@@ -72,27 +111,7 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
   }, [])
 
   const isValidTransition = useCallback(
-    (from: ApplicationStatus, to: ApplicationStatus): boolean => {
-      // Mirrors ALLOWED_TRANSITIONS in the API's application-transitions.ts.
-      // Kept client-side to avoid a round trip for a move the server will
-      // refuse anyway — but it is no longer the only guard, so drifting from
-      // the server table costs a confusing 400 rather than an invalid write.
-      const validTransitions: Record<ApplicationStatus, ApplicationStatus[]> = {
-        new: ['screen', 'rejected'],
-        screen: ['inquired', 'interview', 'rejected'],
-        inquired: ['interview', 'offer', 'rejected'],
-        interview: ['offer', 'rejected'],
-        offer: ['hired', 'rejected'],
-        hired: [], // Terminal state
-        rejected: [], // Terminal state
-        // Also terminal, and never an employer move — withdrawal is the
-        // candidate's, via POST /v1/applications/{id}/withdraw. The server's
-        // table says the same.
-        withdrawn: [],
-      }
-
-      return validTransitions[from]?.includes(to) || false
-    },
+    (from: ApplicationStatus, to: ApplicationStatus): boolean => isValidStatusTransition(from, to),
     []
   )
 
