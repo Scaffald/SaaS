@@ -19,7 +19,9 @@ import {
   useToast,
   useThemeContext,
 } from '@scaffald/ui'
+import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
+import { ROUTES } from '@scf/core/constants/routes'
 import { PaymentIntentForm } from '../../../payments/components/PaymentIntentForm'
 import type { ApplicationStatus, ATSApplication } from '../types'
 
@@ -56,6 +58,7 @@ export const ApplicationStatusChangeModal = ({
   application,
 }: ApplicationStatusChangeModalProps) => {
   const { theme } = useThemeContext()
+  const router = useRouter()
   const [reason, setReason] = useState('')
   const toast = useToast()
   const successFeeMutation = useCreateSuccessFeeMutation()
@@ -241,8 +244,26 @@ export const ApplicationStatusChangeModal = ({
     }
   }
 
-  const legalCopy =
-    'TODO: Replace with the final anti-circumvention clause before launch. Paying this fee confirms you agree to keep communication and hires on-platform.'
+  /**
+   * The clickwrap that gates the payment button.
+   *
+   * This used to read "TODO: Replace with the final anti-circumvention clause
+   * before launch." — placeholder text presented to employers as a term they
+   * were ticking a box to accept, on the most commercially important screen in
+   * the product. Text that says it is a placeholder cannot be the thing
+   * someone agrees to.
+   *
+   * The replacement deliberately does NOT inline a bespoke clause. Scaffald
+   * already has versioned legal acceptance: core.legal_documents is the source
+   * of truth and clients read the required versions from
+   * /v1/prerequisites/check. A second, hand-written set of terms living in a
+   * component is exactly how two conflicting versions of "the agreement" come
+   * to exist. The acknowledgement references the published Terms instead, and
+   * links to them so they can actually be read before accepting.
+   *
+   * The on-platform hiring obligation itself belongs in those published Terms.
+   * That is a drafting task for counsel, not a string in this file.
+   */
 
   return (
     <ResponsiveModal
@@ -317,12 +338,22 @@ export const ApplicationStatusChangeModal = ({
                   >
                     <Row gap={8} align="center">
                       <Checkbox
-                        aria-label="Acknowledge success-fee agreement"
+                        aria-label="Confirm this hire is subject to the Scaffald Terms of Service"
                         checked={legalAccepted}
                         onChange={(next) => setLegalAccepted(Boolean(next))}
                       />
                       <Text style={{ flex: 1, color: colors.text[theme].secondary }}>
-                        {legalCopy}
+                        I confirm this hire and agree it is subject to the Scaffald{' '}
+                        <Text
+                          onPress={() => router.push(ROUTES.AUTH.TERMS.path)}
+                          style={{
+                            color: colors.text[theme].emphasis,
+                            textDecorationLine: 'underline',
+                          }}
+                        >
+                          Terms of Service
+                        </Text>
+                        , including its terms on keeping hiring and communication on-platform.
                       </Text>
                     </Row>
                   </Card>

@@ -30,7 +30,6 @@
 
 import { chromium } from 'playwright'
 import { createClient } from '@supabase/supabase-js'
-import fs from 'node:fs'
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
 const ANON = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
@@ -62,20 +61,36 @@ const ROUTES = [
 const browser = await chromium.launch()
 const results = []
 
-for (const [w, h, tag] of [
-  [1440, 900, 'desktop'],
-  [390, 844, 'mobile'],
+// TODO(dark mode): dark is a first-class theme and theme-dependent colours —
+// chart series especially — are exactly what breaks in only one of them. Two
+// attempts at a dark pass both rendered LIGHT and were removed rather than
+// shipped: Playwright's `colorScheme` does nothing (the app reads its own
+// context, not prefers-color-scheme), and seeding `scaffald-ui-theme` in
+// localStorage did not take either. Whatever drives ThemeProvider on web needs
+// finding first. A pass labelled "dark" that renders light is worse than no
+// pass — it manufactures false confidence in the half of the palette nobody
+// has looked at.
+for (const [w, h, tag, scheme] of [
+  [1440, 900, 'desktop', 'light'],
+  [390, 844, 'mobile', 'light'],
 ]) {
   const ctx = await browser.newContext({
     viewport: { width: w, height: h },
     deviceScaleFactor: 2,
+    colorScheme: scheme,
   })
   // Seed the session before any app code runs.
+  //
+  // The theme goes in alongside it: the app reads its theme from its own
+  // storage (`scaffald-ui-theme`), NOT from prefers-color-scheme, so
+  // Playwright's `colorScheme` alone renders light and a "dark" pass that
+  // only sets it is silently testing light twice.
   await ctx.addInitScript(
-    ([key, session]) => {
+    ([key, session, theme]) => {
       window.localStorage.setItem(key, session)
+      window.localStorage.setItem('scaffald-ui-theme', theme)
     },
-    [storageKey, JSON.stringify(data.session)],
+    [storageKey, JSON.stringify(data.session), scheme],
   )
 
   const page = await ctx.newPage()
@@ -139,7 +154,6 @@ for (const [w, h, tag] of [
 }
 
 await browser.close()
-fs.writeFileSync('smoke-results.tmp.json', JSON.stringify(results, null, 2))
 console.log('\n--- SUMMARY ---')
 for (const r of results) {
   console.log(

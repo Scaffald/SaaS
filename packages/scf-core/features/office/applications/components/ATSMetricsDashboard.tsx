@@ -25,19 +25,35 @@ import { colors } from '@scaffald/ui/tokens'
 import type { ApplicationStatus, ATSApplication } from '../types'
 
 /** Pipeline stage display config */
-const PIPELINE_STAGES: Array<{
-  key: ApplicationStatus
-  label: string
-  color: string
-}> = [
-  { key: 'new', label: 'New', color: '#6366f1' },
-  { key: 'screen', label: 'Screening', color: '#8b5cf6' },
-  { key: 'inquired', label: 'Inquiry', color: '#a78bfa' },
-  { key: 'interview', label: 'Interview', color: '#3b82f6' },
-  { key: 'offer', label: 'Offer', color: '#f59e0b' },
-  { key: 'hired', label: 'Hired', color: '#10b981' },
-  { key: 'rejected', label: 'Rejected', color: '#ef4444' },
-]
+/**
+ * Series colours (§12 #16).
+ *
+ * These were hardcoded hex — a Tailwind-ish palette that belongs to no theme
+ * and no token file, so the charts kept indigo/violet/amber bars on a warm
+ * stone light theme AND on a near-black dark one. The dark-mode versions in
+ * particular sat at whatever contrast they happened to land on.
+ *
+ * They read from the token ramps now and are resolved per theme. Stage order
+ * carries progression — cool at the top of the funnel, warm at the decision
+ * points, terracotta at the terminal stage — rather than being seven unrelated
+ * hues, so a reader can tell direction from colour alone.
+ */
+const pipelineStages = (
+  theme: 'light' | 'dark',
+): Array<{ key: ApplicationStatus; label: string; color: string }> => {
+  // Dark themes need the lighter end of each ramp to hold contrast against a
+  // near-black ground; light themes need the darker end.
+  const step = theme === 'light' ? 600 : 300
+  return [
+    { key: 'new', label: 'New', color: colors.info[step] },
+    { key: 'screen', label: 'Screening', color: colors.primary[step] },
+    { key: 'inquired', label: 'Inquiry', color: colors.violet[step] },
+    { key: 'interview', label: 'Interview', color: colors.blue[step] },
+    { key: 'offer', label: 'Offer', color: colors.warning[step] },
+    { key: 'hired', label: 'Hired', color: colors.success[step] },
+    { key: 'rejected', label: 'Rejected', color: colors.error[step] },
+  ]
+}
 
 /** Source categories for hire tracking */
 export type HireSource =
@@ -57,13 +73,16 @@ const SOURCE_LABELS: Record<HireSource, string> = {
   other: 'Other',
 }
 
-const SOURCE_COLORS: Record<HireSource, string> = {
-  scaffald: '#6366f1',
-  referral: '#10b981',
-  external_board: '#f59e0b',
-  social_media: '#3b82f6',
-  company_website: '#8b5cf6',
-  other: '#94a3b8',
+const sourceColors = (theme: 'light' | 'dark'): Record<HireSource, string> => {
+  const step = theme === 'light' ? 600 : 300
+  return {
+    scaffald: colors.primary[step],
+    referral: colors.success[step],
+    external_board: colors.warning[step],
+    social_media: colors.blue[step],
+    company_website: colors.violet[step],
+    other: colors.gray[theme === 'light' ? 500 : 400],
+  }
 }
 
 interface ATSMetricsDashboardProps {
@@ -109,6 +128,8 @@ export function timeToHireDays(app: ATSApplication): number | null {
 
 export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetricsDashboardProps) {
   const { theme } = useThemeContext()
+  const PIPELINE_STAGES = useMemo(() => pipelineStages(theme), [theme])
+  const SOURCE_COLORS = useMemo(() => sourceColors(theme), [theme])
   const [dateRange, setDateRange] = useState<number>(30)
 
   // Filter applications by date range
@@ -181,7 +202,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
     }
 
     return cumulative
-  }, [filteredApps])
+  }, [filteredApps, PIPELINE_STAGES])
 
   // ─── Source of Hire (Issue #91) ─────────────────────────
   const sourceDistribution = useMemo(() => {
@@ -209,7 +230,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
         color: SOURCE_COLORS[source as HireSource],
       }))
       .sort((a, b) => b.count - a.count)
-  }, [filteredApps])
+  }, [filteredApps, SOURCE_COLORS])
 
   // ─── Time-to-Hire (Issue #92) ─────────────────────────
   const timeToHireStats = useMemo(() => {
@@ -356,7 +377,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                         minWidth: 30,
                       }}
                     >
-                      <Text style={{ color: '#fff', fontSize: 11 }}>{count}</Text>
+                      <Text style={{ color: colors.text[theme].quaternary, fontSize: 11 }}>{count}</Text>
                     </Stack>
                   </Stack>
                 </Row>
@@ -407,7 +428,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                         style={{
                           height: 6,
                           width: `${item.rate}%`,
-                          backgroundColor: PIPELINE_STAGES[idx]?.color || '#6366f1',
+                          backgroundColor: PIPELINE_STAGES[idx]?.color ?? colors.text[theme].tertiary,
                           borderRadius: 3,
                         }}
                       />
@@ -506,14 +527,14 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                           style={{
                             height: 14,
                             width: `${barWidth}%`,
-                            backgroundColor: '#f59e0b',
+                            backgroundColor: colors.warning[theme === 'light' ? 600 : 300],
                             borderRadius: 3,
                             justifyContent: 'center',
                             paddingHorizontal: 4,
                             minWidth: 24,
                           }}
                         >
-                          <Text style={{ color: '#fff', fontSize: 10 }}>{bucket.count}</Text>
+                          <Text style={{ color: colors.text[theme].quaternary, fontSize: 10 }}>{bucket.count}</Text>
                         </Stack>
                       </Stack>
                     </Row>
