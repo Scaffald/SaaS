@@ -109,6 +109,16 @@ export function AdminBackgroundChecksPage() {
     { enabled: isAdmin, staleTime: 30_000 }
   )
 
+  // The queue strip describes the QUEUE, not the current filter.
+  //
+  // `checksQuery` is filtered — and defaults to `under_review` — so computing
+  // the strip from it reported "Over SLA 0" while three cases were actually
+  // over, simply because they sat in other statuses. A processor reading that
+  // would think the queue was clear. This is the same class of mistake as
+  // rendering a confident 0 before data loads: a number that is technically
+  // derived from something, and wrong about the thing it appears to describe.
+  const allChecksQuery = useAdminChecks({}, { enabled: isAdmin, staleTime: 30_000 })
+
   const disputesQuery = useAdminDisputes(undefined, {
     enabled: isAdmin && activeTab === 'disputes',
     staleTime: 30_000,
@@ -312,13 +322,13 @@ export function AdminBackgroundChecksPage() {
     // The queue's own numbers: what is open, what is late, and how long a case
     // typically sits. A queue that shows status but not elapsed time tells a
     // processor what a case IS, not which one to pick up.
-    const queue = computeQueueMetrics(checksQuery.data ?? [])
+    const queue = computeQueueMetrics(allChecksQuery.data ?? [])
     return {
       total,
       pendingDisputes: pendingDisputes.length,
       ...queue,
     }
-  }, [checksQuery.data, disputesQuery.data])
+  }, [checksQuery.data, allChecksQuery.data, disputesQuery.data])
 
   if (isLoadingRoles) {
     return (
@@ -387,7 +397,14 @@ export function AdminBackgroundChecksPage() {
             value={summaryStats.medianDaysOpen == null ? '—' : `${summaryStats.medianDaysOpen}d`}
           />
           <MetricBlock label="Pending disputes" value={summaryStats.pendingDisputes} />
-          <MetricBlock label="Total in view" value={summaryStats.total} />
+          <MetricBlock
+            label="In current filter"
+            value={summaryStats.total}
+            // The only figure here that IS filter-scoped. Named so it
+            // cannot be misread as a queue total sitting beside five that
+            // are.
+            delta="this view only"
+          />
         </MetricRow>
 
         <Row
