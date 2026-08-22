@@ -4,6 +4,7 @@ import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import {
   DndContext,
   DragOverlay,
+  KeyboardSensor,
   PointerSensor,
   useDraggable,
   useDroppable,
@@ -26,7 +27,11 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import type { ApplicationStatus, ATSApplication } from '../types'
-import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
+import {
+  allowedTargetsFor,
+  isValidStatusTransition,
+  useApplicationStatusChange,
+} from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { CandidateDetailModal } from './CandidateDetailModal'
 import { colors } from '@scaffald/ui/tokens'
@@ -197,7 +202,12 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
   }
 
   // Configure drag sensors
+  // PointerSensor was the ONLY sensor, which is §12 #12: the board had no
+  // keyboard path at all. dnd-kit ships a KeyboardSensor that gives Space to
+  // lift, arrows to move between droppables and Space again to drop — so the
+  // fix is registering it, not building a parallel interaction.
   const sensors = useSensors(
+    useSensor(KeyboardSensor),
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8, // 8px of movement required to start drag
@@ -249,6 +259,19 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
 
   const handleDragCancel = () => {
     setActiveId(null)
+  }
+
+  /**
+   * Move a candidate without dragging (§12 #12).
+   *
+   * Routes through the same `changeStatus` the drag path uses, so the confirm
+   * modal for critical moves and the transition guard apply identically — this
+   * is a second INPUT, not a second code path.
+   */
+  const handleMoveApplication = (applicationId: string, toStatus: ApplicationStatus) => {
+    const application = applications.find((app) => app.id === applicationId)
+    if (!application) return
+    changeStatus({ applicationId, fromStatus: application.status, toStatus })
   }
 
   // Find active application for drag overlay
@@ -345,6 +368,14 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                     selectedApplicationIds={selectedApplicationIds}
                     onSelectApplication={setSelectedApplication}
                     onToggleSelection={toggleApplicationSelection}
+                    draggingFromStatus={activeApplication?.status ?? null}
+                    // §12 #12, the mobile half: one stage renders at a time
+                    // behind a Tabs control, so there is no second column on
+                    // screen to drag a card to. Dragging cannot be the only
+                    // way to move a candidate here.
+                    onMoveApplication={handleMoveApplication}
+                    moveTargets={allowedTargetsFor(status)}
+                    moveTargetLabels={STATUS_LABELS}
                   />
                 </Stack>
               </Tabs.Content>
@@ -364,6 +395,10 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                   selectedApplicationIds={selectedApplicationIds}
                   onSelectApplication={setSelectedApplication}
                   onToggleSelection={toggleApplicationSelection}
+                  draggingFromStatus={activeApplication?.status ?? null}
+                  onMoveApplication={handleMoveApplication}
+                  moveTargets={allowedTargetsFor(status)}
+                  moveTargetLabels={STATUS_LABELS}
                 />
               ))}
             </Row>
@@ -494,6 +529,7 @@ function DroppableColumn({
   count,
   color,
   emptyMessage,
+  isIllegalTarget = false,
   children,
 }: {
   id: string
@@ -502,11 +538,28 @@ function DroppableColumn({
   count: number
   color?: string
   emptyMessage?: string
+  /** True while a card is being dragged that cannot legally land here. */
+  isIllegalTarget?: boolean
   children?: React.ReactNode
 }) {
-  const { isOver, setNodeRef } = useDroppable({ id, data: { type: 'column' } })
+  // §12 #13: an illegal drop used to be accepted by the column, rejected after
+  // the fact, and reported as an error the user could not have predicted.
+  // Registering the droppable as `disabled` closes it during the drag — the
+  // card will not land there — and dimming says so before they let go.
+  const { isOver, setNodeRef } = useDroppable({
+    id,
+    data: { type: 'column' },
+    disabled: isIllegalTarget,
+  })
   return (
-    <View ref={setNodeRef as Ref<View>} style={isOver ? { opacity: 0.9 } : undefined}>
+    <View
+      ref={setNodeRef as Ref<View>}
+      // `isOver` cannot be true on a disabled droppable, so these never fight.
+      style={isIllegalTarget ? { opacity: 0.35 } : isOver ? { opacity: 0.9 } : undefined}
+      // Announce it rather than relying on the dim alone, which a screen
+      // reader cannot see and a low-vision user may not notice.
+      aria-disabled={isIllegalTarget || undefined}
+    >
       <KanbanColumn id={id} title={title} count={count} color={color} emptyMessage={emptyMessage}>
         {children}
       </KanbanColumn>
@@ -592,6 +645,17 @@ interface StatusColumnProps {
   selectedApplicationIds: Set<string>
   onSelectApplication: (application: ATSApplication) => void
   onToggleSelection: (applicationId: string) => void
+  /**
+   * The stage of the card currently being dragged, or null when nothing is in
+   * flight. Used to close this column while a card that cannot legally land
+   * here is in the air.
+   */
+  draggingFromStatus?: ApplicationStatus | null
+  /** Move a candidate without dragging. */
+  onMoveApplication?: (applicationId: string, toStatus: ApplicationStatus) => void
+  /** The stages a card in THIS column may legally move to. */
+  moveTargets?: ApplicationStatus[]
+  moveTargetLabels?: Record<ApplicationStatus, string>
 }
 
 const StatusColumn = ({
@@ -602,7 +666,19 @@ const StatusColumn = ({
   selectedApplicationIds,
   onSelectApplication,
   onToggleSelection,
+  draggingFromStatus = null,
+  onMoveApplication,
+  moveTargets = [],
+  moveTargetLabels,
 }: StatusColumnProps) => {
+  // Only illegal while something is actually being dragged — a column is not
+  // "disabled" at rest, and dimming every column the moment the board loads
+  // would be worse than the bug.
+  const isIllegalTarget =
+    draggingFromStatus != null &&
+    draggingFromStatus !== status &&
+    !isValidStatusTransition(draggingFromStatus, status)
+
   return (
     <DroppableColumn
       id={status}
@@ -610,6 +686,7 @@ const StatusColumn = ({
       title={label}
       count={applications.length}
       color={color}
+      isIllegalTarget={isIllegalTarget}
       emptyMessage="No applications"
     >
       {applications.map((app) => {
@@ -624,24 +701,53 @@ const StatusColumn = ({
           (Date.now() - new Date(app.appliedAt).getTime()) / (1000 * 60 * 60 * 24)
         )
 
+        // Legal targets for THIS card. Computed from the card's own status
+        // rather than the column's, because `withdrawn` cards live in the
+        // rejected column and must not inherit its moves.
+        const targets = moveTargets.filter((t) => isValidStatusTransition(app.status, t))
+
         return (
-          <DraggableCard
-            key={app.id}
-            id={app.id}
-            kanbanCardProps={{
-              applicantName: app.candidate.name,
-              applicantAvatar: app.candidate.photo,
-              jobTitle: app.job.title,
-              applicationDate: new Date(app.appliedAt),
-              score: app.score,
-              status: app.status,
-              attachmentCount,
-              durationDays,
-              isSelected: selectedApplicationIds.has(app.id),
-              onToggleSelection: () => onToggleSelection(app.id),
-              onView: () => onSelectApplication(app),
-            }}
-          />
+          <Stack key={app.id} gap={4}>
+            <DraggableCard
+              id={app.id}
+              kanbanCardProps={{
+                applicantName: app.candidate.name,
+                applicantAvatar: app.candidate.photo,
+                jobTitle: app.job.title,
+                applicationDate: new Date(app.appliedAt),
+                score: app.score,
+                status: app.status,
+                attachmentCount,
+                durationDays,
+                isSelected: selectedApplicationIds.has(app.id),
+                onToggleSelection: () => onToggleSelection(app.id),
+                onView: () => onSelectApplication(app),
+              }}
+            />
+
+            {/* The non-drag path (§12 #12). Dragging is now one of two ways to
+                move a candidate rather than the only one — which is what makes
+                the board usable by keyboard, and usable at all on mobile,
+                where a single stage renders at a time behind a Tabs control
+                and there is no second column on screen to drag to. */}
+            {onMoveApplication && targets.length > 0 ? (
+              <Row gap={4} wrap>
+                {targets.map((target) => (
+                  <Button
+                    key={target}
+                    size="sm"
+                    variant="outline"
+                    onPress={() => onMoveApplication(app.id, target)}
+                    accessibilityLabel={`Move ${app.candidate.name} to ${
+                      moveTargetLabels?.[target] ?? target
+                    }`}
+                  >
+                    {`→ ${moveTargetLabels?.[target] ?? target}`}
+                  </Button>
+                ))}
+              </Row>
+            ) : null}
+          </Stack>
         )
       })}
     </DroppableColumn>
