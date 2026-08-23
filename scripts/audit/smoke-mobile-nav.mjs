@@ -50,12 +50,14 @@ const CASES = [
     path: '/dashboard',
     expectTabs: ['Home', 'Jobs', 'Community'],
     expectActive: 'Home',
+    expectRole: 'Worker',
   },
   {
     mode: 'employer',
     path: '/office/applications',
     expectTabs: ['Talent', 'Apps', 'Jobs', 'Screening'],
     expectActive: 'Apps',
+    expectRole: 'Employer',
   },
   {
     // Deep in the ATS cluster, not on /checks itself — the tab should still be
@@ -64,6 +66,7 @@ const CASES = [
     path: '/office/ats/admin',
     expectTabs: ['Talent', 'Apps', 'Jobs', 'Screening'],
     expectActive: 'Screening',
+    expectRole: 'Employer',
   },
 ]
 
@@ -159,6 +162,58 @@ for (const c of CASES) {
   const overlapOk = covered.length === 0
   if (!overlapOk) failures++
 
+  // The masthead avatar opens the account sheet, and the bar's More opens the
+  // drawer. Those two moved together on purpose: the avatar used to be the ONLY
+  // way to open the drawer on a phone, so repointing it without adding More
+  // would have stranded profile, settings and organizations behind nothing.
+  // Both doors are checked here, because "the sheet works" and "the drawer is
+  // still reachable" are separate claims.
+  const doors = await page.evaluate(async () => {
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms))
+    const byLabel = (needle) =>
+      [...document.querySelectorAll('[aria-label]')].find((el) =>
+        (el.getAttribute('aria-label') || '').toLowerCase().includes(needle)
+      )
+    const click = (el) => el?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+
+    // Account sheet, via the avatar.
+    click(byLabel('account and role'))
+    await wait(600)
+    const sheet = [...document.querySelectorAll('*')].some((el) =>
+      (el.textContent || '').includes('Using Scaffald as')
+    )
+    // Every row in the sheet is a menuitem, but only the context rows under
+    // "Using Scaffald as" carry aria-selected — Notifications and Sign out are
+    // actions, not roles, and lumping them together made this line read as if
+    // "Notifications" were something you could be.
+    const roleRows = [...document.querySelectorAll('[role="menuitem"][aria-selected]')].map(
+      (el) => {
+        const label = (el.textContent || '').trim()
+        return el.getAttribute('aria-selected') === 'true' ? `${label}*` : label
+      }
+    )
+    // Close it again so the drawer probe is not clicking through a scrim.
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    await wait(500)
+
+    // Drawer, via More.
+    const more = byLabel('more')
+    click(more)
+    await wait(600)
+    const drawer = [...document.querySelectorAll('*')].some((el) => {
+      const t = (el.textContent || '').trim()
+      return t === 'Settings' || t === 'Profile'
+    })
+
+    return { moreExists: !!more, sheet, roleRows, drawer }
+  })
+
+  // The sheet must agree with the bar about which context you are in — the two
+  // read the same `useAppMode`, so a disagreement means one of them is stale.
+  const sheetAgrees = doors.roleRows.some((r) => r.endsWith('*') && r.startsWith(c.expectRole))
+  const doorsOk = doors.moreExists && doors.sheet && doors.drawer && sheetAgrees
+  if (!doorsOk) failures++
+
   const tabs = observed.map((o) => o.label)
   const active = observed.find((o) => o.selected)?.label ?? null
 
@@ -170,8 +225,11 @@ for (const c of CASES) {
   await page.screenshot({ path: shot })
 
   console.log(
-    `${tabsOk && activeOk && overlapOk ? '✓' : '✗'} ${c.mode.padEnd(8)} ${c.path.padEnd(22)} ` +
+    `${tabsOk && activeOk && overlapOk && doorsOk ? '✓' : '✗'} ${c.mode.padEnd(8)} ${c.path.padEnd(22)} ` +
       `tabs=[${tabs.join(', ')}] active=${active}` +
+      ` sheet=${doors.sheet ? 'opens' : 'NO'}` +
+      ` roles=[${doors.roleRows.join(', ')}]` +
+      ` drawer-via-More=${doors.moreExists ? (doors.drawer ? 'opens' : 'NO') : 'NO MORE TAB'}` +
       (tabsOk ? '' : ` (expected [${c.expectTabs.join(', ')}])`) +
       (activeOk ? '' : ` (expected active ${c.expectActive})`) +
       (overlapOk ? '' : ` COVERED: ${covered.map((c) => `${c.tab}<-"${c.by}"`).join(', ')}`) +
