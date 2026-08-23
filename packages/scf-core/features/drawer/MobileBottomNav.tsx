@@ -34,7 +34,9 @@ import {
   View,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { MoreHorizontal } from 'lucide-react-native'
 import { EMPLOYER_MOBILE_SECTIONS, MOBILE_SECTIONS, type MobileSection } from './config'
+import { useDrawer } from './DrawerContext'
 import { useAppMode } from '@scf/core/utils/useAppMode'
 
 // ── Constants ──
@@ -151,6 +153,7 @@ export function MobileBottomNav() {
   // employer screens (#385), but it left an employer on a phone with no primary
   // navigation at all. Now each mode has its own tab set.
   const sections = mode === 'employer' ? EMPLOYER_MOBILE_SECTIONS : MOBILE_SECTIONS
+  const { open: openDrawer } = useDrawer()
   const visible = isMobile || shouldForceMobile()
 
   // Register nav height so page-level BottomBars can offset above the pill.
@@ -294,6 +297,35 @@ export function MobileBottomNav() {
               </Pressable>
             )
           })}
+
+          {/* More — the drawer's door.
+              The masthead avatar used to be the only way to open the drawer on
+              a phone. It now opens the account-and-role sheet, so the drawer
+              needs this. It is deliberately NOT a section: it navigates
+              nowhere, owns no route, and must never take the active pill, so
+              keeping it out of `sections` keeps the index arithmetic and the
+              layout cache honest. */}
+          <Pressable
+            onPress={openDrawer}
+            accessibilityRole="button"
+            accessibilityLabel="More — open navigation drawer"
+            style={({ pressed }) => ({
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: TAB_VERTICAL_PAD,
+              opacity: pressed ? 0.7 : 1,
+            })}
+          >
+            <MoreHorizontal size={ICON_SIZE} color={inactiveText} />
+            <Text
+              size="xs"
+              weight="medium"
+              style={{ marginTop: 2, fontSize: LABEL_FONT_SIZE, color: inactiveText }}
+            >
+              More
+            </Text>
+          </Pressable>
         </View>
       </GlassTabBar>
     </View>

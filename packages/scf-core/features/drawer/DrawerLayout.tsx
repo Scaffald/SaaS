@@ -21,6 +21,7 @@ import { CustomDrawer } from './CustomDrawer'
 import { DrawerProvider, useDrawer } from './DrawerContext'
 import { DrawerContent } from './DrawerContent'
 import { MobileBottomNav } from './MobileBottomNav'
+import { MobileAccountSheet } from './MobileAccountSheet'
 
 interface DrawerLayoutProps {
   /**
@@ -68,7 +69,7 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
   const { theme } = useThemeContext()
   const router = useRouter()
   const { session } = useSessionContext()
-  const { close, toggle } = useDrawer()
+  const { close } = useDrawer()
   const isSmall = width < 1024 || shouldForceMobile()
   const [isDrawerCollapsed, setIsDrawerCollapsed] = useState(false)
 
@@ -102,6 +103,17 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
       .slice(0, 2) || 'U'
   const avatarAlt = profileData?.display_name ?? avatarName
   const isVerified = profileData?.idVerificationBadge?.badge_status === 'active'
+
+  // The masthead avatar opens the account sheet, not the navigation drawer.
+  //
+  // It used to open the drawer, and was the ONLY thing that did on a phone —
+  // so this could not move until the drawer had another door. The bottom bar's
+  // More tab is that door, added in the same change. Both halves are the
+  // prototype's arrangement: the bar carries navigation and More, the avatar
+  // carries account and role.
+  const [accountOpen, setAccountOpen] = useState(false)
+  const openAccount = useCallback(() => setAccountOpen(true), [])
+  const closeAccount = useCallback(() => setAccountOpen(false), [])
 
   const [searchActive, setSearchActive] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -243,9 +255,9 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
             }}
           >
             <Pressable
-              onPress={toggle}
+              onPress={openAccount}
               hitSlop={8}
-              accessibilityLabel="Open navigation drawer"
+              accessibilityLabel="Account and role"
               accessibilityRole="button"
               style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
             >
@@ -293,7 +305,7 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
       searchQuery,
       submitSearch,
       theme,
-      toggle,
+      openAccount,
       unreadCount,
     ]
   )
@@ -330,6 +342,18 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
           {children}
         </Stack>
         {isSmall && !hideDrawer ? <MobileBottomNav /> : null}
+        {isSmall && !hideDrawer ? (
+          <MobileAccountSheet
+            visible={accountOpen}
+            onClose={closeAccount}
+            avatarUrl={avatarUrl}
+            avatarInitials={avatarInitials}
+            name={avatarName || 'Your account'}
+            subtitle={profileData?.headline ?? undefined}
+            verified={isVerified}
+            unreadCount={unreadCount}
+          />
+        ) : null}
       </CustomDrawer>
     </View>
   )
