@@ -6,7 +6,7 @@ import { useNotificationDeviceRegistration } from '@scf/core/hooks/useNotificati
 import { Slot, useRouter, useSegments } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { Button, Spinner, Text, Stack, useThemeContext, BottomBarProvider } from '@scaffald/ui'
+import { Button, Spinner, Text, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 /**
@@ -67,9 +67,7 @@ export default function ProtectedLayout() {
     if (isCheckingPrereqs || isFetchingPrereqs || !statusData || statusData.isComplete) {
       return
     }
-    const target = statusData.needsOnboarding
-      ? ROUTES.ONBOARDING.path
-      : ROUTES.LEGAL_UPDATE.path
+    const target = statusData.needsOnboarding ? ROUTES.ONBOARDING.path : ROUTES.LEGAL_UPDATE.path
     if (lastRedirectTargetRef.current === target) return
     lastRedirectTargetRef.current = target
     router.replace(target)
@@ -109,10 +107,8 @@ export default function ProtectedLayout() {
 
   // Keep covering the content while an off-this-route incompleteness redirect
   // is pending, so protected content never flashes for a gated user.
-  const redirectPending = !isOnboardingRoute &&
-    !isLegalUpdateRoute &&
-    !!statusData &&
-    !statusData.isComplete
+  const redirectPending =
+    !isOnboardingRoute && !isLegalUpdateRoute && !!statusData && !statusData.isComplete
 
   const showOverlay = !isReady || redirectPending
 
@@ -121,27 +117,28 @@ export default function ProtectedLayout() {
     backgroundColor: colors.bg[resolvedTheme].default,
   }
 
+  // BottomBarProvider used to wrap this too. It is at the app root now
+  // (scf-core/provider/index.tsx) so one provider serves both the phone tab bar
+  // and the root-level cookie banner that has to clear it.
   return (
-    <BottomBarProvider>
-      <View style={{ flex: 1 }}>
-        <Slot />
-        {showOverlay &&
-          (isPrereqsError || showRetry ? (
-            <Stack style={overlayStyle} justify="center" align="center" gap={12}>
-              <Text style={{ color: colors.text[resolvedTheme].secondary }}>
-                This is taking longer than usual.
-              </Text>
-              <Button variant="outline" onPress={handleRetry}>
-                Retry
-              </Button>
-            </Stack>
-          ) : (
-            <Stack style={overlayStyle} justify="center" align="center">
-              <Spinner size="lg" />
-              <Text>Loading...</Text>
-            </Stack>
-          ))}
-      </View>
-    </BottomBarProvider>
+    <View style={{ flex: 1 }}>
+      <Slot />
+      {showOverlay &&
+        (isPrereqsError || showRetry ? (
+          <Stack style={overlayStyle} justify="center" align="center" gap={12}>
+            <Text style={{ color: colors.text[resolvedTheme].secondary }}>
+              This is taking longer than usual.
+            </Text>
+            <Button variant="outline" onPress={handleRetry}>
+              Retry
+            </Button>
+          </Stack>
+        ) : (
+          <Stack style={overlayStyle} justify="center" align="center">
+            <Spinner size="lg" />
+            <Text>Loading...</Text>
+          </Stack>
+        ))}
+    </View>
   )
 }
