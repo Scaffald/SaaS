@@ -13,14 +13,28 @@
  *   Web    → GlassSurface (CSS backdrop-filter)
  */
 
-import { GlassSurface, Text, useResponsive, useThemeContext, useBottomBarContext } from '@scaffald/ui'
+import {
+  GlassSurface,
+  Text,
+  useResponsive,
+  useThemeContext,
+  useBottomBarContext,
+} from '@scaffald/ui'
 import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
 import { BlurView } from './NativeBlurView'
 import { usePathname, useRouter } from 'expo-router'
 import { useEffect, useMemo, useRef, type ReactNode } from 'react'
-import { Animated, Easing, type LayoutChangeEvent, Platform, Pressable, StyleSheet, View } from 'react-native'
+import {
+  Animated,
+  Easing,
+  type LayoutChangeEvent,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { MOBILE_SECTIONS, type MobileSection } from './config'
+import { EMPLOYER_MOBILE_SECTIONS, MOBILE_SECTIONS, type MobileSection } from './config'
 import { useAppMode } from '@scf/core/utils/useAppMode'
 
 // ── Constants ──
@@ -42,9 +56,9 @@ function shouldForceMobile(): boolean {
 }
 
 /** Index of the tab owning `pathname`, or -1 when the route isn't a tab section. */
-function getActiveSectionIndex(pathname: string): number {
-  for (let i = 0; i < MOBILE_SECTIONS.length; i++) {
-    const section = MOBILE_SECTIONS[i]
+function getActiveSectionIndex(pathname: string, sections: MobileSection[]): number {
+  for (let i = 0; i < sections.length; i++) {
+    const section = sections[i]
     for (const prefix of section.matchPrefixes) {
       if (pathname === prefix || pathname.startsWith(prefix)) {
         return i
@@ -67,30 +81,13 @@ const pillShadow = {
   elevation: 12,
 }
 
-function GlassTabBar({
-  children,
-  theme,
-}: {
-  children: ReactNode
-  theme: 'light' | 'dark'
-}) {
-  const borderColor =
-    theme === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.07)'
+function GlassTabBar({ children, theme }: { children: ReactNode; theme: 'light' | 'dark' }) {
+  const borderColor = theme === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.07)'
 
   if (Platform.OS === 'ios') {
     return (
-      <View
-        style={[
-          styles.pillWrapper,
-          pillShadow,
-          { borderColor },
-        ]}
-      >
-        <BlurView
-          intensity={80}
-          tint="systemChromeMaterial"
-          style={styles.blurFill}
-        >
+      <View style={[styles.pillWrapper, pillShadow, { borderColor }]}>
+        <BlurView intensity={80} tint="systemChromeMaterial" style={styles.blurFill}>
           {children}
         </BlurView>
       </View>
@@ -98,16 +95,9 @@ function GlassTabBar({
   }
 
   if (Platform.OS === 'android') {
-    const fallbackBg =
-      theme === 'dark' ? 'rgba(30,30,30,0.85)' : 'rgba(245,245,245,0.88)'
+    const fallbackBg = theme === 'dark' ? 'rgba(30,30,30,0.85)' : 'rgba(245,245,245,0.88)'
     return (
-      <View
-        style={[
-          styles.pillWrapper,
-          pillShadow,
-          { borderColor, backgroundColor: fallbackBg },
-        ]}
-      >
+      <View style={[styles.pillWrapper, pillShadow, { borderColor, backgroundColor: fallbackBg }]}>
         <BlurView
           intensity={40}
           tint={theme === 'dark' ? 'dark' : 'light'}
@@ -136,8 +126,7 @@ function GlassTabBar({
           // Near-opaque backing: even at material="thick" (84%) scrolled text
           // stayed legible through the pill (#378). Keeps the backdrop blur
           // for depth at the edges while making the surface itself read solid.
-          backgroundColor:
-            theme === 'dark' ? 'rgba(28,28,30,0.97)' : 'rgba(252,251,249,0.97)',
+          backgroundColor: theme === 'dark' ? 'rgba(28,28,30,0.97)' : 'rgba(252,251,249,0.97)',
         } as object,
       ]}
     >
@@ -157,10 +146,12 @@ export function MobileBottomNav() {
   const router = useRouter()
   const { mode } = useAppMode()
 
-  // Employer mode hides the worker tab bar (Home/Jobs/Community) instead of
-  // implying worker context on employer screens (#385). Employer navigation
-  // lives in the drawer until a dedicated employer tab set is designed.
-  const visible = (isMobile || shouldForceMobile()) && mode !== 'employer'
+  // The bar mirrors the role you are in. Employer mode used to hide it
+  // altogether — correct in that worker tabs must not imply worker context on
+  // employer screens (#385), but it left an employer on a phone with no primary
+  // navigation at all. Now each mode has its own tab set.
+  const sections = mode === 'employer' ? EMPLOYER_MOBILE_SECTIONS : MOBILE_SECTIONS
+  const visible = isMobile || shouldForceMobile()
 
   // Register nav height so page-level BottomBars can offset above the pill.
   // PILL_HEIGHT (56) + paddingTop (8) + gap (8) = 72.
@@ -169,13 +160,18 @@ export function MobileBottomNav() {
     return () => setNavBarHeight(0)
   }, [visible, setNavBarHeight])
 
-  const activeIndex = useMemo(() => getActiveSectionIndex(pathname), [pathname])
+  const activeIndex = useMemo(() => getActiveSectionIndex(pathname, sections), [pathname, sections])
 
   const indicatorX = useRef(new Animated.Value(0)).current
   const indicatorWidth = useRef(new Animated.Value(0)).current
-  const tabLayoutsRef = useRef<Array<{ x: number; width: number } | null>>(
-    MOBILE_SECTIONS.map(() => null)
-  )
+  const tabLayoutsRef = useRef<Array<{ x: number; width: number } | null>>(sections.map(() => null))
+
+  // Switching mode swaps the tab set, and the two sets are different lengths.
+  // The layout cache is a ref, so it keeps its old size unless we clear it —
+  // which would leave the active pill measuring a tab that is no longer there.
+  useEffect(() => {
+    tabLayoutsRef.current = sections.map(() => null)
+  }, [sections])
 
   useEffect(() => {
     const layout = tabLayoutsRef.current[activeIndex]
@@ -202,8 +198,7 @@ export function MobileBottomNav() {
   const vibrant = glassVibrantColors[resolvedTheme]
   const inactiveText = vibrant.tertiaryText
   const activeText = colors.primary[600]
-  const activeBg =
-    resolvedTheme === 'dark' ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.06)'
+  const activeBg = resolvedTheme === 'dark' ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.06)'
 
   const handleTabLayout = (index: number) => (event: LayoutChangeEvent) => {
     const { x, width } = event.nativeEvent.layout
@@ -257,7 +252,7 @@ export function MobileBottomNav() {
             }}
           />
 
-          {MOBILE_SECTIONS.map((section, index) => {
+          {sections.map((section, index) => {
             const Icon = section.icon
             const isActive = index === activeIndex
             return (
@@ -266,7 +261,15 @@ export function MobileBottomNav() {
                 onPress={() => handleTabPress(section, index)}
                 onLayout={handleTabLayout(index)}
                 accessibilityRole="tab"
+                // Both, deliberately. react-native-web 0.21 maps `aria-selected`
+                // but has NO mapping for `accessibilityState` — so the state
+                // below reaches native and nothing else, and on web the active
+                // tab was never announced. Verified against
+                // react-native-web/dist/modules/createDOMProps: the excluded-prop
+                // list carries aria-selected/accessibilitySelected and no
+                // accessibilityState entry.
                 accessibilityState={{ selected: isActive }}
+                aria-selected={isActive}
                 accessibilityLabel={section.label}
                 style={({ pressed }) => ({
                   flex: 1,

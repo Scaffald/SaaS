@@ -1,5 +1,6 @@
 import { DatePickerProvider } from '@rehookify/datepicker'
 import type { Session } from '@supabase/auth-js'
+import { BottomBarProvider } from '@scaffald/ui'
 import type { FC, ReactNode } from 'react'
 
 import { AuthProvider } from './auth/AuthProvider'
@@ -49,4 +50,19 @@ const compose = (providers: FC<{ children: ReactNode }>[]) =>
     return Provider
   })
 
-const Providers = compose([CookieConsentProvider, ToastProvider, QueryClientProvider])
+// `compose` puts the first entry outermost.
+//
+// BottomBarProvider leads because it is pure context with no output of its own,
+// and because two things that need to agree about the bottom of the screen sit
+// on opposite sides of the tree: the phone tab bar publishes its height from
+// deep inside DrawerLayout, and the cookie banner — which renders here, at the
+// root, inside CookieConsentProvider — has to clear it. It used to be mounted
+// twice further down (DrawerLayout and the protected layout), so the bar
+// registered into the innermost copy while the banner read the empty default
+// and covered the navigation. One provider above both ends that.
+const Providers = compose([
+  BottomBarProvider,
+  CookieConsentProvider,
+  ToastProvider,
+  QueryClientProvider,
+])

@@ -7,10 +7,10 @@ import {
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useQueryClient } from '@tanstack/react-query'
-import { useThemeContext, useResponsive, Avatar, Row, Text, BottomBarProvider } from '@scaffald/ui'
+import { useThemeContext, useResponsive, Avatar, Row, Text } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { NotificationItem } from '@scf/core/components/notifications'
-import { ROUTES, } from '@scf/core/constants/routes'
+import { ROUTES } from '@scf/core/constants/routes'
 import { ArrowLeft, Search, X } from 'lucide-react-native'
 import { Stack } from 'expo-router'
 import { useRouter } from 'expo-router'
@@ -42,12 +42,13 @@ const DRAWER_WIDTH_FULL = 300
 const DRAWER_WIDTH_COLLAPSED = 92
 
 export function DrawerLayout(props: DrawerLayoutProps) {
+  // BottomBarProvider used to wrap this. It now lives at the app root (see
+  // scf-core/provider/index.tsx) so that the cookie banner, which renders up
+  // there, can read the height this layout's tab bar publishes.
   return (
-    <BottomBarProvider>
-      <DrawerProvider>
-        <DrawerLayoutInner {...props} />
-      </DrawerProvider>
-    </BottomBarProvider>
+    <DrawerProvider>
+      <DrawerLayoutInner {...props} />
+    </DrawerProvider>
   )
 }
 
@@ -282,18 +283,18 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
       )
     },
     [
-      avatarAlt, 
-      avatarInitials, 
-      avatarUrl, 
-      closeSearch, 
-      insets.top, 
-      isVerified, 
-      searchActive, 
-      searchQuery, 
-      submitSearch, 
-      theme, 
-      toggle, 
-      unreadCount
+      avatarAlt,
+      avatarInitials,
+      avatarUrl,
+      closeSearch,
+      insets.top,
+      isVerified,
+      searchActive,
+      searchQuery,
+      submitSearch,
+      theme,
+      toggle,
+      unreadCount,
     ]
   )
 

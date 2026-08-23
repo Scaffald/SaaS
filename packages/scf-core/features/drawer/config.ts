@@ -431,6 +431,8 @@ export type MobileSection = {
  * Profile, settings, notifications, organizations and assessments are
  * accessed via the drawer (avatar tap). Discover/Workers/Assessments
  * surface as Home-tab widgets in a follow-up.
+ *
+ * This is the WORKER set. Employer mode gets its own, below.
  */
 export const MOBILE_SECTIONS: MobileSection[] = [
   {
@@ -460,6 +462,62 @@ export const MOBILE_SECTIONS: MobileSection[] = [
     icon: Bookmark,
     route: ROUTES.COMMUNITIES.path,
     matchPrefixes: ['/communities'],
+    subItems: [],
+  },
+]
+
+/**
+ * Employer-mode tabs.
+ *
+ * The bar used to hide itself entirely in employer mode, on the reasoning that
+ * "employer navigation lives in the drawer until a dedicated employer tab set
+ * is designed" (#385). The prototype designs it: the phone bar mirrors the role
+ * you are currently in, rather than showing worker tabs to an employer — or,
+ * as we did, showing nothing at all. Hiding it left an employer on a phone with
+ * no primary navigation whatsoever; every move went through the drawer behind
+ * the header avatar.
+ *
+ * The prototype's employer bar is Talent / Apps / Jobs / Recruiting / More.
+ * Recruiting is deliberately absent here: that surface does not exist yet, and
+ * a tab navigating nowhere is worse than one fewer tab. Screening takes the
+ * fourth slot instead — it is real, reachable, and something an employer works.
+ *
+ * Everything else — profile, settings, notifications, organizations — stays in
+ * the drawer, exactly as it does for workers.
+ */
+export const EMPLOYER_MOBILE_SECTIONS: MobileSection[] = [
+  {
+    key: 'talent',
+    label: 'Talent',
+    icon: Users,
+    route: ROUTES.WORKERS.path,
+    matchPrefixes: ['/workers'],
+    subItems: [],
+  },
+  {
+    key: 'applications',
+    label: 'Apps',
+    icon: ClipboardCheck,
+    route: ROUTES.OFFICE.APPLICATIONS.path,
+    matchPrefixes: ['/office/applications'],
+    subItems: [],
+  },
+  {
+    key: 'office-jobs',
+    label: 'Jobs',
+    icon: Briefcase,
+    route: ROUTES.OFFICE.CMS.JOBS.path,
+    matchPrefixes: ['/office/cms/jobs'],
+    subItems: [],
+  },
+  {
+    key: 'screening',
+    label: 'Screening',
+    icon: ShieldCheck,
+    route: ROUTES.OFFICE.ATS.CHECKS.path,
+    // The whole ATS cluster lights this tab, not just /checks — an admin deep
+    // in /office/ats/admin is still "in Screening".
+    matchPrefixes: ['/office/ats'],
     subItems: [],
   },
 ]
