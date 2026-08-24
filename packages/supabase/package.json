@@ -33,11 +33,11 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/pg": "^8.15.5",
-    "pg": "^8.22.0",
+    "@types/pg": "^8.23.1",
+    "pg": "^8.23.0",
     "stripe": "20.4.1",
     "supabase": "catalog:",
     "typescript": "catalog:",
-    "uuid": "^14.0.1"
+    "uuid": "^14.0.2"
   }
 }
