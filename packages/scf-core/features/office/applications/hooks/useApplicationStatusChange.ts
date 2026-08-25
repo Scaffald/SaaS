@@ -1,8 +1,10 @@
 import { useUpdateEmployerApplicationMutation } from '@scf/core/utils/applications-sdk-hooks'
 import type { Application } from '@scaffald/sdk/resources/applications'
 import { useQueryClient } from '@tanstack/react-query'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useToast } from '@scaffald/ui'
 import type { ApplicationStatus } from '../types'
+import { createWriteQueue, UNDO_WINDOW_MS, type WriteQueue } from '../pending-writes'
 
 type ApiApplicationStatus = Application['status']
 
@@ -31,6 +33,11 @@ interface StatusChangeParams {
   fromStatus: ApplicationStatus
   toStatus: ApplicationStatus
   reason?: string
+  /**
+   * Who moved, for the toast. Optional because the hook can say something
+   * useful without it, and an id in a toast is worse than no name at all.
+   */
+  candidateName?: string
 }
 
 interface UseApplicationStatusChangeReturn {
@@ -70,10 +77,7 @@ export const ALLOWED_TRANSITIONS: Record<ApplicationStatus, ApplicationStatus[]>
   withdrawn: [],
 }
 
-export function isValidStatusTransition(
-  from: ApplicationStatus,
-  to: ApplicationStatus
-): boolean {
+export function isValidStatusTransition(from: ApplicationStatus, to: ApplicationStatus): boolean {
   return ALLOWED_TRANSITIONS[from]?.includes(to) ?? false
 }
 
@@ -82,10 +86,114 @@ export function allowedTargetsFor(from: ApplicationStatus): ApplicationStatus[] 
   return ALLOWED_TRANSITIONS[from] ?? []
 }
 
+/** Stage names as a person would say them, for the toast. */
+const STAGE_LABELS: Record<ApplicationStatus, string> = {
+  new: 'New',
+  screen: 'Screening',
+  inquired: 'Inquired',
+  interview: 'Interview',
+  offer: 'Offer',
+  hired: 'Hired',
+  rejected: 'Closed',
+  withdrawn: 'Withdrawn',
+}
+
+/** The employer list cache: `{ data: [...], total }` per filter combination. */
+interface CachedList {
+  data: Array<{ id: string; status?: string }>
+  total?: number
+}
+
+interface CachedStatusSnapshot {
+  applicationId: string
+  /** The status each cached list held before the patch, keyed by cache key. */
+  before: Array<{ key: unknown[]; status: string | undefined }>
+}
+
+/**
+ * Move the row in every cached employer list, and remember what it was.
+ *
+ * Every filter combination is its own cache entry, so this patches them all
+ * rather than guessing which one the screen is reading.
+ */
+function patchCachedStatus(
+  queryClient: ReturnType<typeof useQueryClient>,
+  applicationId: string,
+  nextStatus: string
+): CachedStatusSnapshot {
+  const before: CachedStatusSnapshot['before'] = []
+
+  // Enumerate then patch per key, rather than a blanket `setQueriesData`
+  // updater: this way the cache key is in hand for the rollback, and there is
+  // no reliance on whether the updater is handed its own query.
+  const entries = queryClient.getQueriesData<CachedList>({
+    queryKey: ['applications', 'employer-list'],
+  })
+
+  for (const [key, old] of entries) {
+    const row = old?.data?.find((r) => r.id === applicationId)
+    if (!row) continue
+    before.push({ key: key as unknown[], status: row.status })
+    queryClient.setQueryData<CachedList>(key, (current) => {
+      if (!current?.data) return current
+      return {
+        ...current,
+        data: current.data.map((r) => (r.id === applicationId ? { ...r, status: nextStatus } : r)),
+      }
+    })
+  }
+
+  return { applicationId, before }
+}
+
+/** Put the row back exactly where each cache had it. */
+function restoreCachedStatus(
+  queryClient: ReturnType<typeof useQueryClient>,
+  snapshot: CachedStatusSnapshot
+): void {
+  for (const entry of snapshot.before) {
+    queryClient.setQueryData<CachedList>(entry.key, (old) => {
+      if (!old?.data) return old
+      return {
+        ...old,
+        data: old.data.map((row) =>
+          row.id === snapshot.applicationId ? { ...row, status: entry.status } : row
+        ),
+      }
+    })
+  }
+}
+
 export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn => {
   const [isChanging, setIsChanging] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const [pendingChange, setPendingChange] = useState<StatusChangeParams | null>(null)
+
+  const toast = useToast()
+  // One queue per mount. A ref, not state — scheduling must never re-render.
+  const queueRef = useRef<WriteQueue | null>(null)
+  if (!queueRef.current) queueRef.current = createWriteQueue()
+  const queue = queueRef.current
+
+  // A held write must not be lost because the user navigated or closed the tab.
+  // Both paths flush rather than discard: the move was already confirmed on
+  // screen, so dropping it would be the worst outcome available.
+  useEffect(() => {
+    const flush = () => queue.flushAll()
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeunload', flush)
+      // `pagehide` is the one that actually fires on mobile Safari, where
+      // `beforeunload` is unreliable.
+      window.addEventListener('pagehide', flush)
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('beforeunload', flush)
+        window.removeEventListener('pagehide', flush)
+      }
+      flush()
+    }
+  }, [queue])
 
   const queryClient = useQueryClient()
   // Employer endpoint, not the applicant one. That endpoint no longer accepts
@@ -131,22 +239,62 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
         return
       }
 
-      // Otherwise, proceed immediately
-      setIsChanging(true)
+      // Everything else moves optimistically and is written after a short
+      // undo window. See pending-writes.ts for why the write is delayed rather
+      // than reversed — there is no legal backward transition to reverse with.
       setError(null)
 
-      try {
-        await updateMutation.mutateAsync({
-          id: applicationId,
-          params: { status: STATUS_MAP[toStatus] },
-        })
-      } catch (err) {
-        setError(err as Error)
+      const previous = patchCachedStatus(queryClient, applicationId, STATUS_MAP[toStatus])
+
+      const send = async () => {
+        setIsChanging(true)
+        try {
+          await updateMutation.mutateAsync({
+            id: applicationId,
+            params: { status: STATUS_MAP[toStatus] },
+          })
+        } catch (err) {
+          // The optimistic move was a promise this write would land. It did
+          // not, so put the row back rather than leaving the board showing a
+          // stage the server never accepted.
+          restoreCachedStatus(queryClient, previous)
+          setError(err as Error)
+        }
       }
+
+      queue.schedule(applicationId, send)
+
+      const stage = STAGE_LABELS[toStatus] ?? toStatus
+      const who = params.candidateName?.trim()
+      const toastId = toast.show({
+        message: who ? `${who} moved to ${stage}` : `Moved to ${stage}`,
+        duration: UNDO_WINDOW_MS,
+        action: {
+          label: 'Undo',
+          onPress: () => {
+            // Only claim the undo if the write really was still held. Past the
+            // window the row has moved for real, and saying otherwise would be
+            // the same lie as a button that 400s.
+            if (queue.cancel(applicationId)) {
+              restoreCachedStatus(queryClient, previous)
+            }
+            toast.dismiss(toastId)
+          },
+        },
+      })
     },
-    [isValidTransition, isCriticalChange, updateMutation]
+    [isValidTransition, isCriticalChange, updateMutation, queryClient, queue, toast]
   )
 
+  /**
+   * Hire and reject, once the confirmation dialog has been answered.
+   *
+   * These write IMMEDIATELY — no undo window. They are the two moves that
+   * already ask before acting, and holding a write the user has just
+   * explicitly confirmed would mean the dialog closes saying it is done while
+   * nothing has happened for five seconds. The dialog IS the undo here; it
+   * comes before the decision rather than after it.
+   */
   const confirmChange = useCallback(
     async (_reason?: string) => {
       if (!pendingChange) return

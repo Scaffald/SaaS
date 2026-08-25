@@ -255,6 +255,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
       applicationId,
       fromStatus: application.status,
       toStatus: newStatus,
+      candidateName: application.candidate?.name,
     })
   }
 
@@ -272,7 +273,12 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
   const handleMoveApplication = (applicationId: string, toStatus: ApplicationStatus) => {
     const application = applications.find((app) => app.id === applicationId)
     if (!application) return
-    changeStatus({ applicationId, fromStatus: application.status, toStatus })
+    changeStatus({
+      applicationId,
+      fromStatus: application.status,
+      toStatus,
+      candidateName: application.candidate?.name,
+    })
   }
 
   // Find active application for drag overlay
