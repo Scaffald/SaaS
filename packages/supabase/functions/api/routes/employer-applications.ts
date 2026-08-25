@@ -562,10 +562,26 @@ app.openapi(updateEmployerApplicationRoute, async (c) => {
     );
   }
 
-  const { data: existing, error: readError } = await supabase
+  // Service role, not the request client — the same escape hatch, and the same
+  // reason, as the list path above and #608.
+  //
+  // #608 moved the ACCESS lookup above RLS but left these two statements on the
+  // request client, so an org admin passed both authorisation checks and then
+  // 404'd here: `core.applications`' policies recognise the organisation OWNER
+  // and the applicant, and an admin is neither. The route therefore rejected
+  // exactly the rows its own list had just returned, and moving a candidate
+  // from the board never worked.
+  //
+  // Authorisation happened above, against the organisation. Reading through RLS
+  // here silently re-decides it on a different axis.
+  const db = getServiceClient();
+
+  const { data: existing, error: readError } = await db
     .schema("core")
     .from("applications")
-    .select("id, status, assigned_to")
+    // `user_id` is read below by the hire fee check. It was referenced but not
+    // selected, so `existing.user_id` was undefined on every hire.
+    .select("id, status, assigned_to, user_id")
     .eq("id", id)
     .single();
 
@@ -625,7 +641,10 @@ app.openapi(updateEmployerApplicationRoute, async (c) => {
     payload.assigned_at = now;
   }
 
-  const { data: updated, error: updateError } = await supabase
+  // Same client as the read above: an admin has no RLS write path to this row
+  // either, so leaving the update on the request client would turn a fixed read
+  // into a silent zero-row write.
+  const { data: updated, error: updateError } = await db
     .schema("core")
     .from("applications")
     .update(payload)
