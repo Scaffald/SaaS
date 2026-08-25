@@ -14,17 +14,7 @@ import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { useApplicationMessages } from '@scf/core/utils/jobs-sdk-hooks'
-import {
-  Avatar,
-  Button,
-  H4,
-  Spinner,
-  Tabs,
-  Text,
-  Row,
-  Stack,
-  useThemeContext,
-} from '@scaffald/ui'
+import { Avatar, Button, H4, Spinner, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { ATSApplication } from '../types'
 import {
   canReject as canRejectStatus,
@@ -232,7 +222,7 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
   const notesCountQuery = useTeamComments(
     teamIdForQuery,
     { applicationId: application.id, limit: 50 },
-    { enabled: Boolean(teamId), staleTime: 30_000 },
+    { enabled: Boolean(teamId), staleTime: 30_000 }
   )
   const messagesCountQuery = useApplicationMessages(application.id)
 
@@ -240,7 +230,6 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
   // `.data`, not `.messages` — GetMessagesResponse nests the array under data,
   // which is how MessagesTab reads it too.
   const messagesCount = messagesCountQuery.data?.data?.length ?? null
-
 
   const handleInquirySuccess = async () => {
     await queryClient.invalidateQueries({ queryKey: ['inquiries', 'detail', application.id] })
@@ -301,6 +290,7 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
                 applicationId: application.id,
                 fromStatus: application.status,
                 toStatus: nextStage.status,
+                candidateName: application.candidate?.name,
               })
             }
           >
