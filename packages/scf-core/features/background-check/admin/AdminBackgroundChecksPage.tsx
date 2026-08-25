@@ -8,10 +8,11 @@ import {
 } from '@scf/core/utils/background-checks-sdk-hooks'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import type { AdminCheckSummary, AdminDisputeSummary } from '@scaffald/sdk'
-import { AlertTriangle, ClipboardList, RefreshCcw } from 'lucide-react-native'
+import { AlertTriangle, ClipboardList, RefreshCcw, X } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { Pressable } from 'react-native'
 import { ResponsiveSelect } from '@scaffald/ui'
 import {
   Button,
@@ -25,6 +26,7 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { computeQueueMetrics } from '../check-sla'
+import { clearQueueFilter, queueFilterChips, type QueueFilterState } from '../queue-filters'
 import { colors } from '@scaffald/ui/tokens'
 
 import {
@@ -162,6 +164,29 @@ export function AdminBackgroundChecksPage() {
       }
     })
   }, [checksQuery.data])
+
+  // The two filters as one value, so the chip strip has a single thing to
+  // describe and a single thing to clear. Memoised on the primitives, not on
+  // the object — an object literal is new every render and would defeat the
+  // memo below.
+  const queueFilters = useMemo<QueueFilterState>(
+    () => ({ status: statusFilter, search: searchQuery }),
+    [statusFilter, searchQuery]
+  )
+
+  const applyQueueFilters = useCallback((next: QueueFilterState) => {
+    setStatusFilter(next.status as 'all' | BackgroundCheckStatus)
+    setSearchQuery(next.search)
+  }, [])
+
+  const queueChips = useMemo(
+    () =>
+      queueFilterChips(
+        queueFilters,
+        (status) => STATUS_FILTERS.find((o) => o.value === status)?.label ?? status
+      ),
+    [queueFilters]
+  )
 
   const filteredCheckRows = useMemo(() => {
     if (!searchQuery.trim()) return checkRows
@@ -514,6 +539,61 @@ export function AdminBackgroundChecksPage() {
             >
               Organization view
             </Button>
+          </Row>
+        ) : null}
+
+        {/* What is currently narrowing the queue, and how to stop it.
+            The queue opens on `under_review`, so this list is a slice from the
+            moment it loads and the only thing that said so was the current
+            value of a dropdown. That is the same shape of confusion as the
+            strip reading "Over SLA 0" while three cases were over (#635) — a
+            filtered view presenting itself as the whole picture. */}
+        {activeTab === 'checks' && queueChips.length > 0 ? (
+          <Row gap={8} wrap align="center">
+            {queueChips.map((chip) => (
+              <Row
+                key={chip.id}
+                gap={6}
+                align="center"
+                style={{
+                  borderWidth: 1,
+                  borderColor: colors.border[t].default,
+                  borderRadius: 7,
+                  paddingVertical: 4,
+                  paddingHorizontal: 8,
+                }}
+              >
+                <Text style={{ fontSize: 13, color: colors.text[t].primary }}>
+                  {`${chip.label}: ${chip.value}`}
+                </Text>
+                <Pressable
+                  onPress={() => applyQueueFilters(clearQueueFilter(queueFilters, chip.id))}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Remove ${chip.label} filter`}
+                  // 12px glyph + 16 each side = a 44px target. Removing the
+                  // filter is the entire job of this control.
+                  hitSlop={16}
+                >
+                  <X size={12} color={colors.text[t].tertiary} />
+                </Pressable>
+              </Row>
+            ))}
+            <Pressable
+              onPress={() => applyQueueFilters({ status: 'all', search: '' })}
+              accessibilityRole="button"
+              accessibilityLabel="Clear all filters"
+              hitSlop={12}
+            >
+              <Text
+                style={{
+                  fontSize: 13,
+                  color: colors.text[t].emphasis,
+                  textDecorationLine: 'underline',
+                }}
+              >
+                Clear all
+              </Text>
+            </Pressable>
           </Row>
         ) : null}
 
