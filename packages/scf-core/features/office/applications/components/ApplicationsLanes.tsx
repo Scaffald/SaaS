@@ -20,12 +20,7 @@ import { View } from 'react-native'
 import { Lane, LaneGroup, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { ApplicationStatus, ATSApplication } from '../types'
-import {
-  daysInStage,
-  formatStageAge,
-  isStageOverdue,
-  stageOverdueReason,
-} from '../stage-timing'
+import { daysInStage, formatStageAge, isStageOverdue, stageOverdueReason } from '../stage-timing'
 
 /**
  * Stage order, label, and what the stage means. The hint is the part a bare
@@ -157,51 +152,76 @@ export const ApplicationsLanes = ({
                   selected={selectedId === app.id}
                   onPress={onSelect ? () => onSelect(app) : undefined}
                   note={reason ?? undefined}
+                  // Labelled cells, so the stacked phone form reads as
+                  // "Source  Scaffald" rather than as a column of orphaned
+                  // values. `empty` is what lets a stacked row drop a cell
+                  // instead of spending a line on an em dash — on a wide row
+                  // the dash still holds the column open.
                   columns={[
-                    <Text key="score" style={muted}>
-                      score{' '}
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          color: colors.text[theme].primary,
-                          fontVariant: ['tabular-nums'],
-                        }}
-                      >
-                        {app.score}
-                      </Text>
-                    </Text>,
-                    <Text key="source" style={muted}>
-                      {app.source ? (SOURCE_LABELS[app.source] ?? app.source) : '—'}
-                    </Text>,
-                    <Text key="union" style={muted}>
-                      {union?.isUnionMember
-                        ? [union.unionName, union.localNumber, union.journeymanStatus]
-                            .filter(Boolean)
-                            .join(' · ')
-                        : '—'}
-                    </Text>,
-                    <Text key="assignee" style={muted}>
-                      {assignee ? 'Assigned' : 'Unassigned'}
-                    </Text>,
+                    {
+                      label: 'Score',
+                      value: (
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            color: colors.text[theme].primary,
+                            fontVariant: ['tabular-nums'],
+                          }}
+                        >
+                          {app.score}
+                        </Text>
+                      ),
+                    },
+                    {
+                      label: 'Source',
+                      value: (
+                        <Text style={muted}>
+                          {app.source ? (SOURCE_LABELS[app.source] ?? app.source) : '—'}
+                        </Text>
+                      ),
+                      empty: !app.source,
+                    },
+                    {
+                      label: 'Union',
+                      value: (
+                        <Text style={muted}>
+                          {union?.isUnionMember
+                            ? [union.unionName, union.localNumber, union.journeymanStatus]
+                                .filter(Boolean)
+                                .join(' · ')
+                            : '—'}
+                        </Text>
+                      ),
+                      empty: !union?.isUnionMember,
+                    },
+                    {
+                      label: 'Assignee',
+                      value: <Text style={muted}>{assignee ? 'Assigned' : 'Unassigned'}</Text>,
+                    },
                     // Withdrawn shares the Closed lane with rejected, so the
                     // row has to say which it is. The brief calls out the
                     // conflation as the thing the data model works to prevent.
-                    <Text
-                      key="outcome"
-                      style={{
-                        fontSize: 14,
-                        color:
-                          app.status === 'withdrawn'
-                            ? colors.text[theme].tertiary
-                            : colors.text[theme].secondary,
-                      }}
-                    >
-                      {app.status === 'withdrawn'
-                        ? 'Withdrawn by candidate'
-                        : app.status === 'rejected'
-                          ? 'Not moved forward'
-                          : ''}
-                    </Text>,
+                    {
+                      label: 'Outcome',
+                      value: (
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            color:
+                              app.status === 'withdrawn'
+                                ? colors.text[theme].tertiary
+                                : colors.text[theme].secondary,
+                          }}
+                        >
+                          {app.status === 'withdrawn'
+                            ? 'Withdrawn by candidate'
+                            : app.status === 'rejected'
+                              ? 'Not moved forward'
+                              : ''}
+                        </Text>
+                      ),
+                      empty: app.status !== 'withdrawn' && app.status !== 'rejected',
+                    },
                   ]}
                 />
               )
