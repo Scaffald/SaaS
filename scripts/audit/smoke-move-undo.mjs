@@ -169,33 +169,40 @@ async function run(mode) {
   // Requests only — the response lines above share the array for ordering.
   const sent = writes.filter((w) => !w.startsWith('      ↳')).length
 
-  // What this asserts, and what it deliberately does not.
+  // What this asserts:
   //
-  //   undo       EXACTLY zero writes. This is the claim #643 makes and the
-  //              only one that can be stated absolutely.
-  //   let-it-go  AT LEAST one write. Not "exactly one": the app currently
-  //              sends a second ~1s later even though 404 sits in
-  //              NON_RETRYABLE_STATUSES, and the endpoint 404s in the first
-  //              place. Both are pre-existing and filed separately — pinning
-  //              "exactly 1" here would bake a bug into the expectation, and
-  //              pinning "exactly 2" would bless it.
+  //   undo       EXACTLY zero writes — the claim #643 makes.
+  //   let-it-go  EXACTLY one write, and it must succeed.
   //
-  // The response codes are printed either way, so a 404 is visible rather
-  // than quietly counted as a successful write.
+  // "Exactly one" was "at least one" while #646 was open: the endpoint 404'd
+  // and the client then sent a second request ~1s later, so pinning 1 would
+  // have baked a bug into the expectation and pinning 2 would have blessed it.
+  // #646 is fixed, the duplicate is gone with it, and the count is now pinned.
+  //
+  // The status is asserted, not just the count. A 404 is still a write on the
+  // wire, and counting it as a successful move is how the board came to claim
+  // moves the server was refusing.
+  const statuses = writes.filter((w) => w.startsWith('      ↳'))
+  const allOk = statuses.length > 0 && statuses.every((s) => /↳ 2\d\d /.test(s))
+
   const ok =
-    toastText !== null && hasUndo > 0 && (mode === 'undo' ? sent === 0 : sent >= 1)
+    toastText !== null && hasUndo > 0 && (mode === 'undo' ? sent === 0 : sent === 1 && allOk)
 
   console.log(
     `${ok ? '✓' : '✗'} ${mode.padEnd(9)} to="${movedTo}" toast=${toastText ? `"${toastText}"` : 'MISSING'} ` +
       `undo=${hasUndo > 0 ? 'offered' : 'MISSING'} writes=${sent} ` +
-      `(expected ${mode === 'undo' ? 'exactly 0' : 'at least 1'})` +
+      `(expected ${mode === 'undo' ? 'exactly 0' : 'exactly 1, 2xx'})` +
       (ok
         ? ''
         : mode === 'undo'
           ? ' ← UNDO DID NOT STOP THE WRITE'
-          : ' ← THE HELD WRITE NEVER FIRED')
+          : sent === 0
+            ? ' ← THE HELD WRITE NEVER FIRED'
+            : sent > 1
+              ? ` ← ${sent} WRITES FOR ONE MOVE`
+              : ' ← THE WRITE WAS REJECTED')
   )
-  if (writes.length) console.log(`   wire:\n     ${writes.join("\n     ")}`)
+  if (writes.length) console.log(`   wire:\n     ${writes.join('\n     ')}`)
 
   await ctx.close()
   return ok
