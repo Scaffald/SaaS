@@ -6,6 +6,7 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
 import { authMiddleware } from "../middleware/auth.ts";
+import { firstOf } from "../lib/postgrest.ts";
 import {
   buildWorkLogCsv,
   buildWorkLogPdf,
@@ -87,16 +88,6 @@ interface PublicFeedRow {
     | { name: string | null; organizations: unknown }
     | Array<{ name: string | null; organizations: unknown }>
     | null;
-}
-
-/**
- * PostgREST returns an embedded to-one relation as an object on some versions
- * and a one-element array on others; both shapes reach this handler.
- */
-// deno-lint-ignore no-explicit-any
-function firstOf<T>(value: any): T | null {
-  if (!value) return null;
-  return Array.isArray(value) ? (value[0] ?? null) : value;
 }
 
 /** How long a public-profile photo link stays valid. */

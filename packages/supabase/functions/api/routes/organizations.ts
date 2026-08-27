@@ -4,8 +4,18 @@
  */
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { createClient } from "@supabase/supabase-js";
 import { authMiddleware } from "../middleware/auth.ts";
 import { canReadOrgInternals } from "../lib/org-access.ts";
+import { firstOf } from "../lib/postgrest.ts";
+
+// Nine route files carry their own copy of this; following the local
+// convention rather than refactoring all of them from a bug fix.
+function getServiceClient() {
+  const url = Deno.env.get("SUPABASE_URL") ?? "";
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  return createClient(url, key);
+}
 
 const app = new OpenAPIHono();
 app.use("*", authMiddleware);
@@ -64,6 +74,19 @@ app.openapi(
  * GET /v1/organizations/:id/members
  * List organization members
  */
+/**
+ * GET /v1/organizations/{id}/members
+ *
+ * This read `core.organization_members`, which exists in no schema, so it
+ * returned 500 for every organization (#655). Membership here is a role scoped
+ * to the org — `core.role_assignments.scope_org_id` — which is what
+ * lib/org-access.ts, /{id}/location-visibility and /{id}/projects-with-overrides
+ * have always used. The members route was the odd one out.
+ *
+ * One person can hold several roles in the same organization, so assignments are
+ * grouped per user and the roles collected. joinedAt is the earliest assignment:
+ * when they first got any role here, not when the most recent one was added.
+ */
 app.openapi(
   createRoute({
     method: "get",
@@ -74,16 +97,17 @@ app.openapi(
       params: z.object({ id: z.string().uuid() }),
       query: z.object({
         search: z.string().optional(),
+        roleNames: z.union([z.string(), z.array(z.string())]).optional(),
       }),
     },
     responses: {
       200: {
         description: "Members",
-        content: {
-          "application/json": {
-            schema: z.array(z.any()),
-          },
-        },
+        content: { "application/json": { schema: z.array(z.any()) } },
+      },
+      404: {
+        description: "No such organization, or not visible to the caller",
+        content: { "application/json": { schema: errorResponseSchema } },
       },
     },
     security: [{ bearerAuth: [] }],
@@ -92,20 +116,32 @@ app.openapi(
     const supabase = c.get("supabase");
     const user = c.get("user");
     const { id } = c.req.valid("param");
-    const { search } = c.req.valid("query");
+    const { search, roleNames } = c.req.valid("query");
 
     if (!user) {
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    let query = supabase.schema("core").from("organization_members").select("*")
-      .eq("organization_id", id);
-
-    if (search) {
-      query = query.ilike("user_id", `%${search}%`);
+    // Who belongs to an organization is not public. Same gate, and the same 404
+    // rather than 403, as the background-check list.
+    const access = await canReadOrgInternals(supabase, id, user.id);
+    if (!access.found || !access.allowed) {
+      return c.json({ error: "Organization not found" }, 404);
     }
 
-    const { data, error } = await query;
+    // core.role_assignments carries one policy — role_assignments_own_read,
+    // `user_id = auth.uid()` — so the caller's own client can only ever see
+    // their own row. Reading it with the user client returned a one-member
+    // organization out of fifteen. canReadOrgInternals above is what makes the
+    // service client safe here.
+    const { data, error } = await getServiceClient()
+      .schema("core")
+      .from("role_assignments")
+      .select(
+        "user_id, created_at, role:role_id (name), user:user_id (id, display_name, username, avatar_url, headline)",
+      )
+      .eq("scope_org_id", id)
+      .order("created_at", { ascending: true });
 
     if (error) {
       return c.json({
@@ -114,7 +150,65 @@ app.openapi(
       }, 500);
     }
 
-    return c.json(data || []);
+    const wanted = roleNames === undefined
+      ? null
+      : new Set(
+        (Array.isArray(roleNames) ? roleNames : roleNames.split(","))
+          .map((r) => r.trim()).filter(Boolean),
+      );
+
+    const term = search?.trim().toLowerCase();
+
+    const byUser = new Map<string, {
+      userId: string;
+      profile: Record<string, unknown> | null;
+      roles: string[];
+      joinedAt: string;
+    }>();
+
+    for (const row of (data ?? []) as Array<Record<string, unknown>>) {
+      const roleName = (firstOf<{ name?: string }>(row.role))?.name;
+      // The previous version filtered with `ilike` on user_id, which is a uuid —
+      // it could only ever match nothing. Search is on the name people know.
+      const profile = firstOf<Record<string, unknown>>(row.user);
+      const userId = row.user_id as string;
+
+      if (wanted && (!roleName || !wanted.has(roleName))) continue;
+
+      if (term) {
+        const haystack = [
+          profile?.display_name,
+          profile?.username,
+        ].filter(Boolean).join(" ").toLowerCase();
+        if (!haystack.includes(term)) continue;
+      }
+
+      const existing = byUser.get(userId);
+      if (existing) {
+        if (roleName && !existing.roles.includes(roleName)) {
+          existing.roles.push(roleName);
+        }
+        continue;
+      }
+
+      byUser.set(userId, {
+        userId,
+        profile: profile
+          ? {
+            id: profile.id,
+            display_name: profile.display_name ?? null,
+            username: profile.username ?? null,
+            avatar_url: profile.avatar_url ?? null,
+            headline: profile.headline ?? null,
+          }
+          : null,
+        roles: roleName ? [roleName] : [],
+        // Rows arrive oldest first, so the first one seen is the earliest.
+        joinedAt: row.created_at as string,
+      });
+    }
+
+    return c.json([...byUser.values()]);
   },
 );
 

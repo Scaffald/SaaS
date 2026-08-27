@@ -149,6 +149,11 @@ app.openapi(
       .select(
         "id, token, label, expires_at, max_uses, used_count, is_revoked, created_at",
       )
+      // RLS already scopes this to the caller, but this select had no filter at
+      // all, so the policy was the only thing between a caller and every share
+      // link on the platform. Two independent guards, since a token is the only
+      // secret protecting a review link.
+      .eq("subject_user_id", user.id)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -198,18 +203,28 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .schema("core")
       .from("review_links")
       .update({ is_revoked: true })
       .eq("id", id)
-      .eq("subject_user_id", user.id);
+      .eq("subject_user_id", user.id)
+      .select("id")
+      .maybeSingle();
 
     if (error) {
       return c.json(
         { error: "Failed to revoke", message: error.message },
         500,
       );
+    }
+
+    // The predicate above matches nothing when the link belongs to someone
+    // else, and an UPDATE that changes no rows is not an error — so without
+    // this, revoking another user's link answered 200 and did nothing. 404
+    // rather than 403, so the response does not confirm the link exists.
+    if (!data) {
+      return c.json({ error: "Not found" }, 404);
     }
 
     return c.json({ success: true });
