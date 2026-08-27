@@ -22,6 +22,7 @@
       "!!**/*.css",
       "!!**/packages/fonts/types/index.d.ts",
       "!!**/tests/reports/coverage",
+    "!!**/packages/supabase/.temp/**",
       "!!**/.turbo",
       "!!**/.nx",
       "!!**/.storybook",

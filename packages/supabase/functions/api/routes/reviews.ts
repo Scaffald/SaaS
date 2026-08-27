@@ -399,7 +399,9 @@ app.openapi(
     const grouped: Record<string, unknown[]> = {};
     for (const skill of data ?? []) {
       const key = (skill as { category?: string }).category ?? "other";
-      (grouped[key] ??= []).push(skill);
+      const bucket = grouped[key] ?? [];
+      bucket.push(skill);
+      grouped[key] = bucket;
     }
 
     return c.json(grouped);

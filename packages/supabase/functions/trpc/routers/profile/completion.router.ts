@@ -509,8 +509,9 @@ function computeCompletionStatus({
     updatedAt: timestamp,
   }
 
-  const userTypesArray = Array.isArray(preferencesData?.user_types)
-    ? (preferencesData?.user_types as string[]).filter(Boolean)
+  const rawUserTypes = preferencesData?.user_types
+  const userTypesArray = Array.isArray(rawUserTypes)
+    ? rawUserTypes.filter((value): value is string => typeof value === 'string' && value.length > 0)
     : []
 
   return {
