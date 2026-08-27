@@ -111,7 +111,6 @@ const BASELINE_BROKEN: Record<string, number> = {
   "core.inquiries": 2,
   "public.user_education": 1,
   "core.profile_completion_nudges": 1,
-  "core.organization_members": 1,
   "core.onet_skills": 1,
   "core.employers": 1,
   "community.users": 1,
