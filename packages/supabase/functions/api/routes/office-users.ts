@@ -153,6 +153,39 @@ app.get("/", async (c) => {
 // DELETE /:id - Delete user
 // ============================================================================
 
+/**
+ * Relations that block deleting a user, and cannot be resolved automatically.
+ *
+ * Each is a RESTRICT foreign key over content the user owns rather than a
+ * pointer to them — an organization document, a task, a punchlist. Removing the
+ * person should not silently remove work other people depend on, and the column
+ * is NOT NULL so it cannot be released either. These need a human decision
+ * (reassign or delete the content first), so the endpoint reports them instead
+ * of guessing.
+ */
+const BLOCKING_RELATIONS: ReadonlyArray<{ table: string; column: string }> = [
+  { table: "tasks", column: "created_by_user_id" },
+  { table: "punchlists", column: "created_by_user_id" },
+  { table: "organization_documents", column: "created_by" },
+  { table: "organization_document_versions", column: "uploaded_by" },
+  { table: "organization_document_shares", column: "created_by" },
+  { table: "organization_folders", column: "created_by" },
+  { table: "organization_locations", column: "created_by" },
+];
+
+/**
+ * Verification pointers that can be released.
+ *
+ * These are nullable audit references — "this skill was verified by X". Once X
+ * is gone, null is the honest value, and holding the deletion hostage to an
+ * audit pointer would make any reviewer undeletable.
+ */
+const RELEASABLE_REFERENCES: ReadonlyArray<{ table: string; column: string }> = [
+  { table: "work_logs", column: "verified_by_user_id" },
+  { table: "user_skills", column: "verified_by" },
+  { table: "skill_evidence", column: "verified_by" },
+];
+
 app.delete("/:id", async (c) => {
   const supabaseAdmin = c.get("supabaseAdmin");
   const { id } = c.req.param();
@@ -161,37 +194,83 @@ app.delete("/:id", async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  // Delete related records
-  await supabaseAdmin.schema("core").from("user_skills").delete().eq(
-    "user_id",
-    id,
-  );
-  await supabaseAdmin.from("user_certifications").delete().eq("user_id", id);
-  await supabaseAdmin.from("work_experience").delete().eq("user_id", id);
-  await supabaseAdmin.from("education").delete().eq("user_id", id);
-  await supabaseAdmin.from("applications").delete().eq("user_id", id);
-  await supabaseAdmin.from("reviews").delete().eq("user_id", id);
-  await supabaseAdmin.from("organization_members").delete().eq("user_id", id);
-  await supabaseAdmin.schema("core").from("profile").delete().eq("user_id", id);
+  // This handler used to delete eight tables by hand before removing the user.
+  // Six of those statements were no-ops — `.schema("core")` applies only to the
+  // statement it is written on, so everything after the first addressed
+  // `public`, where those tables do not exist — and no result was checked, so
+  // the errors were discarded.
+  //
+  // They were also unnecessary. core.users cascades to user_skills,
+  // user_certifications, user_education, user_experience, applications,
+  // reviews, role_assignments, profile and work_logs, and auth.users cascades
+  // to core.users. Deleting the auth user removes all of it.
+  //
+  // What the hand-written cascade did do was destroy data on a path that then
+  // failed: the two statements that worked (core.user_skills, core.profile) ran
+  // before the core.users delete, which is blocked by RESTRICT references for
+  // any user who has verified a work log or created a task. The operator saw
+  // "Failed to delete user profile" while that user's skills and personal
+  // details were already gone, with no transaction to roll back.
+  //
+  // So the blocking check runs before anything is written, and nothing the user
+  // owns is ever deleted outside the cascade. The one write that precedes the
+  // delete is releasing nullable verification pointers; if the delete then
+  // fails for an unrelated reason those stay released, which loses an audit
+  // attribution but destroys no record and is safe to retry.
 
-  const { error: profileError } = await supabaseAdmin
-    .schema("core")
-    .from("users")
-    .delete()
-    .eq("id", id);
+  const blocked: Array<{ table: string; count: number }> = [];
+  for (const rel of BLOCKING_RELATIONS) {
+    const { count, error } = await supabaseAdmin
+      .schema("core")
+      .from(rel.table)
+      .select("*", { count: "exact", head: true })
+      .eq(rel.column, id);
 
-  if (profileError) {
-    return c.json({
-      error: "Failed to delete user profile",
-      message: profileError.message,
-    }, 500);
+    // A head-count against a table that cannot be read comes back with a null
+    // count and no error, so null is the failure signal — not `error`.
+    if (count === null) {
+      return c.json({
+        error: "Failed to check whether the user can be deleted",
+        message: `Could not count core.${rel.table}.${rel.column}: ${
+          error?.message ?? "no count returned"
+        }`,
+      }, 500);
+    }
+    if (count > 0) blocked.push({ table: rel.table, count });
   }
 
+  if (blocked.length > 0) {
+    return c.json({
+      error: "User owns content that must be reassigned first",
+      message:
+        "Deleting this user would remove work other people depend on. Reassign or delete it, then retry.",
+      blockedBy: blocked,
+    }, 409);
+  }
+
+  for (const ref of RELEASABLE_REFERENCES) {
+    const { error } = await supabaseAdmin
+      .schema("core")
+      .from(ref.table)
+      .update({ [ref.column]: null })
+      .eq(ref.column, id);
+
+    if (error) {
+      return c.json({
+        error: "Failed to release verification references",
+        message: `core.${ref.table}.${ref.column}: ${error.message}`,
+      }, 500);
+    }
+  }
+
+  // Cascades: auth.users -> core.users -> the user's profile, skills,
+  // education, experience, certifications, applications, work logs, reviews
+  // they wrote, and role assignments.
   const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(id);
 
   if (authError) {
     return c.json({
-      error: "Failed to delete user from auth",
+      error: "Failed to delete user",
       message: authError.message,
     }, 500);
   }
