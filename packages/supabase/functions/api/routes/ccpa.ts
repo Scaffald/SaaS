@@ -28,85 +28,108 @@ ccpaRouter.get("/data-summary", async (c) => {
 
   const supabase = c.get("supabase");
 
-  // Collect counts from key tables
-  const [
-    profileRes,
-    eduRes,
-    skillsRes,
-    expRes,
-    certsRes,
-    workLogsRes,
-    appsRes,
-    connectionsRes,
-    bgChecksRes,
-    idVerRes,
-    assessmentsRes,
-    reviewsRes,
-    feedbackRes,
-  ] = await Promise.all([
-    supabase.schema("core").from("profiles").select(
-      "id,display_name,email_visible",
-    ).eq("id", user.id).maybeSingle(),
-    supabase.schema("core").from("education").select("id", { count: "exact" })
-      .eq("user_id", user.id),
-    supabase.schema("core").from("profile_skills").select("id", {
-      count: "exact",
-    }).eq("user_id", user.id),
-    supabase.schema("core").from("work_experience").select("id", {
-      count: "exact",
-    }).eq("user_id", user.id),
-    supabase.schema("core").from("certifications").select("id", {
-      count: "exact",
-    }).eq("user_id", user.id),
-    supabase.schema("core").from("work_logs").select("id", { count: "exact" })
-      .eq("user_id", user.id),
-    supabase.schema("core").from("applications").select("id", {
-      count: "exact",
-    }).eq("user_id", user.id),
-    supabase.schema("core").from("connections").select("id", { count: "exact" })
-      .or(`requester_user_id.eq.${user.id},addressee_user_id.eq.${user.id}`),
-    supabase.schema("core").from("background_checks").select("id", {
-      count: "exact",
-    }).eq("user_id", user.id),
-    supabase.schema("core").from("id_verifications").select("id", {
-      count: "exact",
-    }).eq("user_id", user.id),
-    supabase.schema("core").from("personality_assessments").select("id", {
-      count: "exact",
-    }).eq("user_id", user.id),
-    supabase.schema("core").from("reviews").select("id", { count: "exact" }).eq(
-      "reviewer_user_id",
+  // Every count below used to be read as `res.count ?? 0`, which made a failed
+  // query indistinguishable from a genuine zero. Eight of the thirteen were
+  // failing — five tables that do not exist, and three filters on a column the
+  // table does not have — so this endpoint told users the platform held none of
+  // their professional data while holding fourteen records for them.
+  //
+  // This is a statutory disclosure, so a count that cannot be read is an error,
+  // never a zero.
+  const counts: Record<string, number> = {};
+  const failures: string[] = [];
+
+  // `error` is not a reliable failure signal for a head-count. A count against a
+  // table that does not exist comes back as `{status: 204, error: null,
+  // count: null}` — no error is raised at all, which is why the original
+  // `res.count ?? 0` reported a confident zero. Measured, not assumed.
+  //
+  // `count: "exact"` always yields a number when the query runs, so a null count
+  // is the dependable signal that it did not.
+  const count = async (
+    label: string,
+    query: PromiseLike<
+      { count: number | null; error: { message: string } | null }
+    >,
+  ) => {
+    const res = await query;
+    if (res.count === null) {
+      failures.push(`${label}: ${res.error?.message ?? "no count returned"}`);
+      return;
+    }
+    counts[label] = res.count;
+  };
+
+  const rows = (table: string) =>
+    supabase.schema("core").from(table).select("id", { count: "exact", head: true });
+
+  const [profileRes, accountRes] = await Promise.all([
+    // Personal detail (name, address, phone) and the account row are separate
+    // tables; the category covers both.
+    supabase.schema("core").from("profile").select("user_id").eq(
+      "user_id",
       user.id,
-    ),
-    supabase.schema("core").from("feedback").select("id", { count: "exact" })
-      .eq("user_id", user.id),
+    ).maybeSingle(),
+    supabase.schema("core").from("users").select("id").eq("id", user.id)
+      .maybeSingle(),
   ]);
 
-  const eduCount = eduRes.count ?? 0;
-  const skillsCount = skillsRes.count ?? 0;
-  const expCount = expRes.count ?? 0;
-  const certsCount = certsRes.count ?? 0;
-  const workLogsCount = workLogsRes.count ?? 0;
-  const appsCount = appsRes.count ?? 0;
-  const connectionsCount = connectionsRes.count ?? 0;
-  const bgChecksCount = bgChecksRes.count ?? 0;
-  const idVerCount = idVerRes.count ?? 0;
-  const assessmentsCount = assessmentsRes.count ?? 0;
-  const reviewsCount = reviewsRes.count ?? 0;
-  const feedbackCount = feedbackRes.count ?? 0;
+  await Promise.all([
+    count("education", rows("user_education").eq("user_id", user.id)),
+    count("skills", rows("user_skills").eq("user_id", user.id)),
+    count("experience", rows("user_experience").eq("user_id", user.id)),
+    // core.certifications exists but is the catalogue and has no user_id; the
+    // user-scoped table is core.user_certifications.
+    count("certifications", rows("user_certifications").eq("user_id", user.id)),
+    count("work_logs", rows("work_logs").eq("user_id", user.id)),
+    count("applications", rows("applications").eq("user_id", user.id)),
+    count(
+      "connections",
+      rows("connections").or(
+        `requester_user_id.eq.${user.id},addressee_user_id.eq.${user.id}`,
+      ),
+    ),
+    count("background_checks", rows("background_checks").eq("user_id", user.id)),
+    // id_verifications keys the subject as worker_user_id, not user_id.
+    count(
+      "id_verifications",
+      rows("id_verifications").eq("worker_user_id", user.id),
+    ),
+    count(
+      "assessments",
+      rows("personality_assessments").eq("user_id", user.id),
+    ),
+    // reviews keys the writer as author_user_id, not reviewer_user_id.
+    count("reviews", rows("reviews").eq("author_user_id", user.id)),
+  ]);
 
-  const hasProfile = Boolean(profileRes.data);
-  const professionalCount = eduCount + skillsCount + expCount + certsCount +
-    workLogsCount;
-  const sensitiveCount = bgChecksCount + idVerCount + assessmentsCount;
-  const commsCount = reviewsCount + feedbackCount;
+  if (profileRes.error) failures.push(`profile: ${profileRes.error.message}`);
+  if (accountRes.error) failures.push(`account: ${accountRes.error.message}`);
+
+  if (failures.length > 0) {
+    // Reporting a partial summary would understate what is held, which is the
+    // failure this endpoint exists to avoid.
+    console.error("CCPA data summary incomplete", failures);
+    return c.json({
+      error: "Failed to compile data summary",
+      message:
+        "One or more data categories could not be counted; no summary is returned rather than an incomplete one.",
+      details: failures,
+    }, 500);
+  }
+
+  const professionalCount = counts.education + counts.skills +
+    counts.experience + counts.certifications + counts.work_logs;
+  const usageCount = counts.applications + counts.connections;
+  const sensitiveCount = counts.background_checks + counts.id_verifications +
+    counts.assessments;
 
   const categories = [
     {
       id: "personal_information",
       label: "Personal Information",
       description: "Name, email, phone, address, account info",
-      hasData: hasProfile,
+      hasData: Boolean(profileRes.data) || Boolean(accountRes.data),
     },
     {
       id: "professional_information",
@@ -120,8 +143,8 @@ ccpaRouter.get("/data-summary", async (c) => {
       id: "usage_information",
       label: "Usage Information",
       description: "Profile views, applications, connections",
-      hasData: appsCount > 0 || connectionsCount > 0,
-      itemCount: appsCount + connectionsCount,
+      hasData: usageCount > 0,
+      itemCount: usageCount,
     },
     {
       id: "sensitive_information",
@@ -131,11 +154,17 @@ ccpaRouter.get("/data-summary", async (c) => {
       itemCount: sensitiveCount,
     },
     {
+      // Platform feedback lives in logs.user_feedback, which PostgREST does not
+      // expose (config.toml `schemas`) and which grants only postgres — so it
+      // cannot be counted from here at all. It is left out of the label rather
+      // than counted as zero, because a silent zero is the bug this change
+      // fixes. Tracked separately; the feedback router is unreachable for the
+      // same reason.
       id: "communications",
       label: "Communications",
-      description: "Reviews and platform feedback",
-      hasData: commsCount > 0,
-      itemCount: commsCount,
+      description: "Reviews",
+      hasData: counts.reviews > 0,
+      itemCount: counts.reviews,
     },
   ];
 
@@ -470,16 +499,31 @@ ccpaRouter.get("/admin-requests", async (c) => {
   if (userIds.length > 0) {
     const { data: profiles } = await supabaseAdmin
       .schema("core")
-      .from("profiles")
-      .select("id,email_visible,display_name")
+      // core.profiles does not exist, and neither does email_visible on any
+      // table — this lookup returned nothing, so every row in the admin queue
+      // showed a blank name for the person who filed the request. Identity is
+      // core.users; the address belongs to the auth user, which the service
+      // client reads separately below.
+      .from("users")
+      .select("id,display_name,username")
       .in("id", userIds);
 
     for (const p of profiles ?? []) {
       userMap[p.id] = {
-        email: p.email_visible ?? "",
-        display_name: p.display_name ?? "",
+        email: "",
+        display_name: p.display_name ?? p.username ?? "",
       };
     }
+
+    // Emails live in auth.users, which PostgREST does not serve; the admin API
+    // is the only way to resolve them.
+    const admin = getServiceClient();
+    await Promise.all(userIds.map(async (uid: string) => {
+      const { data } = await admin.auth.admin.getUserById(uid);
+      if (data?.user?.email && userMap[uid]) {
+        userMap[uid].email = data.user.email;
+      }
+    }));
   }
 
   const requests = rows.map((row: Record<string, unknown>) => {
