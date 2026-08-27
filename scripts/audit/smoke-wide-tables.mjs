@@ -171,10 +171,19 @@ for (const [w, h, tag] of [
   // Desktop keeps the grid and is allowed to scroll sideways. The phone is the
   // case under test: a stacked row must not overflow, and no cell may sit past
   // the right edge of the screen.
+  // Page chrome is asserted now too.
+  //
+  // It was reported-not-asserted while #664 was open: the breadcrumb and the
+  // tab strip both clipped, both pre-dated the table work, and failing a table
+  // smoke on them would have made it permanently red for something it did not
+  // own. #664 is fixed, so this holds them to the same bar as the table.
   const ok =
     tag === 'desktop'
       ? true
-      : overflow === 0 && clipped.length === 0 && onScreen.length === wanted.length
+      : overflow === 0 &&
+        clipped.length === 0 &&
+        clipping.chrome.length === 0 &&
+        onScreen.length === wanted.length
   if (!ok) failures++
 
   console.log(
@@ -182,7 +191,9 @@ for (const [w, h, tag] of [
       `(row ${measured?.scrollWidth ?? '?'} in ${measured?.clientWidth ?? '?'}) ` +
       `columnsOnScreen=${onScreen.length}/${wanted.length} ` +
       `tableClipped=${clipped.length}` +
-      (ok ? '' : ` ← ${clipped.length ? `clipped: ${clipped.slice(0, 3).join(' | ')}` : 'the row still scrolls sideways'}`)
+      (ok
+        ? ''
+        : ` ← ${clipped.length ? `clipped: ${clipped.slice(0, 3).join(' | ')}` : 'the row still scrolls sideways'}`)
   )
   if (clipping.chrome.length) {
     console.log(
