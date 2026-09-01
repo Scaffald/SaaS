@@ -63,6 +63,13 @@ updates:
       - dependency-name: "react-native"
       - dependency-name: "react-native-*"
       - dependency-name: "babel-preset-expo"
+      # @rnmapbox/maps is held at 10.1.x: 10.3.x pulls MapboxCommon 24.x, which
+      # Mapbox serves only behind a secret downloads token we do not have, so
+      # `pod install` 403s and the iOS build breaks. Dependabot re-proposed the
+      # same bump in #552 and again in #672; both were dropped by hand. Scoped
+      # to >=10.2.0 so 10.1.x patches still flow. Drop once #509 lands.
+      - dependency-name: "@rnmapbox/maps"
+        versions: [">=10.2.0"]
       # Majors are never safe to automerge here; raise them deliberately.
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
