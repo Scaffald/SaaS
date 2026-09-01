@@ -141,11 +141,34 @@ for (const c of CASES) {
   // statically positioned, so a scan for "absolute element with a background
   // overlapping the bar" matches neither and reports all-clear. elementFromPoint
   // asks what the user's finger would actually land on.
-  const covered = await page.evaluate(() => {
+  //
+  // Two things this check got wrong, both of which made it report a defect
+  // that was not there (on /office/ats/admin):
+  //
+  //   - It stripped the dev overlay ONCE, right after load. Expo re-injects
+  //     #error-toast whenever a later dev error fires, and this page fetches
+  //     enough after first paint to trigger one. By the time the hit-test ran,
+  //     an empty `<div id="error-toast">` was back on top of the bar. Strip it
+  //     again here, immediately before measuring.
+  //
+  //   - It hit-tested EVERY [role="tab"] on the page. The bar is what this
+  //     check is about; a page's own tab strip scrolling underneath a fixed
+  //     bar is ordinary behaviour, not a defect, and flagging it buried the
+  //     real signal. Scope to the tabs the bar itself renders — the ones in
+  //     the bottom band, which `observed` has already identified.
+  await page.evaluate(() => {
+    for (const id of ['error-overlay', 'error-toast']) document.getElementById(id)?.remove()
+  })
+
+  const barLabels = observed.map((o) => o.label)
+  const covered = await page.evaluate((labels) => {
     const out = []
     for (const tab of document.querySelectorAll('[role="tab"]')) {
       const r = tab.getBoundingClientRect()
       if (r.width === 0 || r.height === 0) continue
+      // Bottom third only, and only the labels the bar is showing.
+      if (r.top < window.innerHeight * 0.66) continue
+      if (!labels.includes((tab.textContent || '').trim())) continue
       const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)
       if (!hit) continue
       // The hit is fine if it IS the tab, sits inside it (icon/label), or is an
@@ -153,13 +176,40 @@ for (const c of CASES) {
       if (tab.contains(hit) || hit.contains(tab)) continue
       out.push({
         tab: (tab.textContent || '').trim(),
-        by: (hit.textContent || '').trim().slice(0, 40),
+        by: (hit.textContent || '').trim().slice(0, 40) || `<${hit.tagName.toLowerCase()}#${hit.id || '?'}>`,
       })
     }
     return out
-  })
+  }, barLabels)
 
-  const overlapOk = covered.length === 0
+  // Hit-testing says the bar is not buried. Clicking says a finger can actually
+  // move the app — Playwright's click does its own actionability and
+  // pointer-interception check, so an intercepted tap fails here rather than
+  // passing quietly. This is the assertion that would have caught a real cover;
+  // the `doors` probe below cannot, because it dispatches events directly and
+  // so goes around hit-testing entirely.
+  let tapOk = false
+  let tapDetail = ''
+  const tapTarget = barLabels.find((l) => l !== c.expectActive)
+  if (tapTarget) {
+    const from = page.url()
+    try {
+      await page.getByRole('tab', { name: tapTarget }).last().click({ timeout: 8000 })
+      await page.waitForTimeout(2000)
+      tapOk = page.url() !== from
+      tapDetail = tapOk ? `${tapTarget}→moved` : `${tapTarget}→no-nav`
+    } catch (e) {
+      tapDetail = `${tapTarget}→${String(e).includes('intercepts pointer events') ? 'INTERCEPTED' : 'FAILED'}`
+    }
+    // Back to the case's own route: later probes assume it.
+    await page.goto(BASE + c.path, { waitUntil: 'networkidle', timeout: 90000 })
+    await page.waitForTimeout(4000)
+    await page.evaluate(() => {
+      for (const id of ['error-overlay', 'error-toast']) document.getElementById(id)?.remove()
+    })
+  }
+
+  const overlapOk = covered.length === 0 && tapOk
   if (!overlapOk) failures++
 
   // The masthead avatar opens the account sheet, and the bar's More opens the
@@ -232,7 +282,8 @@ for (const c of CASES) {
       ` drawer-via-More=${doors.moreExists ? (doors.drawer ? 'opens' : 'NO') : 'NO MORE TAB'}` +
       (tabsOk ? '' : ` (expected [${c.expectTabs.join(', ')}])`) +
       (activeOk ? '' : ` (expected active ${c.expectActive})`) +
-      (overlapOk ? '' : ` COVERED: ${covered.map((c) => `${c.tab}<-"${c.by}"`).join(', ')}`) +
+      ` tap=${tapDetail || 'n/a'}` +
+      (covered.length ? ` COVERED: ${covered.map((c) => `${c.tab}<-"${c.by}"`).join(', ')}` : '') +
       (errors.length ? ` errors=${errors.length}` : '')
   )
   if (errors.length) console.log('   ', errors[0])
