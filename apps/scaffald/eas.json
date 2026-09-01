@@ -48,15 +48,14 @@
       "node": "22.20.0",
       "pnpm": "10.28.2",
       "android": {
-        "buildType": "apk",
+        "buildType": "app-bundle",
         "cache": {
           "customPaths": [
             "node_modules"
           ],
           "disabled": false,
           "key": "production-android"
-        },
-        "gradleCommand": ":app:bundleRelease"
+        }
       },
       "distribution": "store",
       "env": {
