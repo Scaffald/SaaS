@@ -140,19 +140,8 @@ describe('ApplicationsFilters', () => {
     expect(onFiltersChange).toHaveBeenCalledWith({ ...defaultFilters, status: 'interview' })
   })
 
-  it('resets filters when Clear Filters pressed', async () => {
-    const user = userEvent.setup()
-
-    render(
-      <ApplicationsFilters
-        filters={{ jobId: 'job-1', status: 'offer', minScore: 50 }}
-        onFiltersChange={onFiltersChange}
-        jobs={jobs}
-      />
-    )
-
-    await user.click(screen.getByRole('button', { name: /clear filters/i }))
-
-    expect(onFiltersChange).toHaveBeenCalledWith({ jobId: null, status: null, minScore: 0 })
-  })
+  // The "resets filters when Clear Filters pressed" test used to sit here.
+  // #624 moved clear-all out of the filter body and onto the chip strip, so
+  // there is no such button in this component any more. The assertion lives on
+  // in filters.test.ts, under `describe('clear-all')`.
 })
