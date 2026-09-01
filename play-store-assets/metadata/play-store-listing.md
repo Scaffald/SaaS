@@ -168,5 +168,11 @@ Copy is the easy half. These are not:
    screenshots that show actual in-app experience. See [screenshots/README.md](../screenshots/README.md).
 3. **A Play Console app entry**, which needs a Google Play developer account and
    acceptance of the Developer Distribution Agreement — both human actions.
-4. **Data Safety** and **content rating** forms — drafted in this directory, but
-   they are submitted in the console, not from here.
+4. **Data Safety** and **content rating** forms — drafted in
+   [data-safety.md](data-safety.md) and [content-rating.md](content-rating.md),
+   but submitted in the console, not from here.
+5. **A way to report and block** — #690. Play's UGC policy requires it of any
+   app that declares "Users Interact", which this one must. Rejection risk.
+6. **Tracks, testers and the upload credential** — see
+   [testing-setup.md](testing-setup.md), including the 12-testers-for-14-days
+   rule that applies to personal (not organisation) developer accounts.
