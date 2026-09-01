@@ -28,7 +28,7 @@ catalog:
   # public EXPO_PUBLIC_MAPBOX_TOKEN (pk.), which 403s, and MAPBOX_DOWNLOADS_TOKEN
   # is set in no env file and in no EAS environment. Bumping this breaks the iOS
   # build at `pod install`. See #509 — provision the token first.
-  '@rnmapbox/maps': ~10.1.45
+  '@rnmapbox/maps': ~10.3.5
   # Pinned at 2.86, in lockstep with the pnpm override of the same name (an
   # override outranks this entry — #453; lint:overrides now enforces the pair).
   # The BUILD-TIME blocker that froze this pin is fixed: the client is
@@ -95,7 +95,7 @@ catalog:
   react: 19.2.3
   react-dom: ^19.2.3
   react-dropzone: ~15.0.0
-  react-hook-form: ~7.85.0
+  react-hook-form: ~7.86.0
   react-native: 0.85.3
   react-native-action-sheet: ~2.2.0
   react-native-chart-kit: ~6.12.0
@@ -114,7 +114,7 @@ catalog:
   react-native-webview: 13.16.1
   react-refresh: ~0.18.0
   serve: ~14.2.5
-  supabase: 2.115.0
+  supabase: 2.116.0
   superjson: ~2.2.6
   swr: ~2.5.1
   tsup: ~8.5.1
