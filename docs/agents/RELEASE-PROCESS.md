@@ -49,6 +49,37 @@ push to TestFlight (or equivalent for the artifact), not before.
 Don't promote a release to MAJOR just because the diff is big. The signal is
 "end users have to adapt" or "the team's mental model of the product changed."
 
+
+### Native build numbers
+
+You don't set these. iOS `CFBundleVersion` and Android `versionCode` are both
+derived from the app version in `apps/scaffald/app.config.ts`:
+
+| Version | Build number |
+|---|---|
+| `1.10.2` | `11002` |
+| `1.16.1` | `11601` |
+| `1.17.0` | `11700` |
+
+Bumping `package.json` — which `scripts/release.sh` already does — moves the
+build number with it. There is nothing else to remember.
+
+**Respinning a version that has already been submitted** is the one case
+needing a hand: Apple scopes build-number uniqueness to the version string, so
+a second build of the same version is rejected unless the number changes. Pass
+the override for that build and nowhere else:
+
+```bash
+APP_IOS_BUILD_NUMBER=11701 pnpm --filter scaffald-app eas:build:prod:ios
+```
+
+Do **not** put it in `eas.json`. It was pinned there once, to respin 1.12.0 as
+11201, and it stayed — so 1.14.0, 1.15.0 and 1.16.0 all shipped as 11201 too
+and the number stopped identifying anything (#513). `apps/scaffald/tests/
+build-number.test.ts` now fails if any profile pins it again.
+
+A minor or patch of 100 or more cannot be encoded (`1.100.0` and `2.0.0` both
+give 20000); the config throws rather than emit a duplicate.
 ---
 
 ## Linear coordination

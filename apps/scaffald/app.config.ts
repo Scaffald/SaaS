@@ -33,16 +33,55 @@ const IS_PRODUCTION = APP_ENV === "production";
 const packageVersion = (appPackage.version as string | undefined) ?? "1.0.0";
 const APP_VERSION = process.env.APP_VERSION || packageVersion;
 
+// `1.17.0` -> `11700`: two digits for the minor, two for the patch. iOS reads
+// it as CFBundleVersion, Android as versionCode; both want it unique per
+// release and increasing.
+//
+// Kept inline deliberately. Expo evaluates this file by transpiling it to a
+// single app.config.js, so it cannot resolve a relative import either — not
+// just the package imports the note at the top of this file warns about.
+// Extracting this to ./version-code.ts fails every build with
+// "Cannot find module './version-code'". The tests import THIS file rather
+// than a copy, so the rule stays pinned without being duplicated.
 const deriveVersionCode = (version: string) => {
   const [major = 0, minor = 0, patch = 0] = version
     .split(".")
     .map((segment) => Number.parseInt(segment, 10))
     .map((segment) => (Number.isNaN(segment) ? 0 : segment));
 
+  // Two digits each, so a minor or patch of 100+ collides: 1.100.0 and 2.0.0
+  // would both give 20000. Fail the build rather than emit a duplicate — a
+  // duplicate is only discovered at submission, after a build has been paid
+  // for.
+  if (minor > 99 || patch > 99) {
+    throw new Error(
+      `Version ${version} cannot be encoded as a build number: minor and patch ` +
+        `must each be <= 99, or the code collides with another version. Widen ` +
+        `the scheme in apps/scaffald/app.config.ts before releasing this version.`,
+    );
+  }
+
   return major * 10_000 + minor * 100 + patch;
 };
 
 const derivedVersionCode = deriveVersionCode(APP_VERSION);
+
+// APP_IOS_BUILD_NUMBER is an OVERRIDE, for respinning a build of a version
+// that has already been submitted. It is deliberately not set anywhere by
+// default.
+//
+// It used to be pinned in eas.json's production profile. It was put there to
+// respin 1.12.0 as 11201 — and then it stayed, so 1.14.0, 1.15.0 and 1.16.0
+// all shipped as 11201 too, and the number stopped identifying anything
+// (#513). Apple scopes uniqueness to the version string, so those did not
+// collide at submission; what they did was make a TestFlight build
+// unmappable back to a release.
+//
+// Deriving from the version is the original design and is what Android has
+// always done, three lines down. Pass this variable for a respin and nowhere
+// else:
+//
+//   APP_IOS_BUILD_NUMBER=11701 pnpm --filter scaffald-app eas:build:...
 const IOS_BUILD_NUMBER =
   (process.env.APP_IOS_BUILD_NUMBER || `${derivedVersionCode}`).toString();
 const ANDROID_VERSION_CODE = Number.parseInt(
