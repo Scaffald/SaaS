@@ -133,6 +133,31 @@ describe('clearFilter', () => {
   })
 })
 
+describe('clear-all', () => {
+  // This assertion used to live in ApplicationsFilters.test.tsx, against a
+  // "Clear Filters" button inside the filter body. #624 moved the filters into
+  // a flyout and the clear-all onto the chip strip, so the button went away —
+  // and the test went with it, still asserting a control that no longer exists
+  // there. The behaviour it was protecting is real, so it moves here, to the
+  // module the screen's onClearAll actually calls.
+
+  it('resets every dimension at once', () => {
+    expect(EMPTY_FILTERS).toEqual({ jobId: null, status: null, minScore: 0 })
+  })
+
+  it('leaves nothing for the chip strip to show', () => {
+    expect(filterChips(EMPTY_FILTERS, JOBS)).toEqual([])
+    expect(activeFilterCount(EMPTY_FILTERS)).toBe(0)
+  })
+
+  it('is offered only when something is actually narrowing', () => {
+    // The screen gates onClearAll on activeFilterCount > 0, so a clear-all
+    // must never be offered on an already-empty filter set.
+    expect(activeFilterCount(EMPTY_FILTERS) > 0).toBe(false)
+    expect(activeFilterCount({ jobId: 'j1', status: null, minScore: 0 }) > 0).toBe(true)
+  })
+})
+
 describe('labels', () => {
   it('renders a stage label for every filterable status', () => {
     for (const option of STATUS_FILTER_OPTIONS) {
