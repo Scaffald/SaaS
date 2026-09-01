@@ -429,7 +429,28 @@ export default {
       [
         "@rnmapbox/maps",
         {
-          RNMapboxMapsDownloadToken: process.env.MAPBOX_DOWNLOADS_TOKEN || process.env.EXPO_PUBLIC_MAPBOX_TOKEN,
+          // ONLY the secret downloads token. No fallback to the public one.
+          //
+          // These are two different credentials for two different APIs.
+          // MAPBOX_DOWNLOADS_TOKEN is an `sk.` token carrying DOWNLOADS:READ,
+          // used by CocoaPods and Gradle to fetch the Mapbox SDK at build
+          // time. EXPO_PUBLIC_MAPBOX_TOKEN is a `pk.` token used by the app at
+          // runtime to draw maps. Handing the public one to the downloads API
+          // does not degrade gracefully — it 403s and the build dies at
+          // Install pods / Run gradlew.
+          //
+          // The fallback looked harmless for as long as EXPO_PUBLIC_MAPBOX_TOKEN
+          // never reached an EAS worker. #686 fixed that, which turned an
+          // absent download token into a *wrong* one and broke both platforms
+          // at once (iOS beabeb27, Android 7eff37b0). Verified against Mapbox:
+          // the pk token reports 0 scopes, no DOWNLOADS:READ, and the downloads
+          // API answers 403.
+          //
+          // Undefined is the correct value when there is no secret token: the
+          // 10.1.x SDK resolves without authenticating, which is how every
+          // build up to 11700 succeeded. See #509 for why a real sk. token is
+          // still wanted — without one, @rnmapbox/maps cannot move past 10.1.x.
+          RNMapboxMapsDownloadToken: process.env.MAPBOX_DOWNLOADS_TOKEN,
         },
       ],
     ],
