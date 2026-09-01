@@ -78,10 +78,14 @@ const derivedVersionCode = deriveVersionCode(APP_VERSION);
 // unmappable back to a release.
 //
 // Deriving from the version is the original design and is what Android has
-// always done, three lines down. Pass this variable for a respin and nowhere
-// else:
+// always done, three lines down.
 //
-//   APP_IOS_BUILD_NUMBER=11701 pnpm --filter scaffald-app eas:build:...
+// To respin a version, prefer bumping the patch — 1.17.1 gives 11701 by this
+// same rule. This variable is read wherever app.config.ts is evaluated, and an
+// EAS cloud build evaluates it on the worker, which does not inherit your
+// shell; a locally exported value is not known to reach the binary. If you
+// need it on a cloud build use `eas env:create --environment production`, and
+// delete it afterwards. Anywhere persistent, it becomes #513 again.
 const IOS_BUILD_NUMBER =
   (process.env.APP_IOS_BUILD_NUMBER || `${derivedVersionCode}`).toString();
 const ANDROID_VERSION_CODE = Number.parseInt(
