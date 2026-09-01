@@ -1,4 +1,3 @@
-import { useId } from 'react'
 import type { ViewStyle } from 'react-native'
 import { Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg'
 
@@ -12,6 +11,13 @@ export interface ScaffaldLogoProps {
   style?: ViewStyle
   showWordmark?: boolean
 }
+
+/**
+ * A colour value reduced to something legal in an SVG id: `#76EAFF` becomes
+ * `76EAFF`, `rgb(1, 2, 3)` becomes `rgb123`. Distinct colours stay distinct,
+ * which is all the id has to guarantee.
+ */
+const slug = (color: string) => color.replace(/[^a-zA-Z0-9]/g, '') || 'default'
 
 /**
  * ScaffaldLogo - React SVG component for the Scaffald logo
@@ -43,12 +49,22 @@ export const ScaffaldLogo = ({
   const isSquare = width === height
   const viewBox = isSquare ? '0 0 100 100' : '0 0 609 99'
 
-  // Unique per instance, and — critically — identical on the server and the
-  // client. This was `Math.random()`, which guaranteed the SSR markup and the
-  // hydrated markup disagreed on the gradient id, so React discarded the tree
-  // and re-rendered the whole page on every load (#582). The logo sits in the
-  // app shell, so that fired on every SSR route, not just one screen.
-  const gradientId = `logo-gradient-${useId().replace(/:/g, '')}`
+  // The id names the GRADIENT, not the instance.
+  //
+  // It was `Math.random()` once, which guaranteed the SSR and hydrated markup
+  // disagreed and made React throw the tree away on every load (#582). `useId`
+  // replaced it and fixed that — but `useId` encodes the component's POSITION
+  // in the React tree, and server and client do not agree on that position for
+  // an authenticated page. The DOM matches, so hydration succeeds, but React
+  // reports the id attribute as mismatched and refuses to patch it, on every
+  // SSR route in the shell (#625).
+  //
+  // Position is the wrong thing to key on regardless. Two logos with the same
+  // colours want the SAME gradient — sharing one `<linearGradient>` is correct,
+  // not a collision — and two logos with DIFFERENT colours must not share one.
+  // The colours are exactly the right key: deterministic everywhere, no tree
+  // dependence, and distinct precisely when the gradients differ.
+  const gradientId = `logo-gradient-${slug(gradientStart)}-${slug(gradientEnd)}`
 
   return (
     <Svg width={width} height={height} viewBox={viewBox} style={style}>
