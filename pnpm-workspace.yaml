@@ -17,7 +17,7 @@ catalog:
   '@babel/core': ~7.29.0
   '@babel/runtime': ~7.29.7
   '@biomejs/biome': ~2.5.10
-  '@expo/metro-runtime': ~56.0.12
+  '@expo/metro-runtime': ~56.0.21
   '@hookform/resolvers': ~5.9.1
   '@react-native-async-storage/async-storage': 2.2.0
   '@react-native-community/netinfo': 12.0.1
@@ -56,36 +56,36 @@ catalog:
   # Track the sdk-56 dist-tag. Was ~56.0.4 while packages/scf-core floated to
   # 56.0.18 (it declares expo-* modules but not expo), giving the tree two
   # copies of expo and two babel graphs. See #483 before moving to 57.
-  expo: ~56.0.18
+  expo: ~56.0.21
   expo-apple-authentication: ~56.0.4
-  expo-blur: ~56.0.3
-  expo-build-properties: ~56.0.14
-  expo-clipboard: ~56.0.3
-  expo-constants: ~56.0.15
-  expo-crypto: ~56.0.3
-  expo-dev-client: ~56.0.15
+  expo-blur: ~56.0.4
+  expo-build-properties: ~56.0.27
+  expo-clipboard: ~56.0.4
+  expo-constants: ~56.0.25
+  expo-crypto: ~56.0.5
+  expo-dev-client: ~56.0.26
   expo-device: ~56.0.4
   expo-document-picker: ~56.0.4
   expo-font: ~56.0.5
   expo-glass-effect: ~56.0.4
-  expo-image: ~56.0.9
-  expo-image-manipulator: ~56.0.14
-  expo-image-picker: ~56.0.13
+  expo-image: ~56.0.12
+  expo-image-manipulator: ~56.0.26
+  expo-image-picker: ~56.0.25
   expo-linear-gradient: ~56.0.4
-  expo-linking: ~56.0.14
+  expo-linking: ~56.0.17
   expo-localization: ~56.0.6
-  expo-location: ~56.0.17
+  expo-location: ~56.0.25
   # Mirrors the pnpm override of the same name; the override outranks this, so
   # they must move together or this line silently means nothing (#501).
   expo-modules-core: 56.0.22
-  expo-notifications: ~56.0.13
-  expo-router: ~56.2.6
+  expo-notifications: ~56.0.25
+  expo-router: ~56.2.20
   expo-secure-store: ~56.0.4
-  expo-splash-screen: ~56.0.10
+  expo-splash-screen: ~56.0.15
   expo-status-bar: ~56.0.4
   expo-system-ui: ~56.0.5
-  expo-updates: ~56.0.16
-  expo-web-browser: ~56.0.5
+  expo-updates: ~56.0.26
+  expo-web-browser: ~56.0.6
   fast-xml-parser: ~5.11.0
   i18n-js: ^4.4.3
   mapbox-gl: ~3.29.0
@@ -106,8 +106,8 @@ catalog:
   react-native-gifted-charts: ~1.4.64
   react-native-modal: ~14.0.0-rc.1
   react-native-qrcode-svg: ~6.3.15
-  react-native-safe-area-context: ~5.8.0
-  react-native-screens: ~4.25.2
+  react-native-safe-area-context: ~5.7.0
+  react-native-screens: ~4.26.0
   react-native-svg: 15.15.4
   react-native-url-polyfill: ~3.0.0
   react-native-web: ^0.21.1
