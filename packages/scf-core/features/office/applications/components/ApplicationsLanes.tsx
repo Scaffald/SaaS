@@ -17,7 +17,7 @@
 
 import { useMemo } from 'react'
 import { View } from 'react-native'
-import { Lane, LaneGroup, Text, useThemeContext } from '@scaffald/ui'
+import { Lane, LaneGroup, Row, Text, useResponsive, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { ApplicationStatus, ATSApplication } from '../types'
 import { daysInStage, formatStageAge, isStageOverdue, stageOverdueReason } from '../stage-timing'
@@ -101,6 +101,10 @@ export const ApplicationsLanes = ({
   now,
 }: ApplicationsLanesProps) => {
   const { theme } = useThemeContext()
+  // Matches Lane's own stackBelow default, so the cells agree with the row
+  // they sit in about what counts as narrow.
+  const { width } = useResponsive()
+  const stacked = width > 0 && width < 768
   const nowMs = now ?? Date.now()
 
   const byStage = useMemo(() => {
@@ -118,6 +122,34 @@ export const ApplicationsLanes = ({
   }, [applications, nowMs])
 
   const muted = { fontSize: 14, color: colors.text[theme].tertiary }
+
+  /**
+   * One labelled cell: "Score 88".
+   *
+   * A null value means the row has nothing to say for this column. On a wide
+   * row it still renders an em dash, because the columns line up across rows
+   * and a missing cell would shift everything after it. Stacked, there is no
+   * grid to keep, so it renders nothing rather than spending a line saying
+   * nothing — which is what "Union —" and a blank "Outcome" were doing on a
+   * phone.
+   */
+  const cell = (label: string, value: string | null, opts?: { emphasis?: boolean }) => {
+    if (value == null && stacked) return null
+    return (
+      <Row gap={6} align="baseline">
+        <Text style={{ fontSize: 13, color: colors.text[theme].tertiary }}>{label}</Text>
+        <Text
+          style={
+            opts?.emphasis
+              ? { fontSize: 14, color: colors.text[theme].primary, fontVariant: ['tabular-nums'] }
+              : muted
+          }
+        >
+          {value ?? '—'}
+        </Text>
+      </Row>
+    )
+  }
 
   return (
     <View style={{ width: '100%' }}>
@@ -152,76 +184,42 @@ export const ApplicationsLanes = ({
                   selected={selectedId === app.id}
                   onPress={onSelect ? () => onSelect(app) : undefined}
                   note={reason ?? undefined}
-                  // Labelled cells, so the stacked phone form reads as
-                  // "Source  Scaffald" rather than as a column of orphaned
-                  // values. `empty` is what lets a stacked row drop a cell
-                  // instead of spending a line on an em dash — on a wide row
-                  // the dash still holds the column open.
+                  // Cells carry their own label.
+                  //
+                  // A Lane row has no column headings, so "88 | Scaffald | — |
+                  // Unassigned" is a row of values with nothing saying what any
+                  // of them are — and stacking it on a phone made that worse,
+                  // because position stopped implying anything at all.
+                  //
+                  // The label is composed HERE rather than described to Lane as
+                  // `{label, value}`. Lane used to discriminate that union at
+                  // render time, and the guard evaluated differently under the
+                  // app and under vitest — the raw descriptor reached React as
+                  // a child and every row-rendering test in this file crashed.
+                  // Composing the node leaves nothing to guess.
                   columns={[
-                    {
-                      label: 'Score',
-                      value: (
-                        <Text
-                          style={{
-                            fontSize: 14,
-                            color: colors.text[theme].primary,
-                            fontVariant: ['tabular-nums'],
-                          }}
-                        >
-                          {app.score}
-                        </Text>
-                      ),
-                    },
-                    {
-                      label: 'Source',
-                      value: (
-                        <Text style={muted}>
-                          {app.source ? (SOURCE_LABELS[app.source] ?? app.source) : '—'}
-                        </Text>
-                      ),
-                      empty: !app.source,
-                    },
-                    {
-                      label: 'Union',
-                      value: (
-                        <Text style={muted}>
-                          {union?.isUnionMember
-                            ? [union.unionName, union.localNumber, union.journeymanStatus]
-                                .filter(Boolean)
-                                .join(' · ')
-                            : '—'}
-                        </Text>
-                      ),
-                      empty: !union?.isUnionMember,
-                    },
-                    {
-                      label: 'Assignee',
-                      value: <Text style={muted}>{assignee ? 'Assigned' : 'Unassigned'}</Text>,
-                    },
+                    cell('Score', String(app.score), { emphasis: true }),
+                    cell('Source', app.source ? (SOURCE_LABELS[app.source] ?? app.source) : null),
+                    cell(
+                      'Union',
+                      union?.isUnionMember
+                        ? [union.unionName, union.localNumber, union.journeymanStatus]
+                            .filter(Boolean)
+                            .join(' · ')
+                        : null
+                    ),
+                    cell('Assignee', assignee ? 'Assigned' : 'Unassigned'),
                     // Withdrawn shares the Closed lane with rejected, so the
                     // row has to say which it is. The brief calls out the
                     // conflation as the thing the data model works to prevent.
-                    {
-                      label: 'Outcome',
-                      value: (
-                        <Text
-                          style={{
-                            fontSize: 14,
-                            color:
-                              app.status === 'withdrawn'
-                                ? colors.text[theme].tertiary
-                                : colors.text[theme].secondary,
-                          }}
-                        >
-                          {app.status === 'withdrawn'
-                            ? 'Withdrawn by candidate'
-                            : app.status === 'rejected'
-                              ? 'Not moved forward'
-                              : ''}
-                        </Text>
-                      ),
-                      empty: app.status !== 'withdrawn' && app.status !== 'rejected',
-                    },
+                    cell(
+                      'Outcome',
+                      app.status === 'withdrawn'
+                        ? 'Withdrawn by candidate'
+                        : app.status === 'rejected'
+                          ? 'Not moved forward'
+                          : null
+                    ),
                   ]}
                 />
               )
