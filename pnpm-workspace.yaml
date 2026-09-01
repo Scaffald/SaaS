@@ -36,7 +36,7 @@ catalog:
   # runs Node 22, both proven against 2.110.9 with the export:embed harness in
   # #512. What remains before bumping is RUNTIME validation of the 2.86→2.110
   # auth/realtime surface in the app itself — do that in its own PR.
-  '@supabase/supabase-js': ~2.86.0
+  '@supabase/supabase-js': ~2.112.4
   '@tanstack/react-query': 5.90.21
   '@tanstack/react-table': ~8.21.3
   '@trpc/client': ~11.18.0

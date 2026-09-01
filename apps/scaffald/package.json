@@ -61,7 +61,7 @@
     "@react-native-community/netinfo": "catalog:",
     "@react-native-google-signin/google-signin": "catalog:",
     "@rnmapbox/maps": "catalog:",
-    "@sentry/react": "^10.70.0",
+    "@sentry/react": "^10.72.0",
     "@trpc/server": "catalog:",
     "babel-plugin-module-resolver": "catalog:",
     "burnt": "catalog:",
