@@ -312,7 +312,25 @@ export default {
         backgroundColor: "#FFFFFF",
       },
       package: androidPackage,
-      permissions: ["android.permission.RECORD_AUDIO"],
+      // No `permissions` array on purpose — the plugins below declare what
+      // they need, and anything listed here is *additional*.
+      //
+      // This used to carry android.permission.RECORD_AUDIO explicitly, added
+      // incidentally in c6b40b5 ("Building without errors but styles are not
+      // quite building correctly") rather than for a feature. Nothing in the
+      // app records audio: no expo-av, no expo-audio, no WebRTC, no
+      // getUserMedia, no mic-adjacent dependency of any kind.
+      //
+      // Deleting the entry alone did NOT remove it. expo-image-picker's plugin
+      // adds RECORD_AUDIO on Android unless it is told not to, so the resolved
+      // config still had it. `microphonePermission: false` on that plugin is
+      // the real fix, and it additionally BLOCKS the permission so no other
+      // package can put it back. See the plugin config below.
+      //
+      // Worth the trouble because Play lists declared permissions on the store
+      // page — a hiring app appearing to want your microphone is an install
+      // cost — and Data safety would otherwise have to declare "Voice or sound
+      // recordings" for data the app never collects.
       versionCode: ANDROID_VERSION_CODE,
     },
     web: {
@@ -356,6 +374,10 @@ export default {
             "Scaffald accesses your photos so you can upload a profile picture and attach images to job listings.",
           cameraPermission:
             "Scaffald uses the camera so you can take a profile photo or capture jobsite images for listings.",
+          // Nothing in the app records audio. `false` both removes
+          // RECORD_AUDIO and blocks it, so a future dependency cannot
+          // reintroduce it quietly.
+          microphonePermission: false,
         },
       ],
       [
