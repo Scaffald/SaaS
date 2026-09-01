@@ -111,10 +111,10 @@
     "requireCommit": true
   },
   "submit": {
-    "production": {
+    "internal": {
       "android": {
-        "serviceAccountKeyPath": "../path/to/service-account-key.json",
-        "track": "production"
+        "serviceAccountKeyPath": "./google-play-service-account.json",
+        "track": "internal"
       },
       "ios": {
         "appleId": "clay@unicorn.love",
@@ -124,8 +124,19 @@
     },
     "staging": {
       "android": {
-        "serviceAccountKeyPath": "../path/to/service-account-key.json",
+        "serviceAccountKeyPath": "./google-play-service-account.json",
         "track": "beta"
+      },
+      "ios": {
+        "appleId": "clay@unicorn.love",
+        "appleTeamId": "DAC62CF44G",
+        "ascAppId": "6753185287"
+      }
+    },
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./google-play-service-account.json",
+        "track": "production"
       },
       "ios": {
         "appleId": "clay@unicorn.love",
