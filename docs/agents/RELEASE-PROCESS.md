@@ -66,20 +66,55 @@ build number with it. There is nothing else to remember.
 
 **Respinning a version that has already been submitted** is the one case
 needing a hand: Apple scopes build-number uniqueness to the version string, so
-a second build of the same version is rejected unless the number changes. Pass
-the override for that build and nowhere else:
+a second build of the same version is rejected unless the number changes.
+
+**Bump the patch version and cut a new tag.** `1.17.0` → `1.17.1` moves the
+build number to `11701` by exactly the mechanism above, which is the one path
+proven end to end — `app-v1.17.0` built on EAS as `1.17.0 / 11700`. It also
+keeps one-tag-one-build intact, which a same-version respin quietly breaks.
+
+There is an `APP_IOS_BUILD_NUMBER` override, but know what it does before
+reaching for it. It is read by `app.config.ts` wherever that file is
+*evaluated*. Locally that is verifiable:
 
 ```bash
-APP_IOS_BUILD_NUMBER=11701 pnpm --filter scaffald-app eas:build:prod:ios
+APP_IOS_BUILD_NUMBER=11701 npx expo config --type public   # → 11701
 ```
+
+An EAS cloud build evaluates `app.config.ts` again **on the EAS worker**,
+which does not inherit your shell. A variable exported in your terminal is
+therefore NOT known to reach the built binary, and I have not verified that it
+does. If you need the override on a cloud build, set it where the worker can
+see it — `eas env:create --environment production` — and **delete it as soon
+as the build is done.**
 
 Do **not** put it in `eas.json`. It was pinned there once, to respin 1.12.0 as
 11201, and it stayed — so 1.14.0, 1.15.0 and 1.16.0 all shipped as 11201 too
 and the number stopped identifying anything (#513). `apps/scaffald/tests/
-build-number.test.ts` now fails if any profile pins it again.
+build-number.test.ts` now fails if any profile pins it again. An override left
+anywhere persistent becomes the next #513.
 
 A minor or patch of 100 or more cannot be encoded (`1.100.0` and `2.0.0` both
 give 20000); the config throws rather than emit a duplicate.
+
+### ITMS-90863 after an iOS delivery
+
+Apple emails this on every iOS delivery. Delivery **succeeded**; it is
+advisory and blocks nothing:
+
+```
+ITMS-90863: Macs with Apple silicon support issue - The app uses symbols
+that aren't present in macOS: ExpoModulesCore ...
+```
+
+`supportsTablet: true` makes an iOS app eligible for Apple silicon Macs by
+default, so Apple checks the binary against the macOS runtime and finds Swift
+symbols from `ExpoModulesCore` that do not resolve there. Nothing in this repo
+turns that listing off — it is an App Store Connect setting.
+
+It is expected until someone opts the app out of Mac availability. See #683 —
+and do not "fix" it by setting `supportsTablet: false`, which would drop real
+iPad support to quieten a warning about a platform we do not ship to.
 ---
 
 ## Linear coordination
