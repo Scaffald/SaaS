@@ -158,8 +158,16 @@ jobs:
       - name: Check for duplicate dependencies (run `pnpm dedupe` to fix)
         run: pnpm dedupe --check
 
+      # Best-effort, and it has to stay that way: check-dependency-version-consistency
+      # cannot walk this graph reliably. The `|| echo` below was written for a
+      # non-zero exit, but the failure mode observed on #692 is a HANG — the step
+      # ran 15 minutes and the job died on its own timeout, taking the passing
+      # dedupe and circular-dep checks down with it. `timeout` turns that hang
+      # back into the warning this step was always meant to degrade to. It went
+      # unnoticed because the dedupe step above had been failing first since #490,
+      # so this one was effectively unreachable.
       - name: Check for conflicting dependency versions across the monorepo
-        run: NODE_OPTIONS="--max-old-space-size=4096" pnpm check-deps || echo "⚠️ check-deps exited non-zero (circular dep tool limitation)"
+        run: timeout 300 env NODE_OPTIONS="--max-old-space-size=4096" pnpm check-deps || echo "⚠️ check-deps exited non-zero or timed out (circular dep tool limitation)"
 
       - name: Check the project graph builds (catches circular project deps)
         run: pnpm check-circular-deps

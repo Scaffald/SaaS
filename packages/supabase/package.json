@@ -29,7 +29,7 @@
     "csv-parse": "^6.2.1",
     "pdf-lib": "^1.17.1",
     "pg-copy-streams": "^7.0.0",
-    "posthog-node": "^5.50.0",
+    "posthog-node": "^5.51.4",
     "zod": "catalog:"
   },
   "devDependencies": {
