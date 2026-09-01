@@ -3,25 +3,28 @@ import { describe, expect, it } from 'vitest'
 import { ScaffaldLogo } from '../ScaffaldLogo'
 
 /**
- * ScaffaldLogo derived its SVG gradient id from Math.random(), so the
- * server-rendered id could never equal the client-rendered one. React discarded
- * the tree and re-rendered the whole page — on every SSR route, because the logo
- * lives in the app shell (#582). It is now useId().
+ * ScaffaldLogo's SVG gradient id has been wrong twice, in opposite directions.
  *
- * The exact invariant (server markup === client markup) is not expressible in
- * this harness: `react-dom/server` is not in the workspace's vitest alias list,
- * and importing it resolves into Flow-typed React Native source, killing the
- * file at collection. What is asserted instead are the properties that fail if
- * the id is random again:
+ * It was `Math.random()`, so the server id could never equal the client id;
+ * React discarded the tree and re-rendered every SSR page, because the logo
+ * lives in the app shell (#582). `useId()` fixed that — and then #625 showed
+ * `useId` was still the wrong key: it encodes the component's POSITION in the
+ * React tree, and server and client do not agree on that position for an
+ * authenticated page. Hydration succeeded (the DOM matched) but React reported
+ * the id attribute as mismatched and refused to patch it, on every SSR route.
  *
- *   - the id is not drawn from a random source
- *   - it is stable across re-renders of the same tree
- *   - two logos in one tree still differ
+ * The id now names the GRADIENT — derived from its colours. That makes the
+ * decisive invariant testable here for the first time: the old file noted it
+ * could NOT assert byte-identity across two separate `render()` calls, because
+ * two roots legitimately produce different `useId` values. Position is no
+ * longer an input, so two roots must now agree, and 'is identical across two
+ * independent roots' below is the closest this harness gets to the real
+ * server-markup === client-markup claim.
  *
- * Note that byte-identity across two *separate* render() calls is deliberately
- * NOT asserted — those are two React roots, and useId is only required to be
- * deterministic by position within a root. Asserting it would encode a false
- * expectation that a correct implementation fails.
+ * Sharing an id between two logos is CORRECT when their colours match: the
+ * `<linearGradient>` they would each define is byte-identical, so one shared
+ * def is the right output, not a collision. Distinctness is only required when
+ * the gradients actually differ.
  */
 describe('ScaffaldLogo', () => {
   const gradientIds = (html: string) =>
@@ -55,9 +58,34 @@ describe('ScaffaldLogo', () => {
     expect(gradientIds(container.innerHTML)).toEqual(before)
   })
 
-  it('gives two logos in one tree distinct gradient ids', () => {
-    // Distinctness still matters: two <defs> sharing an id would make one
-    // gradient win for both.
+  it('is identical across two independent roots', () => {
+    // The #625 invariant, and the one the previous implementation could not
+    // satisfy. Two separate render() calls are two React roots — exactly the
+    // situation the server render and the client render are in.
+    const a = render(<ScaffaldLogo />)
+    const b = render(<ScaffaldLogo />)
+
+    expect(gradientIds(a.container.innerHTML)).toEqual(gradientIds(b.container.innerHTML))
+  })
+
+  it('does not depend on where in the tree the logo sits', () => {
+    // Position was the input that server and client disagreed about.
+    const flat = render(<ScaffaldLogo />)
+    const nested = render(
+      <div>
+        <div>
+          <span />
+          <ScaffaldLogo />
+        </div>
+      </div>
+    )
+
+    expect(gradientIds(nested.container.innerHTML)).toEqual(gradientIds(flat.container.innerHTML))
+  })
+
+  it('lets two logos of the same colour share one gradient def', () => {
+    // Not a collision: the two <linearGradient> elements would be identical,
+    // so one shared def is the correct output.
     const { container } = render(
       <>
         <ScaffaldLogo />
@@ -68,17 +96,34 @@ describe('ScaffaldLogo', () => {
     const ids = gradientIds(container.innerHTML)
 
     expect(ids).toHaveLength(2)
+    expect(new Set(ids).size).toBe(1)
+  })
+
+  it('separates logos whose gradients actually differ', () => {
+    // This is where distinctness genuinely matters — sharing an id here would
+    // make one gradient win for both and paint the wrong colours.
+    const { container } = render(
+      <>
+        <ScaffaldLogo gradientStart="#76EAFF" gradientEnd="#239CB2" />
+        <ScaffaldLogo gradientStart="#FF0000" gradientEnd="#00FF00" />
+      </>
+    )
+
+    const ids = gradientIds(container.innerHTML)
+
+    expect(ids).toHaveLength(2)
     expect(new Set(ids).size).toBe(2)
   })
 
   it('emits ids that are valid in an SVG url() reference', () => {
-    // useId() returns ":r0:" style values; colons are not usable in url(#id).
-    const { container } = render(<ScaffaldLogo />)
+    // A colour arrives as `#76EAFF` or `rgb(1, 2, 3)`; neither `#`, `(` nor a
+    // space is usable inside url(#id).
+    const { container } = render(<ScaffaldLogo gradientStart="rgb(1, 2, 3)" />)
     const ids = gradientIds(container.innerHTML)
 
     expect(ids.length).toBeGreaterThan(0)
     for (const id of ids) {
-      expect(id).not.toContain(':')
+      expect(id).toMatch(/^[A-Za-z][A-Za-z0-9-]*$/)
     }
   })
 
