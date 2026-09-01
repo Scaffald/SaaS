@@ -10,10 +10,21 @@
 # Why this script exists:
 # - `eas build --profile production` is a long, fragile command. Easy to forget --no-wait,
 #   --auto-submit, or to run it from the wrong directory with the wrong env.
-# - The eas.json production profile only sets a handful of env vars. The rest
-#   (Mapbox, Google OAuth, redirect URIs) come from .env.production at build time
-#   and are easy to miss — a 20-minute EAS build that silently fails because a key
-#   is empty is a bad day.
+# - A 20-minute EAS build that silently ships without a key is a bad day.
+#
+# CORRECTION (found by inspecting the shipped 1.17.0 / 11700 binary):
+# this script used to say the rest of the vars "come from .env.production at
+# build time". They do not. .env.production is gitignored and never reaches the
+# EAS worker, so `dotenv.config()` there finds nothing. Only two sources reach a
+# cloud build:
+#
+#   1. the `env` block of the profile in eas.json
+#   2. EAS environment variables (`eas env:create --environment production`)
+#
+# The old check validated .env.production, live-pinged the Mapbox token in it,
+# printed a row of ticks, and then shipped a build with no Mapbox token at all.
+# Confident and wrong is worse than no check, so the required-var check now asks
+# EAS what the BUILD will see.
 #
 # What this script checks before kicking off the build:
 # - You're on main (warns if not).
@@ -81,31 +92,44 @@ get_env() {
   grep -E "^${1}=" "$ENV_FILE" | head -1 | sed "s/^${1}=//" | sed 's/^"\(.*\)"$/\1/' | sed "s/^'\(.*\)'$/\1/"
 }
 
-# --- required vars present + non-empty ------------------------------------
+# --- required vars: ask EAS what the BUILD will actually see --------------
+#
+# This is the check that matters. eas.json's `env` block plus EAS environment
+# variables are the only two things a cloud build sees; a value that exists
+# only in .env.production ships as undefined.
+EAS_ENV_NAMES=$( (cd "$PROJECT_DIR" && pnpm exec eas env:list --environment production --format short 2>/dev/null) | sed 's/=.*//' )
+EAS_JSON_NAMES=$(node -e "
+  const p=require('./$PROJECT_DIR/eas.json');
+  console.log(Object.keys(p.build?.production?.env||{}).join('\n'));
+" 2>/dev/null)
+
 missing=()
-todo=()
 for var in "${REQUIRED_VARS[@]}"; do
-  val=$(get_env "$var" || true)
-  if [ -z "$val" ]; then
+  if ! printf '%s\n' "$EAS_ENV_NAMES" | grep -qx "$var" \
+     && ! printf '%s\n' "$EAS_JSON_NAMES" | grep -qx "$var"; then
     missing+=("$var")
-  elif [ "$val" = "TODO" ] || [[ "$val" =~ ^pk\.your_ ]] || [[ "$val" =~ your_.*_here$ ]]; then
-    todo+=("$var=$val")
   fi
 done
 
-if [ ${#missing[@]} -ne 0 ] || [ ${#todo[@]} -ne 0 ]; then
-  echo "✗ $ENV_FILE has problems:"
-  if [ ${#missing[@]} -ne 0 ]; then
-    echo "  Missing or empty:"
-    printf '    - %s\n' "${missing[@]}"
-  fi
-  if [ ${#todo[@]} -ne 0 ]; then
-    echo "  Placeholder values that look unset:"
-    printf '    - %s\n' "${todo[@]}"
-  fi
+if [ ${#missing[@]} -ne 0 ]; then
+  echo "✗ These vars will NOT reach the build — the binary ships without them:"
+  printf '    - %s\n' "${missing[@]}"
+  echo
+  echo "  Having them in $ENV_FILE is not enough. That file is gitignored and"
+  echo "  never reaches the EAS worker. Register each one with:"
+  echo
+  for var in "${missing[@]}"; do
+    echo "    (cd $PROJECT_DIR && pnpm exec eas env:create --environment production \\"
+    echo "        --name $var --value '<value>' --visibility sensitive)"
+  done
+  echo
+  echo "  This is exactly how 1.17.0 / 11700 shipped to TestFlight with no"
+  echo "  Mapbox token: the old check looked in $ENV_FILE and said OK."
   exit 1
 fi
-echo "✓ All ${#REQUIRED_VARS[@]} required env vars present in $ENV_FILE"
+echo "✓ All ${#REQUIRED_VARS[@]} required vars are registered where the build can see them"
+
+
 
 # Soft check on recommended vars — warn only, don't block.
 soft_missing=()
@@ -135,7 +159,10 @@ if [ -n "$SUPA_URL_FROM_ENV" ] && [[ ! "$SUPA_URL_FROM_ENV" =~ ^https:// ]]; the
 fi
 
 # --- live ping the Mapbox token ------------------------------------------
-echo -n "  Pinging Mapbox geocoding API to verify token… "
+# NOTE: this pings the token in .env.production — your LOCAL value. It says the
+# token is alive; it does NOT say the build will carry it. The check above is
+# the one that answers that.
+echo -n "  Pinging Mapbox geocoding API to verify the local token… "
 if curl -sS --max-time 6 -o /dev/null -w "%{http_code}" \
      "https://api.mapbox.com/geocoding/v5/mapbox.places/test.json?access_token=${MAPBOX_TOKEN}&limit=1" \
    | grep -q '^200$'; then
