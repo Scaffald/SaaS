@@ -1,0 +1,75 @@
+# Dependabot regenerates pnpm-lock.yaml but never runs `pnpm dedupe`, so its
+# lockfiles arrive with duplicate resolutions — #700 landed 100+ of them, the
+# whole postcss 8.5.25/8.5.26 split. The Monorepo integrity job runs
+# `pnpm dedupe --check` and fails on exactly that.
+#
+# This did not matter until recently: that job is gated on `deps == 'true'`, so a
+# dependency PR is the only thing that ever runs it, and it had been failing on a
+# pre-existing backlog of duplicates since #490. #692 cleared the backlog, which
+# means the check now passes on main and every dependabot PR fails it instead —
+# each one needing a human to dedupe by hand.
+#
+# So: dedupe the branch for it. If the lockfile changes, commit and push; the
+# push re-triggers this workflow, the second run finds nothing to do, and it
+# terminates.
+name: Dependabot dedupe
+
+# pull_request_target, because a `pull_request` run raised by dependabot gets a
+# read-only token and cannot push. The `github.actor` gate below is what makes
+# that safe, together with `--ignore-scripts`: this checks out the PR head, which
+# on a dependabot PR is an in-repo branch whose only changed files are manifests
+# and the lockfile, and it never executes a package's install scripts.
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dependabot-dedupe-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  dedupe:
+    name: Dedupe the lockfile
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: Checkout the PR branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      # Not ./.github/actions/install: that does a --frozen-lockfile install,
+      # which fails on precisely the lockfiles this job exists to repair.
+      - name: Dedupe
+        run: pnpm dedupe --ignore-scripts
+
+      - name: Commit and push if the lockfile moved
+        run: |
+          if git diff --quiet -- pnpm-lock.yaml; then
+            echo "Lockfile already deduped — nothing to do."
+            exit 0
+          fi
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add pnpm-lock.yaml
+          git commit -m 'chore(deps): pnpm dedupe
+
+          Dependabot regenerates the lockfile without deduping, which fails the
+          Monorepo integrity check. Applied automatically by
+          .github/workflows/dependabot-dedupe.yml.'
+          git push
