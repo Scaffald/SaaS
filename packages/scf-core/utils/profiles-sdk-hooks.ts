@@ -44,20 +44,6 @@ export function useOrganizationProfile(slug: string | undefined, options?: { ena
   })
 }
 
-/** Get an employer profile by slug */
-export function useEmployerProfile(slug: string | undefined, options?: { enabled?: boolean }) {
-  const client = useScaffaldJobsClient()
-  return useQuery({
-    queryKey: ['profiles', 'employer', slug],
-    queryFn: async () => {
-      if (!client || !slug) throw new Error('Missing client or slug')
-      return client.profiles.getEmployer(slug)
-    },
-    enabled: !!client && !!slug && options?.enabled !== false,
-    staleTime: 2 * 60 * 1000,
-  })
-}
-
 // ============================================================================
 // QUERY HOOKS - Profile Management
 // ============================================================================

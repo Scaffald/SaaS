@@ -598,22 +598,6 @@ const organizationProfileSchema = z
   })
   .openapi("OrganizationProfile");
 
-// Employer profile schema
-const employerProfileSchema = z
-  .object({
-    id: z.string().uuid(),
-    slug: z.string(),
-    name: z.string(),
-    description: z.string().nullable(),
-    logo_url: z.string().url().nullable(),
-    website: z.string().url().nullable(),
-    industry: z.string().nullable(),
-    location: z.string().nullable(),
-    created_at: z.string(),
-    active_jobs_count: z.number().int(),
-  })
-  .openapi("EmployerProfile");
-
 // Response schemas
 const profileResponseSchema = z
   .object({
@@ -626,12 +610,6 @@ const organizationResponseSchema = z
     data: organizationProfileSchema,
   })
   .openapi("OrganizationResponse");
-
-const employerResponseSchema = z
-  .object({
-    data: employerProfileSchema,
-  })
-  .openapi("EmployerResponse");
 
 // Error response schema
 const errorResponseSchema = z
@@ -1260,121 +1238,6 @@ app.openapi(getOrganizationRoute, async (c) => {
       data: {
         ...organization,
         job_count: count || 0,
-      },
-    },
-    200,
-  );
-});
-
-/**
- * GET /v1/profiles/employers/:slug
- * Get employer profile by slug
- */
-const getEmployerRoute = createRoute({
-  method: "get",
-  path: "/employers/{slug}",
-  tags: ["Profiles"],
-  summary: "Get employer profile",
-  description:
-    "Retrieve public profile information for an employer by their slug. Rate limited to 100 requests per 15 minutes.",
-  request: {
-    params: z.object({
-      slug: z.string().min(3).max(50).openapi({
-        description: "Employer slug (3-50 characters)",
-        example: "tech-startup",
-      }),
-    }),
-  },
-  responses: {
-    200: {
-      description: "Employer profile data",
-      content: {
-        "application/json": {
-          schema: employerResponseSchema,
-        },
-      },
-    },
-    404: {
-      description: "Employer not found",
-      content: {
-        "application/json": {
-          schema: errorResponseSchema,
-        },
-      },
-    },
-    429: {
-      description: "Too many requests - rate limit exceeded",
-      content: {
-        "application/json": {
-          schema: rateLimitErrorSchema,
-        },
-      },
-    },
-  },
-  security: [
-    {
-      bearerAuth: [],
-    },
-  ],
-});
-
-app.openapi(getEmployerRoute, async (c) => {
-  const supabase = c.get("supabase");
-  const { slug } = c.req.valid("param");
-
-  // Get employer profile
-  const { data: employer, error } = await supabase
-    .schema("core")
-    .from("employers")
-    .select(`
-      id,
-      slug,
-      name,
-      description,
-      logo_url,
-      website,
-      industry,
-      location,
-      created_at
-    `)
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .single();
-
-  if (error) {
-    if (error.code === "PGRST116") {
-      return c.json(
-        {
-          error: "Not Found",
-          message: `Employer with slug '${slug}' not found or is not active`,
-        },
-        404,
-      );
-    }
-    console.error("Error fetching employer:", error);
-    return c.json(
-      {
-        error: "Internal Server Error",
-        message: error.message,
-      },
-      500,
-    );
-  }
-
-  // Get count of open jobs
-  const { count } = await supabase
-    .schema("core")
-    .from("jobs")
-    .select("*", { count: "exact", head: true })
-    .eq("employer_id", employer.id)
-    // See above: "published" is not a value core.jobs.status can hold.
-    .eq("status", "open");
-
-  return c.json(
-    {
-      data: {
-        ...employer,
-        active_jobs_count: count || 0,
       },
     },
     200,

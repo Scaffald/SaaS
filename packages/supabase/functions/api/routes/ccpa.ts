@@ -108,6 +108,7 @@ ccpaRouter.get("/data-summary", async (c) => {
     ),
     // reviews keys the writer as author_user_id, not reviewer_user_id.
     count("reviews", rows("reviews").eq("author_user_id", user.id)),
+    count("feedback", rows("user_feedback").eq("user_id", user.id)),
   ]);
 
   if (profileRes.error) failures.push(`profile: ${profileRes.error.message}`);
@@ -161,17 +162,17 @@ ccpaRouter.get("/data-summary", async (c) => {
       itemCount: sensitiveCount,
     },
     {
-      // Platform feedback lives in logs.user_feedback, which PostgREST does not
-      // expose (config.toml `schemas`) and which grants only postgres — so it
-      // cannot be counted from here at all. It is left out of the label rather
-      // than counted as zero, because a silent zero is the bug this change
-      // fixes. Tracked separately; the feedback router is unreachable for the
-      // same reason.
+      // Platform feedback is counted here again. It used to be omitted because
+      // it lived in logs.user_feedback — a schema PostgREST does not expose,
+      // on a table granting only postgres — so it could not be read at all,
+      // and a silent zero in a statutory disclosure is worse than an honest
+      // omission. Migration 350 moved it to core.user_feedback with the grants
+      // it always needed (#665).
       id: "communications",
       label: "Communications",
-      description: "Reviews",
-      hasData: counts.reviews > 0,
-      itemCount: counts.reviews,
+      description: "Reviews, platform feedback",
+      hasData: counts.reviews + counts.feedback > 0,
+      itemCount: counts.reviews + counts.feedback,
     },
   ];
 
