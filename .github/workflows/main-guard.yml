@@ -31,10 +31,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
-    # semantic-release pushes `chore(release): x.y.z` straight to main by design
-    # (@semantic-release/git in .releaserc). Its commits carry [skip ci], so this
-    # workflow should not even be triggered for them — this is belt and braces in
-    # case that ever changes.
+    # `scripts/release.sh` pushes `chore(release): scaffald-app x.y.z` straight to
+    # main by design — see docs/agents/RELEASE-PROCESS.md. This skips those so a
+    # release commit does not trip the guard. (It also covered semantic-release,
+    # which was retired along with .releaserc.json.)
     if: >-
       github.actor != 'github-actions[bot]' &&
       !startsWith(github.event.head_commit.message, 'chore(release):')
