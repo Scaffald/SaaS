@@ -3,6 +3,8 @@ import { Text, Stack, Row, Card, Avatar, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Image } from 'react-native'
 import { StarRating } from './StarRating'
+import { ReportAction } from '@scf/core/features/moderation'
+import { useUser } from '@scf/core/utils/useUser'
 import type { CommunityPost } from '@scaffald/sdk/resources/community-posts'
 
 interface Props {
@@ -13,6 +15,8 @@ interface Props {
 export function PostCard({ post, onPress }: Props) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
+  const { user } = useUser()
+  const isOwnPost = !!user && post.author_id === user.id
 
   return (
     <Card pressable onPress={onPress} padding="md" variant="glass" glassMaterial="thin">
@@ -27,6 +31,17 @@ export function PostCard({ post, onPress }: Props) {
           <Text style={{ fontWeight: '500', fontSize: 14 }}>
             {post.author?.display_name || 'Anonymous'}
           </Text>
+          {/* #690 — sits in the author row so it is discoverable without
+              opening the post, and hidden on your own posts. */}
+          <Stack style={{ marginLeft: 'auto' }}>
+            <ReportAction
+              subjectType="community_post"
+              subjectId={post.id}
+              reportedUserId={post.author_id}
+              reportedUserName={post.author?.display_name ?? null}
+              hidden={isOwnPost}
+            />
+          </Stack>
           <Stack
             style={{
               paddingHorizontal: 8,
