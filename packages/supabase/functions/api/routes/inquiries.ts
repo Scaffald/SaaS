@@ -5,6 +5,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { authMiddleware } from "../middleware/auth.ts";
+import { blockedUserIds, withoutBlocked } from "../lib/blocks.ts";
 
 const app = new OpenAPIHono();
 app.use("*", authMiddleware);
@@ -466,6 +467,17 @@ app.openapi(
 
     const applicationResult = await applicationPromise;
 
+    // #690: a block hides the thread's messages in both directions. Applied
+    // here rather than in the query because the block list is symmetric and
+    // comes from a definer function — the caller cannot see who blocked them,
+    // so this cannot be expressed as a filter the request client could run.
+    const blocked = await blockedUserIds(supabase, user.id);
+    const visibleComments = withoutBlocked(
+      comments.data,
+      blocked,
+      (row: { sender_id?: string | null }) => row.sender_id,
+    );
+
     const failed = [sections, comments, capabilityResponses, applicationResult]
       .find((r) => r.error);
     if (failed?.error) {
@@ -484,7 +496,8 @@ app.openapi(
     return c.json({
       inquiry,
       sections: sections.data ?? [],
-      comments: comments.data ?? [],
+      // Filtered, not raw — see the blocked-user note above (#690).
+      comments: visibleComments,
       capabilityResponses: capabilityResponses.data ?? [],
       application: applicationDetails,
       candidate: applicationDetails?.candidate ?? null,

@@ -12,6 +12,7 @@ import prerequisitesRouter from "./routes/prerequisites.ts";
 import teamsRouter from "./routes/teams.ts";
 import connectionsRouter from "./routes/connections.ts";
 import followsRouter from "./routes/follows.ts";
+import moderationRouter from "./routes/moderation.ts";
 import schedulingRouter from "./routes/scheduling.ts";
 import employerEeoRouter from "./routes/employer-eeo.ts";
 import employerSchedulingRouter from "./routes/employer-scheduling.ts";
@@ -134,6 +135,7 @@ app.route("/v1/prerequisites", prerequisitesRouter); // Prerequisites/onboarding
 app.route("/v1/teams", teamsRouter); // Teams management
 app.route("/v1/connections", connectionsRouter); // User connections/networking
 app.route("/v1/follows", followsRouter); // User follows
+app.route("/v1/moderation", moderationRouter); // Reporting and blocking (#690)
 app.route("/v1/scheduling", schedulingRouter); // Interview self-scheduling
 app.route("/v1/employer/eeo-report", employerEeoRouter); // Aggregate EEO, counts only
 app.route("/v1/employer/scheduling", employerSchedulingRouter); // Hiring-side slots + links
