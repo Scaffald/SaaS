@@ -121,7 +121,6 @@ export * from '../profile-wizard-sdk-hooks'
 export {
   useUserProfile,
   useOrganizationProfile,
-  useEmployerProfile,
   useSlugAvailability,
 } from '../profiles-sdk-hooks'
 
