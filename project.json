@@ -1,6 +1,13 @@
 {
   "name": "scaffald",
   "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'Root workspace project - built via individual package configs'",
+        "cwd": "."
+      }
+    },
     "lint": {
       "executor": "nx:run-commands",
       "options": {
