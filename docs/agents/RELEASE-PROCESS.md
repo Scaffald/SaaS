@@ -238,7 +238,12 @@ matters — every shipped artifact has a reproducible source commit.
   corresponding git tags (which is what produced `1.0.1` with no tag).
 - Old `semantic-release`-style `vX.Y.Z` tags that didn't correspond to any
   particular package (`v1.0.0`, `v1.1.0`, `v1.2.0` from Dec 2025 — leave
-  in place but they're not load-bearing).
+  in place but they're not load-bearing). The workflow that produced them
+  (`.github/workflows/release.yml` + `.releaserc.json`) was **retired in
+  #698**. It had kept firing on every push to main and failing on every one
+  of them since Dec 2025, and had it ever succeeded it would have rewritten
+  `apps/scaffald/package.json` out from under this process — its next run
+  wanted to set 1.17.1 to 2.0.0.
 - Ad-hoc "is this on TestFlight yet?" questions in Slack.
 
 ---
