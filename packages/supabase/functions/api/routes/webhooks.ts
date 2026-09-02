@@ -46,7 +46,7 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const { data, error } = await supabase.schema("core").from("webhooks")
+    const { data, error } = await supabase.from("webhooks")
       .select("*").eq("user_id", user.id);
 
     if (error) {
@@ -114,7 +114,6 @@ app.openapi(
     const secret = crypto.randomUUID();
 
     const { data, error } = await supabase
-      .schema("core")
       .from("webhooks")
       .insert({
         user_id: user.id,
@@ -182,7 +181,7 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const { error } = await supabase.schema("core").from("webhooks").delete()
+    const { error } = await supabase.from("webhooks").delete()
       .eq("id", id).eq("user_id", user.id);
 
     if (error) {
