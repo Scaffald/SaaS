@@ -49,7 +49,8 @@ Deno.test("the members list reads with the service client, gated first", async (
   );
   // Which is only safe because membership is not public.
   assert(
-    handler.indexOf("canReadOrgInternals") < handler.indexOf("getServiceClient()"),
+    handler.indexOf("canReadOrgInternals") <
+      handler.indexOf("getServiceClient()"),
     "the access check must run before the service client reads anything",
   );
   assert(handler.includes("Organization not found"), "a non-member gets 404");
@@ -104,7 +105,10 @@ Deno.test("revoking someone else's link is not reported as success", async () =>
 
   // An UPDATE matching no rows is not an error, so without checking the
   // returned row this answered 200 and did nothing.
-  assert(source.includes(".maybeSingle()"), "the revoke must read back its row");
+  assert(
+    source.includes(".maybeSingle()"),
+    "the revoke must read back its row",
+  );
   assert(
     source.includes('{ error: "Not found" }, 404'),
     "a revoke that matched nothing must answer 404",
@@ -117,7 +121,10 @@ Deno.test("the migration grants both roles and scopes every policy to the subjec
   // service_role bypasses RLS but still needs the table grant — which is why
   // by-token failed despite already using the service client.
   assert(/GRANT[^;]*TO service_role/.test(sql), "service_role needs the grant");
-  assert(/GRANT[^;]*TO authenticated/.test(sql), "authenticated needs the grant");
+  assert(
+    /GRANT[^;]*TO authenticated/.test(sql),
+    "authenticated needs the grant",
+  );
 
   // Four policies, each scoped to the owner; the SELECT one is the only thing
   // between a caller and every share link on the platform.
@@ -135,5 +142,9 @@ Deno.test("the migration grants both roles and scopes every policy to the subjec
 
   // Anonymous reviewers reach a link through the service client, which checks
   // expiry, revocation and use count first.
-  assertEquals(/TO anon/.test(sql), false, "anon must not read the table directly");
+  assertEquals(
+    /TO anon/.test(sql),
+    false,
+    "anon must not read the table directly",
+  );
 });

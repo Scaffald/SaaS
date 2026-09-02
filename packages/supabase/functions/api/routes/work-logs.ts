@@ -112,7 +112,6 @@ async function signProfilePhoto(
   };
 }
 
-
 /**
  * Resolve a work log the caller may access: their own or a collaborator log
  * (via RLS), falling back to service-role + org-membership check for org
@@ -872,7 +871,6 @@ app.openapi(
     }));
   },
 );
-
 
 /**
  * GET /v1/work-logs/:workLogId

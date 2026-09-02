@@ -6,7 +6,11 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { type ApiEnv, authMiddleware, requireRole } from "../middleware/auth.ts";
+import {
+  type ApiEnv,
+  authMiddleware,
+  requireRole,
+} from "../middleware/auth.ts";
 
 const app = new Hono<ApiEnv>();
 app.use("*", authMiddleware);
@@ -519,7 +523,10 @@ async function emailsByUserId(
   return new Map(entries);
 }
 
-function mapWorker(rec: Record<string, unknown> | null, email: string | null = null) {
+function mapWorker(
+  rec: Record<string, unknown> | null,
+  email: string | null = null,
+) {
   if (!rec) return null;
   return {
     id: rec.id ?? null,
@@ -1033,7 +1040,8 @@ app.get(
 
     const items = disputeRows.map((row: Record<string, unknown>) => {
       const bc = row.background_check as Record<string, unknown> | null;
-      const subjectId = (bc?.user_id as string | null) ?? (row.user_id as string | null);
+      const subjectId = (bc?.user_id as string | null) ??
+        (row.user_id as string | null);
       return {
         id: row.id,
         background_check_id: row.background_check_id,

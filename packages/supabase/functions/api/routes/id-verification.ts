@@ -6,7 +6,12 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { type ApiEnv, addSupabaseAdminForUser, requireAuth, requireRole } from "../middleware/auth.ts";
+import {
+  addSupabaseAdminForUser,
+  type ApiEnv,
+  requireAuth,
+  requireRole,
+} from "../middleware/auth.ts";
 import { mergeMetadata } from "../../_shared/id-verification-utils.ts";
 import {
   addSixMonths,

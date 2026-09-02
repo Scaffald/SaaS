@@ -5,11 +5,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
-import {
-  isDraft,
-  loadOwnReview,
-  mergeMetadata,
-} from "../lib/review-drafts.ts";
+import { isDraft, loadOwnReview, mergeMetadata } from "../lib/review-drafts.ts";
 
 const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
@@ -257,11 +253,17 @@ app.openapi(
       user?.id ?? "",
     );
     if (loadError) {
-      return c.json({ error: "Failed to load review", message: loadError }, 500);
+      return c.json(
+        { error: "Failed to load review", message: loadError },
+        500,
+      );
     }
     if (!existing) {
       return c.json(
-        { error: "Not found", message: "No review with that id belongs to you" },
+        {
+          error: "Not found",
+          message: "No review with that id belongs to you",
+        },
         404,
       );
     }
@@ -659,7 +661,10 @@ app.openapi(
 
     if (deleteError) {
       return c.json(
-        { error: "Failed to update skill ratings", message: deleteError.message },
+        {
+          error: "Failed to update skill ratings",
+          message: deleteError.message,
+        },
         500,
       );
     }
@@ -1058,7 +1063,9 @@ app.openapi(
     }
 
     // Resolve names in one query rather than per skill.
-    const softIds = [...new Set([...strengthAcc.keys(), ...improvementAcc.keys()])];
+    const softIds = [
+      ...new Set([...strengthAcc.keys(), ...improvementAcc.keys()]),
+    ];
     const skillIds = [...skillAcc.keys()];
     const [softNames, hardNames] = await Promise.all([
       softIds.length
@@ -1079,14 +1086,17 @@ app.openapi(
       ) => [s.id, s]),
     );
     const hardName = new Map(
-      (hardNames.data ?? []).map((s: { id: string; name: string }) =>
-        [s.id, s.name]
-      ),
+      (hardNames.data ?? []).map((
+        s: { id: string; name: string },
+      ) => [s.id, s.name]),
     );
 
     const monthAcc = new Map<string, { count: number; total: number }>();
     for (const r of reviews) {
-      const month = String((r as { created_at: string }).created_at).slice(0, 7);
+      const month = String((r as { created_at: string }).created_at).slice(
+        0,
+        7,
+      );
       const cur = monthAcc.get(month) ?? { count: 0, total: 0 };
       cur.count += 1;
       cur.total += (r as { rating: number | null }).rating ?? 0;

@@ -31,7 +31,11 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
-import { type ApiEnv, authMiddleware, requireAuth } from "../middleware/auth.ts";
+import {
+  type ApiEnv,
+  authMiddleware,
+  requireAuth,
+} from "../middleware/auth.ts";
 import {
   listAccessibleOrganizationIds,
   PIPELINE_ROLES,

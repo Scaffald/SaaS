@@ -127,14 +127,29 @@ async function resolveAuthor(
 ): Promise<string | null> {
   const db = getServiceClient();
 
-  const lookup: Record<string, { schema: string; table: string; column: string }> = {
+  const lookup: Record<
+    string,
+    { schema: string; table: string; column: string }
+  > = {
     // Column names verified against the live schema rather than assumed —
     // inquiry_comments uses sender_id, and jobs uses created_by_user_id. Both
     // of my first guesses were wrong, and wrong here is silent: the report
     // still files, just with nobody attached to it.
-    community_post: { schema: "community", table: "posts", column: "author_id" },
-    community_comment: { schema: "community", table: "comments", column: "author_id" },
-    inquiry_message: { schema: "core", table: "inquiry_comments", column: "sender_id" },
+    community_post: {
+      schema: "community",
+      table: "posts",
+      column: "author_id",
+    },
+    community_comment: {
+      schema: "community",
+      table: "comments",
+      column: "author_id",
+    },
+    inquiry_message: {
+      schema: "core",
+      table: "inquiry_comments",
+      column: "sender_id",
+    },
     job: { schema: "core", table: "jobs", column: "created_by_user_id" },
   };
 
@@ -236,7 +251,8 @@ app.openapi(createReportRoute, async (c) => {
     if (error.code === "23505") {
       return c.json({
         error: "Already reported",
-        message: "You have already reported this, and we are still looking at it.",
+        message:
+          "You have already reported this, and we are still looking at it.",
       }, 409);
     }
     console.error("Error creating report:", error);
@@ -264,7 +280,10 @@ const listReportsRoute = createRoute({
       description: "Your reports",
       content: {
         "application/json": {
-          schema: z.object({ data: z.array(reportSchema), total: z.number().int() }),
+          schema: z.object({
+            data: z.array(reportSchema),
+            total: z.number().int(),
+          }),
         },
       },
     },
@@ -292,7 +311,10 @@ app.openapi(listReportsRoute, async (c) => {
 
   if (error) {
     console.error("Error listing reports:", error);
-    return c.json({ error: "Failed to list reports", message: error.message }, 400);
+    return c.json(
+      { error: "Failed to list reports", message: error.message },
+      400,
+    );
   }
 
   return c.json({ data: data || [], total: count || 0 });
@@ -428,7 +450,10 @@ const listBlocksRoute = createRoute({
       description: "Blocked people",
       content: {
         "application/json": {
-          schema: z.object({ data: z.array(blockSchema), total: z.number().int() }),
+          schema: z.object({
+            data: z.array(blockSchema),
+            total: z.number().int(),
+          }),
         },
       },
     },
@@ -456,7 +481,10 @@ app.openapi(listBlocksRoute, async (c) => {
 
   if (error) {
     console.error("Error listing blocks:", error);
-    return c.json({ error: "Failed to list blocks", message: error.message }, 400);
+    return c.json(
+      { error: "Failed to list blocks", message: error.message },
+      400,
+    );
   }
 
   return c.json({ data: data || [], total: count || 0 });

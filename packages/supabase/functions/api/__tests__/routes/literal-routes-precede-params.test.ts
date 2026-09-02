@@ -17,9 +17,7 @@
  * a property of declaration order in the source, and a request-level test would
  * only reproduce the confusing symptom, not point at the cause.
  */
-import {
-  assertEquals,
-} from "https://deno.land/std@0.208.0/assert/mod.ts";
+import { assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
 
 const ROUTE_FILES = [
   "work-logs.ts",
@@ -92,11 +90,16 @@ for (const file of ROUTE_FILES) {
     const declarations = declarationsIn(source);
 
     const unreachable = declarations
-      .map((decl, idx) => ({ decl, by: shadowedBy(decl, declarations.slice(0, idx)) }))
+      .map((decl, idx) => ({
+        decl,
+        by: shadowedBy(decl, declarations.slice(0, idx)),
+      }))
       .filter((entry) => entry.by !== null)
       .map((entry) =>
         `${entry.decl.method.toUpperCase()} ${entry.decl.path} (line ${entry.decl.line}) ` +
-        `is unreachable — ${entry.by!.method.toUpperCase()} ${entry.by!.path} ` +
+        `is unreachable — ${entry.by!.method.toUpperCase()} ${
+          entry.by!.path
+        } ` +
         `(line ${entry.by!.line}) matches it first. Move it above that route.`
       );
 

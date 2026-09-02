@@ -341,26 +341,30 @@ app.openapi(
     // Unlike the read paths, writing someone else's history is never valid.
     if (userId && userId !== user.id) {
       return c.json(
-        { error: "Forbidden", message: "You can only snapshot your own skills" },
+        {
+          error: "Forbidden",
+          message: "You can only snapshot your own skills",
+        },
         403,
       );
     }
     const targetId = user.id;
 
-    const [ratingsRes, evidenceRes, reviewsRes, previousRes] = await Promise.all(
-      [
-        supabase.schema("core").from("user_skills")
-          .select("proficiency_level, soft_skills(category)")
-          .eq("user_id", targetId).eq("skill_taxonomy", "soft_skills"),
-        supabase.schema("core").from("skill_evidence")
-          .select("id").eq("user_id", targetId),
-        supabase.schema("core").from("reviews")
-          .select("id").eq("subject_id", targetId),
-        supabase.schema("core").from("skill_snapshots")
-          .select("*").eq("user_id", targetId)
-          .order("created_at", { ascending: false }).limit(1),
-      ],
-    );
+    const [ratingsRes, evidenceRes, reviewsRes, previousRes] = await Promise
+      .all(
+        [
+          supabase.schema("core").from("user_skills")
+            .select("proficiency_level, soft_skills(category)")
+            .eq("user_id", targetId).eq("skill_taxonomy", "soft_skills"),
+          supabase.schema("core").from("skill_evidence")
+            .select("id").eq("user_id", targetId),
+          supabase.schema("core").from("reviews")
+            .select("id").eq("subject_id", targetId),
+          supabase.schema("core").from("skill_snapshots")
+            .select("*").eq("user_id", targetId)
+            .order("created_at", { ascending: false }).limit(1),
+        ],
+      );
 
     if (ratingsRes.error) {
       return c.json(
@@ -660,7 +664,9 @@ app.openapi(
 
     // Only the listed fields are writable. `verified` in particular is not —
     // a user editing their own evidence must not be able to mark it verified.
-    const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    const patch: Record<string, unknown> = {
+      updated_at: new Date().toISOString(),
+    };
     if (body.title !== undefined) patch.title = body.title;
     if (body.description !== undefined) patch.description = body.description;
     if (body.url !== undefined) patch.url = body.url;

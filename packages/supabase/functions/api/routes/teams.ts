@@ -5,7 +5,11 @@
  */
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { type ApiEnv, addSupabaseAdminForUser, authMiddleware } from "../middleware/auth.ts";
+import {
+  addSupabaseAdminForUser,
+  type ApiEnv,
+  authMiddleware,
+} from "../middleware/auth.ts";
 
 const app = new OpenAPIHono<ApiEnv>();
 

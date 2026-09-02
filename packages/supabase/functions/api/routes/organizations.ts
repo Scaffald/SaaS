@@ -150,12 +150,10 @@ app.openapi(
       }, 500);
     }
 
-    const wanted = roleNames === undefined
-      ? null
-      : new Set(
-        (Array.isArray(roleNames) ? roleNames : roleNames.split(","))
-          .map((r) => r.trim()).filter(Boolean),
-      );
+    const wanted = roleNames === undefined ? null : new Set(
+      (Array.isArray(roleNames) ? roleNames : roleNames.split(","))
+        .map((r) => r.trim()).filter(Boolean),
+    );
 
     const term = search?.trim().toLowerCase();
 
@@ -926,6 +924,5 @@ app.openapi(
     return c.json(data ?? []);
   },
 );
-
 
 export default app;

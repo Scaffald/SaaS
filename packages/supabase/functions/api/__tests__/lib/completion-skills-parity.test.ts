@@ -1,4 +1,7 @@
-import { assert, assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
+import {
+  assert,
+  assertEquals,
+} from "https://deno.land/std@0.208.0/assert/mod.ts";
 
 /**
  * Profile completion is calculated in two places: core.v_profile_completion_scores

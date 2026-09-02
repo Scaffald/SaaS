@@ -1,7 +1,11 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
 import { updateGeneralSchema } from "../lib/general-info-schema.ts";
-import { type ApiEnv, authMiddleware, requireAuth } from "../middleware/auth.ts";
+import {
+  type ApiEnv,
+  authMiddleware,
+  requireAuth,
+} from "../middleware/auth.ts";
 import { rateLimiter } from "../middleware/rate-limiter.ts";
 
 const app = new OpenAPIHono<ApiEnv>();
