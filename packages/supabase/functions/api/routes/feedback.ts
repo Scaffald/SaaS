@@ -134,7 +134,7 @@ app.get(
     }
 
     const { data, error, count } = await supabase
-      .schema("logs")
+      .schema("core")
       .from("user_feedback")
       .select(
         `
@@ -234,7 +234,7 @@ app.post("/submit", zValidator("json", feedbackSubmitSchema), async (c) => {
   };
 
   const { data, error } = await supabase
-    .schema("logs")
+    .schema("core")
     .from("user_feedback")
     .insert(insertPayload)
     .select("id, created_at")
