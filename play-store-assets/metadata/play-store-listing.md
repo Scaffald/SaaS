@@ -171,8 +171,9 @@ Copy is the easy half. These are not:
 4. **Data Safety** and **content rating** forms — drafted in
    [data-safety.md](data-safety.md) and [content-rating.md](content-rating.md),
    but submitted in the console, not from here.
-5. **A way to report and block** — #690. Play's UGC policy requires it of any
-   app that declares "Users Interact", which this one must. Rejection risk.
+5. ~~**A way to report and block** — #690.~~ Done: report on a community post,
+   report an inquiry message, report a person, block a person (both
+   directions), and unblock from Settings.
 6. **Tracks, testers and the upload credential** — see
    [testing-setup.md](testing-setup.md), including the 12-testers-for-14-days
    rule that applies to personal (not organisation) developer accounts.
