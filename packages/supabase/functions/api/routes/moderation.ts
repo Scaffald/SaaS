@@ -15,7 +15,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 
 /**
  * Service-role client. Defined here rather than imported because there is no
@@ -27,7 +27,7 @@ function getServiceClient() {
   return createClient(url, key);
 }
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 
 app.use("*", authMiddleware);
 
