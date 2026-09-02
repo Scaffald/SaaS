@@ -10,6 +10,7 @@ import { MessageSquare, Send } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
 import { Avatar } from '@scaffald/ui'
+import { ReportAction } from '@scf/core/features/moderation'
 
 interface InquiryCommentThreadProps {
   inquiryId: string
@@ -140,9 +141,19 @@ export function InquiryCommentThread({
                   initials={comment.sender_id.charAt(0).toUpperCase()}
                 />
                 <Stack flex={1} gap={4}>
-                  <Row justify="space-between" align="center">
+                  <Row justify="space-between" align="center" gap={8}>
                     <Text style={{ color: colors.text[t].secondary }}>{isFromCurrentUser ? 'You' : 'Organization'}</Text>
-                    <Text style={{ color: colors.text[t].secondary }}>{formatTimestamp(comment.created_at)}</Text>
+                    <Row gap={8} align="center">
+                      <Text style={{ color: colors.text[t].secondary }}>{formatTimestamp(comment.created_at)}</Text>
+                      {/* #690. Hidden on your own messages — reporting yourself
+                          is not a thing, and the API rejects it anyway. */}
+                      <ReportAction
+                        subjectType="inquiry_message"
+                        subjectId={comment.id}
+                        reportedUserId={comment.sender_id}
+                        hidden={!!isFromCurrentUser}
+                      />
+                    </Row>
                   </Row>
                   <Text style={{ color: colors.text[t].secondary }}>{comment.content}</Text>
                   {isUnread && (

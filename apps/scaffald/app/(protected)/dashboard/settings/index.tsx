@@ -10,6 +10,7 @@ import { AccountDeletionPanel } from '@scf/core/features/profile/components/Acco
 import { VanityUrlSection } from '@scf/core/features/profile/components/VanityUrlSection'
 import { AuthorizedAppsList } from '@scf/core/features/oauth/components/AuthorizedAppsList'
 import { PrivacyDataScreen } from '@scf/core/features/privacy/PrivacyDataScreen'
+import { BlockedUsersSection } from '@scf/core/features/moderation'
 import { Separator, Stack, Text } from '@scaffald/ui'
 import { ScrollView } from 'react-native'
 
@@ -51,6 +52,14 @@ export default function SettingsPage() {
                 View and manage your data, export requests, and privacy preferences.
               </Text>
               <PrivacyDataScreen />
+            </Stack>
+
+            <Separator />
+
+            {/* #690 — blocking has to be reversible somewhere findable, or it
+                is a one-way door only support can open. */}
+            <Stack gap={12}>
+              <BlockedUsersSection />
             </Stack>
 
             <Separator />

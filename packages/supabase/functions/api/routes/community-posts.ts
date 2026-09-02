@@ -7,6 +7,7 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { authMiddleware } from "../middleware/auth.ts";
 import { notifyFollowersOfNewPost } from "../../_shared/community-notifications.ts";
+import { blockedUserIds } from "../lib/blocks.ts";
 
 const app = new OpenAPIHono();
 
@@ -201,6 +202,13 @@ app.openapi(getCommunityFeedRoute, async (c) => {
   const { communityId } = c.req.valid("param");
   const { limit, cursor, post_type, sort } = c.req.valid("query");
 
+  // #690: hide posts by anyone on either side of a block, before paging —
+  // filtering after the fact would silently shorten pages and break the
+  // cursor. `not in ()` is invalid SQL, hence the guard on an empty set.
+  const blocked = user?.id
+    ? await blockedUserIds(supabase, user.id as string)
+    : new Set<string>();
+
   let query = supabase
     .schema("community")
     .from("posts")
@@ -208,6 +216,10 @@ app.openapi(getCommunityFeedRoute, async (c) => {
     .eq("community_id", communityId)
     .eq("status", "published")
     .is("deleted_at", null);
+
+  if (blocked.size > 0) {
+    query = query.not("author_id", "in", `(${[...blocked].join(",")})`);
+  }
 
   if (post_type) {
     query = query.eq("post_type", post_type);
