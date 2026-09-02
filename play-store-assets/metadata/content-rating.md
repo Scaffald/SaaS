@@ -40,17 +40,16 @@ questionnaire branch about social features the app does not have.
 | Unrestricted internet access (browser) | **No** |
 | User accounts required | **Yes** |
 
-### Users Interact — Yes, and it is not clean yet
+### Users Interact — Yes
 
 Employers and candidates exchange messages in inquiry comment threads, and
 community posts are visible to other users. That is interaction, plainly.
 
-**#690 is open against this answer.** Play's UGC policy expects an app that
-declares "Users Interact" to let users report content, report people, and block
-each other. Scaffald currently has none of those; community posts get
-pre-publication review and nothing else. Answer this honestly and fix #690 —
-answering "No" to dodge the requirement is the one move that turns a fixable
-gap into a policy violation.
+**#690 is resolved**, so this answer is now clean: a user can report a
+community post, report an individual inquiry message, report a person, and
+block a person — with blocking taking effect in both directions and reversible
+from Settings. That is what Play's UGC policy expects of an app declaring
+"Users Interact".
 
 ### Shares Location — Yes
 
@@ -82,7 +81,7 @@ and not a contradiction.
 
 ## Before submitting
 
-- [ ] #690 resolved, so "Users Interact: Yes" is answerable without a caveat
+- [x] #690 resolved, so "Users Interact: Yes" is answerable without a caveat
 - [ ] Re-run the questionnaire if in-app purchases ship — Digital Purchases
       becomes Yes and the rating is regenerated
 - [ ] Keep in step with [data-safety.md](data-safety.md); Shares Location must
