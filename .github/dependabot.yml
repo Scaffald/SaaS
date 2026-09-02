@@ -63,6 +63,15 @@ updates:
       - dependency-name: "react-native"
       - dependency-name: "react-native-*"
       - dependency-name: "babel-preset-expo"
+      # @supabase/supabase-js is pinned at 2.86 by a pnpm OVERRIDE as well as the
+      # catalog entry, and lint:overrides enforces that the pair move together
+      # (#453). Dependabot only ever edits the catalog, so its PR fails that lint
+      # by construction — #695 and #522 both did. The pin itself is documented in
+      # pnpm-workspace.yaml: the build-time blocker is fixed, what remains is
+      # runtime validation of the 2.86 -> 2.112 auth/realtime surface, which
+      # wants its own PR. Scoped to >=2.87.0 so 2.86.x patches still flow.
+      - dependency-name: "@supabase/supabase-js"
+        versions: [">=2.87.0"]
       # @rnmapbox/maps is held at 10.1.x: 10.3.x pulls MapboxCommon 24.x, which
       # Mapbox serves only behind a secret downloads token we do not have, so
       # `pod install` 403s and the iOS build breaks. Dependabot re-proposed the
