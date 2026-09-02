@@ -126,7 +126,6 @@ const BASELINE_BROKEN: Record<string, number> = {
   "core.profile_import_data": 5,
   "core.inquiries": 2,
   "core.profile_completion_nudges": 1,
-  "core.employers": 1,
 
   // These two are a different failure from the rest of this list. The tables
   // are real -- core.content_reports and core.user_blocks both exist in the
