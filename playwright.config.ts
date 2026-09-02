@@ -43,13 +43,32 @@ export default defineConfig({
     // then `pnpm exec playwright test tests/e2e/profile --project=chromium`.
     // Green run -> add "**/tests/e2e/profile/*.spec.ts" here.
 
-    // Office specs are still absent, and #575 was not the last blocker.
-    // Seeded accounts now get past onboarding and legal acceptance, so the
-    // specs reach the app — but ApplicationsKanbanBoard renders no testID,
-    // data-testid or nativeID at all, while kanban-helpers.ts waits on
-    // [data-column], [data-status] and kanban-column-*. Those selectors match
-    // nothing, so the spec cannot pass on any data. Adding it here would ship
-    // a known-red selection.
+    // Office specs are still absent, but the selector blocker recorded here
+    // previously was wrong, and correcting it matters because it was the stated
+    // reason not to proceed.
+    //
+    // It said ApplicationsKanbanBoard "renders no testID, data-testid or
+    // nativeID at all". It does. The chain, traced end to end:
+    //
+    //   StatusColumn            <DroppableColumn id={status}>
+    //   DroppableColumn         <KanbanColumn id={id}>
+    //   @scaffald/ui            testID={`kanban-column-${id}`}
+    //   react-native-web        domProps['data-testid'] = testID
+    //                           (createDOMProps/index.js:836)
+    //
+    // kanban-helpers.ts tries three selectors and only the first two —
+    // [data-column] and [data-status] — miss. The third,
+    // getByTestId(`kanban-column-${column}`), resolves. The column ids line up
+    // exactly too: KANBAN_COLUMNS is new/screen/interview/offer/hired/rejected,
+    // all of which are in the board's STATUSES (which also has `inquired`).
+    // test-office-jobs-kanban.spec.ts already selects
+    // [data-testid="kanban-column-${status}"] directly, on the same component.
+    //
+    // So what is left is not a code fix but a verified green run, which needs
+    // the whole local stack up — Supabase, the api function, a warm dev server
+    // and seeded users past onboarding. Adding the spec without that run is
+    // still shipping a known-unknown selection, which is why it is still not
+    // listed. See #553; the sequencing note there stands.
   ],
 
   // Exclude debug/exploration/example files permanently

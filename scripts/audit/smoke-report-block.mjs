@@ -11,10 +11,15 @@
  */
 import { chromium } from 'playwright'
 import { createClient } from '@supabase/supabase-js'
+import { finish, requireServer } from './lib/dev-server.mjs'
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
 const ANON = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
 const BASE = process.env.SMOKE_BASE_URL || 'http://localhost:8081'
+
+// Fail distinctly if the dev server is not answering, rather than
+// reporting its absence as an assertion failure (#680).
+await requireServer(BASE)
 const storageKey = `sb-${new URL(SUPABASE_URL).hostname.split('.')[0]}-auth-token`
 
 const supabase = createClient(SUPABASE_URL, ANON)
@@ -89,4 +94,4 @@ const open = async (path, mode = 'worker') => {
 
 await browser.close()
 console.log(failures ? `\n${failures} check(s) failed` : '\nall checks passed')
-process.exit(failures ? 1 : 0)
+await finish(BASE, failures)
