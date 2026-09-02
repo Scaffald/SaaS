@@ -6,9 +6,13 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { authMiddleware, requireRole } from "../middleware/auth.ts";
+import {
+  type ApiEnv,
+  authMiddleware,
+  requireRole,
+} from "../middleware/auth.ts";
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 app.use("*", authMiddleware);
 app.use("*", requireRole("office", "platform"));
 
@@ -180,11 +184,12 @@ const BLOCKING_RELATIONS: ReadonlyArray<{ table: string; column: string }> = [
  * is gone, null is the honest value, and holding the deletion hostage to an
  * audit pointer would make any reviewer undeletable.
  */
-const RELEASABLE_REFERENCES: ReadonlyArray<{ table: string; column: string }> = [
-  { table: "work_logs", column: "verified_by_user_id" },
-  { table: "user_skills", column: "verified_by" },
-  { table: "skill_evidence", column: "verified_by" },
-];
+const RELEASABLE_REFERENCES: ReadonlyArray<{ table: string; column: string }> =
+  [
+    { table: "work_logs", column: "verified_by_user_id" },
+    { table: "user_skills", column: "verified_by" },
+    { table: "skill_evidence", column: "verified_by" },
+  ];
 
 app.delete("/:id", async (c) => {
   const supabaseAdmin = c.get("supabaseAdmin");

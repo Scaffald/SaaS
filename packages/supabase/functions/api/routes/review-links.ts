@@ -21,7 +21,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 
 function getServiceClient() {
   const url = Deno.env.get("SUPABASE_URL") ?? "";
@@ -50,7 +50,7 @@ const RELATIONSHIP_VALUES = [
   "other",
 ] as const;
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
 
 // ============================================================================

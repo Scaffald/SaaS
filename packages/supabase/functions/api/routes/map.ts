@@ -7,8 +7,9 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import type { ApiEnv } from "../middleware/auth.ts";
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 
 // In-memory cache for location result counts (matches tRPC behavior)
 interface CachedCounts {

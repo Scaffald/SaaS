@@ -11,9 +11,9 @@ import {
   getKeyPrefix,
   hashApiKey,
 } from "../../_shared/utils/api-key.ts";
-import { requireAuth } from "../middleware/auth.ts";
+import { type ApiEnv, requireAuth } from "../middleware/auth.ts";
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 
 // Service-role client for key existence/ownership lookups. GET /:id and usage
 // must locate a key regardless of the caller's org so the explicit access check

@@ -7,8 +7,9 @@
 import { Hono } from "hono";
 import { createClient } from "@supabase/supabase-js";
 import type Stripe from "stripe";
+import type { ApiEnv } from "../middleware/auth.ts";
 
-const paymentsRouter = new Hono();
+const paymentsRouter = new Hono<ApiEnv>();
 
 // Pinned deliberately: this integration is written against the 2025-11-17
 // response shapes. stripe@20.4.1 types `apiVersion` as `LatestApiVersion`

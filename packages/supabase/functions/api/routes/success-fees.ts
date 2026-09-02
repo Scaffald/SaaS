@@ -7,7 +7,11 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { addSupabaseAdminForUser, requireAuth } from "../middleware/auth.ts";
+import {
+  addSupabaseAdminForUser,
+  type ApiEnv,
+  requireAuth,
+} from "../middleware/auth.ts";
 import type Stripe from "stripe";
 
 // Pinned deliberately: this integration is written against the 2025-11-17
@@ -212,7 +216,7 @@ const confirmBodySchema = z.object({
   paymentIntentId: z.string().min(5),
 });
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 
 /**
  * GET /v1/success-fees/status

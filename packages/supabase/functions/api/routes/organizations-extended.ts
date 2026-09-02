@@ -6,9 +6,9 @@
 
 import { Hono } from "hono";
 import { createClient } from "@supabase/supabase-js";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 app.use("*", authMiddleware);
 
 // ---------------------------------------------------------------------------

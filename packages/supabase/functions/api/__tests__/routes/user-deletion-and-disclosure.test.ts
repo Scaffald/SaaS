@@ -141,7 +141,8 @@ Deno.test("delete-user checks for blockers before it writes anything", async () 
   // Order is the guarantee: a user who cannot be deleted must not be partly
   // deleted first.
   assert(
-    source.lastIndexOf("blockedBy") < source.lastIndexOf("auth.admin.deleteUser"),
+    source.lastIndexOf("blockedBy") <
+      source.lastIndexOf("auth.admin.deleteUser"),
     "the blocking check must run before the delete",
   );
 });

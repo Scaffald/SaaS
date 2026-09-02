@@ -96,7 +96,13 @@ Deno.test("loadSkillLookups issues no query when there is nothing to resolve", a
   const supabase = {
     schema() {
       queried = true;
-      return { from: () => ({ select: () => ({ in: () => Promise.resolve({ data: [], error: null }) }) }) };
+      return {
+        from: () => ({
+          select: () => ({
+            in: () => Promise.resolve({ data: [], error: null }),
+          }),
+        }),
+      };
     },
   };
 

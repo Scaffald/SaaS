@@ -8,6 +8,7 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import {
   addSupabaseAdminForUser,
+  type ApiEnv,
   requireAuth,
   requireRole,
 } from "../middleware/auth.ts";
@@ -66,7 +67,7 @@ function toError(
   return c.json({ error: message }, status);
 }
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 
 // GET /pricing - protected
 app.get("/pricing", requireAuth, async (c) => {

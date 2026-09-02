@@ -5,8 +5,9 @@
  */
 import { Hono } from "hono";
 import { createClient } from "@supabase/supabase-js";
+import type { ApiEnv } from "../middleware/auth.ts";
 
-const ccpaRouter = new Hono();
+const ccpaRouter = new Hono<ApiEnv>();
 
 function getServiceClient() {
   const url = Deno.env.get("SUPABASE_URL") ?? "";
@@ -61,7 +62,10 @@ ccpaRouter.get("/data-summary", async (c) => {
   };
 
   const rows = (table: string) =>
-    supabase.schema("core").from(table).select("id", { count: "exact", head: true });
+    supabase.schema("core").from(table).select("id", {
+      count: "exact",
+      head: true,
+    });
 
   const [profileRes, accountRes] = await Promise.all([
     // Personal detail (name, address, phone) and the account row are separate
@@ -89,7 +93,10 @@ ccpaRouter.get("/data-summary", async (c) => {
         `requester_user_id.eq.${user.id},addressee_user_id.eq.${user.id}`,
       ),
     ),
-    count("background_checks", rows("background_checks").eq("user_id", user.id)),
+    count(
+      "background_checks",
+      rows("background_checks").eq("user_id", user.id),
+    ),
     // id_verifications keys the subject as worker_user_id, not user_id.
     count(
       "id_verifications",

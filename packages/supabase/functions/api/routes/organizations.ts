@@ -5,7 +5,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import { canReadOrgInternals } from "../lib/org-access.ts";
 import { firstOf } from "../lib/postgrest.ts";
 
@@ -17,7 +17,7 @@ function getServiceClient() {
   return createClient(url, key);
 }
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
 
 const errorResponseSchema = z.object({
@@ -150,12 +150,10 @@ app.openapi(
       }, 500);
     }
 
-    const wanted = roleNames === undefined
-      ? null
-      : new Set(
-        (Array.isArray(roleNames) ? roleNames : roleNames.split(","))
-          .map((r) => r.trim()).filter(Boolean),
-      );
+    const wanted = roleNames === undefined ? null : new Set(
+      (Array.isArray(roleNames) ? roleNames : roleNames.split(","))
+        .map((r) => r.trim()).filter(Boolean),
+    );
 
     const term = search?.trim().toLowerCase();
 
@@ -926,6 +924,5 @@ app.openapi(
     return c.json(data ?? []);
   },
 );
-
 
 export default app;

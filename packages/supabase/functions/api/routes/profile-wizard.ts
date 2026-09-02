@@ -4,7 +4,7 @@
  */
 
 import { Hono } from "hono";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import {
   PROFILE_WIZARD_REQUIRED_STEPS,
   PROFILE_WIZARD_STEP_WEIGHTS,
@@ -17,7 +17,7 @@ import {
   type ProfileWizardStepId,
 } from "../lib/profile-wizard-schema.ts";
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 app.use("*", authMiddleware);
 
 const TOTAL_WIZARD_WEIGHT = PROFILE_WIZARD_STEPS.reduce(

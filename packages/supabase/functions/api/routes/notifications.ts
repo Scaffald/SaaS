@@ -4,9 +4,9 @@
  */
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 
 app.use("*", authMiddleware);
 
@@ -528,14 +528,18 @@ app.openapi(markAllAsReadRoute, async (c) => {
   const { count, error } = await supabase
     .schema("core")
     .from("notifications")
+    // `count` belongs on update() itself. Passing it to the select() that
+    // follows a mutation does nothing: that select is PostgrestTransformBuilder's
+    // returning-clause overload, which takes columns only and silently discards
+    // a second argument -- so `count` came back null and this endpoint always
+    // reported updated_count: 0. Typing the context surfaced it (#477).
     .update({
       read: true,
       read_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-    })
+    }, { count: "exact" })
     .eq("user_id", user.id)
-    .eq("read", false)
-    .select("*", { count: "exact", head: true });
+    .eq("read", false);
 
   if (error) {
     console.error("Error marking all as read:", error);
@@ -586,9 +590,10 @@ app.openapi(deleteAllNotificationsRoute, async (c) => {
   const { count, error } = await supabase
     .schema("core")
     .from("notifications")
-    .delete()
-    .eq("user_id", user.id)
-    .select("*", { count: "exact", head: true });
+    // Same as above: count goes on delete(), not on a trailing select().
+    // This endpoint always reported deleted_count: 0.
+    .delete({ count: "exact" })
+    .eq("user_id", user.id);
 
   if (error) {
     console.error("Error deleting all notifications:", error);

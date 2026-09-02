@@ -15,9 +15,7 @@
  * written. The test fails on anything *new*, and fails again when an entry is
  * fixed but left in the list — so the number can only go down.
  */
-import {
-  assertEquals,
-} from "https://deno.land/std@0.208.0/assert/mod.ts";
+import { assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
 
 const ROUTES_DIR = new URL("../../routes/", import.meta.url);
 const TYPES = new URL("../../../../types.ts", import.meta.url);
@@ -114,7 +112,7 @@ const BASELINE_BROKEN: Record<string, number> = {
   "core.onet_skills": 1,
   "core.employers": 1,
   "community.users": 1,
-}
+};
 
 /** Schemas types.ts knows about — a reference into any other schema cannot be
  * judged here. `logs` is real in the database but absent from the generated
@@ -193,10 +191,13 @@ Deno.test("the catalogue actually parsed", async () => {
 });
 
 Deno.test("tableRefs resolves .from against the governing .schema", () => {
-  const refs = tableRefs("x.ts", [
-    'await db.schema("core").from("user_skills").delete().eq("user_id", id);',
-    'await db.from("applications").delete().eq("user_id", id);',
-  ].join("\n"));
+  const refs = tableRefs(
+    "x.ts",
+    [
+      'await db.schema("core").from("user_skills").delete().eq("user_id", id);',
+      'await db.from("applications").delete().eq("user_id", id);',
+    ].join("\n"),
+  );
 
   assertEquals(refs[0].ref, "core.user_skills");
   // The second call carries no .schema(), so PostgREST addresses public — this
@@ -205,11 +206,14 @@ Deno.test("tableRefs resolves .from against the governing .schema", () => {
 });
 
 Deno.test("tableRefs ignores storage buckets", () => {
-  const refs = tableRefs("x.ts", [
-    "const { error } = await supabase.storage",
-    '  .from("certifications")',
-    "  .upload(name, bytes);",
-  ].join("\n"));
+  const refs = tableRefs(
+    "x.ts",
+    [
+      "const { error } = await supabase.storage",
+      '  .from("certifications")',
+      "  .upload(name, bytes);",
+    ].join("\n"),
+  );
 
   assertEquals(refs, []);
 });

@@ -7,7 +7,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { requireRole } from "../middleware/auth.ts";
+import { type ApiEnv, requireRole } from "../middleware/auth.ts";
 
 const notificationSelection = `
   id,
@@ -29,7 +29,7 @@ const notificationSelection = `
   updated_at
 `;
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 app.use("*", requireRole("office", "platform"));
 
 app.get(

@@ -17,9 +17,9 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 
 // OAuth protocol endpoints are server-authoritative: client credentials,
 // authorization codes and tokens live in core.oauth_* tables that only

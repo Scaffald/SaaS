@@ -4,10 +4,10 @@
  */
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import { orIlike } from "../../_shared/utils/postgrest.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
 
 const _errorResponseSchema = z.object({

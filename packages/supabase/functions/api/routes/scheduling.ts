@@ -8,9 +8,9 @@
  */
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
 
 // scheduling_links / interview_slots / interview_bookings are RLS-protected for

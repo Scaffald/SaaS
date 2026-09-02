@@ -6,9 +6,13 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { authMiddleware, requireRole } from "../middleware/auth.ts";
+import {
+  type ApiEnv,
+  authMiddleware,
+  requireRole,
+} from "../middleware/auth.ts";
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 app.use("*", authMiddleware);
 app.use("*", requireRole("office", "platform"));
 

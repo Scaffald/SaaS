@@ -9,9 +9,9 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
-import { requireAuth } from "../middleware/auth.ts";
+import { type ApiEnv, requireAuth } from "../middleware/auth.ts";
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 
 // Environment configuration
 const MAGIC_LINK_REDIRECT_FALLBACK = Deno.env.get("MAGIC_LINK_REDIRECT_URL") ??

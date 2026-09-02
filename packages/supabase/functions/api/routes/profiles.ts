@@ -1,10 +1,14 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
 import { updateGeneralSchema } from "../lib/general-info-schema.ts";
-import { authMiddleware, requireAuth } from "../middleware/auth.ts";
+import {
+  type ApiEnv,
+  authMiddleware,
+  requireAuth,
+} from "../middleware/auth.ts";
 import { rateLimiter } from "../middleware/rate-limiter.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 
 function getServiceClient() {
   const url = Deno.env.get("SUPABASE_URL") ?? "";

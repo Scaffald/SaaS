@@ -5,7 +5,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import { firstOf } from "../lib/postgrest.ts";
 import {
   buildWorkLogCsv,
@@ -21,7 +21,7 @@ function getServiceClient() {
   return createClient(url, key);
 }
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
 
 const _errorResponseSchema = z.object({
@@ -111,7 +111,6 @@ async function signProfilePhoto(
     thumbnailSignedUrl: await sign(photo.thumbnail_path ?? photo.file_path),
   };
 }
-
 
 /**
  * Resolve a work log the caller may access: their own or a collaborator log
@@ -872,7 +871,6 @@ app.openapi(
     }));
   },
 );
-
 
 /**
  * GET /v1/work-logs/:workLogId

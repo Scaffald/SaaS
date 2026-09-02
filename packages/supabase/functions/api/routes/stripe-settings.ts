@@ -6,7 +6,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { requireRole } from "../middleware/auth.ts";
+import { type ApiEnv, requireRole } from "../middleware/auth.ts";
 
 const WEBHOOK_PATH = "/functions/v1/stripe-webhook";
 
@@ -33,7 +33,7 @@ const settingsSelect = [
   "updated_by",
 ].join(", ");
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 app.use("*", requireRole("office", "platform"));
 
 app.get("/", async (c) => {

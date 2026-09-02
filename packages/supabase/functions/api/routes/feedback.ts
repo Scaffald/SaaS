@@ -7,7 +7,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { requireAuth } from "../middleware/auth.ts";
+import { type ApiEnv, requireAuth } from "../middleware/auth.ts";
 
 const FEEDBACK_BUCKET_ID = "feedback-screenshots";
 const DEFAULT_HISTORY_LIMIT = 20;
@@ -105,7 +105,7 @@ const historyQuerySchema = z.object({
   offset: z.coerce.number().int().min(0).optional(),
 });
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 app.use("*", requireAuth);
 
 // GET /user-feedback - Get current user's feedback history

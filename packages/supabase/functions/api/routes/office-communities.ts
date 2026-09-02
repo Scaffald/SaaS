@@ -5,9 +5,9 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 
 app.use("*", authMiddleware);
 

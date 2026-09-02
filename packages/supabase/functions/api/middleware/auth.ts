@@ -1,9 +1,45 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Context, Next } from "hono";
 import {
   hashApiKey,
   validateApiKeyFormat,
 } from "../../_shared/utils/api-key.ts";
+
+/**
+ * The shape this middleware puts on the Hono context.
+ *
+ * Without it every route file constructed a bare `new OpenAPIHono()`, whose
+ * default env has no Variables. `c.get("supabase")` then infers as `never`, and
+ * every property access on it is an error -- 41 in routes/jobs.ts alone, none
+ * of them real. That made `pnpm test:deno:types` unable to pass, so it provided
+ * no signal at all and a genuine type error would have been indistinguishable
+ * from the noise (#477).
+ *
+ * Route files parameterize their app with this: `new OpenAPIHono<ApiEnv>()`.
+ *
+ * `user` and `organization` are optional because the two auth paths populate
+ * different halves: a JWT sets `user` and leaves `organization` unset, while an
+ * API key sets `organization` and explicitly sets `user` to undefined, since
+ * server-to-server calls have no user. `supabaseAdmin` is set only on the
+ * routes that opt into it.
+ */
+export type ApiEnv = {
+  Variables: {
+    supabase: SupabaseClient;
+    supabaseAdmin: SupabaseClient;
+    authType: "jwt" | "api_key";
+    user?: { id: string; email?: string | null };
+    userToken?: string;
+    organization?: { id: string; [key: string]: unknown };
+    apiKey?: {
+      id: string;
+      organizationId: string;
+      name: string;
+      scopes: string[];
+      rateLimitTier: string;
+    };
+  };
+};
 
 /**
  * Authentication middleware - verifies JWT tokens OR API keys and adds context
@@ -23,7 +59,7 @@ import {
  * - Updates last_used_at timestamp
  * - Enforces rate limits by tier
  */
-export async function authMiddleware(c: Context, next: Next) {
+export async function authMiddleware(c: Context<ApiEnv>, next: Next) {
   // Skip auth for health checks (monitoring/liveness probes)
   const path = new URL(c.req.url).pathname;
   if (path.endsWith("/health")) {
@@ -129,18 +165,23 @@ export async function authMiddleware(c: Context, next: Next) {
       );
     }
 
-    // Update last_used_at timestamp (fire and forget)
-    void serviceClient
-      .schema("core")
-      .from("api_keys")
-      .update({ last_used_at: new Date().toISOString() })
-      .eq("id", apiKeyData.id)
-      .then(() => {
-        // Success - no action needed
-      })
-      .catch((error: unknown) => {
-        console.error("Failed to update API key last_used_at:", error);
-      });
+    // Update last_used_at timestamp (fire and forget).
+    //
+    // This used to be `.then(...).catch(...)`, which could not report anything.
+    // PostgREST builders resolve with `{ error }` rather than rejecting, so a
+    // failed update never reached the catch; and the builder's then() returns
+    // PromiseLike<void>, which has no .catch at all, so the handler was not
+    // even well-typed. Read the error off the resolved value instead.
+    void (async () => {
+      const { error: touchError } = await serviceClient
+        .schema("core")
+        .from("api_keys")
+        .update({ last_used_at: new Date().toISOString() })
+        .eq("id", apiKeyData.id);
+      if (touchError) {
+        console.error("Failed to update API key last_used_at:", touchError);
+      }
+    })();
 
     // API-key requests are server-to-server and already validated above. Use the
     // service-role client so RLS-protected reads work (e.g. core.api_keys grants
@@ -158,7 +199,20 @@ export async function authMiddleware(c: Context, next: Next) {
       scopes: apiKeyData.scopes || [],
       rateLimitTier: apiKeyData.rate_limit_tier,
     });
-    c.set("organization", apiKeyData.organizations);
+    // PostgREST returns an embedded to-one relation as an object, but
+    // supabase-js types `organizations:organization_id (...)` as an array,
+    // because it cannot infer cardinality from the select string. Normalize so
+    // the value matches its declared type either way. Nothing reads this key
+    // today; a consumer that did would have got an array where the type
+    // promises an object.
+    const embeddedOrg = apiKeyData.organizations as
+      | ApiEnv["Variables"]["organization"]
+      | ApiEnv["Variables"]["organization"][]
+      | null;
+    c.set(
+      "organization",
+      Array.isArray(embeddedOrg) ? embeddedOrg[0] : (embeddedOrg ?? undefined),
+    );
     c.set("user", undefined); // API keys don't have user context
 
     await next();

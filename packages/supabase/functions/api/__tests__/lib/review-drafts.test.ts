@@ -26,7 +26,9 @@ function row(overrides: Partial<ReviewDraftRow> = {}): ReviewDraftRow {
 }
 
 /** Records the filters applied so the ownership predicate can be asserted. */
-function fakeSupabase(result: { data: unknown; error: { message: string } | null }) {
+function fakeSupabase(
+  result: { data: unknown; error: { message: string } | null },
+) {
   const filters: Record<string, unknown> = {};
   const builder = {
     select: () => builder,
@@ -111,7 +113,9 @@ Deno.test("requireDraft rejects an already-submitted review", async () => {
     error: null,
   });
 
-  const result = await loadOwnReview(client, "r1", "u1", { requireDraft: true });
+  const result = await loadOwnReview(client, "r1", "u1", {
+    requireDraft: true,
+  });
 
   assertEquals(result.review, null);
   assertEquals(result.error, null);
@@ -123,7 +127,9 @@ Deno.test("requireDraft allows a draft through", async () => {
     error: null,
   });
 
-  const result = await loadOwnReview(client, "r1", "u1", { requireDraft: true });
+  const result = await loadOwnReview(client, "r1", "u1", {
+    requireDraft: true,
+  });
 
   assert(result.review !== null);
   assertEquals(result.review?.id, "r1");
