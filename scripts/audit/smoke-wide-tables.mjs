@@ -20,10 +20,15 @@
 import { chromium } from 'playwright'
 import { createClient } from '@supabase/supabase-js'
 import { mkdir } from 'node:fs/promises'
+import { finish, requireServer } from './lib/dev-server.mjs'
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
 const ANON = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
 const BASE = process.env.SMOKE_BASE_URL || 'http://localhost:8087'
+
+// Fail distinctly if the dev server is not answering, rather than
+// reporting its absence as an assertion failure (#680).
+await requireServer(BASE)
 const EMAIL = process.env.SMOKE_EMAIL
 const PASSWORD = process.env.SMOKE_PASSWORD
 const OUT = process.env.SMOKE_OUT || 'docs/plans/redesign/shots-current'
@@ -205,4 +210,4 @@ for (const [w, h, tag] of [
 
 await browser.close()
 console.log(failures ? `\n${failures} case(s) failed` : '\nall cases passed')
-process.exit(failures ? 1 : 0)
+await finish(BASE, failures)

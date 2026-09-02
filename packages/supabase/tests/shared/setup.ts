@@ -32,10 +32,22 @@ export interface TestUserDefinition {
   password: string
 }
 
+// These must match what the seeds actually create, or every suite that needs a
+// token fails at setup and takes ~100 unrelated assertions with it (#478).
+//
+// `regular` said 'testpassword123' while seeds/002a_seed-api-test-user.sql
+// creates test@example.com with 'test123456'. Measured against the running
+// stack: the seeded password returns 200 from /auth/v1/token, the constant here
+// returned 400. The seed is the source of truth for local users, so this
+// follows it rather than the other way round.
+//
+// `admin` has no seed at all -- no admin@example.com exists in auth.users -- so
+// anything reaching for the admin token still fails. Seeding it needs a
+// decision about which role it should carry; tracked on #478.
 export const TEST_USERS: Record<'regular' | 'admin', TestUserDefinition> = {
   regular: {
     email: 'test@example.com',
-    password: 'testpassword123',
+    password: 'test123456',
   },
   admin: {
     email: 'admin@example.com',
@@ -339,6 +351,31 @@ export function extractMagicLinkFromEmail(emailHtml: string): string | null {
 export async function completeMagicLinkAuth(
   magicLink: string
 ): Promise<{ token: string; userId: string } | null> {
+  // A literal `env(...)` here means the Supabase CLI never substituted the
+  // variable, so GoTrue was handed the placeholder as its site_url:
+  //
+  //   config.toml:52   site_url = "env(EXPO_PUBLIC_URL)"
+  //   container        GOTRUE_SITE_URL=env(EXPO_PUBLIC_URL)
+  //
+  // Every magic link is then built on an unparseable base, `new URL()` throws
+  // TypeError: Invalid URL: 'env%28EXPO_PUBLIC_URL%29/auth/confirm?...', and
+  // auth.test.ts cannot write tests/fixtures/tokens.json. Every suite that
+  // calls requireAuthSetup() then fails with "Auth setup is incomplete" —
+  // 132 failures in one run, none of them about the code under test (#478).
+  //
+  // Say so, rather than letting it surface 132 times as something else.
+  if (magicLink.includes('env(') || magicLink.includes('env%28')) {
+    console.error(
+      `Magic link was built on an unsubstituted config placeholder: ${magicLink}\n` +
+        '  GoTrue received site_url literally as "env(EXPO_PUBLIC_URL)".\n' +
+        '  EXPO_PUBLIC_URL must be set in the .env that `pnpm supa` reads\n' +
+        '  (package.json env-local -> dotenv -e .env) BEFORE the stack starts,\n' +
+        '  and must point at the local app for a local run, not app.scaffald.com.\n' +
+        '  Restart the stack after setting it; a running container keeps the old value.'
+    )
+    return null
+  }
+
   try {
     const url = new URL(magicLink)
     const token = url.searchParams.get('token')

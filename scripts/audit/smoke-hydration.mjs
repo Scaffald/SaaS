@@ -28,10 +28,15 @@
 
 import { chromium } from 'playwright'
 import { createClient } from '@supabase/supabase-js'
+import { finish, requireServer } from './lib/dev-server.mjs'
 
 const URL = 'http://127.0.0.1:54321'
 const ANON = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
 const BASE = process.env.SMOKE_BASE_URL || 'http://localhost:8087'
+
+// Fail distinctly if the dev server is not answering, rather than
+// reporting its absence as an assertion failure (#680).
+await requireServer(BASE)
 
 // React's actual message. A loose /hydrat/i also matches react-native-web's
 // startup log line `{rootTag: #root, hydrate: true}`, which is not an error —
@@ -96,4 +101,4 @@ if (loggedOut > 0) {
 }
 await browser.close()
 
-process.exit(loggedOut > 0 || loggedIn > 0 ? 1 : 0)
+await finish(BASE, loggedOut > 0 || loggedIn > 0)
