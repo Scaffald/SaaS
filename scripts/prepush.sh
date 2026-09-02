@@ -29,7 +29,7 @@ cd "$(git rev-parse --show-toplevel)"
 # pnpm overrides in the root package.json — see the comments there — so they
 # are back under pre-push coverage.
 BUILD_EXCLUDES="scaffald"
-TEST_EXCLUDES="@scaffald/integration-test,@scaffald/ui,scf-core,scaffald"
+TEST_EXCLUDES="@scaffald/integration-test,scf-core,scaffald"
 
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096}"
 export NX_PARALLEL="${NX_PARALLEL:-5}"

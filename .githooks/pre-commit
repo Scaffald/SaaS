@@ -55,6 +55,41 @@ if [ "${CHECK_EXIT:-0}" -ne 0 ]; then
   # Get list of staged files (full relative paths for precise matching)
   STAGED_PATHS=$(git diff --cached --name-only 2>/dev/null)
 
+  # Submodule pointer bumps need special handling (#470). A gitlink stages a
+  # single directory path -- "packages/ui" -- and that path is a prefix of every
+  # file inside the submodule, so the substring match below claims all of the
+  # submodule's pre-existing violations as "errors in staged files". The
+  # violation count is identical either side of the bump, which is the proof the
+  # pointer move introduces none of them; yet the commit is blocked, so every
+  # pointer bump has had to use --no-verify and skip the checks that would have
+  # been useful.
+  #
+  # Replace each staged gitlink with the files that actually changed inside the
+  # submodule between the old and new pointer. A bump then still fails on
+  # violations it genuinely introduces, and no longer fails on ones it inherits.
+  # If the pointers cannot be diffed (submodule not fetched, or newly added),
+  # drop the gitlink rather than guessing -- pre-push and CI still lint it.
+  STAGED_GITLINKS=$(git diff --cached --raw 2>/dev/null \
+    | awk -F'\t' '{ split($1, m, " "); if (m[1] == ":160000" || m[2] == "160000") print $2 }')
+
+  if [ -n "$STAGED_GITLINKS" ]; then
+    while IFS= read -r sm_path; do
+      [ -z "$sm_path" ] && continue
+      # Drop the bare gitlink path from the match list.
+      STAGED_PATHS=$(printf '%s\n' "$STAGED_PATHS" | grep -Fxv "$sm_path" || true)
+
+      sm_old=$(git diff --cached --raw -- "$sm_path" 2>/dev/null | awk '{print $3}')
+      sm_new=$(git diff --cached --raw -- "$sm_path" 2>/dev/null | awk '{print $4}')
+      case "$sm_old" in *[!0]*) ;; *) continue ;; esac   # all-zero = newly added
+      case "$sm_new" in *[!0]*) ;; *) continue ;; esac   # all-zero = removed
+
+      sm_changed=$(git -C "$sm_path" diff --name-only "$sm_old" "$sm_new" 2>/dev/null) || continue
+      [ -z "$sm_changed" ] && continue
+      STAGED_PATHS=$(printf '%s\n%s' "$STAGED_PATHS" \
+        "$(printf '%s\n' "$sm_changed" | sed "s|^|$sm_path/|")")
+    done <<< "$STAGED_GITLINKS"
+  fi
+
   # Known systemic TS errors to always ignore (pre-existing @types/react conflicts, SDK resolution)
   KNOWN_ERRORS="error TS2322|error TS4023|error TS2307|error TS2305|error TS7006|error TS2339|error TS18046|error TS2345|error TS2352|error TS2614"
 
