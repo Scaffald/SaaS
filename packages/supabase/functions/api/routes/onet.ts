@@ -78,11 +78,15 @@ app.get("/occupation/status", async (c) => {
     { onet_code: string; title: string; description?: string }
   > = [];
   if (codes.length > 0) {
+    // The O*NET data lives in the `onet` schema, not `core`, and its key
+    // column is `onetsoc_code`. `core.onet_occupations` has never existed, so
+    // every one of these reads failed (#656). Alias back to `onet_code` so the
+    // response shape the SDK consumes is unchanged.
     const { data: occs } = await supabase
-      .schema("core")
-      .from("onet_occupations")
-      .select("onet_code, title, description")
-      .in("onet_code", codes);
+      .schema("onet")
+      .from("occupation_data")
+      .select("onet_code:onetsoc_code, title, description")
+      .in("onetsoc_code", codes);
     occupations = (occs ?? []).map((
       o: { onet_code: string; title: string; description?: string },
     ) => ({
@@ -150,9 +154,9 @@ app.openapi(
     const offset = (page - 1) * limit;
 
     const { data, error, count } = await supabase
-      .schema("core")
-      .from("onet_occupations")
-      .select("*", { count: "exact" })
+      .schema("onet")
+      .from("occupation_data")
+      .select("onet_code:onetsoc_code, title, description", { count: "exact" })
       .or(orIlike(["title", "description"], keyword))
       .range(offset, offset + limit - 1);
 
@@ -210,11 +214,11 @@ app.openapi(
     }
 
     const { data, error } = await supabase
-      .schema("core")
-      .from("onet_occupations")
-      .select("*")
-      .eq("onet_code", onetCode)
-      .single();
+      .schema("onet")
+      .from("occupation_data")
+      .select("onet_code:onetsoc_code, title, description")
+      .eq("onetsoc_code", onetCode)
+      .maybeSingle();
 
     if (error || !data) {
       return c.json({ error: "Occupation not found" }, 404);
@@ -263,20 +267,40 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    let query = supabase.schema("core").from("onet_skills").select("*").eq(
-      "onet_code",
-      onetCode,
-    );
+    // `core.onet_skills` never existed. The real table is `onet.skills`, and it
+    // is raw O*NET measure data rather than the flat shape this handler
+    // assumed: one row per (onetsoc_code, element_id, scale_id), where scale
+    // "IM" is importance on a 1-5 scale and "LV" is level on 0-7. It carries
+    // neither a skill name -- those are in onet.content_model_reference -- nor
+    // a `category` column (#656).
+    //
+    // The scale ids and the element-id taxonomy below come from the O*NET
+    // content model, not from this database: onet.skills,
+    // onet.occupation_data and onet.scales_reference are all empty in the
+    // local seed, so the shape is verified against information_schema and the
+    // generated types, and the row-level behaviour is not.
+    //
+    // O*NET element ids encode the taxonomy, and that prefix is the only thing
+    // corresponding to the `category` this endpoint accepts.
+    const SKILL_CATEGORIES: Record<string, string> = {
+      "2.A": "Basic Skills",
+      "2.B": "Cross-Functional Skills",
+    };
+    const categoryOf = (elementId: string): string | undefined =>
+      SKILL_CATEGORIES[elementId.split(".").slice(0, 2).join(".")];
+
+    let query = supabase
+      .schema("onet")
+      .from("skills")
+      .select("element_id, data_value")
+      .eq("onetsoc_code", onetCode)
+      .eq("scale_id", "IM");
 
     if (min_importance) {
-      query = query.gte("importance", min_importance);
+      query = query.gte("data_value", min_importance);
     }
 
-    if (category) {
-      query = query.eq("category", category);
-    }
-
-    const { data, error } = await query.order("importance", {
+    const { data: measures, error } = await query.order("data_value", {
       ascending: false,
     });
 
@@ -287,7 +311,38 @@ app.openapi(
       );
     }
 
-    return c.json({ data: data || [] });
+    const rows = (measures ?? []).filter((m: { element_id: string }) =>
+      !category || categoryOf(m.element_id) === category
+    );
+
+    if (rows.length === 0) {
+      return c.json({ data: [] });
+    }
+
+    // Names come from a second read rather than an embed: there is no declared
+    // foreign key from onet.skills to content_model_reference, so PostgREST
+    // cannot resolve it as a relationship.
+    const { data: elements } = await supabase
+      .schema("onet")
+      .from("content_model_reference")
+      .select("element_id, element_name, description")
+      .in("element_id", rows.map((r: { element_id: string }) => r.element_id));
+
+    const nameFor = new Map(
+      (elements ?? []).map((
+        e: { element_id: string; element_name: string; description: string },
+      ) => [e.element_id, e]),
+    );
+
+    return c.json({
+      data: rows.map((r: { element_id: string; data_value: number }) => ({
+        element_id: r.element_id,
+        name: nameFor.get(r.element_id)?.element_name ?? null,
+        description: nameFor.get(r.element_id)?.description ?? null,
+        category: categoryOf(r.element_id) ?? null,
+        importance: r.data_value,
+      })),
+    });
   },
 );
 
@@ -334,9 +389,9 @@ app.openapi(
     }
 
     const { data, error } = await supabase
-      .schema("core")
-      .from("onet_occupations")
-      .select("onet_code, title")
+      .schema("onet")
+      .from("occupation_data")
+      .select("onet_code:onetsoc_code, title")
       .ilike("title", `${searchQuery}%`)
       .limit(limit);
 

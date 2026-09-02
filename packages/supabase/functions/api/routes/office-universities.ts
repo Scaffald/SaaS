@@ -244,6 +244,7 @@ app.delete("/:id", requireRole("office", "platform"), async (c) => {
   const { id } = c.req.param();
 
   const { count } = await supabase
+    .schema("core")
     .from("user_education")
     .select("id", { count: "exact", head: true })
     .eq("university_id", id);

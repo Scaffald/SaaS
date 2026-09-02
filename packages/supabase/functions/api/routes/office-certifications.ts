@@ -66,6 +66,7 @@ app.post("/", zValidator("json", createBodySchema), async (c) => {
   const input = c.req.valid("json");
 
   const { data, error } = await supabaseAdmin
+    .schema("core")
     .from("certifications")
     .insert({ ...input, is_active: true })
     .select()
@@ -93,6 +94,7 @@ app.patch("/:id", zValidator("json", updateBodySchema), async (c) => {
   const input = c.req.valid("json");
 
   const { data, error } = await supabaseAdmin
+    .schema("core")
     .from("certifications")
     .update(input)
     .eq("id", id)

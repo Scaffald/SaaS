@@ -67,13 +67,35 @@ export function tableRefs(file: string, source: string): TableRef[] {
   const flush = () => {
     if (buffer.length === 0) return;
     const stmt = buffer.join("\n");
-    const schema = stmt.match(/\.schema\(\s*"(\w+)"\s*\)/)?.[1] ?? "public";
 
     for (let k = 0; k < buffer.length; k++) {
       const from = buffer[k].match(/\.from\(\s*"([\w.]+)"\s*\)/);
       if (!from) continue;
       // A storage bucket is not a table.
       if (/\.storage\b/.test(stmt)) continue;
+
+      // The governing .schema() is the nearest one *before* this .from(),
+      // not the first one in the statement. A statement can hold more than one
+      // chain -- a Promise.all([...]) of two queries is a single statement --
+      // and taking the first match attributed the second chain's .from() to the
+      // first chain's schema. That is what put `community.users` in
+      // BASELINE_BROKEN: office-communities.ts:146 reads .schema("core")
+      // .from("users") inside a Promise.all whose first element is
+      // .schema("community"), so a correct reference was reported as broken.
+      //
+      // Scanning backwards is still correct for the office-users.ts
+      // delete-cascade bug this test was written to catch: those calls are
+      // separate statements, so each lands in its own buffer and only the first
+      // sees a .schema() at all.
+      let schema = "public";
+      for (let j = k; j >= 0; j--) {
+        const m = buffer[j].match(/\.schema\(\s*"(\w+)"\s*\)/);
+        if (m) {
+          schema = m[1];
+          break;
+        }
+      }
+
       const table = from[1];
       refs.push({
         file,
@@ -102,16 +124,25 @@ export function tableRefs(file: string, source: string): TableRef[] {
 const BASELINE_BROKEN: Record<string, number> = {
   "core.soft_skills_ratings": 8,
   "core.profile_import_data": 5,
-  "core.onet_occupations": 4,
-  "core.webhooks": 3,
-  "core.team_job_assignments": 3,
-  "public.certifications": 2,
   "core.inquiries": 2,
-  "public.user_education": 1,
   "core.profile_completion_nudges": 1,
-  "core.onet_skills": 1,
   "core.employers": 1,
-  "community.users": 1,
+
+  // These two are a different failure from the rest of this list. The tables
+  // are real -- core.content_reports and core.user_blocks both exist in the
+  // database -- but #703 shipped their migrations without regenerating
+  // packages/supabase/types.ts, which is what this test reads. So the routes
+  // are correct and the catalogue is stale.
+  //
+  // Regenerating from a local database is NOT the fix, and was tried: the local
+  // database is itself drifted and has no `application_status` enum, which
+  // types.ts does declare, so `supa:generate` here silently deletes it. See #707.
+  //
+  // They are listed rather than excused so the count still only goes down: once
+  // types.ts is regenerated these become stale entries and the test demands
+  // their removal.
+  "core.content_reports": 2,
+  "core.user_blocks": 4,
 };
 
 /** Schemas types.ts knows about — a reference into any other schema cannot be
@@ -203,6 +234,29 @@ Deno.test("tableRefs resolves .from against the governing .schema", () => {
   // The second call carries no .schema(), so PostgREST addresses public — this
   // is the office-users.ts delete-cascade bug in miniature.
   assertEquals(refs[1].ref, "public.applications");
+});
+
+Deno.test("tableRefs attributes each chain in a statement to its own schema", () => {
+  // A Promise.all of two queries is one statement with two .schema() calls.
+  // Taking the first one for both is how a correct reference ended up in
+  // BASELINE_BROKEN as `community.users`.
+  const refs = tableRefs(
+    "x.ts",
+    [
+      "const [a, b] = await Promise.all([",
+      "  supabase",
+      '    .schema("community")',
+      '    .from("communities")',
+      '    .select("id"),',
+      "  supabase",
+      '    .schema("core")',
+      '    .from("users")',
+      '    .select("id"),',
+      "]);",
+    ].join("\n"),
+  );
+
+  assertEquals(refs.map((r) => r.ref), ["community.communities", "core.users"]);
 });
 
 Deno.test("tableRefs ignores storage buckets", () => {

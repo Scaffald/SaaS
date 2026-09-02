@@ -1154,7 +1154,7 @@ app.openapi(listJobAssignmentsRoute, async (c) => {
   try {
     const { data, error } = await supabase
       .schema("core")
-      .from("team_job_assignments")
+      .from("job_team_assignments")
       .select("*")
       .eq("team_id", id)
       .order("assigned_at", { ascending: false });
@@ -1221,7 +1221,7 @@ app.openapi(createJobAssignmentRoute, async (c) => {
   try {
     const { data, error } = await supabase
       .schema("core")
-      .from("team_job_assignments")
+      .from("job_team_assignments")
       .insert({
         team_id: id,
         job_id: result.data.jobId,
@@ -1280,7 +1280,7 @@ app.openapi(deleteJobAssignmentRoute, async (c) => {
   try {
     const { error } = await supabase
       .schema("core")
-      .from("team_job_assignments")
+      .from("job_team_assignments")
       .delete()
       .eq("id", assignmentId);
 
