@@ -598,22 +598,6 @@ const organizationProfileSchema = z
   })
   .openapi("OrganizationProfile");
 
-// Employer profile schema
-const employerProfileSchema = z
-  .object({
-    id: z.string().uuid(),
-    slug: z.string(),
-    name: z.string(),
-    description: z.string().nullable(),
-    logo_url: z.string().url().nullable(),
-    website: z.string().url().nullable(),
-    industry: z.string().nullable(),
-    location: z.string().nullable(),
-    created_at: z.string(),
-    active_jobs_count: z.number().int(),
-  })
-  .openapi("EmployerProfile");
-
 // Response schemas
 const profileResponseSchema = z
   .object({
@@ -626,12 +610,6 @@ const organizationResponseSchema = z
     data: organizationProfileSchema,
   })
   .openapi("OrganizationResponse");
-
-const employerResponseSchema = z
-  .object({
-    data: employerProfileSchema,
-  })
-  .openapi("EmployerResponse");
 
 // Error response schema
 const errorResponseSchema = z

@@ -142,6 +142,19 @@ const BASELINE_BROKEN: Record<string, number> = {
   // their removal.
   "core.content_reports": 2,
   "core.user_blocks": 4,
+
+  // Same shape again, and this one is ours: migration 350 moves
+  // logs.user_feedback to core.user_feedback so /v1/feedback can be reached at
+  // all (#665). The table is real and the route is right; types.ts simply has
+  // not been regenerated, and it never carried the old location either --
+  // `logs` is absent from the generated types entirely, which is why this
+  // reference was invisible here while it was broken.
+  //
+  // Listed rather than hand-edited into types.ts, for the reason in #707:
+  // regenerating from a drifted local database deletes an enum. When types are
+  // regenerated properly this entry goes stale and the test demands its
+  // removal, which is exactly the reminder we want.
+  "core.user_feedback": 2,
 };
 
 /** Schemas types.ts knows about — a reference into any other schema cannot be
