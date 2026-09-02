@@ -127,6 +127,22 @@ const BASELINE_BROKEN: Record<string, number> = {
   "core.inquiries": 2,
   "core.profile_completion_nudges": 1,
   "core.employers": 1,
+
+  // These two are a different failure from the rest of this list. The tables
+  // are real -- core.content_reports and core.user_blocks both exist in the
+  // database -- but #703 shipped their migrations without regenerating
+  // packages/supabase/types.ts, which is what this test reads. So the routes
+  // are correct and the catalogue is stale.
+  //
+  // Regenerating from a local database is NOT the fix, and was tried: the local
+  // database is itself drifted and has no `application_status` enum, which
+  // types.ts does declare, so `supa:generate` here silently deletes it. See #707.
+  //
+  // They are listed rather than excused so the count still only goes down: once
+  // types.ts is regenerated these become stale entries and the test demands
+  // their removal.
+  "core.content_reports": 2,
+  "core.user_blocks": 4,
 };
 
 /** Schemas types.ts knows about — a reference into any other schema cannot be
