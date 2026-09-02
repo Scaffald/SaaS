@@ -31,7 +31,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
-import { authMiddleware, requireAuth } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware, requireAuth } from "../middleware/auth.ts";
 import {
   listAccessibleOrganizationIds,
   PIPELINE_ROLES,
@@ -42,7 +42,7 @@ import {
   MIN_CELL_SIZE,
 } from "../lib/eeo-aggregation.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 
 app.use("*", authMiddleware);
 

@@ -8,9 +8,9 @@ import {
   OpenAPIHono,
   z,
 } from "@hono/zod-openapi";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
 
 // ============================================================================

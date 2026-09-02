@@ -4,7 +4,7 @@
  */
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import {
   completionPercentage as sumCompletionPercentage,
   getSectionStatuses,
@@ -12,7 +12,7 @@ import {
   nextMilestone,
 } from "../lib/profile-completion-calc.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
 
 // ============================================================================

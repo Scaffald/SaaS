@@ -1,5 +1,5 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import {
   computeSoftSkillMatch,
   fetchSoftSkillMetadata,
@@ -8,7 +8,7 @@ import {
   type SoftSkillRequirement,
 } from "../../_shared/soft-skills-matching.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 
 // Apply auth middleware to all routes
 app.use("*", authMiddleware);

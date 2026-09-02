@@ -82,13 +82,13 @@ import communitySearchRouter from "./routes/community-search.ts";
 import analyticsRouter from "./routes/analytics.ts";
 import openapi from "./openapi.ts";
 import { corsHeaders } from "../_shared/cors.ts";
-import { authMiddleware } from "./middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "./middleware/auth.ts";
 import {
   rateLimitMiddleware,
   trackApiKeyUsage,
 } from "./middleware/usage-tracker.ts";
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 
 // CORS middleware - handle preflight and add headers to all responses
 app.use("*", async (c, next) => {

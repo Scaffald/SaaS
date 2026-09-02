@@ -1,5 +1,5 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { authMiddleware, requireAuth } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware, requireAuth } from "../middleware/auth.ts";
 import {
   applicationCreateSchema,
   applicationUpdateSchema,
@@ -10,7 +10,7 @@ import {
   resolveApplicationOrgAccess,
 } from "../lib/application-access.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 
 // Apply auth middleware to all routes
 app.use("*", authMiddleware);

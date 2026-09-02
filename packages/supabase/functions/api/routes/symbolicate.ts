@@ -5,8 +5,9 @@
  */
 
 import { Hono } from "hono";
+import type { ApiEnv } from "../middleware/auth.ts";
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 
 // POST /symbolicate - Metro/Expo often POST stack traces here
 app.post("/", (c) => {

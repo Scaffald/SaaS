@@ -5,8 +5,9 @@
  */
 import { Hono } from "hono";
 import { createClient } from "@supabase/supabase-js";
+import type { ApiEnv } from "../middleware/auth.ts";
 
-const ccpaRouter = new Hono();
+const ccpaRouter = new Hono<ApiEnv>();
 
 function getServiceClient() {
   const url = Deno.env.get("SUPABASE_URL") ?? "";

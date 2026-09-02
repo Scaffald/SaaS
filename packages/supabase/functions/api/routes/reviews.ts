@@ -4,14 +4,14 @@
  */
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import {
   isDraft,
   loadOwnReview,
   mergeMetadata,
 } from "../lib/review-drafts.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
 
 const _errorResponseSchema = z.object({

@@ -6,11 +6,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import {
-  addSupabaseAdminForUser,
-  requireAuth,
-  requireRole,
-} from "../middleware/auth.ts";
+import { type ApiEnv, addSupabaseAdminForUser, requireAuth, requireRole } from "../middleware/auth.ts";
 import { mergeMetadata } from "../../_shared/id-verification-utils.ts";
 import {
   addSixMonths,
@@ -66,7 +62,7 @@ function toError(
   return c.json({ error: message }, status);
 }
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 
 // GET /pricing - protected
 app.get("/pricing", requireAuth, async (c) => {

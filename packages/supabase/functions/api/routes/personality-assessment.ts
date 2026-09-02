@@ -8,9 +8,9 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { mapToArchetype } from "../../_shared/ipip-archetype-mapper.ts";
 import { getScore } from "../../_shared/ipip-score.ts";
 import type { IPIPAnswer } from "../../_shared/ipip-types.ts";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 
 app.use("*", authMiddleware);
 

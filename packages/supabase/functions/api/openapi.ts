@@ -1,6 +1,7 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
+import type { ApiEnv } from "./middleware/auth.ts";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<ApiEnv>();
 
 /**
  * OpenAPI Documentation

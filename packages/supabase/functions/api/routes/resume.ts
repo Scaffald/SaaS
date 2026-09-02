@@ -5,10 +5,10 @@
  */
 
 import { Hono } from "hono";
-import { authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import { extractTextFromPdf } from "../../_shared/pdf/extract-text.ts";
 
-const app = new Hono();
+const app = new Hono<ApiEnv>();
 
 app.use("*", authMiddleware);
 
