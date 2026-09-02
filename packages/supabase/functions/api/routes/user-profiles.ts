@@ -468,7 +468,12 @@ app.openapi(getUserProfileRoute, async (c) => {
     `,
     )
     .eq("id", userId)
-    .single();
+    // maybeSingle, not single: PostgREST answers `.single()` on zero rows with
+    // "Cannot coerce the result to a single JSON object", which arrived here as
+    // an `error` and was reported as a 500. A profile that does not exist is an
+    // ordinary outcome, and a 500 makes the client retry something that can
+    // never succeed. The route already declares a 404 (#659).
+    .maybeSingle();
 
   if (error) {
     return c.json(
@@ -478,6 +483,10 @@ app.openapi(getUserProfileRoute, async (c) => {
       },
       500,
     );
+  }
+
+  if (!profile) {
+    return c.json({ error: "Not Found", message: "User not found" }, 404);
   }
 
   const { data: calculatedYears, error: yearsError } = await supabase.rpc(
