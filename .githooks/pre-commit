@@ -5,6 +5,17 @@
 
 set -e
 
+# Conflict-marker guard. Not covered by SKIP_HOOKS/SKIP_PRECOMMIT, like the
+# protected-branch guard in pre-push. The core.whitespace override disables the
+# whitespace checks so `--check` fires on nothing but markers.
+if ! git -c core.whitespace=-blank-at-eol,-space-before-tab,-blank-at-eof \
+     diff --cached --check; then
+  echo ""
+  echo "❌ Merge-conflict markers in staged files (see above)."
+  echo "   Resolve the conflict properly, then re-stage."
+  exit 1
+fi
+
 # Quick-skip: SKIP_HOOKS=1 or SKIP_PRECOMMIT=1 to bypass (friendlier than --no-verify)
 if [ "${SKIP_HOOKS:-}" = "1" ] || [ "${SKIP_PRECOMMIT:-}" = "1" ]; then
   echo "⏭️  Pre-commit hooks skipped (SKIP_HOOKS/SKIP_PRECOMMIT=1)"

@@ -17,18 +17,11 @@ Scaffald SDK).
 
 ## Route auth matrix
 
-| Auth type                             | Behavior                                                                                  | Example routes                                                                                                                                                                                                                                                                                                          |
-| ------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **None**                              | Only global auth middleware; anon key or JWT both pass. No user required.                 | `/health`, `GET /v1/jobs`, `GET /v1/profiles/:username`, `GET /v1/industries`, `GET /v1/onet/*`, public OAuth endpoints                                                                                                                                                                                                 |
-| <<<<<<< HEAD                          |                                                                                           |                                                                                                                                                                                                                                                                                                                         |
-| **requireAuth**                       | User JWT **or** API key required. Missing/invalid token → 401.                            | `/v1/auth/roles`, `/v1/auth/session`, `/v1/api-keys`, `/v1/prerequisites/check`, `/v1/profile-views`, `/v1/applications`, `/v1/feedback`, `/v1/account-deletion`, success-fees (status, create, confirm), id-verification (pricing, request, confirm, status, current), resume, profile-wizard, documents-storage, etc. |
-| **requireRole('office', 'platform')** | Authenticated user **and** office role with platform scope. Valid JWT without role → 403. | All `/v1/office/*` (jobs, organizations, storage, users, universities, certifications), `/v1/notifications/admin`, `/v1/stripe-settings`, `/v1/legal-agreements`, `/v1/background-checks/admin`, id-verification list/revoke, oauth-management admin routes                                                             |
-| =======                               |                                                                                           |                                                                                                                                                                                                                                                                                                                         |
-| **requireAuth**                       | User JWT **or** API key required. Missing/invalid token → 401.                            | `/v1/auth/roles`, `/v1/auth/session`, `/v1/api-keys`, `/v1/applications`, `/v1/feedback`, `/v1/account-deletion`, success-fees (status, create, confirm), id-verification (pricing, request, confirm, status, current), resume, profile-wizard, documents-storage, etc.                                                 |
-| **requireRole('office', 'platform')** | Authenticated user **and** office role with platform scope. Valid JWT without role → 403. | All `/v1/office/*` (jobs, organizations, storage, users, universities, certifications), `/v1/notifications/admin`, `/v1/stripe-settings`, `/v1/legal-agreements`, `/v1/background-checks/admin`, id-verification list/revoke, oauth-management admin routes, cms office routes                                          |
-
->>>>>>> bcccec207 (chore: SDK integration tests, supabase config, forsured-web
->>>>>>> updates, and infra cleanup)
+| Auth type                             | Behavior                                                                                  | Example routes                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **None**                              | Only global auth middleware; anon key or JWT both pass. No user required.                 | `/health`, `GET /v1/jobs`, `GET /v1/profiles/:username`, `GET /v1/industries`, public OAuth endpoints                                                                                                                                                                                                                                                                                                                                                   |
+| **requireAuth**                       | User JWT **or** API key required. Missing/invalid token → 401.                            | `/v1/auth/roles`, `/v1/auth/session`, `/v1/api-keys`, `/v1/applications`, `/v1/employer/applications`, `/v1/employer/eeo-report`, `/v1/employer/scheduling`, `/v1/feedback`, `/v1/account-deletion`, success-fees (status, create, confirm), id-verification (pricing, request, confirm, status, current), parts of `/v1/profiles`. `/v1/onet/*` and `/v1/office/communities` enforce the same rule inside each handler rather than via the middleware. |
+| **requireRole('office', 'platform')** | Authenticated user **and** office role with platform scope. Valid JWT without role → 403. | `/v1/office/jobs`, `/v1/office/organizations`, `/v1/office/storage`, `/v1/office/users`, `/v1/office/universities`, `/v1/office/certifications`, `/v1/notifications/admin`, `/v1/stripe-settings`, `/v1/legal-agreements`, `/v1/background-checks/admin`, id-verification list/revoke, oauth-management admin routes                                                                                                                                    |
 
 ## Common causes of 401
 
@@ -52,9 +45,9 @@ If you see `{"msg":"Invalid JWT"}` when calling the API:
 - **Fix:**
   1. Always send a Bearer token: use the **anon key** for public routes, or a
      **user session `access_token`** for routes that require auth (e.g.
-     `/v1/prerequisites/check`).
-  2. For user-specific routes like `/v1/prerequisites/check`: sign in first and
-     send `session.access_token`, not the anon key.
+     `/v1/auth/session`).
+  2. For user-specific routes like `/v1/auth/session`: sign in first and send
+     `session.access_token`, not the anon key.
   3. **Restart the functions server** after API changes (e.g. lockfile/config):
      stop and run again `pnpm supa:functions`. You do **not** need to restart
      Supabase (`pnpm supa start`).
@@ -91,6 +84,7 @@ to obtain a JWT and hit endpoints.
    ```
 2. From the repo root (with `.env` containing `SUPABASE_URL` /
    `SUPABASE_ANON_KEY` for local):
+
    ```bash
    # Endpoint script only (login with test user + hit all endpoints)
    pnpm verify:api:e2e
