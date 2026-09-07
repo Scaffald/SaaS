@@ -21,7 +21,7 @@ catalog:
   '@hookform/resolvers': ~5.9.1
   '@react-native-async-storage/async-storage': 2.2.0
   '@react-native-community/netinfo': 12.0.1
-  '@react-native-google-signin/google-signin': ~16.1.2
+  '@react-native-google-signin/google-signin': ~16.1.5
   # Held at 10.1.x deliberately. 10.3.x pulls MapboxCommon 24.x, which Mapbox
   # serves only from its gated downloads API and needs a SECRET (sk.) token with
   # DOWNLOADS:READ. RNMapboxMapsDownloadToken in app.config.ts falls back to the
@@ -91,14 +91,14 @@ catalog:
   expo-web-browser: ~56.0.6
   fast-xml-parser: ~5.11.0
   i18n-js: ^4.4.3
-  mapbox-gl: ~3.29.0
+  mapbox-gl: ~3.30.0
   moti: ~0.30.0
   msw: 2.12.14
   openapi-typescript: ~7.4.4
   react: 19.2.3
   react-dom: ^19.2.3
   react-dropzone: ~15.0.0
-  react-hook-form: ~7.86.0
+  react-hook-form: ~7.87.0
   react-native: 0.85.3
   react-native-action-sheet: ~2.2.0
   react-native-chart-kit: ~6.12.0
