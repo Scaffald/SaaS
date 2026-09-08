@@ -72,16 +72,16 @@ UNI-Construct/
 
 - **`core.*`** - Shared platform tables (users, organizations, jobs, applications)
 - **`data.*`** - Reference data (industries, universities, skills)
-- **`onet.*`** - O*NET occupational database (1,016 occupations)
+- **`onet.*`** - O\*NET occupational database (1,016 occupations)
 - **`cms.*`** - Content management
 
 ### API Architecture
 
-| API Type | Use Case | Auth | Location |
-|----------|----------|------|----------|
-| **tRPC** | Internal apps (Scaffald) | JWT (Supabase Auth) | `packages/scf-trpc` |
-| **REST API** | Third-party developers | API Keys or OAuth 2.0 | `packages/supabase/functions/api` |
-| **SDK** | Abstraction over REST API | API Keys or OAuth 2.0 | `packages/scaffald-sdk` |
+| API Type     | Use Case                  | Auth                  | Location                          |
+| ------------ | ------------------------- | --------------------- | --------------------------------- |
+| **tRPC**     | Internal apps (Scaffald)  | JWT (Supabase Auth)   | `packages/scf-trpc`               |
+| **REST API** | Third-party developers    | API Keys or OAuth 2.0 | `packages/supabase/functions/api` |
+| **SDK**      | Abstraction over REST API | API Keys or OAuth 2.0 | `packages/scaffald-sdk`           |
 
 ---
 
@@ -179,40 +179,40 @@ cd examples/integration-test && node simple-test.mjs
 ### SDK Usage Example
 
 ```typescript
-import Scaffald from '@scaffald/sdk'
+import Scaffald from "@scaffald/sdk";
 
 // Initialize client
 const client = new Scaffald({
-  apiKey: 'sk_live_...',
-})
+  apiKey: "sk_live_...",
+});
 
 // List jobs
-const jobs = await client.jobs.list({ limit: 20, status: 'published' })
+const jobs = await client.jobs.list({ limit: 20, status: "published" });
 
 // Submit application
 const app = await client.applications.create({
   jobId: jobs.data[0].id,
-  currentLocation: 'San Francisco, CA',
-})
+  currentLocation: "San Francisco, CA",
+});
 ```
 
 ### React Hooks Example
 
 ```tsx
-import { ScaffaldProvider, useJobs } from '@scaffald/sdk/react'
+import { ScaffaldProvider, useJobs } from "@scaffald/sdk/react";
 
 function App() {
   return (
     <ScaffaldProvider config={{ apiKey: process.env.SCAFFALD_API_KEY }}>
       <JobsList />
     </ScaffaldProvider>
-  )
+  );
 }
 
 function JobsList() {
-  const { data, isLoading } = useJobs({ limit: 20 })
-  if (isLoading) return <div>Loading...</div>
-  return <>{/* ... */}</>
+  const { data, isLoading } = useJobs({ limit: 20 });
+  if (isLoading) return <div>Loading...</div>;
+  return <>{/* ... */}</>;
 }
 ```
 
@@ -233,7 +233,7 @@ function JobsList() {
 
 The API key system allows third-party developers to access the Scaffald REST API programmatically.
 
-**Location**: `packages/supabase/supabase/migrations/` (migrations 300-302)
+**Location**: `packages/supabase/migrations/` (migrations 300-302)
 
 ### Database Schema
 
@@ -281,11 +281,11 @@ CREATE TABLE core.api_key_usage (
 
 ### Rate Limits by Tier
 
-| Tier       | Limit            | Use Case |
-|------------|------------------|----------|
-| Free       | 100 req/15 min   | Testing, hobby projects |
-| Pro        | 1,000 req/15 min | Small businesses |
-| Enterprise | 10,000 req/15 min| Large scale integrations |
+| Tier       | Limit             | Use Case                 |
+| ---------- | ----------------- | ------------------------ |
+| Free       | 100 req/15 min    | Testing, hobby projects  |
+| Pro        | 1,000 req/15 min  | Small businesses         |
+| Enterprise | 10,000 req/15 min | Large scale integrations |
 
 ### API Key Scopes
 
@@ -330,25 +330,28 @@ Supports both JWT (internal) and API key (external) authentication:
 
 ```typescript
 export async function authMiddleware(c: Context, next: Next) {
-  const authHeader = c.req.header('Authorization')
+  const authHeader = c.req.header("Authorization");
 
   // Check for API key
-  if (authHeader?.startsWith('Bearer sk_')) {
-    const apiKey = authHeader.replace('Bearer ', '')
-    const keyHash = await hashApiKey(apiKey)
+  if (authHeader?.startsWith("Bearer sk_")) {
+    const apiKey = authHeader.replace("Bearer ", "");
+    const keyHash = await hashApiKey(apiKey);
 
     const { data: keyData } = await supabase
-      .from('api_keys')
-      .select('*, organization:organizations(*)')
-      .eq('key_hash', keyHash)
-      .eq('is_active', true)
-      .single()
+      .from("api_keys")
+      .select("*, organization:organizations(*)")
+      .eq("key_hash", keyHash)
+      .eq("is_active", true)
+      .single();
 
-    if (keyData && (!keyData.expires_at || new Date(keyData.expires_at) > new Date())) {
-      c.set('apiKey', keyData)
-      c.set('organization', keyData.organization)
-      c.set('scopes', keyData.scopes)
-      return next()
+    if (
+      keyData &&
+      (!keyData.expires_at || new Date(keyData.expires_at) > new Date())
+    ) {
+      c.set("apiKey", keyData);
+      c.set("organization", keyData.organization);
+      c.set("scopes", keyData.scopes);
+      return next();
     }
   }
 
@@ -409,6 +412,7 @@ Components being built:
 REST API supports two authentication methods:
 
 1. **API Keys** (for server-side integrations)
+
    ```
    Authorization: Bearer sk_live_...
    ```
@@ -428,6 +432,7 @@ Implemented via in-memory rate limiting with Redis-like semantics:
 - Includes `Retry-After` header
 
 **Headers**:
+
 ```
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -453,17 +458,17 @@ pnpm supa:generate
 
 ### Migrations
 
-Location: `packages/supabase/supabase/migrations/`
+Location: `packages/supabase/migrations/`
 
 Key migrations:
+
 - `001-099`: Core schema (users, organizations, roles, teams)
 - `100-199`: Jobs and applications
-<<<<<<< HEAD
-- `132`, `133`, `20251118181923`: Map RPCs (`core.get_jobs_with_coords`, `core.get_organizations_with_coords` and public wrappers) — required for `/dashboard/map`
-=======
->>>>>>> bcccec207 (chore: SDK integration tests, supabase config, forsured-web updates, and infra cleanup)
+- `132`, `133`, `203`: Map RPCs (`core.get_jobs_with_coords`,
+  `core.get_organizations_with_coords` and their public wrappers) — required by
+  `/workers/map` and `/v1/map`
 - `300-302`: API keys system
-- `400+`: O*NET occupational database
+- `400+`: O\*NET occupational database
 
 ### Row Level Security (RLS)
 
@@ -474,6 +479,7 @@ User → team_members → teams → organizations
 ```
 
 **Example Policy**:
+
 ```sql
 CREATE POLICY "Users can view jobs in their organization"
 ON core.jobs FOR SELECT
@@ -595,8 +601,7 @@ SCAFFALD_CLIENT_SECRET=your_client_secret
 SCAFFALD_WEBHOOK_SECRET=whsec_...
 ```
 
-<<<<<<< HEAD
-For address autocomplete (e.g. onboarding, profile) and for the **dashboard map page** (`/dashboard/map`), set `EXPO_PUBLIC_MAPBOX_TOKEN` (or pass `apiKey` to `ControlledAddressForm`). See `.env.template` for Mapbox vars.
+For address autocomplete (e.g. onboarding, profile) and for the **worker map page** (`/workers/map`), set `EXPO_PUBLIC_MAPBOX_TOKEN` (or pass `apiKey` to `ControlledAddressForm`). See `.env.template` for Mapbox vars.
 
 ### News
 
@@ -607,9 +612,6 @@ The dashboard News widget and `/dashboard/news` page show articles from `core.ca
 3. **Optional fallback industry** – For local/dev when the construction industry is missing from the DB, set `EXPO_PUBLIC_NEWS_CONSTRUCTION_INDUSTRY_ID` to a valid industry UUID so the widget can still show articles.
 
 **Summary:** Run full seed (with functions running) so news import runs once; if import was skipped or failed, run `pnpm supa:news:import` after seed.
-=======
-For address autocomplete (e.g. onboarding, profile), set `EXPO_PUBLIC_MAPBOX_TOKEN` (or pass `apiKey` to `ControlledAddressForm`). See `.env.template` for Mapbox vars.
->>>>>>> 1dbb2307b (feat(onboarding): Mapbox address autocomplete and expandable manual fields)
 
 ---
 
@@ -642,14 +644,14 @@ pnpm exec playwright test
 Use Vitest for unit tests:
 
 ```typescript
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from "vitest";
 
-describe('Jobs API', () => {
-  it('should list jobs', async () => {
-    const jobs = await client.jobs.list()
-    expect(jobs.data).toBeInstanceOf(Array)
-  })
-})
+describe("Jobs API", () => {
+  it("should list jobs", async () => {
+    const jobs = await client.jobs.list();
+    expect(jobs.data).toBeInstanceOf(Array);
+  });
+});
 ```
 
 ---
@@ -694,17 +696,17 @@ git commit --no-verify
 
 When migrating from Tamagui-style props to scaffald-ui, use this mapping:
 
-| Tamagui | scaffald-ui |
-|---------|-------------|
-| `ai` | `align` |
-| `jc` | `justify` |
-| `f` | `flex` |
-| `position`, `borderWidth`, `borderColor` on layout | Pass via `style` |
-| `backgroundColor`, `padded`, `bordered` on Card | Use `style`, `padding`, `variant="outlined"` |
-| `chromeless` on Button | `variant="text"` |
-| `fontFamily`, `mt`, `textAlign` on Paragraph | Use `style` or `align` |
-| `"outlined"` (ButtonVariant) | `"outline"` |
-| `"$red12"`, `"$blue10"` for colors | Use semantic: `color="error"`, `color="primary"` |
+| Tamagui                                            | scaffald-ui                                      |
+| -------------------------------------------------- | ------------------------------------------------ |
+| `ai`                                               | `align`                                          |
+| `jc`                                               | `justify`                                        |
+| `f`                                                | `flex`                                           |
+| `position`, `borderWidth`, `borderColor` on layout | Pass via `style`                                 |
+| `backgroundColor`, `padded`, `bordered` on Card    | Use `style`, `padding`, `variant="outlined"`     |
+| `chromeless` on Button                             | `variant="text"`                                 |
+| `fontFamily`, `mt`, `textAlign` on Paragraph       | Use `style` or `align`                           |
+| `"outlined"` (ButtonVariant)                       | `"outline"`                                      |
+| `"$red12"`, `"$blue10"` for colors                 | Use semantic: `color="error"`, `color="primary"` |
 
 ---
 
@@ -754,9 +756,9 @@ pnpm --filter @scaffald/sdk publish --access public
 
 ### Published Packages
 
-| Package | Location | CI Workflow | Trigger |
-|---------|----------|-------------|---------|
-| `@scaffald/ui` | `packages/scaffald-ui` | `semantic-release-ui.yml` | Push to `main` when `packages/scaffald-ui/**` changes |
+| Package         | Location                | CI Workflow                | Trigger                                                |
+| --------------- | ----------------------- | -------------------------- | ------------------------------------------------------ |
+| `@scaffald/ui`  | `packages/scaffald-ui`  | `semantic-release-ui.yml`  | Push to `main` when `packages/scaffald-ui/**` changes  |
 | `@scaffald/sdk` | `packages/scaffald-sdk` | `semantic-release-sdk.yml` | Push to `main` when `packages/scaffald-sdk/**` changes |
 
 ### NPM_TOKEN Requirement
@@ -794,7 +796,7 @@ Publishing `@scaffald/ui` and `@scaffald/sdk` to npm requires `NPM_TOKEN` in Git
 - **Supabase README**: `/packages/supabase/README.md`
 - **SDK README**: `/packages/scaffald-sdk/README.md`
 - **UI README**: `/packages/scaffald-ui/README.md`
-- **O*NET Database**: `/packages/supabase/onet/README.md`
+- **O\*NET Database**: `/packages/supabase/onet/README.md`
 - **Tests README**: `/tests/README.md`
 
 ---

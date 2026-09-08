@@ -27,6 +27,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # No `needs` and no `if`: it must run on docs-only PRs, and nothing may
+  # depend on it, so a marker cannot mask the lint/test signal.
+  markers:
+    name: No merge-conflict markers
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      # git grep: 0 = match, 1 = no match, 128/129 = bad pattern or option.
+      - run: |
+          set -uo pipefail
+          git grep -nIE '^(<<<<<<<|=======|>>>>>>>|\|\|\|\|\|\|\|)( |$)' -- . && rc=0 || rc=$?
+          case "$rc" in
+            0) echo "::error::Committed merge-conflict markers (see above)."; exit 1 ;;
+            1) echo "✅ No conflict markers." ;;
+            *) exit "$rc" ;;
+          esac
+
   gate:
     name: Detect changes
     runs-on: ubuntu-latest
@@ -73,7 +92,7 @@ jobs:
 
       - uses: ./.github/actions/install
         with:
-          build-workspace-packages: 'true'
+          build-workspace-packages: "true"
 
       - name: Cache Nx
         uses: actions/cache@v6
@@ -111,7 +130,7 @@ jobs:
 
       - uses: ./.github/actions/install
         with:
-          build-workspace-packages: 'true'
+          build-workspace-packages: "true"
 
       - name: Cache Nx
         uses: actions/cache@v6

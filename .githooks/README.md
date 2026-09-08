@@ -2,10 +2,10 @@
 
 These hooks run automatically when using this repository.
 
-| Hook | Runs | What it does |
-|------|------|--------------|
-| **pre-commit** | Before each commit | Lint + typecheck (affected packages, single nx invocation) |
-| **pre-push** | Before each push | Protected-branch guard, then stamp-only verification (instant pass/fail) |
+| Hook           | Runs               | What it does                                                                           |
+| -------------- | ------------------ | -------------------------------------------------------------------------------------- |
+| **pre-commit** | Before each commit | Conflict-marker guard, then lint + typecheck (affected packages, single nx invocation) |
+| **pre-push**   | Before each push   | Protected-branch guard, then stamp-only verification (instant pass/fail)               |
 
 Hooks are activated via `git config core.hooksPath .githooks`, which is set automatically by `pnpm install` (prepare script).
 
@@ -83,11 +83,11 @@ pnpm precommit:skip -m "wip"
 
 ## Environment variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `SKIP_HOOKS` | — | Set to `1` to skip all hooks (not the protected-branch guard) |
-| `SKIP_PRECOMMIT` | — | Set to `1` to skip pre-commit only |
-| `SKIP_PREPUSH` | — | Set to `1` to skip the pre-push stamp check (not the protected-branch guard) |
-| `ALLOW_PUSH_TO_MAIN` | — | Set to `1` to allow a deliberate push to `main`/`preview`/`prod` |
-| `PRECOMMIT_TIMEOUT` | `90` | Timeout in seconds for pre-commit checks |
-| `NX_PARALLEL` | `5` | Number of parallel NX tasks during hooks |
+| Variable             | Default | Description                                                                       |
+| -------------------- | ------- | --------------------------------------------------------------------------------- |
+| `SKIP_HOOKS`         | —       | Set to `1` to skip all hooks (not the protected-branch or conflict-marker guards) |
+| `SKIP_PRECOMMIT`     | —       | Set to `1` to skip pre-commit lint + typecheck (not the conflict-marker guard)    |
+| `SKIP_PREPUSH`       | —       | Set to `1` to skip the pre-push stamp check (not the protected-branch guard)      |
+| `ALLOW_PUSH_TO_MAIN` | —       | Set to `1` to allow a deliberate push to `main`/`preview`/`prod`                  |
+| `PRECOMMIT_TIMEOUT`  | `90`    | Timeout in seconds for pre-commit checks                                          |
+| `NX_PARALLEL`        | `5`     | Number of parallel NX tasks during hooks                                          |
