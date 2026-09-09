@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'packages/supabase/functions/api/**'
+      - 'packages/supabase/migrations/**'
+      - 'packages/supabase/types.ts'
       - 'scripts/test-api-local.ts'
       - 'scripts/deno.json'
       - '.github/workflows/api-tests.yml'
@@ -12,6 +14,8 @@ on:
       - main
     paths:
       - 'packages/supabase/functions/api/**'
+      - 'packages/supabase/migrations/**'
+      - 'packages/supabase/types.ts'
       - 'scripts/test-api-local.ts'
       - 'scripts/deno.json'
 
@@ -69,6 +73,19 @@ jobs:
           done
         env:
           SUPABASE_DB_PASSWORD: postgres
+
+      # A fresh `supabase start` has applied every migration file, so the
+      # types generated from it are the truth: a diff means a migration merged
+      # without `pnpm supa:generate` (#707). Uses the catalog-pinned CLI, not
+      # the setup-cli one, so the output matches what a developer generates.
+      - name: Check types.ts matches the migrations
+        working-directory: packages/supabase
+        run: |
+          pnpm exec supabase --workdir .. gen types typescript --local > types.ts
+          git diff --exit-code -- types.ts || {
+            echo "::error file=packages/supabase/types.ts::types.ts is stale. Run \`pnpm supa:generate\` and commit the result."
+            exit 1
+          }
 
       - name: Wait for API
         run: |

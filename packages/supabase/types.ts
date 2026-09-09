@@ -43,6 +43,7 @@ export type Database = {
           client_id: string
           client_secret: string
           created_at: string
+          custom_claims_allowlist: string[]
           discovery_cached_at: string | null
           discovery_url: string | null
           email_optional: boolean
@@ -69,6 +70,7 @@ export type Database = {
           client_id: string
           client_secret: string
           created_at?: string
+          custom_claims_allowlist?: string[]
           discovery_cached_at?: string | null
           discovery_url?: string | null
           email_optional?: boolean
@@ -95,6 +97,7 @@ export type Database = {
           client_id?: string
           client_secret?: string
           created_at?: string
+          custom_claims_allowlist?: string[]
           discovery_cached_at?: string | null
           discovery_url?: string | null
           email_optional?: boolean
@@ -4023,6 +4026,94 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          reason: Database["core"]["Enums"]["report_reason"]
+          reported_user_id: string | null
+          reporter_id: string
+          resolution_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["core"]["Enums"]["report_status"]
+          subject_id: string
+          subject_type: Database["core"]["Enums"]["report_subject_type"]
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: Database["core"]["Enums"]["report_reason"]
+          reported_user_id?: string | null
+          reporter_id: string
+          resolution_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["core"]["Enums"]["report_status"]
+          subject_id: string
+          subject_type: Database["core"]["Enums"]["report_subject_type"]
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: Database["core"]["Enums"]["report_reason"]
+          reported_user_id?: string | null
+          reporter_id?: string
+          resolution_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["core"]["Enums"]["report_status"]
+          subject_id?: string
+          subject_type?: Database["core"]["Enums"]["report_subject_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_reports_reported_user_id_fkey"
+            columns: ["reported_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_reported_user_id_fkey"
+            columns: ["reported_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
           },
         ]
@@ -11387,6 +11478,56 @@ export type Database = {
         }
         Relationships: []
       }
+      user_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_certifications: {
         Row: {
           certificate_file_path: string | null
@@ -11609,6 +11750,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_feedback: {
+        Row: {
+          browser_name: string | null
+          browser_version: string | null
+          created_at: string
+          feedback_text: string
+          feedback_type: string
+          id: string
+          operating_system: string | null
+          page_title: string | null
+          page_url: string
+          screen_resolution: string | null
+          screenshot_path: string | null
+          updated_at: string
+          user_agent: string | null
+          user_email: string
+          user_id: string
+          user_name: string | null
+          viewport_size: string | null
+        }
+        Insert: {
+          browser_name?: string | null
+          browser_version?: string | null
+          created_at?: string
+          feedback_text: string
+          feedback_type: string
+          id?: string
+          operating_system?: string | null
+          page_title?: string | null
+          page_url: string
+          screen_resolution?: string | null
+          screenshot_path?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          user_email: string
+          user_id: string
+          user_name?: string | null
+          viewport_size?: string | null
+        }
+        Update: {
+          browser_name?: string | null
+          browser_version?: string | null
+          created_at?: string
+          feedback_text?: string
+          feedback_type?: string
+          id?: string
+          operating_system?: string | null
+          page_title?: string | null
+          page_url?: string
+          screen_resolution?: string | null
+          screenshot_path?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          user_email?: string
+          user_id?: string
+          user_name?: string | null
+          viewport_size?: string | null
+        }
+        Relationships: []
       }
       user_relationships: {
         Row: {
@@ -12646,6 +12847,7 @@ export type Database = {
         Args: { p_application_id: string }
         Returns: boolean
       }
+      blocked_user_ids: { Args: { for_user: string }; Returns: string[] }
       calculate_application_score: {
         Args: { p_application_id: string }
         Returns: number
@@ -12915,6 +13117,10 @@ export type Database = {
         Args: { p_org_id?: string; p_role_name: string; p_user_id: string }
         Returns: boolean
       }
+      users_are_blocked: {
+        Args: { user_a: string; user_b: string }
+        Returns: boolean
+      }
       validate_address_in_site: {
         Args: { p_address_id: string; p_site_id: string }
         Returns: boolean
@@ -12926,15 +13132,6 @@ export type Database = {
     }
     Enums: {
       app_role: "user" | "moderator" | "admin" | "super_admin"
-      application_status:
-        | "draft"
-        | "submitted"
-        | "under_review"
-        | "interviewing"
-        | "offer_extended"
-        | "hired"
-        | "rejected"
-        | "withdrawn"
       background_check_dispute_status:
         | "pending"
         | "under_review"
@@ -13081,6 +13278,22 @@ export type Database = {
         | "industrial"
         | "mixed_use"
         | "other"
+      report_reason:
+        | "spam"
+        | "harassment"
+        | "hate_speech"
+        | "sexual_content"
+        | "violence_or_threats"
+        | "scam_or_fraud"
+        | "off_platform_solicitation"
+        | "other"
+      report_status: "open" | "reviewing" | "actioned" | "dismissed"
+      report_subject_type:
+        | "community_post"
+        | "community_comment"
+        | "inquiry_message"
+        | "user"
+        | "job"
       review_status: "pending" | "approved" | "rejected" | "flagged"
       storage_preference: "supabase" | "dropbox" | "google_drive"
       team_activity_event_type:
@@ -17289,6 +17502,7 @@ export type Database = {
           public: boolean | null
           type: Database["storage"]["Enums"]["buckettype"]
           updated_at: string | null
+          versioning_status: string
         }
         Insert: {
           allowed_mime_types?: string[] | null
@@ -17302,6 +17516,7 @@ export type Database = {
           public?: boolean | null
           type?: Database["storage"]["Enums"]["buckettype"]
           updated_at?: string | null
+          versioning_status?: string
         }
         Update: {
           allowed_mime_types?: string[] | null
@@ -17315,6 +17530,7 @@ export type Database = {
           public?: boolean | null
           type?: Database["storage"]["Enums"]["buckettype"]
           updated_at?: string | null
+          versioning_status?: string
         }
         Relationships: []
       }
@@ -17487,9 +17703,12 @@ export type Database = {
       }
       objects: {
         Row: {
+          archived_at: string | null
           bucket_id: string | null
           created_at: string | null
           id: string
+          is_delete_marker: boolean
+          is_versioned: boolean
           last_accessed_at: string | null
           metadata: Json | null
           name: string | null
@@ -17501,9 +17720,12 @@ export type Database = {
           version: string | null
         }
         Insert: {
+          archived_at?: string | null
           bucket_id?: string | null
           created_at?: string | null
           id?: string
+          is_delete_marker?: boolean
+          is_versioned?: boolean
           last_accessed_at?: string | null
           metadata?: Json | null
           name?: string | null
@@ -17515,9 +17737,12 @@ export type Database = {
           version?: string | null
         }
         Update: {
+          archived_at?: string | null
           bucket_id?: string | null
           created_at?: string | null
           id?: string
+          is_delete_marker?: boolean
+          is_versioned?: boolean
           last_accessed_at?: string | null
           metadata?: Json | null
           name?: string | null
@@ -17995,16 +18220,6 @@ export const Constants = {
   core: {
     Enums: {
       app_role: ["user", "moderator", "admin", "super_admin"],
-      application_status: [
-        "draft",
-        "submitted",
-        "under_review",
-        "interviewing",
-        "offer_extended",
-        "hired",
-        "rejected",
-        "withdrawn",
-      ],
       background_check_dispute_status: [
         "pending",
         "under_review",
@@ -18163,6 +18378,24 @@ export const Constants = {
         "industrial",
         "mixed_use",
         "other",
+      ],
+      report_reason: [
+        "spam",
+        "harassment",
+        "hate_speech",
+        "sexual_content",
+        "violence_or_threats",
+        "scam_or_fraud",
+        "off_platform_solicitation",
+        "other",
+      ],
+      report_status: ["open", "reviewing", "actioned", "dismissed"],
+      report_subject_type: [
+        "community_post",
+        "community_comment",
+        "inquiry_message",
+        "user",
+        "job",
       ],
       review_status: ["pending", "approved", "rejected", "flagged"],
       storage_preference: ["supabase", "dropbox", "google_drive"],
