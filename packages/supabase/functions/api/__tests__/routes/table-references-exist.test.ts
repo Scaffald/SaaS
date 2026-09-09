@@ -126,35 +126,10 @@ const BASELINE_BROKEN: Record<string, number> = {
   "core.profile_import_data": 5,
   "core.inquiries": 2,
   "core.profile_completion_nudges": 1,
-
-  // These two are a different failure from the rest of this list. The tables
-  // are real -- core.content_reports and core.user_blocks both exist in the
-  // database -- but #703 shipped their migrations without regenerating
-  // packages/supabase/types.ts, which is what this test reads. So the routes
-  // are correct and the catalogue is stale.
-  //
-  // Regenerating from a local database is NOT the fix, and was tried: the local
-  // database is itself drifted and has no `application_status` enum, which
-  // types.ts does declare, so `supa:generate` here silently deletes it. See #707.
-  //
-  // They are listed rather than excused so the count still only goes down: once
-  // types.ts is regenerated these become stale entries and the test demands
-  // their removal.
-  "core.content_reports": 2,
-  "core.user_blocks": 4,
-
-  // Same shape again, and this one is ours: migration 350 moves
-  // logs.user_feedback to core.user_feedback so /v1/feedback can be reached at
-  // all (#665). The table is real and the route is right; types.ts simply has
-  // not been regenerated, and it never carried the old location either --
-  // `logs` is absent from the generated types entirely, which is why this
-  // reference was invisible here while it was broken.
-  //
-  // Listed rather than hand-edited into types.ts, for the reason in #707:
-  // regenerating from a drifted local database deletes an enum. When types are
-  // regenerated properly this entry goes stale and the test demands its
-  // removal, which is exactly the reminder we want.
-  "core.user_feedback": 2,
+  // core.content_reports, core.user_blocks and core.user_feedback were listed
+  // here while types.ts was stale, and are gone now that it has been
+  // regenerated (#707). The list did what it is for: the entries went stale,
+  // the second test demanded their removal, and the count went down.
 };
 
 /** Schemas types.ts knows about — a reference into any other schema cannot be

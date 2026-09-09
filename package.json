@@ -96,7 +96,7 @@
     "supa:functions:dev": "pnpm env-dev pnpm exec supabase --workdir packages functions deploy --project-ref pmtdqrfpumqwkdhpgwcz",
     "supa:functions:preview": "pnpm supa:preview functions deploy trpc --project-ref rxcbcxkzielwojunbtph",
     "supa:functions:prod": "pnpm supa:prod functions deploy trpc --project-ref qmfmpcyxsihhfttvqpbw",
-    "supa:generate": "dotenv -e .env -- pnpm exec supabase --workdir packages gen types typescript --local > packages/supabase/types.ts",
+    "supa:generate": "node scripts/generate-supabase-types.mjs",
     "supa:migration:up": "pnpm supa migration up",
     "supa:news:feeds": "pnpm env-local pnpm --filter @scf/supabase seed:news-feeds",
     "supa:news:import": "pnpm env-local pnpm --filter @scf/supabase seed:news-import",

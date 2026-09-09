@@ -108,7 +108,7 @@ export const feedbackRouter = t.router({
     }
 
     const { data, error } = await supabase
-      .schema('logs')
+      .schema('core')
       .from('user_feedback')
       .insert(insertPayload)
       .select('id, created_at')
@@ -148,7 +148,7 @@ export const feedbackRouter = t.router({
       const offset = input?.offset ?? 0
 
       const { data, error, count } = await supabase
-        .schema('logs')
+        .schema('core')
         .from('user_feedback')
         .select(
           `
