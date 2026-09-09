@@ -99,22 +99,50 @@ give 20000); the config throws rather than emit a duplicate.
 
 ### ITMS-90863 after an iOS delivery
 
-Apple emails this on every iOS delivery. Delivery **succeeded**; it is
-advisory and blocks nothing:
+Apple emails this after an iOS delivery. Delivery **succeeded**; the notice is
+advisory and blocks neither TestFlight nor review:
 
 ```
 ITMS-90863: Macs with Apple silicon support issue - The app uses symbols
-that aren't present in macOS: ExpoModulesCore ...
+that aren't present in macOS:
+
+* @rpath/ExpoModulesCore.framework/ExpoModulesCore
+   * _$s15ExpoModulesCore9AnyModuleP18_exposedDefinition...
 ```
 
-`supportsTablet: true` makes an iOS app eligible for Apple silicon Macs by
-default, so Apple checks the binary against the macOS runtime and finds Swift
-symbols from `ExpoModulesCore` that do not resolve there. Nothing in this repo
-turns that listing off — it is an App Store Connect setting.
+**Treat it as a real signal, not as known noise.** Through build `11700` it was
+filed as an inherent Expo/macOS incompatibility. It was not: `ExpoModulesCore`
+never contained those symbols. `expo-image` (56.0.9) and
+`expo-image-manipulator` (56.0.14) had been compiled against an older
+`ExpoModulesCore` API surface than the 56.0.22 bundled beside them, leaving
+two `(undefined) external` — not weak — Swift references that iOS's dyld
+tolerates and Apple's stricter Mac-compatibility check does not. #689
+realigned all 22 drifted SDK 56 packages; `nm -m` on build `11701` shows zero
+occurrences of `_exposedDefinition` in either framework. CI now runs
+`expo install --check` so that drift fails a PR instead of surfacing months
+later as one of these emails.
 
-It is expected until someone opts the app out of Mac availability. See #683 —
-and do not "fix" it by setting `supportsTablet: false`, which would drop real
-iPad support to quieten a warning about a platform we do not ship to.
+`supportsTablet: true` (`apps/scaffald/app.config.ts:139`) is why Apple runs the
+check at all: an iPad-capable app is offered on Apple silicon Macs by default.
+Do **not** "fix" a recurrence by setting `supportsTablet: false` — that drops
+real iPad support to quieten a warning about a platform we do not ship to.
+
+If one arrives, read the symbol list and inspect the binary rather than waiting
+on another delivery:
+
+1. Download the `.ipa` EAS produced, unzip it, and `nm -m` the frameworks named
+   in the email (`Payload/*.app/Frameworks/<Name>.framework/<Name>`)
+2. Look for `(undefined) external` references to the symbols Apple listed. Their
+   defining framework names the package whose version is behind
+3. Realign that package against the bundled `expo-modules-core`, in one
+   coordinated bump (#483), and re-inspect before delivering
+
+Two things stay open on #683: whether `1.17.1 / 11701` drew the email again —
+nobody has checked App Store Connect since it submitted — and whether Scaffald
+should be offered on Apple silicon Macs at all. That listing is an App Store
+Connect setting (Pricing and Availability), not something this repo controls,
+and we neither build nor test for that platform today.
+
 ---
 
 ## Linear coordination
