@@ -126,7 +126,6 @@ const BASELINE_BROKEN: Record<string, number> = {
   "core.profile_import_data": 5,
   "core.inquiries": 2,
   "core.profile_completion_nudges": 1,
-
   // core.content_reports, core.user_blocks and core.user_feedback were listed
   // here while types.ts was stale, and are gone now that it has been
   // regenerated (#707). The list did what it is for: the entries went stale,
