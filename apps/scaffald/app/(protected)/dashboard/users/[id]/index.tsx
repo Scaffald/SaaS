@@ -14,7 +14,7 @@ import { useRecordViewMutation } from '@scf/core/utils/profile-views-sdk-hooks'
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import type { DashboardBreadcrumbSegment } from '@scf/core/utils/navigation/buildDashboardBreadcrumbs'
 import { useLocalSearchParams } from 'expo-router'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Stack } from '@scaffald/ui'
 
 /**
@@ -47,31 +47,23 @@ export default function UserProfilePage() {
   // Determine if viewing own profile
   const isOwnProfile = currentUserId === id
 
-  // Profile view tracking
-  const recordViewMutation = useRecordViewMutation()
+  // Profile view tracking. See the note on the public profile route: depending
+  // on the mutation *object* re-runs this effect on the render its own mutate()
+  // caused. Here the calls succeed rather than 401, so the loop wrote a view
+  // record per render instead of failing loudly (#731).
+  const { mutate: recordProfileView } = useRecordViewMutation()
+  const recordedProfileId = useRef<string | null>(null)
 
   useEffect(() => {
-    // Track profile view automatically
-    const trackProfileView = () => {
-      // Don't track own profile views
-      if (!id || isOwnProfile || !currentUserId) {
-        return
-      }
+    // Don't track own profile views.
+    if (!id || isOwnProfile || !currentUserId) return
 
-      try {
-        // Record view (fire-and-forget, don't wait for response)
-        // The router handles session ID generation and deduplication internally
-        recordViewMutation.mutate({
-          viewedUserId: id,
-        })
-      } catch (error) {
-        // Silent error handling - don't block page load
-        console.warn('Failed to track profile view:', error)
-      }
-    }
+    if (recordedProfileId.current === id) return
+    recordedProfileId.current = id
 
-    trackProfileView()
-  }, [id, isOwnProfile, currentUserId, recordViewMutation])
+    // Fire-and-forget; the route handles session id and deduplication.
+    recordProfileView({ viewedUserId: id })
+  }, [id, isOwnProfile, currentUserId, recordProfileView])
 
   const breadcrumbs = useMemo<DashboardBreadcrumbSegment[]>(
     () => [

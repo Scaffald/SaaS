@@ -19,7 +19,7 @@ import { useRecordViewMutation } from '@scf/core/utils/profile-views-sdk-hooks'
 import type { BreadcrumbItemData } from '@scaffald/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { GenerateMetadataFunction, LoaderFunction } from 'expo-server'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Row, Spinner, Text, Stack } from '@scaffald/ui'
 import {
   fetchPublicProfileBySlug,
@@ -111,37 +111,34 @@ export default function PublicUserProfilePage() {
   const profileData = queriedProfile ?? loaderProfile
   const isLoading = isQueryLoading && !profileData
 
-  // Profile view tracking
-  const recordViewMutation = useRecordViewMutation()
+  // Profile view tracking.
+  //
+  // `mutate` is destructured deliberately. useMutation returns a fresh object
+  // every render (it spreads its result), so naming that object as a dependency
+  // makes this effect re-run on the render its own mutate() caused — forever.
+  // In production this fired ~88 requests/second, indefinitely, from a single
+  // anonymous tab on a page that is in sitemap-users.xml (#731). `mutate`
+  // itself is memoised by useMutation and is stable.
+  const { mutate: recordProfileView } = useRecordViewMutation()
 
-  // Track profile view automatically (before redirect check)
+  // Record a given profile at most once per mount. `mutate` being stable is
+  // enough to stop the loop on its own; this also stops a re-record when the
+  // profile query refetches and hands back an equal-but-new object.
+  const recordedProfileId = useRef<string | null>(null)
+
   useEffect(() => {
-    const trackProfileView = () => {
-      // Don't track if loading, no profile data, or own profile
-      if (isLoading || !profileData || !profileData.id) {
-        return
-      }
+    const viewedUserId = profileData?.id
+    if (isLoading || !viewedUserId) return
 
-      // Don't track own profile views
-      const isOwnProfile = currentUserId && profileData.id === currentUserId
-      if (isOwnProfile) {
-        return
-      }
+    // Don't track own profile views.
+    if (currentUserId && viewedUserId === currentUserId) return
 
-      try {
-        // Record view (fire-and-forget, don't wait for response)
-        // The router handles session ID generation and deduplication internally
-        recordViewMutation.mutate({
-          viewedUserId: profileData.id,
-        })
-      } catch (error) {
-        // Silent error handling - don't block page load
-        console.warn('Failed to track profile view:', error)
-      }
-    }
+    if (recordedProfileId.current === viewedUserId) return
+    recordedProfileId.current = viewedUserId
 
-    trackProfileView()
-  }, [profileData, currentUserId, isLoading, recordViewMutation])
+    // Fire-and-forget; the route handles session id and deduplication.
+    recordProfileView({ viewedUserId })
+  }, [profileData?.id, currentUserId, isLoading, recordProfileView])
 
   // Redirect to dashboard route if viewing own profile
   useEffect(() => {
