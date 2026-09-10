@@ -3,7 +3,7 @@ import { useAwardResultsViewXPMutation } from '@scf/core/utils/personality-asses
 import { useQueryClient } from '@tanstack/react-query'
 import { AlertCircle, RefreshCcw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useIPIPResults } from '../hooks/useIPIPResults'
@@ -22,7 +22,12 @@ export function IPIPResultsPage() {
   const [activeTab, setActiveTab] = useState<'narrative' | 'chart'>('narrative')
   const queryClient = useQueryClient()
 
-  const awardXP = useAwardResultsViewXPMutation({
+  // `mutate` is destructured deliberately. useMutation returns a fresh object
+  // every render, so naming that object as a dependency re-runs this effect on
+  // the render its own mutate() caused — and `results.isComplete` stays true,
+  // which is exactly the condition that fires it. Same defect as #731, which
+  // ran at ~88 requests/second in production. `mutate` itself is memoised.
+  const { mutate: awardXP } = useAwardResultsViewXPMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
     },
@@ -32,11 +37,15 @@ export function IPIPResultsPage() {
     },
   })
 
-  // Award +2 XP on first view
+  // Award +2 XP on first view. Mount-scoped rather than keyed, unlike the
+  // profile-view guard in #731: there is one result set per page.
+  const hasAwardedXP = useRef(false)
+
   useEffect(() => {
-    if (!results.isLoading && results.isComplete) {
-      awardXP.mutate()
-    }
+    if (results.isLoading || !results.isComplete) return
+    if (hasAwardedXP.current) return
+    hasAwardedXP.current = true
+    awardXP()
   }, [results.isLoading, results.isComplete, awardXP])
 
   if (results.isLoading) {

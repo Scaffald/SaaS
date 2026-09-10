@@ -1827,21 +1827,43 @@ app.openapi(awardResultsViewXPRoute, async (c) => {
   }
 
   try {
-    // Check if already awarded
-    const { data: existingXP } = await supabase
+    // Claim the award first, and let the unique constraint on
+    // (user_id, assessment_type, xp_type) decide who wins.
+    //
+    // This used to read the row, return early if it existed, then credit XP and
+    // insert last — a check-then-act window in which two requests can both pass
+    // the check, both credit +2, and only one insert survive the constraint,
+    // leaving inflated XP with a single award row to show for it. The client was
+    // firing this in a render loop (#740), which is the concurrency such a
+    // window needs.
+    //
+    // Honesty about the evidence: 20 simultaneous requests against the old code
+    // on a local stack did *not* inflate anything, so the window is argued from
+    // the ordering rather than demonstrated — the local edge runtime appears to
+    // serialise, which is exactly the condition under which a race cannot show
+    // up. Inserting first removes the window either way and costs nothing: the
+    // unique constraint becomes the lock, and a duplicate is rejected before any
+    // XP is credited.
+    const { error: claimError } = await supabase
       .schema("core")
       .from("user_assessment_xp")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("assessment_type", "ipip")
-      .eq("xp_type", "view")
-      .single();
+      .insert({
+        user_id: user.id,
+        assessment_type: "ipip",
+        xp_type: "view",
+        xp_amount: 2,
+      });
 
-    if (existingXP) {
-      return c.json({ success: true, alreadyAwarded: true }, 200);
+    if (claimError) {
+      // 23505 is unique_violation: somebody already holds this award, which is
+      // the normal outcome on a revisit and not an error.
+      if (claimError.code === "23505") {
+        return c.json({ success: true, alreadyAwarded: true }, 200);
+      }
+      throw claimError;
     }
 
-    // Award +2 XP
+    // Award +2 XP now that the claim is ours alone.
     const { data: userData } = await supabase
       .schema("core")
       .from("users")
@@ -1854,14 +1876,6 @@ app.openapi(awardResultsViewXPRoute, async (c) => {
 
     await supabase.schema("core").from("users").update({ frequency_xp: newXP })
       .eq("id", user.id);
-
-    // Track XP award
-    await supabase.schema("core").from("user_assessment_xp").insert({
-      user_id: user.id,
-      assessment_type: "ipip",
-      xp_type: "view",
-      xp_amount: 2,
-    });
 
     return c.json({ success: true, newXP }, 200);
   } catch (error) {
