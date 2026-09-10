@@ -200,90 +200,22 @@ app.openapi(getStatusRoute, async (c) => {
 });
 
 /**
- * POST /v1/profiles/completion/nudges/dismiss
- * Dismiss a profile completion nudge
+ * POST /v1/profiles/completion/nudges/dismiss used to live here, and is gone.
+ *
+ * It upserted into core.profile_completion_nudges, a table that has never
+ * existed (#658). Two things made retiring it the right call rather than
+ * creating the table:
+ *
+ *   - Nothing called it. useDismissNudgeMutation wrapped it and no component
+ *     imported that hook; the only other "nudge" in the app is prose about
+ *     application next-steps, a different concept.
+ *   - It was not a working upsert even in principle. The call named no
+ *     onConflict target, so with a UUID primary key every "dismiss" would have
+ *     inserted a fresh row rather than recording one.
+ *
+ * Per the method on #660: an endpoint no screen can reach does not get a
+ * table built for it. The SDK method and hook are retired alongside.
  */
-const dismissNudgeRoute = createRoute({
-  method: "post",
-  path: "/nudges/dismiss",
-  tags: ["Profile Completion"],
-  summary: "Dismiss nudge",
-  request: {
-    body: {
-      content: {
-        "application/json": {
-          schema: z.object({
-            nudgeId: z.string(),
-            reason: z.string().optional(),
-          }),
-        },
-      },
-    },
-  },
-  responses: {
-    200: {
-      description: "Nudge dismissed",
-      content: {
-        "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            nudgeHistory: z.object({
-              dismissed: z.record(z.object({
-                dismissedAt: z.string(),
-                reason: z.string().optional(),
-              })),
-              lastDismissedAt: z.string(),
-            }),
-          }),
-        },
-      },
-    },
-  },
-  security: [{ bearerAuth: [] }],
-});
-
-app.openapi(dismissNudgeRoute, async (c) => {
-  const supabase = c.get("supabase");
-  const user = c.get("user");
-  const { nudgeId, reason } = c.req.valid("json");
-
-  if (!user) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
-  const dismissedAt = new Date().toISOString();
-
-  // Store dismissal in user metadata or separate table
-  const { error } = await supabase
-    .schema("core")
-    .from("profile_completion_nudges")
-    .upsert({
-      user_id: user.id,
-      nudge_id: nudgeId,
-      dismissed_at: dismissedAt,
-      reason,
-    });
-
-  if (error) {
-    return c.json(
-      { error: "Failed to dismiss nudge", message: error.message },
-      500,
-    );
-  }
-
-  return c.json({
-    success: true,
-    nudgeHistory: {
-      dismissed: {
-        [nudgeId]: {
-          dismissedAt,
-          reason,
-        },
-      },
-      lastDismissedAt: dismissedAt,
-    },
-  });
-});
 
 /**
  * GET /v1/profiles/completion/benefits

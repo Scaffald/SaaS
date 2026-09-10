@@ -122,9 +122,13 @@ export function tableRefs(file: string, source: string): TableRef[] {
  * here fails the test rather than rotting.
  */
 const BASELINE_BROKEN: Record<string, number> = {
-  "core.soft_skills_ratings": 8,
-  "core.profile_import_data": 5,
-  "core.profile_completion_nudges": 1,
+  // Empty, and it should stay that way. The last three entries were #658:
+  // core.soft_skills_ratings and core.profile_import_data are now created by
+  // migration 354 — three live features were written against them and they
+  // simply never existed — and core.profile_completion_nudges's one route was
+  // retired, because no component reached it and its upsert named no conflict
+  // target. Anything appearing here from now on is a regression, not a
+  // baseline.
 
   // core.inquiries used to sit here too. The two routes reading it were a
   // generic person-to-person messaging feature that was never built — not a
