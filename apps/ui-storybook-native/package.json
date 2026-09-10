@@ -16,7 +16,7 @@
     "@expo/metro-runtime": "catalog:",
     "@react-native-async-storage/async-storage": "catalog:",
     "@scaffald/ui": "workspace:*",
-    "@storybook/addon-ondevice-actions": "^10.5.4",
+    "@storybook/addon-ondevice-actions": "^10.6.0",
     "@storybook/addon-ondevice-backgrounds": "^8.3.4",
     "@storybook/addon-ondevice-controls": "^8.3.4",
     "@storybook/react-native": "^8.3.4",
