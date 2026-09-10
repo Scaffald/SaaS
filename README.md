@@ -1,4 +1,4 @@
-[![Test Suite](https://github.com/Unicorn/SCF-Scaffald/actions/workflows/test.yml/badge.svg)](https://github.com/Unicorn/SCF-Scaffald/actions/workflows/test.yml)
+[![Test Suite](https://github.com/Scaffald/SaaS/actions/workflows/test.yml/badge.svg)](https://github.com/Scaffald/SaaS/actions/workflows/test.yml)
 
 ## Getting Started
 
