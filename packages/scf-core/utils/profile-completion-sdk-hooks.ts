@@ -3,9 +3,8 @@
  * React Query hooks for profile completion status, milestones, and nudges
  */
 
-import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
-import type { DismissNudgeParams, DismissNudgeResponse } from '@scaffald/sdk'
 
 // ============================================================================
 // Query Hooks
@@ -47,19 +46,6 @@ export function usePersonalizedBenefits() {
 // Mutation Hooks
 // ============================================================================
 
-/**
- * Dismiss a profile completion nudge
- */
-export function useDismissNudgeMutation(
-  options?: UseMutationOptions<DismissNudgeResponse, Error, DismissNudgeParams>
-) {
-  const client = useScaffaldJobsClient()
-
-  return useMutation({
-    mutationFn: async (params: DismissNudgeParams) => {
-      if (!client) throw new Error('Scaffald client not available')
-      return client.profileCompletion.dismissNudge(params)
-    },
-    ...options,
-  })
-}
+// useDismissNudgeMutation used to be here. No component ever imported it, and
+// the endpoint it called wrote to a table that does not exist. Retired with the
+// route (#658).

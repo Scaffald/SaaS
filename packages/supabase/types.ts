@@ -8948,6 +8948,45 @@ export type Database = {
           },
         ]
       }
+      profile_import_data: {
+        Row: {
+          created_at: string
+          id: string
+          payload: Json
+          source: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          payload: Json
+          source: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          payload?: Json
+          source?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_import_data_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_import_data_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_addresses: {
         Row: {
           address_id: string
@@ -10062,6 +10101,58 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      soft_skills_ratings: {
+        Row: {
+          created_at: string
+          id: string
+          rating: number
+          self_assessed_at: string
+          skill_id: string
+          user_id: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          rating: number
+          self_assessed_at?: string
+          skill_id: string
+          user_id: string
+          version: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          rating?: number
+          self_assessed_at?: string
+          skill_id?: string
+          user_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "soft_skills_ratings_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "soft_skills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "soft_skills_ratings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "soft_skills_ratings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stripe_settings: {
         Row: {
