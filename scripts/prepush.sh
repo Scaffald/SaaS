@@ -120,12 +120,22 @@ echo "🔍 Checking pnpm overrides against the catalog…"
 node scripts/check-override-catalog-alignment.mjs
 ALIGN_STATUS=$?
 
+# A function created without an explicit search_path resolves unqualified names
+# against the caller's search_path. Migration 308 swept the ones that existed;
+# ten created by 314-325 were missed and drifted unnoticed for eleven migrations
+# (#468). Also catches two migrations sharing a number, which concurrent
+# branches make likely — it happened between #723 and this change.
+echo "🔍 Checking migration numbers and function search_path…"
+node scripts/check-migrations.mjs
+MIGRATIONS_STATUS=$?
+
 FAILED=""
 [ "$BUILD_STATUS" -ne 0 ] && FAILED="$FAILED build"
 [ "$TEST_STATUS" -ne 0 ]  && FAILED="$FAILED test"
 [ "$DENO_STATUS" -ne 0 ]  && FAILED="$FAILED deno-parse"
 [ "$AUTOLINK_STATUS" -ne 0 ] && FAILED="$FAILED expo-autolinking"
 [ "$ALIGN_STATUS" -ne 0 ] && FAILED="$FAILED override-catalog"
+[ "$MIGRATIONS_STATUS" -ne 0 ] && FAILED="$FAILED migrations"
 
 if [ -n "$FAILED" ]; then
   echo
