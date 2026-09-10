@@ -124,9 +124,14 @@ export function tableRefs(file: string, source: string): TableRef[] {
 const BASELINE_BROKEN: Record<string, number> = {
   "core.soft_skills_ratings": 8,
   "core.profile_import_data": 5,
-  "core.inquiries": 2,
   "core.profile_completion_nudges": 1,
 
+  // core.inquiries used to sit here too. The two routes reading it were a
+  // generic person-to-person messaging feature that was never built — not a
+  // rename of core.application_inquiries, whose columns are entirely
+  // different. Nothing called them, so they were deleted rather than given a
+  // table (#476).
+  //
   // core.content_reports, core.user_blocks and core.user_feedback used to sit
   // here. They were never broken references — the tables were real and the
   // routes right; types.ts, which this test reads, had not been regenerated
