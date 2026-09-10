@@ -43,6 +43,20 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          # packages/ui and packages/sdk are submodules, and pnpm-workspace.yaml
+          # lists them as workspace packages. Without this, packages/ui is an
+          # empty directory, so apps/ui-storybook-native's
+          # `"@scaffald/ui": "workspace:*"` resolves to nothing and pnpm exits
+          # before deduping anything:
+          #
+          #   ERR_PNPM_WORKSPACE_PKG_NOT_FOUND  In apps/ui-storybook-native:
+          #   "@scaffald/ui@workspace:*" is in the dependencies but no package
+          #   named "@scaffald/ui" is present in the workspace
+          #
+          # Every job in ci.yml that runs pnpm already checks out submodules for
+          # the same reason; this one was written without it and so has never
+          # deduped a single lockfile.
+          submodules: true
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
