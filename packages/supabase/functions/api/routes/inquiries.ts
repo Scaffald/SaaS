@@ -4,8 +4,19 @@
  */
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { createClient } from "@supabase/supabase-js";
 import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import { blockedUserIds, withoutBlocked } from "../lib/blocks.ts";
+
+/**
+ * Service-role client, for the existence lookup in checkApplicationAccess only.
+ * Same escape hatch, and the same reason, as employer-applications.ts (#608).
+ */
+function getServiceClient() {
+  const url = Deno.env.get("SUPABASE_URL") ?? "";
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  return createClient(url, key);
+}
 
 const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
@@ -16,174 +27,24 @@ const _errorResponseSchema = z.object({
 });
 
 /**
- * GET /v1/inquiries
- * List inquiries
+ * GET /v1/inquiries and POST /v1/inquiries used to live here, and are gone.
+ *
+ * Both read core.inquiries, which does not exist and never has (#476). They
+ * were not a rename of the real table: the list filtered on `sender_id` /
+ * `recipient_id` and the create inserted `subject`, `message`, `inquiry_type`,
+ * none of which exist on core.application_inquiries. They described a generic
+ * person-to-person messaging feature that was never built.
+ *
+ * The real feature is application-scoped and is served below by
+ * GET /by-application/{applicationId} against core.application_inquiries —
+ * which every inquiry child table has a foreign key to.
+ *
+ * Deleted rather than implemented, per the method on #660: nothing calls them.
+ * `Inquiries.list()` and `Inquiries.create()` in the SDK were the only callers
+ * and are retired alongside; no hook or screen used either. Building
+ * core.inquiries to satisfy them would have shipped a table for an endpoint
+ * nothing can reach.
  */
-app.openapi(
-  createRoute({
-    method: "get",
-    path: "/",
-    tags: ["Inquiries"],
-    summary: "List inquiries",
-    request: {
-      query: z.object({
-        direction: z.enum(["sent", "received"]).optional(),
-        status: z.enum(["pending", "responded", "archived"]).optional(),
-        inquiry_type: z.enum(["general", "job_inquiry", "support", "feedback"])
-          .optional(),
-        page: z.coerce.number().optional(),
-        limit: z.coerce.number().optional(),
-      }),
-    },
-    responses: {
-      200: {
-        description: "Inquiries list",
-        content: {
-          "application/json": {
-            schema: z.object({
-              data: z.array(z.any()),
-              pagination: z.object({
-                total: z.number(),
-                page: z.number(),
-                limit: z.number(),
-                total_pages: z.number(),
-              }),
-            }),
-          },
-        },
-      },
-    },
-    security: [{ bearerAuth: [] }],
-  }),
-  async (c) => {
-    const supabase = c.get("supabase");
-    const user = c.get("user");
-    const { direction, status, page = 1, limit = 20 } = c.req.valid("query");
-
-    if (!user) {
-      return c.json({ error: "Unauthorized" }, 401);
-    }
-
-    let query = supabase.schema("core").from("inquiries").select("*", {
-      count: "exact",
-    });
-
-    if (direction === "sent") {
-      query = query.eq("sender_id", user.id);
-    } else if (direction === "received") {
-      query = query.eq("recipient_id", user.id);
-    } else {
-      query = query.or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`);
-    }
-
-    if (status) {
-      query = query.eq("status", status);
-    }
-
-    const offset = (page - 1) * limit;
-    query = query.range(offset, offset + limit - 1).order("created_at", {
-      ascending: false,
-    });
-
-    const { data, error, count } = await query;
-
-    if (error) {
-      return c.json({
-        error: "Failed to fetch inquiries",
-        message: error.message,
-      }, 500);
-    }
-
-    return c.json({
-      data: data || [],
-      pagination: {
-        total: count || 0,
-        page,
-        limit,
-        total_pages: Math.ceil((count || 0) / limit),
-      },
-    });
-  },
-);
-
-/**
- * POST /v1/inquiries
- * Create inquiry
- */
-app.openapi(
-  createRoute({
-    method: "post",
-    path: "/",
-    tags: ["Inquiries"],
-    summary: "Create inquiry",
-    request: {
-      body: {
-        content: {
-          "application/json": {
-            schema: z.object({
-              recipient_id: z.string().uuid(),
-              subject: z.string().optional(),
-              message: z.string().optional(),
-              inquiry_type: z.enum([
-                "general",
-                "job_inquiry",
-                "support",
-                "feedback",
-              ]).optional(),
-              job_id: z.string().uuid().optional(),
-              template_id: z.string().uuid().optional(),
-            }),
-          },
-        },
-      },
-    },
-    responses: {
-      201: {
-        description: "Inquiry created",
-        content: {
-          "application/json": {
-            schema: z.object({ data: z.any() }),
-          },
-        },
-      },
-    },
-    security: [{ bearerAuth: [] }],
-  }),
-  async (c) => {
-    const supabase = c.get("supabase");
-    const user = c.get("user");
-    const body = c.req.valid("json");
-
-    if (!user) {
-      return c.json({ error: "Unauthorized" }, 401);
-    }
-
-    const { data, error } = await supabase
-      .schema("core")
-      .from("inquiries")
-      .insert({
-        sender_id: user.id,
-        recipient_id: body.recipient_id,
-        subject: body.subject || "Inquiry",
-        message: body.message || "",
-        inquiry_type: body.inquiry_type || "general",
-        job_id: body.job_id,
-        template_id: body.template_id,
-        status: "pending",
-      })
-      .select()
-      .single();
-
-    if (error) {
-      return c.json({
-        error: "Failed to create inquiry",
-        message: error.message,
-      }, 500);
-    }
-
-    return c.json({ data }, 201);
-  },
-);
 
 /**
  * authMiddleware stores its values on an untyped `Context`, so `c.get(...)`
@@ -288,7 +149,26 @@ export async function checkApplicationAccess(
 ): Promise<
   { ok: true } | { ok: false; status: 403 | 404 | 500; error: string }
 > {
-  const { data: application, error } = await supabase
+  // Service role, not the request client.
+  //
+  // This is a LOOKUP, not an authorisation decision — the decision is made
+  // below, unchanged, from the row's own user_id, the organisation owner, and
+  // an org-scoped role assignment. Reading it under RLS made this function
+  // answer "Application not found" to the very employers it then goes on to
+  // authorise: RLS on core.applications does not expose an org's applications
+  // to its staff, which is why employer-applications.ts reads the same table
+  // with the service role (#608, #649).
+  //
+  // Measured, not assumed. For an employer whose own list returns application
+  // d95a852c:
+  //
+  //   visible to the REQUEST client (RLS): NO   <- the 404 came from here
+  //   visible to the SERVICE client      : yes
+  //
+  // So GET /by-application/{id} 404'd on every application an employer could
+  // see, which is the whole inquiry thread screen — including the per-message
+  // report control #703 put on it.
+  const { data: application, error } = await getServiceClient()
     .schema("core")
     .from("applications")
     .select(
@@ -400,7 +280,23 @@ app.openapi(
       return c.json({ error: access.error }, access.status);
     }
 
-    const { data: inquiry, error: inquiryError } = await supabase
+    // Service role again, for the same reason and only after the access check
+    // above has authorised this caller.
+    //
+    // RLS hides core.application_inquiries from an organisation's own staff
+    // exactly as it hides core.applications, so reading it as the request
+    // client turned the 404 into a 200 with an empty thread — a different
+    // broken, not a fixed one. Measured on the same employer:
+    //
+    //   core.applications           RLS: NO   service: yes
+    //   core.application_inquiries  RLS: NO   service: yes
+    //
+    // The authorisation decision is still the one checkApplicationAccess made;
+    // this only stops the read from silently returning nothing to someone who
+    // is allowed to see it.
+    const db = getServiceClient();
+
+    const { data: inquiry, error: inquiryError } = await db
       .schema("core")
       .from("application_inquiries")
       .select("*")
@@ -425,7 +321,10 @@ app.openapi(
     // application alongside and map it to the same camelCase shape the legacy
     // tRPC procedure returned. Omitting these would silently degrade that page
     // to "Candidate" / "Job" placeholders.
-    const applicationPromise = supabase
+    // Same authorised-then-read pattern: RLS hides this row from the very
+    // employer the access check just approved, and a null here silently
+    // degrades the screen to "Candidate" / "Job" placeholders.
+    const applicationPromise = db
       .schema("core")
       .from("applications")
       // NB: the legacy tRPC procedure selected `applied_at` and
@@ -446,19 +345,19 @@ app.openapi(
       .maybeSingle();
 
     const [sections, comments, capabilityResponses] = await Promise.all([
-      supabase
+      db
         .schema("core")
         .from("inquiry_sections")
         .select("*")
         .eq("inquiry_id", inquiry.id)
         .order("section_name"),
-      supabase
+      db
         .schema("core")
         .from("inquiry_comments")
         .select("*")
         .eq("inquiry_id", inquiry.id)
         .order("created_at", { ascending: true }),
-      supabase
+      db
         .schema("core")
         .from("inquiry_capability_responses")
         .select("*")
