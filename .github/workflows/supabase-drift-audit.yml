@@ -89,7 +89,22 @@ jobs:
             # migration while later ones are applied puts it permanently before
             # the last applied version.
             if echo "$output" | grep -q "Found local migration files to be inserted before the last migration"; then
-              echo "::error::${{ matrix.env.name }}: out-of-order drift — a migration listed above was skipped while later ones were applied. On dev this is currently 337_notification_cron_vault.sql, which cannot be applied until the two Vault secrets exist (see issue #564). Resolve that rather than re-running."
+              # Name the migrations THIS environment is actually missing. The
+              # message used to hardcode dev's cause — "On dev this is currently
+              # 337_notification_cron_vault.sql" — and printed it for prod and
+              # preview too, sending whoever read it to the wrong migration and
+              # the wrong issue.
+              pending=$(echo "$output" \
+                | grep -oE 'supabase/migrations/[0-9]+_[A-Za-z0-9_]+\.sql' \
+                | sed 's|supabase/migrations/||' \
+                | paste -sd ' ' -)
+              hint=""
+              case "$pending" in
+                *337_notification_cron_vault*)
+                  hint=" 337_notification_cron_vault.sql cannot be applied until the two Vault secrets exist — see #564."
+                  ;;
+              esac
+              echo "::error::${{ matrix.env.name }}: out-of-order drift — these migrations were skipped while later ones were applied, so they now sort before the last applied version and will never be picked up: ${pending:-<none parsed; see the log above>}.${hint} Applying them needs a deliberate --include-all push, not a re-run."
             else
               echo "::error::${{ matrix.env.name }}: 'supabase db push --dry-run' exited with status $exit_code. Audit result is untrusted — investigate before assuming sync."
             fi
