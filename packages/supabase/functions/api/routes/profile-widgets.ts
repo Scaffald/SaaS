@@ -5,11 +5,76 @@
  */
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { createClient } from "@supabase/supabase-js";
 import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import { loadSkillLookups, toSkillWidgetEntry } from "../lib/skill-lookups.ts";
+import {
+  canViewSection,
+  loadProfileVisibility,
+  type ProfileSection,
+  resolveAudience,
+} from "../lib/profile-visibility.ts";
 
 const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
+
+function getServiceClient() {
+  return createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+  );
+}
+
+/**
+ * Resolve whose profile a section request is for, and whether it may be served.
+ *
+ * These endpoints each did `if (!user) return 401` and then
+ * `userId || user.id`. The auth check existed to make that fallback possible —
+ * without a caller there is no "me" — but it also locked out the anonymous
+ * visitor these sections exist for. GET /v1/profiles/slug/{slug} already serves
+ * anonymously and hands the page a `visibility` object saying which sections to
+ * render; the page then asked for them here and got 401, so every public
+ * profile showed "No profile data available" for a profile that had data
+ * (#732).
+ *
+ * An explicit userId needs no fallback, so it is served — subject to the
+ * owner's core.preferences.profile_visibility, which is the same rule
+ * /slug/{slug} already applies.
+ */
+async function resolveSectionAccess(
+  requestedUserId: string | undefined,
+  viewerId: string | undefined,
+  section: ProfileSection | null,
+): Promise<
+  | { ok: true; targetUserId: string; useServiceClient: boolean }
+  | { ok: false; status: 401 | 404 }
+> {
+  const audience = resolveAudience({ requestedUserId, viewerId });
+  if (audience.kind === "unauthenticated") return { ok: false, status: 401 };
+  if (audience.kind === "self") {
+    // Reading your own profile stays on your own client, so RLS still applies.
+    return { ok: true, targetUserId: audience.userId, useServiceClient: false };
+  }
+  if (section === null) {
+    return { ok: true, targetUserId: audience.userId, useServiceClient: true };
+  }
+
+  const visibility = await loadProfileVisibility(
+    getServiceClient(),
+    audience.userId,
+  );
+  if (!canViewSection(audience, section, visibility)) {
+    // 404 rather than 403: a hidden section should be indistinguishable from
+    // one that holds nothing, or the response confirms what the owner hid.
+    return { ok: false, status: 404 };
+  }
+  // core.user_experience, user_education and user_certifications carry
+  // owner-only SELECT policies, so a viewer's client reads nothing of somebody
+  // else's profile no matter what the owner published. The visibility check
+  // above is the authorization; the service client is only the mechanism that
+  // carries it out — the same split profiles.ts already uses for /slug/{slug}.
+  return { ok: true, targetUserId: audience.userId, useServiceClient: true };
+}
 
 // ============================================================================
 // Schemas
@@ -69,13 +134,20 @@ app.openapi(generalInfoRoute, async (c) => {
   const user = c.get("user");
   const { userId } = c.req.valid("query");
 
-  if (!user) {
-    return c.json({ error: "Unauthorized" }, 401);
+  const access = await resolveSectionAccess(userId, user?.id, null);
+  if (!access.ok) {
+    return c.json(
+      access.status === 401
+        ? { error: "Unauthorized" }
+        : { error: "not_found", message: "Profile section not available" },
+      access.status,
+    );
   }
+  const targetUserId = access.targetUserId;
+  const db = access.useServiceClient ? getServiceClient() : supabase;
 
-  const targetUserId = userId || user.id;
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .schema("core")
     .from("users")
     .select(
@@ -153,13 +225,20 @@ app.openapi(experienceRoute, async (c) => {
   const user = c.get("user");
   const { userId } = c.req.valid("query");
 
-  if (!user) {
-    return c.json({ error: "Unauthorized" }, 401);
+  const access = await resolveSectionAccess(userId, user?.id, "work_experience");
+  if (!access.ok) {
+    return c.json(
+      access.status === 401
+        ? { error: "Unauthorized" }
+        : { error: "not_found", message: "Profile section not available" },
+      access.status,
+    );
   }
+  const targetUserId = access.targetUserId;
+  const db = access.useServiceClient ? getServiceClient() : supabase;
 
-  const targetUserId = userId || user.id;
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .schema("core")
     .from("user_experience")
     .select("*")
@@ -221,13 +300,20 @@ app.openapi(educationRoute, async (c) => {
   const user = c.get("user");
   const { userId } = c.req.valid("query");
 
-  if (!user) {
-    return c.json({ error: "Unauthorized" }, 401);
+  const access = await resolveSectionAccess(userId, user?.id, "education");
+  if (!access.ok) {
+    return c.json(
+      access.status === 401
+        ? { error: "Unauthorized" }
+        : { error: "not_found", message: "Profile section not available" },
+      access.status,
+    );
   }
+  const targetUserId = access.targetUserId;
+  const db = access.useServiceClient ? getServiceClient() : supabase;
 
-  const targetUserId = userId || user.id;
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .schema("core")
     .from("user_education")
     .select("*")
@@ -286,13 +372,20 @@ app.openapi(skillsRoute, async (c) => {
   const user = c.get("user");
   const { userId } = c.req.valid("query");
 
-  if (!user) {
-    return c.json({ error: "Unauthorized" }, 401);
+  const access = await resolveSectionAccess(userId, user?.id, "skills");
+  if (!access.ok) {
+    return c.json(
+      access.status === 401
+        ? { error: "Unauthorized" }
+        : { error: "not_found", message: "Profile section not available" },
+      access.status,
+    );
   }
+  const targetUserId = access.targetUserId;
+  const db = access.useServiceClient ? getServiceClient() : supabase;
 
-  const targetUserId = userId || user.id;
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .schema("core")
     .from("user_skills")
     .select("*")
@@ -361,13 +454,20 @@ app.openapi(certificationsRoute, async (c) => {
   const user = c.get("user");
   const { userId } = c.req.valid("query");
 
-  if (!user) {
-    return c.json({ error: "Unauthorized" }, 401);
+  const access = await resolveSectionAccess(userId, user?.id, "certifications");
+  if (!access.ok) {
+    return c.json(
+      access.status === 401
+        ? { error: "Unauthorized" }
+        : { error: "not_found", message: "Profile section not available" },
+      access.status,
+    );
   }
+  const targetUserId = access.targetUserId;
+  const db = access.useServiceClient ? getServiceClient() : supabase;
 
-  const targetUserId = userId || user.id;
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .schema("core")
     .from("user_certifications")
     .select("*")
