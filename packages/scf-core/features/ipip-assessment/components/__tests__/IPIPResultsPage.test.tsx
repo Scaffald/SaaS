@@ -33,14 +33,16 @@ vi.mock('../ShareResults', () => ({
 
 const invalidateAssessment = vi.fn()
 const invalidateArchetype = vi.fn()
-const awardMutation = {
-  mutate: vi.fn(),
-}
+const awardMutate = vi.fn()
 
 // Component now uses personality-assessment-sdk-hooks +
 // @tanstack/react-query useQueryClient.
+//
+// Like the real useMutation, this returns a NEW object on every call with a
+// stable `mutate`. A single shared object would hide #740: the effect that
+// depended on the object identity only loops when the identity changes.
 vi.mock('@scf/core/utils/personality-assessment-sdk-hooks', () => ({
-  useAwardResultsViewXPMutation: () => awardMutation,
+  useAwardResultsViewXPMutation: () => ({ mutate: awardMutate }),
 }))
 
 vi.mock('@tanstack/react-query', async (importOriginal) => {
@@ -81,7 +83,7 @@ describe('IPIPResultsPage', () => {
     mockPush.mockClear()
     invalidateAssessment.mockClear()
     invalidateArchetype.mockClear()
-    awardMutation.mutate.mockClear()
+    awardMutate.mockClear()
   })
 
   it('renders a loading state while queries run', () => {
@@ -120,10 +122,34 @@ describe('IPIPResultsPage', () => {
     expect(screen.queryByTestId('narrative-view')).not.toBeInTheDocument()
   })
 
-  // TODO: "Element type is invalid" — IPIPResultsPage now consumes a
-  // sub-component (likely from @scaffald/ui) that isn't exported by the
-  // beyond-ui mock. Locate the missing export and extend the mock.
-  it.skip('renders the main layout, warnings, and share section when data is available', () => {
+  it('does not award XP while results are incomplete', () => {
+    render(<IPIPResultsPage />, { wrapper: TestQueryWrapper })
+
+    expect(awardMutate).not.toHaveBeenCalled()
+  })
+
+  // #740: the award effect depended on the mutation object, which useMutation
+  // recreates every render, so mutate() re-triggered itself indefinitely.
+  it('awards XP exactly once, however many times the page re-renders', () => {
+    mockUseIPIPResults.mockReturnValue({
+      ...baseResults,
+      scores: {} as IPIPScores,
+      normalizedScores: null,
+      narratives: null,
+      isComplete: true,
+      completedDomains: 5,
+    })
+
+    const view = render(<IPIPResultsPage />, { wrapper: TestQueryWrapper })
+    view.rerender(<IPIPResultsPage />)
+    view.rerender(<IPIPResultsPage />)
+    // Switching tabs re-renders through state, the way a user would.
+    fireEvent.click(screen.getByText('Chart View'))
+
+    expect(awardMutate).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders the main layout, warnings, and share section when data is available', () => {
     mockUseIPIPResults.mockReturnValue({
       ...baseResults,
       scores: {} as IPIPScores,
@@ -144,8 +170,7 @@ describe('IPIPResultsPage', () => {
     expect(screen.getByText(/Scoring calculation failed/i)).toBeVisible()
   })
 
-  // TODO: same "Element type is invalid" root cause as the layout test above.
-  it.skip('awards XP once results are complete', () => {
+  it('awards XP once results are complete', () => {
     mockUseIPIPResults.mockReturnValue({
       ...baseResults,
       scores: {} as IPIPScores,
@@ -157,7 +182,7 @@ describe('IPIPResultsPage', () => {
 
     render(<IPIPResultsPage />, { wrapper: TestQueryWrapper })
 
-    expect(awardMutation.mutate).toHaveBeenCalled()
+    expect(awardMutate).toHaveBeenCalled()
     expect(screen.getByTestId('share-results')).toHaveTextContent('share-enabled')
   })
 })

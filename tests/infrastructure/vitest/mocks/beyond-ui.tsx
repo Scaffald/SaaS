@@ -325,7 +325,11 @@ export const AssessmentProgressBar = ({
   [key: string]: unknown
 }) => createElement('div', { role: 'progressbar', 'aria-valuenow': value, 'aria-valuemax': max, ...rest })
 export const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? require('react').useLayoutEffect : require('react').useEffect
-export const Tabs = createEl('div')
+export const Tabs = Object.assign(createEl('div'), {
+  Item: createEl('div'),
+  Trigger: createEl('button'),
+  Content: createEl('div'),
+})
 export const Form = createEl('form')
 export const Progress = ({
   value,

@@ -158,22 +158,53 @@ async function setUserSlug(userId: string, slug: string | null) {
 async function createTestOrganizationProfile(overrides: {
   slug?: string;
   name?: string;
-  is_public?: boolean;
+  // core.organizations has no is_public; visibility is CHECK (public|private)
+  // and defaults to public.
+  visibility?: "public" | "private";
+  industrySlug?: string;
+  // jsonb, like the route's schema says — not the free-text `location` the old
+  // contract promised.
+  address?: Record<string, string>;
 } = {}) {
   const admin = createAdminClient();
 
   const timestamp = Date.now();
   const slug = overrides.slug || `testorg${timestamp}`;
 
-  const { data: org } = await admin
+  // Industry is a FK to the seeded core.industries taxonomy, joined by the
+  // route through industry_id — so a test that wants one names a real slug.
+  let industry_id: string | null = null;
+  if (overrides.industrySlug) {
+    const { data: industry, error: industryError } = await admin
+      .schema("core")
+      .from("industries")
+      .select("id")
+      .eq("slug", overrides.industrySlug)
+      .single();
+    if (industryError) {
+      throw new Error(
+        `Failed to look up industry '${overrides.industrySlug}': ${industryError.message}`,
+      );
+    }
+    industry_id = industry.id;
+  }
+
+  const { data: org, error } = await admin
     .schema("core")
     .from("organizations")
     .insert({
       slug,
       name: overrides.name || "Test Organization",
+      visibility: overrides.visibility ?? "public",
+      industry_id,
+      address: overrides.address ?? null,
     })
     .select()
     .single();
+
+  if (error) {
+    throw new Error(`Failed to create test organization: ${error.message}`);
+  }
 
   return org;
 }
@@ -460,21 +491,38 @@ Deno.test("GET /v1/profiles/slug/history - is not shadowed by the slug route", a
 Deno.test("GET /v1/profiles/organizations/:slug - returns organization profile", async () => {
   markTestStart();
 
-  const org = await createTestOrganizationProfile({ slug: "acme-corp" });
+  // Unique slug: a run that fails before cleanup must not poison the next one
+  // with a duplicate-key error on organizations_slug_key.
+  const slug = `acme-corp-${Date.now()}`;
+  const org = await createTestOrganizationProfile({
+    slug,
+    industrySlug: "construction",
+    address: { city: "Detroit", state: "MI" },
+  });
 
   const client = createTestClient();
-  const response = await client.get("/v1/profiles/organizations/acme-corp");
+  const response = await client.get(`/v1/profiles/organizations/${slug}`);
 
   assertSuccessResponse(response);
   assertEquals(response.status, 200);
-  assertEquals(response.body.data.slug, "acme-corp");
+  assertEquals(response.body.data.id, org.id);
+  assertEquals(response.body.data.slug, slug);
   assertEquals(response.body.data.name, "Test Organization");
-  assertExists(response.body.data.description);
-  assertExists(response.body.data.industry);
-  assertExists(response.body.data.size);
-  assertExists(response.body.data.location);
-  assertEquals(response.body.data.founded_year, 2020);
+  // address is jsonb, returned as the object it was stored as.
+  assertEquals(response.body.data.address, { city: "Detroit", state: "MI" });
+  // industry resolves through industry_id to the taxonomy row, not a string.
+  assertEquals(response.body.data.industry.slug, "construction");
+  assertEquals(response.body.data.industry.name, "Construction");
   assertEquals(typeof response.body.data.job_count, "number");
+  // The columns the old contract promised do not exist on the table, and the
+  // response must not pretend otherwise (#482).
+  for (const phantom of ["size", "location", "founded_year", "is_public"]) {
+    assertEquals(
+      phantom in response.body.data,
+      false,
+      `response must not carry nonexistent column '${phantom}'`,
+    );
+  }
 
   await cleanupCurrentTestData();
 });
@@ -485,8 +533,10 @@ Deno.test("GET /v1/profiles/organizations/:slug - includes job count", async () 
   const admin = createAdminClient();
   const org = await createTestOrganizationProfile();
 
-  // Add published jobs
-  await admin
+  // Add open jobs. core.jobs.status is CHECK (draft|open|paused|closed);
+  // "published" is rejected by the constraint, which this insert used to
+  // swallow, so the count it expected could never have been reached.
+  const { error: jobsError } = await admin
     .schema("core")
     .from("jobs")
     .insert([
@@ -494,13 +544,13 @@ Deno.test("GET /v1/profiles/organizations/:slug - includes job count", async () 
         organization_id: org.id,
         title: "Job 1",
         description: "Test",
-        status: "published",
+        status: "open",
       },
       {
         organization_id: org.id,
         title: "Job 2",
         description: "Test",
-        status: "published",
+        status: "open",
       },
       {
         organization_id: org.id,
@@ -509,12 +559,15 @@ Deno.test("GET /v1/profiles/organizations/:slug - includes job count", async () 
         status: "draft", // Should not be counted
       },
     ]);
+  if (jobsError) {
+    throw new Error(`Failed to seed jobs: ${jobsError.message}`);
+  }
 
   const client = createTestClient();
   const response = await client.get(`/v1/profiles/organizations/${org.slug}`);
 
   assertSuccessResponse(response);
-  assertEquals(response.body.data.job_count, 2); // Only published jobs
+  assertEquals(response.body.data.job_count, 2); // Only open jobs
 
   await cleanupCurrentTestData();
 });
@@ -551,13 +604,14 @@ Deno.test("GET /v1/profiles/organizations/:slug - returns 404 if not found", asy
 Deno.test("GET /v1/profiles/organizations/:slug - returns 404 if not public", async () => {
   markTestStart();
 
+  const slug = `private-org-${Date.now()}`;
   const org = await createTestOrganizationProfile({
-    slug: "private-org",
-    is_public: false,
+    slug,
+    visibility: "private",
   });
 
   const client = createTestClient();
-  const response = await client.get("/v1/profiles/organizations/private-org");
+  const response = await client.get(`/v1/profiles/organizations/${slug}`);
 
   assertStatus(response, 404);
   assertErrorResponse(response);
