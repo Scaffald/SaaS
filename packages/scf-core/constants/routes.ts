@@ -449,7 +449,7 @@ const ROUTES_CONFIG = {
     protected: true,
     exact: false,
     DETAIL: {
-      path: '/jobs/:id',
+      path: '/jobs/view/:id',
       titleKey: 'routes.dashboard.discover.jobs.detail',
       protected: true,
       exact: true,
@@ -760,7 +760,7 @@ const ROUTES_CONFIG = {
         protected: true,
         exact: false,
         DETAIL: {
-          path: '/jobs/:id',
+          path: '/jobs/view/:id',
           titleKey: 'routes.dashboard.discover.jobs.detail',
           protected: true,
           exact: true,
