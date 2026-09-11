@@ -1110,13 +1110,13 @@ app.openapi(getProfileBySlugRoute, async (c) => {
     );
   }
 
-  // Get location from core.profile (PII table)
-  const { data: privateProfile } = await supabase
-    .schema("core")
-    .from("profile")
-    .select("location")
-    .eq("user_id", user.id)
-    .single();
+  // Location lives in core.profile, whose SELECT policies are all granted to
+  // `authenticated` (profile_public_read is `true` — every signed-in viewer
+  // sees it). An anonymous viewer's client reads nothing there, so the public
+  // page showed no location to exactly the audience it exists for (#732).
+  // The user row was already resolved above, so reading this through the
+  // service-role client widens nothing about who can find the profile.
+  let privateProfile: { location: string | null } | null = null;
 
   // Section visibility lives in core.preferences, which is RLS-scoped to the
   // owner (preferences_own_all). A public viewer's client reads nothing, so use
@@ -1134,6 +1134,14 @@ app.openapi(getProfileBySlugRoute, async (c) => {
   const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (supabaseUrl && supabaseServiceKey) {
     const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
+    const { data: profileRow } = await serviceClient
+      .schema("core")
+      .from("profile")
+      .select("location")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    privateProfile = profileRow;
+
     const { data: preferences } = await serviceClient
       .schema("core")
       .from("preferences")
