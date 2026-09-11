@@ -146,7 +146,6 @@ app.openapi(generalInfoRoute, async (c) => {
   const targetUserId = access.targetUserId;
   const db = access.useServiceClient ? getServiceClient() : supabase;
 
-
   const { data, error } = await db
     .schema("core")
     .from("users")
@@ -225,7 +224,11 @@ app.openapi(experienceRoute, async (c) => {
   const user = c.get("user");
   const { userId } = c.req.valid("query");
 
-  const access = await resolveSectionAccess(userId, user?.id, "work_experience");
+  const access = await resolveSectionAccess(
+    userId,
+    user?.id,
+    "work_experience",
+  );
   if (!access.ok) {
     return c.json(
       access.status === 401
@@ -236,7 +239,6 @@ app.openapi(experienceRoute, async (c) => {
   }
   const targetUserId = access.targetUserId;
   const db = access.useServiceClient ? getServiceClient() : supabase;
-
 
   const { data, error } = await db
     .schema("core")
@@ -312,7 +314,6 @@ app.openapi(educationRoute, async (c) => {
   const targetUserId = access.targetUserId;
   const db = access.useServiceClient ? getServiceClient() : supabase;
 
-
   const { data, error } = await db
     .schema("core")
     .from("user_education")
@@ -383,7 +384,6 @@ app.openapi(skillsRoute, async (c) => {
   }
   const targetUserId = access.targetUserId;
   const db = access.useServiceClient ? getServiceClient() : supabase;
-
 
   const { data, error } = await db
     .schema("core")
@@ -465,7 +465,6 @@ app.openapi(certificationsRoute, async (c) => {
   }
   const targetUserId = access.targetUserId;
   const db = access.useServiceClient ? getServiceClient() : supabase;
-
 
   const { data, error } = await db
     .schema("core")

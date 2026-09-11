@@ -32,7 +32,9 @@ export function useAssessmentStatus() {
       nextAvailableAt: luscherAvailabilityQuery.data?.nextAvailableAt ?? null,
     },
     ipip: {
-      isCompleted: (ipipQuery.data as { data?: { isCompleted?: boolean } } | undefined)?.data?.isCompleted ?? false,
+      // Was cast through `{ data?: … }` to satisfy a declared envelope the
+      // route never sent. getIPIPStatus() is bare, so no cast is needed (#744).
+      isCompleted: ipipQuery.data?.isCompleted ?? false,
       isLoading: ipipQuery.isLoading,
     },
     luscher2: {

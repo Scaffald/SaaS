@@ -79,22 +79,19 @@ const META_KEYS = new Set([
  * Pairs that already disagree. `"<VERB> <path>"` -> which side says what.
  * Delete a line when the pair is brought into agreement; leaving it fails.
  */
-const BASELINE_MISMATCHES: Record<string, string> = {
-  // Each of these resolves on both sides and genuinely disagrees. The value is
-  // the reason, not a category — deciding which side moves is Scaffald/SaaS#744.
-
-  "PATCH /v1/api-keys/:p": "sdk-bare",
-  "GET /v1/api-keys/:p/usage": "sdk-bare",
-  "GET /v1/auth/roles": "sdk-bare",
-  "POST /v1/connections/:p/accept": "sdk-bare",
-  "POST /v1/connections/request": "sdk-bare",
-  "POST /v1/engagement/track": "sdk-bare",
-  "POST /v1/follows/job": "sdk-bare",
-  "POST /v1/follows/user": "sdk-bare",
-  "POST /v1/office/jobs/:p/duplicate": "sdk-bare",
-  "GET /v1/personality-assessment/ipip/status": "sdk-wrapped",
-  "GET /v1/personality-assessment/status": "sdk-wrapped",
-};
+/**
+ * Empty, and it should stay that way.
+ *
+ * The 11 entries that used to live here were resolved in Scaffald/sdk#30 and
+ * the companion change in this repo: seven SDK methods that declared the
+ * payload against a wrapping route now unwrap, two that declared an envelope
+ * their route never sent now declare the payload, and two were this test's own
+ * false positives — `auth.getUserRoles` and `jobs.officeDuplicateJob` unwrap
+ * through spellings the detector did not recognise.
+ *
+ * Anything appearing here from now on is a regression, not a baseline.
+ */
+const BASELINE_MISMATCHES: Record<string, string> = {};
 
 // ── shared parsing helpers ───────────────────────────────────────────────────
 
@@ -294,6 +291,44 @@ function sdkEnvelope(ret: string, defs: Map<string, string>): boolean | null {
  *
  *   other      anything else — not judged.
  */
+/**
+ * Does this method body read `.data` off the value the request returned?
+ *
+ * Naively matching `return \w+.data` catches only the commonest spelling. Two
+ * other shapes are in use and are equally correct, and treating them as
+ * mismatches is exactly the false positive that put `auth.getUserRoles` and
+ * `jobs.officeDuplicateJob` in this baseline:
+ *
+ *   const response = await this.get<{ data: X }>(p)
+ *   return { roles: response.data.roles }      // reshapes while unwrapping
+ *
+ *   return this.post<{ data: X }>(p, {}).then((res) => res.data)
+ *
+ * So: find whatever name the response is bound to — by `const X = await this.…`
+ * or by `.then((X) =>` — and ask whether the body reads `X.data`. That is
+ * precise about the thing that matters (the envelope is consumed here) without
+ * matching a domain field that merely happens to be called `data`.
+ */
+function readsDataOffTheResponse(body: string): boolean {
+  const names = new Set<string>();
+  // `const x = await this.get(...)` and `const x = (await this.get(...)) as T`
+  // — the parenthesised cast form is what six of these resources use.
+  for (
+    const m of body.matchAll(
+      /(?:const|let)\s+(\w+)\s*=\s*\(?\s*(?:await\s+)?this\.\w+/g,
+    )
+  ) {
+    names.add(m[1]);
+  }
+  for (const m of body.matchAll(/\.then\(\s*\(?\s*(\w+)/g)) names.add(m[1]);
+  for (const name of names) {
+    if (new RegExp(`\\b${name}\\b[^\\n]{0,80}?\\.data\\b`).test(body)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 type SdkShape = { declared: boolean | null; unwraps: boolean };
 
 async function readSdkEnvelopes(): Promise<Map<string, SdkShape>> {
@@ -316,7 +351,7 @@ async function readSdkEnvelopes(): Promise<Map<string, SdkShape>> {
       // Body up to the method's closing brace, so the unwrap check cannot read
       // into the next method.
       const body = braceBlock(src, bodyStart - 1);
-      const unwraps = /return\s+\w+\.data\b/.test(body);
+      const unwraps = readsDataOffTheResponse(body);
       out.set(`${call[1].toUpperCase()} ${normalisePath(call[2])}`, {
         declared: sdkEnvelope(m[1], defs),
         unwraps,
