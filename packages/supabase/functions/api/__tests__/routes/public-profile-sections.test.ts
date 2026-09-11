@@ -35,7 +35,8 @@ Deno.test("section handlers do not blanket-refuse anonymous callers", async () =
 
   // One is legitimate: /preferences is the caller's own settings and has no
   // public form. Any more than that and a public section has been re-gated.
-  const bare = src.match(/return c\.json\(\{ error: "Unauthorized" \}, 401\)/g) ?? [];
+  const bare =
+    src.match(/return c\.json\(\{ error: "Unauthorized" \}, 401\)/g) ?? [];
 
   assertEquals(
     bare.length,
@@ -55,7 +56,14 @@ Deno.test("every section decides through the shared visibility rule", async () =
     "each public section must route its decision through resolveSectionAccess",
   );
 
-  for (const section of ["work_experience", "education", "skills", "certifications"]) {
+  for (
+    const section of [
+      "work_experience",
+      "education",
+      "skills",
+      "certifications",
+    ]
+  ) {
     assert(
       src.includes(`"${section}"`),
       `${section} must be gated by its visibility flag`,
@@ -70,7 +78,10 @@ Deno.test("someone else's sections are read with the service client", async () =
   // owner-only SELECT policies, so a viewer's own client reads nothing of
   // another profile however the owner published it. The visibility check is the
   // authorization; the service client is only how it is carried out.
-  assert(src.includes("useServiceClient"), "reads must switch client by audience");
+  assert(
+    src.includes("useServiceClient"),
+    "reads must switch client by audience",
+  );
   assert(
     src.includes("access.useServiceClient ? getServiceClient() : supabase"),
     "your own profile must stay on your own client, so RLS still applies",
@@ -114,7 +125,9 @@ Deno.test("the public work-log feed takes no auth", async () => {
   // inside it — verified status, show_on_profile, per-photo opt-in — are the
   // publication rule, and none of them depend on who is asking.
   assertEquals(
-    /if \(!user\) return c\.json\(\{ error: "Unauthorized" \}, 401\)/.test(handler),
+    /if \(!user\) return c\.json\(\{ error: "Unauthorized" \}, 401\)/.test(
+      handler,
+    ),
     false,
     "public-feed serves a page whose audience is signed out by definition",
   );
@@ -129,14 +142,16 @@ Deno.test("the defaults match what /slug/{slug} promises the page", async () => 
   const defaults = lib.slice(lib.indexOf("DEFAULT_PROFILE_VISIBILITY"));
   const slugDefaults = profiles.slice(profiles.indexOf("let visibility = {"));
 
-  for (const [key, value] of Object.entries({
-    work_experience: true,
-    education: true,
-    skills: true,
-    certifications: true,
-    reviews: true,
-    contact_info: false,
-  })) {
+  for (
+    const [key, value] of Object.entries({
+      work_experience: true,
+      education: true,
+      skills: true,
+      certifications: true,
+      reviews: true,
+      contact_info: false,
+    })
+  ) {
     assert(
       new RegExp(`${key}:\\s*${value}`).test(defaults.slice(0, 600)),
       `lib default for ${key} should be ${value}`,

@@ -24,7 +24,9 @@ export function PersonalityAssessmentWidget() {
 
   // Get assessment status
   const { data: assessmentData, isLoading } = useAssessmentStatus();
-  const assessment = assessmentData?.data;
+  // getStatus() returns the status object itself; the `{ data }` this used to
+  // reach through was never sent, so this read undefined (#744).
+  const assessment = assessmentData;
 
   // Don't show widget if already completed
   if (isLoading) {

@@ -79,7 +79,15 @@ Deno.test("contact_info is private by default; the rest are public", () => {
   // These defaults have to match GET /v1/profiles/slug/{slug} exactly, or the
   // page renders a section the data endpoint then refuses.
   assertEquals(DEFAULT_PROFILE_VISIBILITY.contact_info, false);
-  for (const s of ["work_experience", "education", "skills", "certifications", "reviews"]) {
+  for (
+    const s of [
+      "work_experience",
+      "education",
+      "skills",
+      "certifications",
+      "reviews",
+    ]
+  ) {
     assertEquals(
       DEFAULT_PROFILE_VISIBILITY[s as keyof ProfileVisibility],
       true,

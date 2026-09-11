@@ -15,7 +15,8 @@ export function usePersonalityAssessment() {
   // Get assessment status
   const { data: assessmentData, isLoading, error } = useAssessmentStatus()
 
-  const assessment = assessmentData?.data
+  // See PersonalityAssessmentWidget: getStatus() is bare, not enveloped (#744).
+  const assessment = assessmentData
 
   // Save Luscher 1
   const saveLuscher1 = useSaveLuscher1Mutation({

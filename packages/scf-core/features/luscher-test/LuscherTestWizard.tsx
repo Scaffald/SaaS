@@ -40,10 +40,11 @@ export function LuscherTestWizard() {
   const queryClient = useQueryClient()
 
   const availability = availabilityData
-  // SDK type declares { data: AssessmentStatus } but API returns AssessmentStatus directly
+  // This used to reach for `.data` with a fallback to the value itself, under a
+  // comment noting the SDK type declared `{ data: AssessmentStatus }` while the
+  // API returned it directly. That was correct, and is now fixed at the source:
+  // getStatus() declares the payload (#744), so the fallback is what is left.
   const assessment = assessmentData
-    ? (assessmentData.data ?? (assessmentData as unknown as NonNullable<typeof assessmentData>['data']))
-    : undefined
 
   // Save Part 1 mutation
   const savePart1Mutation = useSaveLuscher1Mutation({
