@@ -806,9 +806,19 @@ app.openapi(
     security: [{ bearerAuth: [] }],
   }),
   async (c) => {
-    const user = c.get("user");
     const { userId, limit } = c.req.valid("query");
-    if (!user) return c.json({ error: "Unauthorized" }, 401);
+
+    // Deliberately no auth check. This is the only consumer of
+    // WorkLogPortfolioWidget, which renders on app/(public)/users/[slug].tsx —
+    // a page whose audience is signed out by definition. I built this route in
+    // #616 with `if (!user) return 401` and verified it with an authenticated
+    // caller, so it was reachable in exactly the case it was not built for
+    // (#732).
+    //
+    // Nothing here depends on who is asking. The filters below are the
+    // publication rule — verified status, the worker's show_on_profile opt-in,
+    // and a per-photo opt-in — and they are what make these rows safe to serve
+    // to anyone holding the profile URL.
 
     // Service client: the reader is not the owner, and core.work_logs' RLS is
     // scoped to owners, collaborators and org members. The filters above are

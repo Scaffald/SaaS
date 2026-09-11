@@ -4,6 +4,8 @@
  */
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { loadProfileVisibility } from "../lib/profile-visibility.ts";
+import { createClient } from "@supabase/supabase-js";
 import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import { isDraft, loadOwnReview, mergeMetadata } from "../lib/review-drafts.ts";
 
@@ -19,6 +21,13 @@ const _errorResponseSchema = z.object({
  * GET /reviews/soft-skills
  * Get soft skills list
  */
+function getServiceClient() {
+  return createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+  );
+}
+
 app.openapi(
   createRoute({
     method: "get",
@@ -179,8 +188,28 @@ app.openapi(
     const user = c.get("user");
     const { subject_id, subject_type, status } = c.req.valid("query");
 
-    if (!user) {
-      return c.json({ error: "Unauthorized" }, 401);
+    // Reviews about a worker are part of their public profile, and the schema
+    // already says so: core.reviews carries reviews_read as SELECT to
+    // {anon, authenticated} USING (true). The 401 that used to sit here was the
+    // only thing stopping the public profile page from showing them (#732), and
+    // it contradicted the table's own policy.
+    //
+    // The owner can still hide the section. That switch lives in
+    // core.preferences.profile_visibility, which is RLS-scoped to them, so it
+    // takes the service client to read — see lib/profile-visibility.ts.
+    if (subject_type === "user" && subject_id !== user?.id) {
+      const visibility = await loadProfileVisibility(
+        getServiceClient(),
+        subject_id,
+      );
+      if (!visibility.reviews) {
+        // 404, not 403: a hidden section should look like an empty one rather
+        // than confirm what was hidden.
+        return c.json(
+          { error: "not_found", message: "Reviews are not available" },
+          404,
+        );
+      }
     }
 
     let query = supabase.schema("core").from("reviews").select("*").eq(
