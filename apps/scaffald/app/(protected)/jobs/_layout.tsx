@@ -19,7 +19,12 @@ export default function JobsLayout() {
     >
       <DrawerLayout protectionComponent={null}>
         <Stack.Screen name="index" options={{ title: 'Search Jobs' }} />
-        <Stack.Screen name="[id]" options={{ title: 'Job Detail' }} />
+        {/* Lives at jobs/view/[id], not jobs/[id]: the public SEO route
+            (app/(public)/jobs/[slug].tsx) is also /jobs/<param>, and route
+            groups are not part of the URL, so the two collided. The server
+            rendered the public page's title and metadata and the client then
+            resolved to this one and redirected to /auth (#734). */}
+        <Stack.Screen name="view/[id]" options={{ title: 'Job Detail' }} />
         <Stack.Screen name="saved/index" options={{ title: 'Saved Jobs' }} />
         <Stack.Screen name="applications/index" options={{ title: 'Applications' }} />
         <Stack.Screen

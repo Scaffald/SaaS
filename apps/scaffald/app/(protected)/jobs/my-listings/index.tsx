@@ -1,4 +1,4 @@
-import { ROUTES } from '@scf/core/constants/routes'
+import { buildPath, ROUTES } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
@@ -72,7 +72,7 @@ export default function MyListingsRoute() {
         My Listings ({jobs.length})
       </Text>
       {jobs.map((job) => (
-        <Pressable key={job.id} onPress={() => router.push(`/jobs/${job.id}`)}>
+        <Pressable key={job.id} onPress={() => router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }) as never)}>
           <DashboardWidget gap={8}>
             <Row justify="space-between" align="center">
               <Text
