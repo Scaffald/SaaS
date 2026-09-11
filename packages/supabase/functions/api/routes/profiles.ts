@@ -580,19 +580,73 @@ const profileBySlugSchema = z
   })
   .openapi("ProfileBySlug");
 
-// Organization profile schema
+// Organization profile schema.
+//
+// This described a response the endpoint has never sent. #617 repaired the
+// select — it used to ask for industry, size, location and founded_year and
+// filter on is_public, none of which exist on core.organizations — but the
+// schema above it was left as written, so the published contract and the SDK
+// type generated from it were wrong in six ways at once (#482).
+//
+// Checked against a live response rather than reasoned about:
+//
+//   field         declared    actually returned
+//   description   string      object   (rich-text document)
+//   industry      string      object   { id, name, slug }
+//   size          string      ABSENT
+//   location      string      ABSENT
+//   founded_year  number      ABSENT
+//   address       -           returned, undeclared
+//
+// Nothing broke visibly because @hono/zod-openapi documents responses rather
+// than validating them, and because no screen imports useOrganizationProfile.
+// The SDK tests passed throughout: their msw handler hand-writes the *declared*
+// shape ("industry: 'Technology'", "size: '1000-5000'"), so they asserted
+// against a response the API cannot produce. That mock is corrected alongside.
+//
+// size, location and founded_year are dropped rather than added. They exist in
+// no table in any schema — `select ... where column_name in ('size',
+// 'founded_year', ...)` matches nothing outside pg_catalog and storage — so
+// keeping them would mean inventing product surface to satisfy a schema that
+// was only ever aspirational.
 const organizationProfileSchema = z
   .object({
     id: z.string().uuid(),
     slug: z.string(),
     name: z.string(),
-    description: z.string().nullable(),
+    // jsonb. A rich-text document, not a string — same convention as the other
+    // jsonb payloads in these routes. Null for all but a handful of orgs.
+    description: z.record(z.string(), z.unknown()).nullable(),
     logo_url: z.string().url().nullable(),
     website: z.string().url().nullable(),
-    industry: z.string().nullable(),
-    size: z.string().nullable(),
-    location: z.string().nullable(),
-    founded_year: z.number().int().nullable(),
+    // Embedded through the industry_id FK to core.industries, so this is the
+    // row and not a name. Null whenever industry_id is unset, which today is
+    // 552 of 561 organizations.
+    //
+    // Declared as an object because that is what PostgREST returns for a
+    // to-one embed — verified against a live response. Note that supabase-js
+    // *types* it as an array, because it cannot infer cardinality from the
+    // select string, so `deno check` reports the 200 body as
+    // `industry: {...}[]`. Do not "correct" this to an array on the strength of
+    // that: the type is wrong and the wire format is not. Same ambiguity as the
+    // embedded organization in middleware/auth.ts.
+    industry: z
+      .object({
+        id: z.string().uuid(),
+        name: z.string(),
+        slug: z.string(),
+      })
+      .nullable(),
+    // jsonb. The real column behind what the old schema called `location`.
+    address: z
+      .object({
+        street: z.string().optional(),
+        city: z.string().optional(),
+        state: z.string().optional(),
+        postal: z.string().optional(),
+        country: z.string().optional(),
+      })
+      .nullable(),
     created_at: z.string(),
     job_count: z.number().int(),
   })

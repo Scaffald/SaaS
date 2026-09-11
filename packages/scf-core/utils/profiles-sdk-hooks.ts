@@ -30,7 +30,13 @@ export function useUserProfile(username: string | undefined, options?: { enabled
   })
 }
 
-/** Get an organization profile by slug */
+/**
+ * Get an organization profile by slug.
+ *
+ * The route wraps its payload in `{ data }`, so this query's `data` is the
+ * envelope and the profile is one level down (#482). Inferred from the SDK
+ * method rather than annotated, so it follows if that ever changes.
+ */
 export function useOrganizationProfile(slug: string | undefined, options?: { enabled?: boolean }) {
   const client = useScaffaldJobsClient()
   return useQuery({
