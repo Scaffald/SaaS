@@ -9,7 +9,7 @@
  * - Actionable recommendations
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -88,6 +88,8 @@ interface HealthReport {
     totalDuration: number;
     averageTestDuration: number;
   };
+  /** Tests that failed in THIS run, named, so a CI log says what broke. */
+  failures: Array<{ file: string; name: string; error?: string }>;
   slowestTests: SlowTest[];
   mostFailures: FailureAnalysis[];
   flakyTests: FlakyTest[];
@@ -298,6 +300,98 @@ function saveTestHistory(currentRun: JSONReportOutput, history: Map<string, Test
 /**
  * Analyze test health and provide actionable insights
  */
+
+/**
+ * Read every per-project report in `dir` and merge them.
+ *
+ * Two problems this solves, both of which made `pnpm test:health` print
+ * `Total Tests: undefined` on every run — including successful ones — since it
+ * was written (#753):
+ *
+ *   1. It parsed the file as `{ totalTests, passed, failed, tests[] }`. Nothing
+ *      writes that. Vitest's json reporter emits the Jest shape:
+ *      `{ numTotalTests, numPassedTests, testResults[].assertionResults[] }`.
+ *      Every field came back undefined, `data.tests` was undefined, and the
+ *      analyzer bailed with "No test results found" while reporting success.
+ *
+ *   2. Every package inherits the root vitest config, so all five projects in
+ *      `nx affected -t test` wrote one fixed path and the last writer won. The
+ *      reporter now emits one file per project; this reads all of them.
+ *
+ * Unknown-shaped files are skipped rather than throwing, so one malformed
+ * report cannot hide the rest.
+ */
+function readAllReports(dir: string): JSONReportOutput {
+  const merged: JSONReportOutput = {
+    timestamp: new Date().toISOString(),
+    totalTests: 0,
+    passed: 0,
+    failed: 0,
+    skipped: 0,
+    duration: 0,
+    tests: [],
+    errors: [],
+  };
+
+  if (!existsSync(dir)) return merged;
+
+  const files = readdirSync(dir).filter(
+    (f) => f.startsWith('test-results') && f.endsWith('.json'),
+  );
+
+  for (const file of files) {
+    let raw: unknown;
+    try {
+      raw = JSON.parse(readFileSync(resolve(dir, file), 'utf-8'));
+    } catch {
+      continue;
+    }
+    const d = raw as Record<string, any>;
+
+    // Vitest / Jest json reporter.
+    if (typeof d.numTotalTests === 'number') {
+      merged.totalTests += d.numTotalTests ?? 0;
+      merged.passed += d.numPassedTests ?? 0;
+      merged.failed += d.numFailedTests ?? 0;
+      merged.skipped += (d.numPendingTests ?? 0) + (d.numTodoTests ?? 0);
+
+      for (const suite of d.testResults ?? []) {
+        for (const a of suite.assertionResults ?? []) {
+          const status: TestResult['status'] = a.status === 'passed'
+            ? 'pass'
+            : a.status === 'failed'
+            ? 'fail'
+            : 'skip';
+          const duration = a.duration ?? 0;
+          merged.duration += duration;
+          merged.tests.push({
+            file: suite.name ?? file,
+            name: a.fullName ?? a.title ?? '(unnamed)',
+            duration,
+            status,
+            error: a.failureMessages?.[0],
+          });
+        }
+      }
+      continue;
+    }
+
+    // The shape this analyzer originally expected. Nothing writes it today,
+    // but reading it costs nothing and keeps an older report usable.
+    if (typeof d.totalTests === 'number') {
+      merged.totalTests += d.totalTests ?? 0;
+      merged.passed += d.passed ?? 0;
+      merged.failed += d.failed ?? 0;
+      merged.skipped += d.skipped ?? 0;
+      merged.duration += d.duration ?? 0;
+      merged.tests.push(...(d.tests ?? []));
+      merged.errors.push(...(d.errors ?? []));
+    }
+  }
+
+  return merged;
+}
+
 export function analyzeTestHealth(): HealthReport {
   const reportPath = resolve(scriptDir, '../tests/reports/coverage/test-results.json');
   const history = loadTestHistory();
@@ -312,6 +406,7 @@ export function analyzeTestHealth(): HealthReport {
       totalDuration: 0,
       averageTestDuration: 0,
     },
+    failures: [],
     slowestTests: [],
     mostFailures: [],
     flakyTests: [],
@@ -320,7 +415,7 @@ export function analyzeTestHealth(): HealthReport {
   };
 
   try {
-    const data: JSONReportOutput = JSON.parse(readFileSync(reportPath, 'utf-8'));
+    const data: JSONReportOutput = readAllReports(dirname(reportPath));
 
     // Summary
     report.summary = {
@@ -331,6 +426,10 @@ export function analyzeTestHealth(): HealthReport {
       totalDuration: data.duration,
       averageTestDuration: data.duration / data.totalTests || 0,
     };
+
+    report.failures = data.tests
+      .filter((t) => t.status === 'fail')
+      .map((t) => ({ file: t.file, name: t.name, error: t.error }));
 
     if (!data.tests || data.tests.length === 0) {
       report.recommendations.push('⚠️  No test results found. Run tests first.');
@@ -572,6 +671,24 @@ if (isMainModule) {
   console.log(
     `  Average Test Duration: ${formatDuration(report.summary.averageTestDuration)}`,
   );
+
+  // Named failures, first, because this is what a CI log needs. `nx affected`
+  // prints only "Failed tasks: - <project>" — no test name, no assertion — so
+  // before this a red build could not be told from a flake without reproducing
+  // it locally, and neither of the two that prompted this reproduced (#753).
+  if (report.failures.length > 0) {
+    console.log(`\n❌ Failed Tests (${report.failures.length}):`);
+    report.failures.slice(0, 25).forEach((failure, index) => {
+      console.log(`  ${index + 1}. ${failure.name}`);
+      console.log(`     ${truncatePath(failure.file)}`);
+      if (failure.error) {
+        console.log(`     ${failure.error.split('\n')[0].slice(0, 160)}`);
+      }
+    });
+    if (report.failures.length > 25) {
+      console.log(`  … and ${report.failures.length - 25} more`);
+    }
+  }
 
   if (report.slowestTests.length > 0) {
     console.log(`\n🐌 Slowest Tests (Top 10):`);
