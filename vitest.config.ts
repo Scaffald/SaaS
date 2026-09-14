@@ -270,7 +270,27 @@ export default defineConfig({
     maxWorkers: 2,
     reporters: [
       quietProgressReporterPath,
-      ["json", { outputFile: "tests/reports/coverage/test-results.json" }],
+      // One file per project. Every package inherits this config, so a single
+      // fixed path meant `nx affected -t test` had five projects writing the
+      // same file and the last writer won — including when an earlier project
+      // was the one that failed. scripts/test-health-analyzer.ts then had
+      // nothing to report about it (#753).
+      //
+      // NX_TASK_TARGET_PROJECT is set by nx when it runs a target. A bare
+      // `vitest run` has no project, and keeps the original name.
+      [
+        "json",
+        {
+          outputFile: process.env.NX_TASK_TARGET_PROJECT
+            ? `tests/reports/coverage/test-results-${
+              process.env.NX_TASK_TARGET_PROJECT
+                // "@scaffald/ui" -> "scaffald-ui"
+                .replace(/[^a-zA-Z0-9_-]+/g, "-")
+                .replace(/^-+|-+$/g, "")
+            }.json`
+            : "tests/reports/coverage/test-results.json",
+        },
+      ],
     ],
     // Run test files sequentially to prevent resource exhaustion
     sequence: {
