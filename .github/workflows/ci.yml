@@ -190,3 +190,19 @@ jobs:
 
       - name: Check the project graph builds (catches circular project deps)
         run: pnpm check-circular-deps
+
+      # Expo SDK packages ship prebuilt native frameworks compiled against one
+      # ExpoModulesCore API surface. Let them drift apart and the mismatch is
+      # invisible until Apple's Mac-compatibility check rejects the symbols at
+      # delivery (#683: expo-image 56.0.9 against expo-modules-core 56.0.22 left
+      # two `(undefined) external` Swift symbols in the shipped binary; #689
+      # realigned all 22). Dependabot moves one package at a time, which is
+      # exactly how that skew accumulates — so fail here instead.
+      #
+      # To fix: run the same command locally to list the drift, then realign it
+      # in one coordinated commit (#483) — versions live in the catalog, in
+      # `pnpm.overrides`, and in direct dependencies, and only the installed
+      # tree sees all three.
+      - name: Check Expo SDK version alignment
+        working-directory: apps/scaffald
+        run: pnpm exec expo install --check

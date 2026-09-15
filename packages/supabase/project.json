@@ -38,7 +38,7 @@
     "generate": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "dotenv -e ../../.env -- supabase gen types typescript --local > types.ts",
+        "command": "node ../../scripts/generate-supabase-types.mjs",
         "cwd": "packages/supabase"
       },
       "outputs": ["{projectRoot}/types.ts"]
