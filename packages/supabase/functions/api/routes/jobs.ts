@@ -63,7 +63,13 @@ const jobSchema = z
     id: z.string().uuid(),
     organization_id: z.string().uuid(),
     title: z.string(),
-    description: z.string(),
+    // JSONB, not text: core.jobs.description holds TipTap rich-text JSON
+    // (001_schema.sql:145, and the FTS index in 007 reads it through
+    // extract_tiptap_plain_text). It has been declared as a string since this
+    // schema was written, and a live response confirms an object on the wire —
+    // the same declared-contract-vs-reality gap as #744, in the other
+    // direction. Callers that want text use extractPlainText.
+    description: z.unknown(),
     status: z.enum(["draft", "open", "paused", "closed", "published"]),
     employment_type: z.enum([
       "full_time",
@@ -98,7 +104,7 @@ const jobSchema = z
     require_drug_test: z.boolean().nullable(),
     require_drivers_license: z.boolean().nullable(),
     security_clearance_required: z.string().nullable(),
-    travel_percentage: z.number().nullable(),
+    travel_percentage: z.number().int().nullable(),
     required_soft_skills: z.unknown().nullable(),
     organization: z
       .object({
