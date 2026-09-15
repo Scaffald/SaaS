@@ -63,8 +63,37 @@ jobs:
       - name: Start server
         run: |
           pnpm web:build
-          pnpm web:serve &
-          sleep 10
+
+          pnpm web:serve > /tmp/web-serve.log 2>&1 &
+          echo $! > /tmp/web-serve.pid
+
+          # `sleep 10` was the whole readiness check, and it is not one. With
+          # the SSR export there is no static index.html to fall back on — the
+          # server has to be up and answering — so a slow start handed
+          # Lighthouse a dead port and it reported:
+          #
+          #   CHROME_INTERSTITIAL_ERROR ... test URL (http://localhost:8081/)
+          #   was redirected to chrome-error://chromewebdata/
+          #
+          # which reads like a broken page and is an empty socket. Poll instead,
+          # and fail here with the server's own log rather than letting
+          # Lighthouse report a performance failure it never measured.
+          for i in $(seq 1 60); do
+            if curl -fsS -o /dev/null --max-time 5 "http://localhost:8081/"; then
+              echo "✅ server answering after ${i}s"
+              exit 0
+            fi
+            if ! kill -0 "$(cat /tmp/web-serve.pid)" 2>/dev/null; then
+              echo "::error::web:serve exited before it answered."
+              cat /tmp/web-serve.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          echo "::error::Server did not answer on http://localhost:8081/ within 60s."
+          cat /tmp/web-serve.log
+          exit 1
         env:
           NODE_ENV: production
           PORT: 8081
