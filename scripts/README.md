@@ -405,6 +405,21 @@ This serves all Edge Functions (including `trpc` and `api`) using `.env`. Leave 
 
 **Summary:** Terminal 1 → `pnpm supa:start:full`; Terminal 2 → `pnpm supa:functions`; then run `pnpm test:api` or `pnpm verify:api:e2e`.
 
+## Manual tools (not wired to package.json)
+
+Run these by path. Each has usage notes in its header comment.
+
+| Script | Purpose |
+|---|---|
+| `apply-migration.sh` | Apply one migration to a remote Supabase project and record it in the ledger (`--dry-run`, `--status`). |
+| `check-circular-deps.sh` | Run `madge -c` against a source dir; exits non-zero on a cycle. |
+| `check-supabase.sh` | Exit 0 if the local Supabase stack answers, 1 otherwise. |
+| `coverage-merger.ts` | Merge `coverage/worker-*.json` from parallel test workers into one report. |
+| `fix-gotrue-env.sh` | Patch the local GoTrue container's site URL after `supa start` so magic links resolve. |
+| `seed-app-review-prod.sh` | Seed the App Store reviewer demo accounts into production. |
+| `seed-notify-cron-vault.sh` | Seed the Vault secret pg_cron uses to call the notification edge functions (migration 337). |
+| `set-resend-eas-env.sh` | Publish `RESEND_API_KEY` from `.env` into the EAS environments. |
+
 ## Archived Scripts
 
 ### API testing and E2E verification

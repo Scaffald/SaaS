@@ -30,7 +30,7 @@ import { dirname, resolve, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const REPO_ROOT = resolve(__dirname, '..')
+const REPO_ROOT = resolve(__dirname, '..', '..')
 
 // ---------- Config ----------
 const BASE_URL = process.env.AUDIT_BASE_URL || 'http://localhost:8081'

@@ -19,7 +19,6 @@ npm-debug.log*
 !.nx/**/*.log
 
 # local env files
-.env
 .env.dev
 .env.preview
 .env.local
@@ -74,8 +73,6 @@ tests/reports/
 !tests/reports/contracts/
 tests/reports/contracts/generated/
 # Allow contracts source files (generated/ subdirectory is ignored)
-!tests/reports/contracts/
-tests/reports/contracts/generated/
 
 # playwright
 .playwright/
@@ -104,8 +101,6 @@ static/
 **/playwright-report/
 **/test-results/
 
-# plans files
-/plans/
 .claude/
 .certs/
 
@@ -132,3 +127,9 @@ screenshots/**/.auth-state.json
 # Grants upload rights to the Play listing — never commit it.
 google-play-service-account.json
 **/google-play-service-account.json
+
+# caches and build output that must never be committed
+.deno/
+**/metro-cache/
+infra/aws/dist/
+*.bak

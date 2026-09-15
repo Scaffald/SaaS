@@ -182,7 +182,8 @@ aws sns publish \
 | `alerts-sms-dispatcher` | wraps SNS publish | `https://hyqcev7h5au2csgzusj4deiemq0uerpd.lambda-url.us-east-1.on.aws/` |
 
 - IAM role `alerts-lambda-notifications` with SES + SNS permissions and CloudWatch logging.
-- Code lives in `infra/aws/lambda/{email,sms}/index.mjs`.
+- Code lives in `infra/aws/lambda/{email,sms}/index.mjs`. The deployable zips
+  are built into `infra/aws/dist/` (gitignored), never committed.
 
 ### Example payloads
 
