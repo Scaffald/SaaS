@@ -112,6 +112,16 @@ pnpm supa:generate
 # Test application functionality
 ```
 
+`supa:generate` reads the **local** database, so it first refuses to run when
+a migration file is not applied, or an applied version has no file — a
+generation from a database that is behind silently deletes everything it has
+not caught up to. Apply the gap with `pnpm supa:migration:up`. It compares
+versions only: a migration edited after it was applied is not detected. It
+then refuses to write when a table, view, enum or function would disappear
+from `types.ts`, and prints which. If the removal is intended (migration 344
+drops `core.application_status` on purpose), re-run with `--allow-removals`.
+#707 is what happens without those two checks.
+
 ## Key Features
 
 ### Security
