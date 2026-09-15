@@ -111,13 +111,26 @@ jobs:
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v12
         with:
+          # Four of the six URLs audited here had not existed for months —
+          # /dashboard/profile/general and the three /dashboard/discover/*
+          # pages all 404 (confirmed against production). Lighthouse reported
+          # that as "unable to reliably load the page you requested
+          # (Status code: 404)" and failed the whole run, which is why this
+          # list is worth checking rather than inheriting.
+          #
+          # The set is now the public, crawlable pages: they are the ones an
+          # anonymous visitor and a search engine actually reach, so the SEO
+          # and accessibility assertions in .lighthouserc.json mean something
+          # against them. The authenticated surfaces are deliberately absent —
+          # Lighthouse has no session, so auditing /dashboard measures the
+          # redirect to /auth and nothing else.
           urls: |
             http://localhost:8081/
-            http://localhost:8081/dashboard
-            http://localhost:8081/dashboard/profile/general
-            http://localhost:8081/dashboard/discover/workers
-            http://localhost:8081/dashboard/discover/jobs
-            http://localhost:8081/dashboard/discover/employers
+            http://localhost:8081/jobs
+            http://localhost:8081/support
+            http://localhost:8081/privacy
+            http://localhost:8081/terms
+            http://localhost:8081/contact
           uploadArtifacts: true
           temporaryPublicStorage: true
           configPath: '.lighthouserc.json'
