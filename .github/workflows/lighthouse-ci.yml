@@ -41,14 +41,64 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # `pnpm build` (nx run-many across every package) used to run here as well.
-      # `web:build` is the only build Lighthouse actually audits, so the extra
-      # pass was ~6 minutes of duplicate work on every run.
+      # `pnpm build` (nx run-many across every package) used to run here, and
+      # dropping it to save ~6 minutes is what broke this workflow: it was also
+      # the step that built @scaffald/sdk. The SDK is a submodule whose dist/ is
+      # gitignored and it has no `prepare` script, so `pnpm install` does not
+      # build it — and app code imports `@scaffald/sdk/react`, which the package
+      # exports as ./dist/react/index.mjs. Without that file the export dies:
+      #
+      #   Unable to resolve module @scaffald/sdk/react from
+      #   apps/scaffald/app/(admin)/office/cms/teams/[id]/edit.tsx
+      #
+      # `nx run scf-core:build` is the cheap version of the build that was
+      # removed. `build` declares dependsOn ["^build"], so this one command
+      # builds @scaffald/ui, @scaffald/sdk, supabase and scf-schemas first —
+      # everything web:build needs, and nothing it doesn't. Verified by
+      # reproducing CI: packages/sdk/dist is absent after a plain
+      # `pnpm install --frozen-lockfile` and present after this command.
+      - name: Build workspace packages
+        run: pnpm nx run scf-core:build
+
       - name: Start server
         run: |
           pnpm web:build
-          pnpm web:serve &
-          sleep 10
+
+          # `pnpm web:serve` does not exist at the root — only `web:build` is
+          # forwarded there, and the `web:serve` script lives in
+          # apps/scaffald. The root invocation exited immediately with
+          # "Command \"web:serve\" not found. Did you mean pnpm web:remote?",
+          # which nothing noticed because the readiness check was a sleep.
+          pnpm --filter scaffald-app web:serve > /tmp/web-serve.log 2>&1 &
+          echo $! > /tmp/web-serve.pid
+
+          # `sleep 10` was the whole readiness check, and it is not one. With
+          # the SSR export there is no static index.html to fall back on — the
+          # server has to be up and answering — so a slow start handed
+          # Lighthouse a dead port and it reported:
+          #
+          #   CHROME_INTERSTITIAL_ERROR ... test URL (http://localhost:8081/)
+          #   was redirected to chrome-error://chromewebdata/
+          #
+          # which reads like a broken page and is an empty socket. Poll instead,
+          # and fail here with the server's own log rather than letting
+          # Lighthouse report a performance failure it never measured.
+          for i in $(seq 1 60); do
+            if curl -fsS -o /dev/null --max-time 5 "http://localhost:8081/"; then
+              echo "✅ server answering after ${i}s"
+              exit 0
+            fi
+            if ! kill -0 "$(cat /tmp/web-serve.pid)" 2>/dev/null; then
+              echo "::error::web:serve exited before it answered."
+              cat /tmp/web-serve.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          echo "::error::Server did not answer on http://localhost:8081/ within 60s."
+          cat /tmp/web-serve.log
+          exit 1
         env:
           NODE_ENV: production
           PORT: 8081
@@ -58,16 +108,42 @@ jobs:
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.DEV_EXPO_PUBLIC_SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.DEV_EXPO_PUBLIC_SUPABASE_ANON_KEY }}
 
+      # Budgets are `warn`, not `error`, in .lighthouserc.json — deliberately,
+      # and temporarily. This workflow had never completed a run, so those
+      # numbers had never been measured against anything. The first run that
+      # did complete missed every one of them on all six pages (#774: /jobs
+      # alone reports a 94s LCP). A budget nothing has ever met is a wish, not
+      # a regression gate, and leaving it as `error` would mean this job is red
+      # every night for a reason no single change caused — which is how a
+      # nightly stops being read.
+      #
+      # So the job now fails on what it is actually able to police: the build,
+      # the server, and Lighthouse being able to load the pages at all. The
+      # numbers are published in the report and tracked in #774, and go back to
+      # `error` — ratcheted from measurements — as the work there lands.
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v12
         with:
+          # Four of the six URLs audited here had not existed for months —
+          # /dashboard/profile/general and the three /dashboard/discover/*
+          # pages all 404 (confirmed against production). Lighthouse reported
+          # that as "unable to reliably load the page you requested
+          # (Status code: 404)" and failed the whole run, which is why this
+          # list is worth checking rather than inheriting.
+          #
+          # The set is now the public, crawlable pages: they are the ones an
+          # anonymous visitor and a search engine actually reach, so the SEO
+          # and accessibility assertions in .lighthouserc.json mean something
+          # against them. The authenticated surfaces are deliberately absent —
+          # Lighthouse has no session, so auditing /dashboard measures the
+          # redirect to /auth and nothing else.
           urls: |
             http://localhost:8081/
-            http://localhost:8081/dashboard
-            http://localhost:8081/dashboard/profile/general
-            http://localhost:8081/dashboard/discover/workers
-            http://localhost:8081/dashboard/discover/jobs
-            http://localhost:8081/dashboard/discover/employers
+            http://localhost:8081/jobs
+            http://localhost:8081/support
+            http://localhost:8081/privacy
+            http://localhost:8081/terms
+            http://localhost:8081/contact
           uploadArtifacts: true
           temporaryPublicStorage: true
           configPath: '.lighthouserc.json'

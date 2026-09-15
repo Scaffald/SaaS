@@ -73,7 +73,14 @@ export default defineConfig({
     command: 'pnpm web',
     url: 'http://localhost:8081',
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000, // 2 minutes to start
+    // 2 minutes was under the measured cost of a cold start. The Lighthouse
+    // run on the same commit reported `Web Bundling ... 155505ms (8556
+    // modules)` on a CI runner, so a build that works can still exceed the old
+    // budget and report itself as "Timed out waiting 120000ms from
+    // config.webServer" — a failure that reads like a hang and is really a
+    // stopwatch. Six minutes leaves headroom without letting a genuinely stuck
+    // server hold the job for the full timeout-minutes.
+    timeout: 6 * 60 * 1000,
   },
 
   // Global setup script

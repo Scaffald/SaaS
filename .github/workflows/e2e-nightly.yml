@@ -45,8 +45,14 @@ jobs:
 
       - uses: ./.github/actions/install
 
+      # Not just @scaffald/ui: the Playwright webServer runs the app, which
+      # imports `@scaffald/sdk/react`, and the SDK's dist/ is gitignored with no
+      # `prepare` hook to build it on install. `nx run scf-core:build` pulls in
+      # ui, sdk, supabase and scf-schemas through dependsOn ["^build"] — the
+      # same preparation deploy-web.yml does, which is why that workflow builds
+      # and these nightly ones did not.
       - name: Build workspace packages
-        run: pnpm --filter @scaffald/ui build
+        run: pnpm nx run scf-core:build
 
       - name: Install Playwright browsers
         run: |
