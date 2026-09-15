@@ -106,6 +106,21 @@ export async function fetchPublicProfileBySlug(
   return getFromApi<PublicProfile>(`/v1/profiles/slug/${encodeURIComponent(resolved)}`, false)
 }
 
+/**
+ * The open jobs shown on the public `/jobs` listing.
+ *
+ * `/v1/jobs` defaults to `status=published`, which the route maps to the `open`
+ * status the column actually stores. Rows without a slug are dropped: the
+ * listing's only job of work is to point crawlers at `/jobs/<slug>` detail
+ * pages, and a row that cannot produce that link has nothing to contribute to
+ * a sitemap or to an ItemList.
+ */
+export async function fetchPublicJobs(limit = 50): Promise<PublicJob[]> {
+  const page = await getFromApi<PublicJob[]>(`/v1/jobs?limit=${limit}`)
+  if (!page) return []
+  return page.filter((job) => !!job.slug)
+}
+
 export async function fetchPublicJobBySlug(
   slug: string | string[] | undefined
 ): Promise<PublicJob | null> {

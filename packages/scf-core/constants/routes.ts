@@ -446,7 +446,11 @@ const ROUTES_CONFIG = {
   JOBS: {
     path: '/jobs',
     titleKey: 'routes.dashboard.discover.jobs.title',
-    protected: true,
+    // Public since #756 — the listing moved to app/(public)/jobs/index.tsx so
+    // the sitemap entry and the public /jobs/<slug> detail pages (#734) stop
+    // contradicting each other. Child routes below stay protected: applying,
+    // saved jobs and my-listings are all per-user.
+    protected: false,
     exact: false,
     DETAIL: {
       path: '/jobs/view/:id',
