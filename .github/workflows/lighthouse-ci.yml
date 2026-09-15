@@ -41,9 +41,25 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # `pnpm build` (nx run-many across every package) used to run here as well.
-      # `web:build` is the only build Lighthouse actually audits, so the extra
-      # pass was ~6 minutes of duplicate work on every run.
+      # `pnpm build` (nx run-many across every package) used to run here, and
+      # dropping it to save ~6 minutes is what broke this workflow: it was also
+      # the step that built @scaffald/sdk. The SDK is a submodule whose dist/ is
+      # gitignored and it has no `prepare` script, so `pnpm install` does not
+      # build it — and app code imports `@scaffald/sdk/react`, which the package
+      # exports as ./dist/react/index.mjs. Without that file the export dies:
+      #
+      #   Unable to resolve module @scaffald/sdk/react from
+      #   apps/scaffald/app/(admin)/office/cms/teams/[id]/edit.tsx
+      #
+      # `nx run scf-core:build` is the cheap version of the build that was
+      # removed. `build` declares dependsOn ["^build"], so this one command
+      # builds @scaffald/ui, @scaffald/sdk, supabase and scf-schemas first —
+      # everything web:build needs, and nothing it doesn't. Verified by
+      # reproducing CI: packages/sdk/dist is absent after a plain
+      # `pnpm install --frozen-lockfile` and present after this command.
+      - name: Build workspace packages
+        run: pnpm nx run scf-core:build
+
       - name: Start server
         run: |
           pnpm web:build
