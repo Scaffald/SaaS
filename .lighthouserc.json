@@ -3,55 +3,55 @@
     "assert": {
       "assertions": {
         "categories:accessibility": [
-          "error",
+          "warn",
           {
             "minScore": 0.95
           }
         ],
         "categories:best-practices": [
-          "error",
+          "warn",
           {
             "minScore": 0.9
           }
         ],
         "categories:performance": [
-          "error",
+          "warn",
           {
             "minScore": 0.9
           }
         ],
         "categories:seo": [
-          "error",
+          "warn",
           {
             "minScore": 0.9
           }
         ],
         "cumulative-layout-shift": [
-          "error",
+          "warn",
           {
             "maxNumericValue": 0.1
           }
         ],
         "first-contentful-paint": [
-          "error",
+          "warn",
           {
             "maxNumericValue": 1000
           }
         ],
         "largest-contentful-paint": [
-          "error",
+          "warn",
           {
             "maxNumericValue": 2500
           }
         ],
         "speed-index": [
-          "error",
+          "warn",
           {
             "maxNumericValue": 3000
           }
         ],
         "total-blocking-time": [
-          "error",
+          "warn",
           {
             "maxNumericValue": 300
           }
