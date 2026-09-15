@@ -74,18 +74,35 @@ jobs:
         env:
           SUPABASE_DB_PASSWORD: postgres
 
-      # A fresh `supabase start` has applied every migration file, so the
-      # types generated from it are the truth: a diff means a migration merged
+      # A fresh `supabase start` has applied every migration file, so the types
+      # generated from it are the truth: a difference means a migration merged
       # without `pnpm supa:generate` (#707). Uses the catalog-pinned CLI, not
       # the setup-cli one, so the output matches what a developer generates.
+      #
+      # Only the schemas this repo owns are compared. `storage`, `auth` and
+      # `realtime` are introspected from whichever postgres-meta image the CLI
+      # pulls, so they drift when Supabase ships, not when we do — the first
+      # version of this check failed on four new `storage` columns
+      # (versioning_status, archived_at, is_delete_marker, is_versioned) that
+      # no amount of regenerating would have fixed.
+      #
+      # It also generates to a temp file rather than over types.ts, so a failure
+      # leaves the working tree as it found it.
       - name: Check types.ts matches the migrations
         working-directory: packages/supabase
         run: |
-          pnpm exec supabase --workdir .. gen types typescript --local > types.ts
-          git diff --exit-code -- types.ts || {
+          pnpm exec supabase --workdir .. gen types typescript --local > /tmp/types-fresh.ts
+
+          node ../../scripts/types-owned-schemas.mjs types.ts          > /tmp/types-committed.slice
+          node ../../scripts/types-owned-schemas.mjs /tmp/types-fresh.ts > /tmp/types-fresh.slice
+
+          if ! diff -u /tmp/types-committed.slice /tmp/types-fresh.slice > /tmp/types.diff; then
             echo "::error file=packages/supabase/types.ts::types.ts is stale. Run \`pnpm supa:generate\` and commit the result."
+            echo "Differences in the schemas this repo owns:"
+            head -100 /tmp/types.diff
             exit 1
-          }
+          fi
+          echo "✅ types.ts matches the migrations"'"'
 
       - name: Wait for API
         run: |
