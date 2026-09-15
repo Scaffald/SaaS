@@ -52,13 +52,65 @@ jobs:
 
           SHORT="${SHA:0:8}"
 
-          # `commits/{sha}/pulls` lists the PRs a commit belongs to. A squash-
-          # merged PR's commit resolves to that PR; a direct push resolves to
-          # nothing.
-          COUNT=$(gh api "repos/$REPO/commits/$SHA/pulls" \
-            --jq '[.[] | select(.merged_at != null)] | length')
+          # Two independent ways to establish that a commit arrived through a
+          # PR. Both are needed, and the order matters.
+          #
+          # 1. `pulls/{n}` records the commit a merge produced as
+          #    `merge_commit_sha` — for a squash merge that is the squashed
+          #    commit itself. It is written as part of the merge, so it is
+          #    never stale. Requiring it to equal this SHA is what makes the
+          #    trailing `(#n)` in the message safe to read: a direct push can
+          #    end its subject with any number, but only the genuine merge
+          #    commit of PR n matches.
+          #
+          # 2. `commits/{sha}/pulls` asks the reverse question. It is the more
+          #    general check — it catches a merge whose message carries no PR
+          #    number — but it reads an index that is eventually consistent,
+          #    and this workflow starts seconds after the merge.
+          #
+          # That lag is not hypothetical. #747 was filed against ac49dbd0 three
+          # seconds after PR #746 merged it: the endpoint answered `[]` then and
+          # answers `#746` now. An empty list on the first read means "not
+          # indexed yet" at least as often as it means "pushed directly", so it
+          # is polled rather than believed, and only after (1) has declined to
+          # answer — which keeps the ordinary squash-merge path instant and
+          # spends the waiting only on commits that really do look unattached.
 
-          if [ "$COUNT" -gt 0 ]; then
+          merge_commit_of_referenced_pr() {
+            local num merged
+            num=$(printf '%s' "$MESSAGE" | head -1 \
+              | sed -n 's/.*(#\([0-9][0-9]*\))[[:space:]]*$/\1/p')
+            [ -n "$num" ] || return 1
+
+            merged=$(gh api "repos/$REPO/pulls/$num" \
+              --jq 'select(.merged_at != null) | .merge_commit_sha' 2>/dev/null) || return 1
+            [ "$merged" = "$SHA" ] || return 1
+
+            echo "   PR #$num records $SHORT as its merge commit."
+          }
+
+          indexed_against_a_merged_pr() {
+            local count
+            for delay in 0 5 10 20 30; do
+              if [ "$delay" -gt 0 ]; then
+                echo "   not indexed yet; waiting ${delay}s"
+                sleep "$delay"
+              fi
+
+              count=$(gh api "repos/$REPO/commits/$SHA/pulls" \
+                --jq '[.[] | select(.merged_at != null)] | length' 2>/dev/null) || count=0
+
+              [ "${count:-0}" -gt 0 ] && return 0
+            done
+            return 1
+          }
+
+          if merge_commit_of_referenced_pr; then
+            echo "✅ $SHORT landed via a merged pull request."
+            exit 0
+          fi
+
+          if indexed_against_a_merged_pr; then
             echo "✅ $SHORT landed via a merged pull request."
             exit 0
           fi
