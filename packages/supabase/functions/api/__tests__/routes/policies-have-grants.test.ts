@@ -21,9 +21,7 @@
  * it also catches a table whose grant exists but whose policy predicate reads
  * something the role cannot see — exactly core.user_skills below.
  */
-import {
-  assertEquals,
-} from "https://deno.land/std@0.208.0/assert/mod.ts";
+import { assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
 import { TEST_SUPABASE_ANON_KEY, TEST_SUPABASE_URL } from "../setup.ts";
 
 /**
