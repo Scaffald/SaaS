@@ -83,6 +83,31 @@ const jobSchema = z
     application_deadline: z.string().nullable(),
     number_of_openings: z.number().int().nullable(),
     is_featured: z.boolean().nullable(),
+    // Added with PUBLIC_JOB_COLUMNS (#756). `slug` is what a public listing
+    // links to, and the rest were already promised by the SDK's `Job` type
+    // while the schema here did not mention them.
+    slug: z.string().nullable(),
+    posted_at: z.string().nullable(),
+    pay_frequency: z.string().nullable(),
+    job_category: z.string().nullable(),
+    position_level: z.string().nullable(),
+    benefits_summary: z.string().nullable(),
+    minimum_education_level: z.string().nullable(),
+    minimum_years_experience: z.number().int().nullable(),
+    require_background_check: z.boolean().nullable(),
+    require_drug_test: z.boolean().nullable(),
+    require_drivers_license: z.boolean().nullable(),
+    security_clearance_required: z.string().nullable(),
+    travel_percentage: z.number().nullable(),
+    required_soft_skills: z.unknown().nullable(),
+    organization: z
+      .object({
+        id: z.string().uuid(),
+        name: z.string(),
+        slug: z.string().nullable(),
+        logo_url: z.string().nullable(),
+      })
+      .nullable(),
   })
   .openapi("Job");
 
@@ -174,6 +199,73 @@ const getJobsRoute = createRoute({
   ],
 });
 
+/**
+ * The columns `GET /v1/jobs` returns.
+ *
+ * It used to `select("*")`, which answered anonymous callers with all ~95
+ * columns of `core.jobs` — including `auto_reject_criteria`, `min_reputation`,
+ * `minimum_score`, `internal_job_code`, `cost_center`, `hiring_manager_id`,
+ * `recruiter_id`, `utm_parameters` and `search_tsv`. None of those are
+ * applicant-facing, and the route's own response schema has described a
+ * "simplified public fields" subset since it was written, so the `*` was
+ * always contradicting the declared contract rather than extending it.
+ *
+ * That mattered little while the list was reachable only by someone who knew
+ * the endpoint. `/jobs` is a crawlable page now (#756), so this is the shape
+ * that goes in front of the open internet.
+ *
+ * The set is the union of the declared `jobSchema`, the fields the SDK's `Job`
+ * type promises, and what InternalJobCard actually renders — plus the
+ * organization embed, which the list never returned even though the card has
+ * always tried to read `job.organization`. `custom_application_questions` is
+ * deliberately left out: the SDK declares it optional and only the
+ * fetch-by-id path needs it, so carrying it per row would bloat the list for
+ * nothing.
+ *
+ * `visibility` is NOT read here. Production rows carry the column and no
+ * migration in this repo creates it, so a query naming it would work remotely
+ * and fail on a freshly migrated database. Confidentiality is enforced through
+ * `is_confidential`, which migration 142 does define.
+ */
+const PUBLIC_JOB_COLUMNS = `
+  id,
+  organization_id,
+  title,
+  slug,
+  description,
+  status,
+  employment_type,
+  remote_option,
+  location,
+  pay_range_min_cents,
+  pay_range_max_cents,
+  pay_range_type,
+  pay_frequency,
+  job_category,
+  position_level,
+  benefits_summary,
+  minimum_education_level,
+  minimum_years_experience,
+  require_background_check,
+  require_drug_test,
+  require_drivers_license,
+  security_clearance_required,
+  travel_percentage,
+  required_soft_skills,
+  application_deadline,
+  number_of_openings,
+  is_featured,
+  posted_at,
+  created_at,
+  updated_at,
+  organization:organizations(
+    id,
+    name,
+    slug,
+    logo_url
+  )
+`;
+
 app.openapi(getJobsRoute, async (c) => {
   const supabase = c.get("supabase");
   const query = c.req.valid("query");
@@ -185,8 +277,11 @@ app.openapi(getJobsRoute, async (c) => {
   let dbQuery = supabase
     .schema("core")
     .from("jobs")
-    .select("*", { count: "exact" })
+    .select(PUBLIC_JOB_COLUMNS, { count: "exact" })
     .eq("status", dbStatus)
+    // `is_confidential` defaults to false (migration 142) but is nullable, so
+    // this has to exclude `true` rather than select `false`.
+    .not("is_confidential", "is", true)
     .range(query.offset, query.offset + query.limit - 1)
     .order("created_at", { ascending: false });
 

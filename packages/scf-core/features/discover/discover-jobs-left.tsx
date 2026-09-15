@@ -4,6 +4,7 @@ import {
   usePublishedJobs,
   useUserApplications,
 } from '@scf/core/utils/jobs-sdk-hooks'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { extractPlainText, SkeletonList, useThemeContext } from '@scaffald/ui'
 import type { JSONContent } from '@tiptap/core'
 import { ScrollView, Text, Stack } from '@scaffald/ui'
@@ -66,10 +67,16 @@ export function DiscoverJobsLeft({
     { enabled: jobSource === 'all' || jobSource === 'internal' }
   )
 
-  // Fetch user's applications to show applied status
+  // Fetch user's applications to show applied status.
+  //
+  // Gated on having a session: /jobs is public now (#756), and
+  // /v1/applications/me is not. Left unconditional it fires a guaranteed 401
+  // on every anonymous visit — noise in the console for a set that is
+  // necessarily empty when nobody is signed in.
+  const { session } = useSessionContext()
   const { data: userApplications } = useUserApplications(
     { limit: 100, offset: 0 },
-    { enabled: true }
+    { enabled: !!session?.access_token }
   )
 
   const externalJobs = externalData ?? []

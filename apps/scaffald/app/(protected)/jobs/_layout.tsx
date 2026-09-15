@@ -18,7 +18,9 @@ export default function JobsLayout() {
       }}
     >
       <DrawerLayout protectionComponent={null}>
-        <Stack.Screen name="index" options={{ title: 'Search Jobs' }} />
+        {/* No "index" screen: the jobs listing is public and lives at
+            app/(public)/jobs/index.tsx (#756). What remains under this layout
+            is the per-user half — saved jobs, applications, my-listings. */}
         {/* Lives at jobs/view/[id], not jobs/[id]: the public SEO route
             (app/(public)/jobs/[slug].tsx) is also /jobs/<param>, and route
             groups are not part of the URL, so the two collided. The server
