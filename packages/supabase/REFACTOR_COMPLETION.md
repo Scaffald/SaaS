@@ -26,7 +26,6 @@
 ### 4. Documentation
 - ✅ `packages/supabase/docs/MIGRATION_GUIDELINES.md` - Created
 - ✅ `packages/supabase/migrations/README.md` - Updated
-- ✅ `.cursor/rules/supabase.mdc` - Updated with new schema conventions
 
 ## 🔄 Next Steps (After Database Reset)
 

@@ -297,5 +297,4 @@ const { data, error } = await serviceClient
 
 - [PostgreSQL Row Security Policies](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)
 - [Supabase RLS Guide](https://supabase.com/docs/guides/auth/row-level-security)
-- [tRPC Supabase Patterns](.cursor/rules/trpc-supabase-patterns.mdc)
 - [Migration Consolidation](./MIGRATION_CONSOLIDATION.md)

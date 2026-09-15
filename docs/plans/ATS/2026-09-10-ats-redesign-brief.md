@@ -1006,7 +1006,6 @@ the existing screens will inherit all of these.
 | `2026-03-30-flow-engine-package-design.md` | The pipeline engine all four surfaces run on |
 | `source_material/jodie_convo.md` | Raw notes from the NationSearch owner interview |
 | `source_material/background_check_notes.md` | Expanded background-check requirements |
-| `source_material/incorrect_prd.md` | Superseded — named as incorrect; do not use |
 | `recruiter-company-applicant-prototype.html` | Clickable prototype (March) |
 | `nationsearch-prototype.html` | Clickable prototype (March) |
 

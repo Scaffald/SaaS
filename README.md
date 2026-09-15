@@ -63,7 +63,7 @@ You may need to run `pnpm ios` once to have it generate the env file, and then r
 
 ## Included packages
 
-- [Beyond UI](packages/beyond-ui/) (custom UI library)
+- [@scaffald/ui](packages/ui/) (custom UI library)
 - [solito](https://solito.dev)
 - [Expo SDK](https://expo.dev)
 - [Expo Router](https://docs.expo.dev/router/introduction/)
@@ -305,7 +305,7 @@ try {
 
 The SDK is located in this monorepo at:
 ```
-packages/scaffald-sdk/
+packages/sdk/
 ├── src/
 │   ├── client.ts          # Main SDK class
 │   ├── resources/         # API resources
@@ -330,7 +330,7 @@ pnpm --filter @scaffald/sdk test
 cd examples/integration-test && node simple-test.mjs
 ```
 
-For complete SDK documentation, see [`packages/scaffald-sdk/README.md`](packages/scaffald-sdk/README.md).
+For complete SDK documentation, see [`packages/sdk/README.md`](packages/sdk/README.md).
 
 ## First-time Configuration
 
@@ -434,7 +434,7 @@ SELECT * FROM onet.get_occupation('15-1252.00');
 SELECT onetsoc_code, title FROM onet.occupation_data ORDER BY title;
 ```
 
-For more details, see [O*NET README](packages/supabase/onet/README.md).
+For more details, see [O*NET seed docs](packages/supabase/docs/ONET_SEED.md).
 
 #### Cloud Deployment Steps
 
@@ -489,16 +489,14 @@ Please reference [Supabase's documentation](https://supabase.com/docs/guides/sel
 
 #### Local backend (two processes)
 
-The REST API and tRPC are served by Edge Functions in a **separate process**. For full local backend (no 404s on `/functions/v1/api/v1/...`):
+The REST API (and the legacy tRPC function) are served by Edge Functions in a **separate process**. For full local backend (no 404s on `/functions/v1/api/v1/...`):
 
 1. **Terminal 1:** `pnpm supa start` (or `pnpm supa:start:full`) — Supabase stack.
 2. **Terminal 2:** `pnpm supa:functions` — serves the `api` Edge Function and others. Leave running.
 
-**Verify:** `curl -s http://127.0.0.1:54321/functions/v1/api/health` should return `{"status":"ok",...}`. If you get 404, start the functions server (step 2). See [AGENTINFO.md](AGENTINFO.md) and troubleshooting guide section 5b.
+**Verify:** `curl -s http://127.0.0.1:54321/functions/v1/api/health` should return `{"status":"ok",...}`. If you get 404, start the functions server (step 2). See [AGENTINFO.md](AGENTINFO.md).
 
 **Important:** Always use `pnpm supa start` (or `pnpm supa:start:full`) instead of direct supabase commands to ensure environment variables are properly loaded.
-
-NOTE: When using tRPC, even if you just want to develop on native, you need to have the web server running to be able to make tRPC requests.
 
 The iOS simulator will not make requests to localhost
 
@@ -531,7 +529,7 @@ await signInAsTestUser(page)
 const token = await getBearerToken('user@example.com', 'password')
 ```
 
-See [`tests/README.md`](./tests/README.md) for full documentation.
+See [`docs/TESTING.md`](docs/TESTING.md) for full documentation.
 
 ### EAS dev builds
 
@@ -583,13 +581,6 @@ In the `apps/expo` folder you can use EAS and a few helpful scripts:
 
 Add `--local` to build locally.
 
-### Code generation script
-
-- Component: `pnpm gen component`
-- Screen: `pnpm gen screen`
-- tRPC Router: `pnpm gen router`
-- **Route: `pnpm gen route`** (New! See Route Naming Convention below)
-
 ### Signup Flow
 
 Supabase PKCE flow requires email confirmation on sign up. You fill in the sign up form with email and password. Local setup will let you confirm the email by:
@@ -608,11 +599,11 @@ The main apps are:
 - `apps`
   - `expo` (Native and Web)
 - `packages` Shared packages across apps
-  - `beyond-ui` Shared UI component library (Beyond UI)
+  - `ui` Shared UI component library (`@scaffald/ui`)
   - `app` You'll be importing most files from `app/`
     - `features` Where most of your code lives.
     - `provider` All providers that wrap the app, sometimes forked by platform.
-- `supabase` Supabase files, migrations, types, etc. + [scripts](/supabase/README.md)
+- `supabase` Supabase files, migrations, types, etc. + [scripts](packages/supabase/README.md)
 
 Note that the main entry point for the Expo app is at `apps/expo/app/index.tsx`. For more on how Expo Router works, [check out their docs](https://docs.expo.dev/router/create-pages/).
 
@@ -748,7 +739,7 @@ To run a [native build](https://docs.expo.dev/develop/development-builds/introdu
 
 ## Expo Go
 
-Expo Go works with the standard Expo and Beyond UI setup.
+Expo Go works with the standard Expo and `@scaffald/ui` setup.
 
 ## Expo EAS Update
 
@@ -774,7 +765,7 @@ Redirect URL for email signup needs to be configured in Supabase Auth dashboard 
 
 Getting OAuth to work on web is as easy as it gets but on native, you will need to manually get the OAuth credentials, and then feed them to the Supabase session. See [this article](https://dev.to/fedorish/google-sign-in-using-supabase-and-react-native-expo-14jf) for more info on how to handle native OAuth with Supabase.
 
-For a detailed guide about Supabase and all available script commands see [Supabase README](/supabase/README.md)
+For a detailed guide about Supabase and all available script commands see [Supabase README](packages/supabase/README.md)
 
 ### Protecting Screens on Native
 
@@ -911,7 +902,7 @@ We actively maintain the starter and add new features and updates to it.
 
 ## UI Kit
 
-The monorepo uses a custom UI library (Beyond UI). See `packages/beyond-ui` for components and theming.
+The monorepo uses a custom UI library, `@scaffald/ui`. See `packages/ui` for components and theming.
 
 ### Layout Components
 
@@ -925,7 +916,7 @@ The UI package includes several layout components:
 
 When creating new UI components:
 
-1. **Use Beyond UI components** (`Button`, `Text`, `View`, `Stack`, etc. from `@unicornlove/beyond-ui`)
+1. **Use `@scaffald/ui` components** (`Button`, `Text`, `Stack`, `Row`, etc.)
 2. **Follow the design system** patterns established in the UI package
 3. **Make components cross-platform** (web, iOS, Android)
 4. **Document components** with JSDoc comments
@@ -992,44 +983,6 @@ This error is likely caused my not having Supabase setup correctly and running i
 - Where is the initial page that gets rendered on the Expo app?
 
 We recommend you familiarize yourself with how Expo Router handles routing on [their docs](https://docs.expo.dev/router/introduction/). In a fresh project, the initial page would be on `apps/expo/app/(drawer)/index.tsx`.
-
-## Cursor Rules
-
-This project includes cursor rules to help maintain code quality and consistency. The rules are located in `.cursor/rules/` and include:
-
-- **`route-naming-convention.mdc`** - Guidelines for dashboard route structure
-- **`ui-development.mdc`** - UI component development standards
-- **`react-native.mdc`** - React Native/Expo development guidelines
-- **`code-quality.mdc`** - Code quality and maintenance rules
-
-### Using Generators
-
-We provide several Nx generators to speed up development:
-
-```bash
-# Create a new component
-pnpm gen component
-
-# Create a new screen
-pnpm gen screen
-
-# Create a new tRPC router
-pnpm gen router
-
-# Create a new dashboard route (recommended)
-pnpm gen route
-```
-
-### Generator Best Practices
-
-1. **Use the route generator** for dashboard pages - it creates all necessary files
-2. **Follow naming conventions** - generators enforce consistent patterns
-3. **Review generated code** - customize as needed for your specific use case
-4. **Run quality checks** after generation:
-   ```bash
-   pnpm format:fix
-   pnpm lint:fix
-   ```
 
 ## Troubleshooting
 

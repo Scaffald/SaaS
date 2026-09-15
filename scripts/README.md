@@ -442,6 +442,4 @@ One-off codemods and setup scripts live in [scripts/archive/](archive/). Use sta
 
 ## Additional Resources
 
-- [Production Deployment Guide](../docs/deployment/PRODUCTION_DEPLOYMENT.md)
-- [Supabase Cloud Setup](../docs/deployment/supabase-cloud-setup.md)
-- [AWS Setup Guide](../docs/deployment/aws-setup.md)
+- [Deployment infrastructure](../docs/setup/DEPLOYMENT.md)

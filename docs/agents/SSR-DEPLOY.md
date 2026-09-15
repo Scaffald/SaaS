@@ -179,8 +179,8 @@ a previous deployment from the [EAS Hosting dashboard](https://expo.dev/projects
 - **`getProfileBySlug` in `@scaffald/sdk` targets a nonexistent API path**
   (`/v1/profiles/slug/{slug}`); the real route is `/v1/profiles/{username}`.
   Public profile pages are broken in production today. The SSR loader works
-  around it by calling the correct path directly. Filed as a Task in the
-  Unicorn org's *Dogfood Bugs (Open)* punchlist.
+  around it by calling the correct path directly. Tracked under #447 (SDK/api
+  contract drift).
 - **Sitemaps query PostgREST directly** (`core.users`, `core.jobs`) because the
   REST API exposes no bulk slug listing. Capped at 40k URLs each; split further
   before crossing 50k.

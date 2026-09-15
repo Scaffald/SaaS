@@ -1,13 +1,11 @@
 # Release Process
 
-> **⚠️ Tracker migrated (2026-07-16):** Linear is deprecated — tracking now
-> lives in GitHub Issues + the [Scaffald project board](https://github.com/orgs/Scaffald/projects/1).
-> See [TRACKING.md](TRACKING.md). Read the Linear steps below as their board
-> equivalents: `vX.Y.Z` Linear label → GitHub `vX.Y.Z` issue label; "In Github"
-> / "In TestFlight" state moves → board Status column moves;
-> `pnpm release:promote` → bulk board-status update.
+> Written when Linear was the tracker. Tracking moved to GitHub Issues + the
+> [project board](https://github.com/orgs/Scaffald/projects/1) on 2026-07-16
+> (see [TRACKING.md](TRACKING.md)); read "Linear label" as the GitHub `vX.Y.Z`
+> label and state moves as board Status moves.
 
-Coordinated version tagging across git, Linear, commits, and TestFlight. The
+Coordinated version tagging across git, the tracker, commits, and TestFlight. The
 goal is a single audit trail per release so we always know: what code shipped,
 what tickets it covered, what's been QA'd, and what's safe to roll back to.
 
@@ -250,12 +248,12 @@ matters — every shipped artifact has a reproducible source commit.
 
 ## Conventions for contributors
 
-- **Commit messages**: keep the existing pattern. `Closes Scaffald/SC-X` in
-  the commit body so Linear auto-closes the issue on merge.
+- **Commit messages**: conventional prefix, and `Fixes #NNN` / `Closes #NNN`
+  in the PR body so the issue closes on merge.
 - **PR titles**: lead with the scope and the ticket(s). Existing convention
   is fine.
-- **Branches**: `clay/sc-X-...` per issue, or `clay/sc-X-Y-...` for grouped
-  work. Same as now.
+- **Branches**: `fix/<issue>-<slug>`, `feat/<issue>-<slug>`, `docs/<slug>`;
+  agent sessions use `claude/<slug>`.
 - **Don't tag commits manually** outside the release flow. Tags are reserved
   for shippable builds.
 
@@ -263,7 +261,5 @@ matters — every shipped artifact has a reproducible source commit.
 
 ## See also
 
-- [CLAUDE.md](./CLAUDE.md) — top-level agent guidance for this repo.
-- [DOGFOODING.md](./DOGFOODING.md) — internal usage / smoke testing.
-- [Linear roadmap view](https://linear.app/scaffald/team/SC) — filter by
-  `vX.Y.Z` label for release notes.
+- [CLAUDE.md](../../CLAUDE.md) — agent guidance for this repo.
+- [TRACKING.md](TRACKING.md) — issues, labels, and the project board.

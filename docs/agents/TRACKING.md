@@ -56,9 +56,3 @@ ship in a release, move them to **In TestFlight** on the board when the build
 is live, and **Done** once verified. The old Linear promotion scripts were
 removed in the Scaffald org migration — release promotion is now a
 board-status move.
-
-## History
-
-- Migration session: 2026-07-16 (Linear SC-14/23/31/32/75/76/99/130/131/132 →
-  GitHub #368–#377, commented + canceled in Linear).
-- Old backlog snapshots: `docs/agents/audits/`.

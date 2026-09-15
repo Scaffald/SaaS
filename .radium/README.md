@@ -52,6 +52,5 @@ critical_constraints:
 
 ## Integration
 
-- **Claude Code**: `docs/agents/CLAUDE.md` contains a lookup table pointing to these docs
-- **Cursor**: `.cursor/rules/radium-lookup.mdc` references these docs
+- **Claude Code**: the root `CLAUDE.md` carries the lookup table pointing to these docs
 - **Verification**: `pnpm radium:check` runs grep-based constraint validation

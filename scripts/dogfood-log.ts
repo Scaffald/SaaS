@@ -3,11 +3,8 @@
 /**
  * scripts/dogfood-log.ts
  *
- * Records a Claude Code session (or any unit of work in this repo) into
- * Unicorn's Logs system via the Scaffald SDK. Used at the end of every
- * session to dogfood the product and accumulate real demo data.
- *
- * See: docs/agents/DOGFOODING.md and root CLAUDE.md.
+ * Records a unit of work as a Logs entry in the local Unicorn org via the
+ * Scaffald SDK. Manual demo-data tool; nothing in the repo depends on it.
  *
  * Usage:
  *   pnpm tsx scripts/dogfood-log.ts \
