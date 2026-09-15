@@ -1,10 +1,16 @@
 #!/usr/bin/env node
 /**
- * iOS-viewport UI audit via Playwright.
+ * Viewport UI audit via Playwright.
  *
- * Walks every route in apps/scaffald/app/ at 390x844 (iPhone 14) on the
- * Expo Web dev server, screenshots each, writes a manifest. Auth is
- * programmatic via @supabase/supabase-js — no UI driving for login.
+ * Walks every route in apps/scaffald/app/ on the Expo Web dev server at one
+ * device profile, screenshots each, writes a manifest. Auth is programmatic
+ * via @supabase/supabase-js — no UI driving for login.
+ *
+ * AUDIT_DEVICE picks the profile (default `iphone`):
+ *   iphone           390x844   dpr 3   the original sweep
+ *   ipad-portrait    768x1024  dpr 2   #373 — App Store review tests on iPad
+ *   ipad-landscape   1024x768  dpr 2   #373
+ *   android          360x800   dpr 3   #372 — the web half; native needs adb
  *
  * Prereqs:
  *   - Dev server running: pnpm expo start --port 8081 (separate terminal)
@@ -40,14 +46,50 @@ const LOGIN_TIMEOUT = Number(process.env.AUDIT_LOGIN_TIMEOUT) || 90000
 // Repo root (this file lives at scripts/audit/, so two levels up).
 const PROJECT_ROOT = resolve(__dirname, '..', '..')
 
-// iPhone 14 — 390x844, dpr 3.
-const IPHONE = devices['iPhone 14'] || {
-  viewport: { width: 390, height: 844 },
-  deviceScaleFactor: 3,
-  isMobile: true,
-  hasTouch: true,
-  userAgent:
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+// Device profiles. Playwright's descriptors carry viewport, dpr, touch and UA;
+// the fallbacks exist so a Playwright without that descriptor still runs.
+const IPAD_UA =
+  'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'
+const DEVICES = {
+  iphone: devices['iPhone 14'] || {
+    viewport: { width: 390, height: 844 },
+    deviceScaleFactor: 3,
+    isMobile: true,
+    hasTouch: true,
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+  },
+  // 768x1024 is the classic iPad point size and what #373 names; every
+  // current iPad is at least this wide, so a layout that breaks here breaks
+  // on all of them.
+  'ipad-portrait': {
+    viewport: { width: 768, height: 1024 },
+    deviceScaleFactor: 2,
+    isMobile: true,
+    hasTouch: true,
+    userAgent: IPAD_UA,
+  },
+  'ipad-landscape': {
+    viewport: { width: 1024, height: 768 },
+    deviceScaleFactor: 2,
+    isMobile: true,
+    hasTouch: true,
+    userAgent: IPAD_UA,
+  },
+  android: devices['Pixel 7'] || {
+    viewport: { width: 360, height: 800 },
+    deviceScaleFactor: 3,
+    isMobile: true,
+    hasTouch: true,
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36',
+  },
+}
+const DEVICE_NAME = process.env.AUDIT_DEVICE || 'iphone'
+const IPHONE = DEVICES[DEVICE_NAME]
+if (!IPHONE) {
+  console.error(`✗ unknown AUDIT_DEVICE "${DEVICE_NAME}"; one of: ${Object.keys(DEVICES).join(', ')}`)
+  process.exit(2)
 }
 
 // Whatever auth-token storage format the app uses is captured by driving the
@@ -140,6 +182,7 @@ async function performLoginAndSaveState(browser) {
   const page = await context.newPage()
   await page.goto(`${BASE_URL}/auth`, { waitUntil: 'commit', timeout: 60000 })
   await page.waitForLoadState('domcontentloaded')
+  await dismissDevOverlay(page)
 
   // Accept cookies if banner appears.
   const acceptCookies = page.locator(
@@ -151,7 +194,10 @@ async function performLoginAndSaveState(browser) {
     await page.waitForTimeout(300)
   } catch {}
 
-  // Login UI is magic-link by default. Toggle to password, check Terms, submit.
+  // Login UI is magic-link by default. Toggle to password and submit. There
+  // is no terms checkbox any more — acceptance is versioned server-side
+  // (core.legal_documents, #342) and the form only carries the passive "By
+  // continuing you agree" line.
   // The first request to a freshly-started Expo Web dev server triggers a cold
   // Metro compile (8k+ modules, can take 60-90s) before anything renders — so
   // this first waitFor doubles as "wait for the bundle to compile." Override
@@ -169,10 +215,7 @@ async function performLoginAndSaveState(browser) {
   await passwordInput.waitFor({ timeout: 5000 })
   await passwordInput.fill(PASSWORD)
 
-  // Accept Terms by clicking the wrapping Pressable (text "I agree to the…").
-  await page.getByText('I agree to the').first().click()
-
-  // After toggle the link below now reads "Use email link instead", so the
+  // After the toggle the link below reads "Use email link instead", so the
   // only remaining "Sign in" text is the submit button.
   await page.getByText('Sign in', { exact: true }).first().click()
 
@@ -207,6 +250,21 @@ async function performLoginAndSaveState(browser) {
   const state = await context.storageState()
   await context.close()
   return state
+}
+
+// In dev, Expo Router paints a full-screen error overlay on any uncaught
+// error — including the intermittent SSR hydration mismatch on the (auth)
+// layout (#681). It sits above the form and eats every click, so a sweep that
+// happens to hit that render would fail at login for a reason that has nothing
+// to do with login. Escape closes it; the app underneath keeps running.
+async function dismissDevOverlay(page) {
+  const overlay = page.getByText(/Uncaught Error|Hydration failed/i).first()
+  try {
+    await overlay.waitFor({ timeout: 2500 })
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(300)
+    console.log('  (dismissed the dev error overlay — see #681)')
+  } catch {}
 }
 
 // ---------- Capture ----------
@@ -253,6 +311,7 @@ async function captureRoute(page, route, manifest) {
   try {
     const res = await page.goto(url, { waitUntil: 'commit', timeout: 30000 })
     await settle(page)
+    await dismissDevOverlay(page)
     await page.screenshot({ path: outFile, fullPage: true })
     manifest.push({
       group: route.group,
@@ -359,7 +418,7 @@ async function preflightApi() {
 
 // ---------- Main ----------
 async function main() {
-  console.log(`  iOS-viewport UI audit`)
+  console.log(`  viewport UI audit — ${DEVICE_NAME} ${IPHONE.viewport.width}x${IPHONE.viewport.height}`)
   console.log(`  base: ${BASE_URL}`)
   console.log(`  out:  ${OUT_DIR}`)
   console.log(`  user: ${EMAIL}\n`)
@@ -420,6 +479,7 @@ async function main() {
         baseUrl: BASE_URL,
         startedAt,
         finishedAt: new Date().toISOString(),
+        device: DEVICE_NAME,
         viewport: IPHONE.viewport,
         user: EMAIL,
         captures: manifest,

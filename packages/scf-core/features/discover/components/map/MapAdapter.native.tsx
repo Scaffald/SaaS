@@ -4,7 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import { StyleSheet, Text, useColorScheme, View } from 'react-native'
 import type { MapContainerRef, ViewportBounds } from '@scaffald/ui'
 
-import { getMapStyleUrl } from './mapboxStyleConfig'
+import { getNativeMapStyleUrl } from './mapboxStyleConfig'
 
 interface MapPin {
   id: string
@@ -41,7 +41,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
 
     useEffect(() => { latestPinsRef.current = pins }, [pins])
 
-    const mapStyle = getMapStyleUrl(resolvedTheme)
+    const mapStyle = getNativeMapStyleUrl(resolvedTheme)
 
     useImperativeHandle(ref, () => ({
       centerOnPin: (pinId: string, options?: { preserveZoom?: boolean }) => {

@@ -5,7 +5,26 @@
 
 import type { ColumnDef } from '@tanstack/react-table'
 import { flexRender } from '@tanstack/react-table'
+import { createElement, isValidElement } from 'react'
+import { Text } from 'react-native'
 import type { TableColumn, TableRowData } from '@scaffald/ui'
+
+/**
+ * @scaffald/ui's Table drops `render()` output straight into a <View>. On web
+ * a bare string is fine there; on native it is the "Text strings must be
+ * rendered within a <Text> component" render error — which is what every
+ * Office table did on iPad, because flexRender returns the raw value for any
+ * column without a custom cell (and for custom cells that return a string).
+ * Primitives get a <Text>; elements pass through untouched.
+ */
+function asRenderable(result: unknown) {
+  if (result === null || result === undefined || result === false) return null
+  if (isValidElement(result)) return result
+  if (typeof result === 'string' || typeof result === 'number') {
+    return createElement(Text, null, String(result))
+  }
+  return result as never
+}
 
 /**
  * Convert TanStack ColumnDef array to @scaffald/ui TableColumn array
@@ -26,7 +45,7 @@ export function columnsFromTanStack<TData extends Record<string, unknown>>(
       sortable: (def as { enableSorting?: boolean }).enableSorting !== false,
       render: (value: unknown, row: TableRowData, rowIndex: number) => {
         if (!def.cell) {
-          return value !== null && value !== undefined ? String(value) : ''
+          return asRenderable(value !== null && value !== undefined ? String(value) : '')
         }
         const cellContext = {
           getValue: () => value,
@@ -34,7 +53,7 @@ export function columnsFromTanStack<TData extends Record<string, unknown>>(
           column: { columnDef: def },
           getContext: () => cellContext,
         }
-        return flexRender(def.cell, cellContext as never)
+        return asRenderable(flexRender(def.cell, cellContext as never))
       },
     }
   })
