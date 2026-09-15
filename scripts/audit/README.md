@@ -59,12 +59,15 @@ audit/
   ui-sweep.mjs              # reusable
   2026-05-26/
     file-findings.ts        # filed 19 findings as in-product Tasks
-    create-linear-tickets.mjs   # created SC-77 through SC-89
+  2026-06-10/
+    generate-status-matrix.mjs   # worker-flow status matrix (v1.10.0 prep)
+    inventory-ui-kit.mjs         # @scaffald/ui export usage inventory
+  2026-06-23/
+    hide-dead-ui-exports.mjs     # applied the inventory's dead-export list
 ```
 
 To kick off a new audit:
 
-1. Run `ui-sweep.mjs` → produces screenshots.
-2. Hand-write `findings.md` after walking each.
-3. Copy a previous date's filing scripts to today's date, swap the finding
-   list + Task ID mapping, and run.
+1. Run `ui-sweep.mjs` → produces screenshots under `screenshots/ui-audit/`.
+2. Walk each screenshot and file one GitHub Issue per finding (see the root
+   `CLAUDE.md` for the shape). Do not write a findings markdown file.
