@@ -1,98 +1,41 @@
 # CLAUDE.md
 
-Project-specific guidance for Claude Code sessions in this repo.
+Guidance for Claude Code sessions in this repo.
 
-**Canonical project context**: [docs/agents/CLAUDE.md](docs/agents/CLAUDE.md) and
-[AGENTINFO.md](AGENTINFO.md). Read those first for architecture, pillar docs
-(`.radium/*`), and pre-edit checklists.
+## Canonical context
 
----
+- [AGENTINFO.md](AGENTINFO.md) — architecture, packages, commands, environment, testing, deployment. Read it first.
+- [.radium/](.radium/README.md) — one constraint doc per pillar. **Read the pillar doc before editing that area**:
 
-## Dogfood Logging
+| Editing… | Read |
+|---|---|
+| `packages/ui` components or tokens | `.radium/scaffald-ui.md` |
+| `packages/sdk` or `*-sdk-hooks.ts` in scf-core | `.radium/scaffald-sdk.md` |
+| `apps/scaffald` routes, layouts, navigation, auth | `.radium/app-expo.md` |
+| `packages/supabase` edge functions, migrations, RLS | `.radium/supabase-backend.md` |
+| build config, CI, dependency pins | `.radium/ci-deployment.md` |
 
-**At the end of every session that produced meaningful work in this repo, log it
-to Unicorn's Logs system.** This is how we generate real demo data, exercise the
-API/SDK/UI surface continuously, and surface bugs and feature gaps. See
-[docs/agents/DOGFOODING.md](docs/agents/DOGFOODING.md) for the full plan.
+`pnpm radium:check` greps for the known-bad patterns those docs describe. When a bug came from an agent misreading a constraint, fix the `.radium/` doc in the same PR.
 
-Two modes:
+## Working in this repo
 
-1. **API mode (default)** — run the script:
-   ```bash
-   pnpm tsx scripts/dogfood-log.ts \
-     --team <design|frontend|backend|infra> \
-     --project <scaffald-platform|scaffald-ui|logs-feature|tasks-feature|infrastructure|mobile-app> \
-     --hours 1.0 \
-     --description "One-paragraph past-tense summary of what was done" \
-     --tasks "Task one,Task two,Task three" \
-     --submit
-   ```
-   Pick the team + project that best fit. Estimate hours honestly, rounded
-   to 0.25h. Write the description in past tense. List concrete completed
-   tasks in `--tasks` (comma-separated). Add `--submit` to move the log to
-   `pending_verification`; omit to leave as draft.
+- **pnpm only.** Use `pnpm supa …` rather than a global Supabase CLI. Never `npm`.
+- **Shared checkout.** Other sessions use the same clone. Work in a git worktree, never switch branches, stash, reset, or `git checkout -- <path>` in the shared tree, and never rewrite history that has been pushed.
+- **Hooks.** Pre-commit reformats staged files (re-add and amend if it changed anything). Run `pnpm prepush` before pushing; the push hook refuses without its stamp. See [.githooks/README.md](.githooks/README.md).
+- **No non-terminating commands.** No `--watch`, `tail -f`, or dev servers from Bash. Use the preview tools for servers, and single-run commands (`pnpm check`, `pnpm test:unit`) for verification.
+- **Routes are constants.** Paths come from `packages/scf-core/constants/routes.ts`; `scripts/check-hardcoded-routes.mjs` rejects string literals.
+- **Tests hit real systems.** Real local database and real HTTP against the `api` edge function. Mocks are only for third-party services we don't own.
+- **Migrations are append-only.** New numbered file; never edit an applied one.
 
-2. **Browser mode (weekly Friday smoke, ~45 min)** — open
-   `http://localhost:8081/employers/org/unicorn/logs/create` and fill the
-   form manually. While there, exercise filters/sort/search on the list
-   page, click into a few logs, and file any UI bugs as Tasks (see below).
+## Tracking
 
-**Don't skip logging.** Gaps in the timeline are the failure mode we want
-to avoid. If you can't decide on a team/project, ask the user. If the
-script fails because the API isn't running, start it with `pnpm supa start`
-and `pnpm supa functions serve api` (separate terminal).
+Work is tracked in GitHub Issues on `Scaffald/SaaS` and the org project board. See [docs/agents/TRACKING.md](docs/agents/TRACKING.md) for labels and the `agent-ready` contract.
 
-**Bugs and ideas:** while working, or when reviewing your output in the
-browser, file findings **as Tasks in the product** — the markdown stopgaps
-this used to point at are gone (Phase 3 shipped; see
-[docs/agents/DOGFOODING.md](docs/agents/DOGFOODING.md)). Filing them in the
-product *is* part of the dogfood loop: it exercises the Tasks surface the
-same way logging exercises Logs.
+**Audit and investigation findings become GitHub Issues, not markdown.** Do not write findings to `docs/`. The shape:
 
-Punchlists in the Unicorn org
-([employers/org/unicorn/tasks](http://localhost:8081/employers/org/unicorn/tasks)):
-- **Dogfood Bugs (Open)** — broken UI, broken behavior, schema misnomers
-- **Dogfood Bugs (Fixed)** — move here rather than deleting, so the
-  before/after stays visible
-- **Dogfood Ideas** — feature ideas, especially PM primitives that would let
-  us run this product on itself
+1. Survey first: `gh label list`, `gh issue list --limit 60`, dedupe against what is open.
+2. One issue per self-contained finding, with `file:line` evidence and an acceptance section. Add `agent-ready` only when it genuinely stands alone.
+3. An epic issue rolling the children up: checkbox list, dependency notes, sequencing, and a "what is solid" section.
+4. Milestones carry the version plan; the epic carries the narrative.
 
-**Then add the finding to
-[packages/supabase/seeds/012_seed-dogfood-tasks.sql](packages/supabase/seeds/012_seed-dogfood-tasks.sql).**
-A Task filed only in local dev is destroyed by the next `pnpm supa db reset` —
-that is exactly how the first copy of the 2026-07-30 findings was lost. File it
-in the product so the surface gets exercised, then seed it so it survives.
-
-**Bugs in the code, as opposed to in the product experience, go to GitHub
-Issues** on `Scaffald/SaaS` with the `agent-ready` label when they are
-self-contained — see [docs/agents/TRACKING.md](docs/agents/TRACKING.md).
-Rule of thumb: if a teammate would triage it on the board, it is an Issue;
-if it is dogfood signal about using Scaffald, it is a Task.
-
----
-
-## Audits and Investigations → GitHub Issues, not markdown
-
-**When an audit, review, or investigation produces findings, file them as
-GitHub Issues. Do not write them to a markdown file under `docs/plans/` or
-`docs/agents/audits/`.** Plan docs go stale in the repo and nobody triages
-them off a board.
-
-The shape:
-
-1. **Survey first** — `gh label list` and `gh issue list --limit 60` to dedupe
-   against what is already open and to pick labels that actually exist.
-2. **One issue per self-contained finding**, with `file:line` evidence and an
-   acceptance section, so it stands alone without the conversation that
-   produced it. Add `agent-ready` only when it genuinely is self-contained.
-3. **An epic issue** rolling the children up: checkbox list by phase, a
-   dependency graph, a sequencing note, and a "what is genuinely solid"
-   section so the set does not read as a teardown.
-4. **Comment on any existing umbrella issue** pointing at the new epic.
-5. **Milestones carry the version/sprint plan**; the epic carries the narrative.
-
-Reference example: the 2026-08-03 `/office` ATS audit — epic
-[#539](https://github.com/Scaffald/SaaS/issues/539), children #524–#538.
-
-Design specs and architecture proposals are still markdown under
-`docs/plans/` — the rule is about *findings*, not about intent.
+Design specs and architecture proposals are still markdown under `docs/plans/`. The rule is about *findings*, not intent.

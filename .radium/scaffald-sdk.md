@@ -1,12 +1,12 @@
 ---
 pillar: "@scaffald/sdk"
 status: active
-last_verified: 2026-03-10
+last_verified: 2026-09-15
 packages:
-  - packages/scaffald-sdk/
+  - packages/sdk/
   - packages/scf-core/utils/*-sdk-hooks.ts
 key_files:
-  - packages/scaffald-sdk/src/resources/
+  - packages/sdk/src/resources/
   - packages/scf-core/utils/
 critical_constraints:
   - "Always accept UseMutationOptions as final param and spread with ...options"
@@ -86,23 +86,8 @@ queryClient.invalidateQueries({ queryKey: ['teams'] })
 SDK responses nest data under `data.data`:
 
 ```typescript
-// tRPC (old): data is direct
-const connections = data.connections
-
-// SDK (current): data is nested
-const connections = data.data
+const connections = data.data   // not data.connections, not data.items
 ```
-
-## tRPC → SDK Migration Checklist
-
-When converting a tRPC call to SDK:
-
-1. Replace `api.resource.action.useQuery(params)` with the SDK hook equivalent
-2. Replace `utils.resource.action.invalidate()` with `queryClient.invalidateQueries({ queryKey: [...] })`
-3. Check parameter format — tRPC often wraps params, SDK may use direct values
-4. Check response structure — SDK uses `data.data` nesting
-5. Add null client guard in the hook
-6. Accept `UseMutationOptions` for mutations and spread with `...options`
 
 ## SDK Testing Patterns
 

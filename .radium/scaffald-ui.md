@@ -1,12 +1,12 @@
 ---
 pillar: "@scaffald/ui"
 status: active
-last_verified: 2026-03-10
+last_verified: 2026-09-15
 packages:
-  - packages/scaffald-ui/
+  - packages/ui/
 key_files:
-  - packages/scaffald-ui/src/hooks/useResponsive.ts
-  - packages/scaffald-ui/src/theme/ThemeProvider.tsx
+  - packages/ui/src/hooks/useResponsive.ts
+  - packages/ui/src/theme/ThemeProvider.tsx
 critical_constraints:
   - "Use colors.bg[theme].default NOT colors.background[theme].default"
   - "Use colors.text[theme].primary NOT colors.text.primary — always include [theme]"
@@ -32,8 +32,8 @@ colors.{semantic}[theme].{variant}
 
 ### Usage
 ```typescript
-import { useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 const { theme } = useThemeContext()
 
@@ -49,27 +49,6 @@ colors.text.primary               // ❌ missing [theme] — use colors.text[the
 colors.border.default             // ❌ missing [theme] — use colors.border[theme].default
 ```
 
-## Tamagui → Beyond-UI Token Mapping
-
-| Tamagui | Beyond-UI |
-|---------|-----------|
-| `$background` | `colors.bg[theme].default` |
-| `$borderColor` | `colors.border[theme].default` |
-| `$color1` | `colors.text[theme].onPrimary` |
-| `$color2` | `colors.bg[theme].subtle` |
-| `$color3` | `colors.bg[theme].muted` |
-| `$color5` | `colors.bg[theme].inactive` |
-| `$color7` | `colors.border[theme].subtle` |
-| `$color10` | `colors.text[theme].tertiary` |
-| `$color11` | `colors.text[theme].secondary` |
-| `$color12` | `colors.text[theme].primary` |
-| `$red9` | `colors.bg[theme].error` |
-| `$red10` / `$red11` | `colors.text[theme].error` |
-| `$blue9` | `colors.bg[theme].primary` |
-| `$blue10` | `colors.text[theme].info` |
-| `$green9` | `colors.bg[theme].success` |
-| `$green10` | `colors.text[theme].success` |
-
 ## Spacing Tokens
 
 **Valid indices only:** 0, 2, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 80, 96, 128, 160, 192, 256, 384, 512, 768
@@ -79,20 +58,6 @@ colors.border.default             // ❌ missing [theme] — use colors.border[t
 <Row gap={12}>           // ✅ use literal value
 <Row gap={spacing[4]}>   // ✅ valid index (resolves to 16)
 ```
-
-## Component API Mapping
-
-| Tamagui | Beyond-UI |
-|---------|-----------|
-| `YStack` | `Stack` |
-| `XStack` | `Row` |
-| `SizableText` | `Text` with `size` prop |
-| `<Button.Text>` | Direct children in `Button` |
-| `CustomCheckbox` + `onCheckedChange` | `Checkbox` + `onChange` |
-| `ToggleSwitch` | `Toggle` + `onChange` |
-| `size="$3"` / `size="$4"` | `size="sm"` / `size="md"` / `size="lg"` |
-| `variant="primary"` | `variant="filled"` + `color="primary"` |
-| `variant="outlined"` | `variant="outline"` |
 
 ## useResponsive Hook
 

@@ -118,8 +118,8 @@ Two known causes:
      20251121083706 20251121090000 ... --linked
    ```
 
-See `docs/agents/audits/2026-05-22-supabase-schema-drift.md` for the
-full investigation that surfaced both.
+Both were surfaced by the 2026-05-22 schema-drift investigation;
+`.github/workflows/supabase-drift-audit.yml` now checks for them nightly.
 
 ### `migration repair --status applied` is a record-only operation
 

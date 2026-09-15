@@ -2,7 +2,7 @@
 
 > **Canonical Source**: This file contains all project-specific context for the UNI-Construct monorepo.
 
-**Last Updated**: 2025-01-01
+**Last Updated**: 2026-09-15 (maintained by hand; verify paths against the tree)
 
 ## Table of Contents
 
@@ -29,9 +29,9 @@
 
 ### Tech Stack
 
-- **Frontend**: React Native (Expo), React, Beyond UI
+- **Frontend**: React Native (Expo), React, `@scaffald/ui`
 - **Backend**: Supabase (PostgreSQL + Edge Functions)
-- **API**: tRPC (internal), REST API (external)
+- **API**: REST `api` edge function + `@scaffald/sdk` (tRPC in `packages/scf-trpc` is legacy; do not add to it)
 - **Build**: pnpm workspaces, Nx, tsup
 - **Testing**: Vitest, Playwright
 - **Type Safety**: TypeScript 5.9.2+
@@ -39,8 +39,8 @@
 ### Key Repositories
 
 - **Main App**: `apps/scaffald` - Expo app (iOS, Android, Web)
-- **SDK**: `packages/scaffald-sdk` - Published npm package
-- **UI**: `packages/scaffald-ui` - Published npm package (`@scaffald/ui`)
+- **SDK**: `packages/sdk` - Published npm package
+- **UI**: `packages/ui` - Published npm package (`@scaffald/ui`)
 - **Core**: `packages/scf-core` - Shared business logic
 - **Supabase**: `packages/supabase` - Database, migrations, edge functions
 
@@ -56,13 +56,12 @@ UNI-Construct/
 │   └── scaffald/              # Expo app (iOS, Android, Web) - port 8081
 │
 ├── packages/
-│   ├── scaffald-sdk/          # @scaffald/sdk - Published SDK
-│   ├── scaffald-ui/           # @scaffald/ui - Published UI framework
+│   ├── sdk/                   # @scaffald/sdk - published SDK (git submodule)
+│   ├── ui/                    # @scaffald/ui - published UI library (git submodule)
 │   ├── scf-core/              # @scf/core - Shared features
 │   ├── scf-schemas/           # Zod schemas
-│   ├── scf-trpc/              # tRPC routers (internal API)
-│   ├── supabase/              # Database + Edge Functions
-│   └── beyond-ui/             # @unicornlove/beyond-ui - UI components
+│   ├── scf-trpc/              # legacy tRPC routers (no new work)
+│   └── supabase/              # Database + Edge Functions
 │
 └── examples/
     └── integration-test/      # SDK integration tests
@@ -79,9 +78,9 @@ UNI-Construct/
 
 | API Type     | Use Case                  | Auth                  | Location                          |
 | ------------ | ------------------------- | --------------------- | --------------------------------- |
-| **tRPC**     | Internal apps (Scaffald)  | JWT (Supabase Auth)   | `packages/scf-trpc`               |
+| **tRPC**     | Legacy internal API (no new work) | JWT (Supabase Auth) | `packages/scf-trpc`         |
 | **REST API** | Third-party developers    | API Keys or OAuth 2.0 | `packages/supabase/functions/api` |
-| **SDK**      | Abstraction over REST API | API Keys or OAuth 2.0 | `packages/scaffald-sdk`           |
+| **SDK**      | Abstraction over REST API | API Keys or OAuth 2.0 | `packages/sdk`           |
 
 ---
 
@@ -91,7 +90,7 @@ UNI-Construct/
 
 The **Scaffald SDK** (`@scaffald/sdk`) enables third-party developers to integrate with the Scaffald REST API.
 
-**Location**: `packages/scaffald-sdk/`
+**Location**: `packages/sdk/`
 
 **Published**: npm as `@scaffald/sdk` (not yet published, in development)
 
@@ -109,7 +108,7 @@ The **Scaffald SDK** (`@scaffald/sdk`) enables third-party developers to integra
 ### Package Structure
 
 ```
-packages/scaffald-sdk/
+packages/sdk/
 ├── src/
 │   ├── index.ts                 # Main entry point
 │   ├── client.ts                # Scaffald class
@@ -218,12 +217,12 @@ function JobsList() {
 
 ### SDK Documentation
 
-- **Main README**: `packages/scaffald-sdk/README.md`
-- **Getting Started**: `packages/scaffald-sdk/docs/getting-started.md`
-- **API Reference**: `packages/scaffald-sdk/docs/api-reference.md`
-- **React Hooks**: `packages/scaffald-sdk/docs/react-hooks.md`
-- **Webhooks**: `packages/scaffald-sdk/docs/webhooks.md`
-- **OAuth 2.0**: `packages/scaffald-sdk/docs/oauth.md`
+- **Main README**: `packages/sdk/README.md`
+- **Getting Started**: `packages/sdk/docs/getting-started.md`
+- **API Reference**: `packages/sdk/docs/api-reference.md`
+- **React Hooks**: `packages/sdk/docs/react-hooks.md`
+- **Webhooks**: `packages/sdk/docs/webhooks.md`
+- **OAuth 2.0**: `packages/sdk/docs/oauth.md`
 
 ---
 
@@ -557,12 +556,12 @@ pnpm supa db reset && pnpm supa:seed
 pnpm supa:generate
 ```
 
-**Local backend (two processes):** The REST API and tRPC are served by Edge Functions, which run in a **separate process**. For full local backend (profiles, jobs, notifications, etc.):
+**Local backend (two processes):** The REST API (and the legacy tRPC function) are served by Edge Functions, which run in a **separate process**. For full local backend (profiles, jobs, notifications, etc.):
 
 1. **Terminal 1:** `pnpm supa start` (or `pnpm supa:start:full`) — Supabase stack (DB, Auth, Kong).
 2. **Terminal 2:** `pnpm supa:functions` — serves the `api` Edge Function and others. Leave this running.
 
-**Verify API:** `curl -s http://127.0.0.1:54321/functions/v1/api/health` should return HTTP 200 and `{"status":"ok",...}`. If you get 404, start the functions server (step 2). See also [troubleshooting (.cursor/rules/memory/troubleshooting-guide.md)](.cursor/rules/memory/troubleshooting-guide.md) section 5b.
+**Verify API:** `curl -s http://127.0.0.1:54321/functions/v1/api/health` should return HTTP 200 and `{"status":"ok",...}`. If you get 404, start the functions server (step 2).
 
 ### Development Commands
 
@@ -692,22 +691,6 @@ git commit --no-verify
 - **Naming**: PascalCase for components, camelCase for functions
 - **Imports**: Absolute imports via `@app/*`, `@scf/*` aliases
 
-### @scaffald/ui Prop Mapping (Tamagui Migration)
-
-When migrating from Tamagui-style props to scaffald-ui, use this mapping:
-
-| Tamagui                                            | scaffald-ui                                      |
-| -------------------------------------------------- | ------------------------------------------------ |
-| `ai`                                               | `align`                                          |
-| `jc`                                               | `justify`                                        |
-| `f`                                                | `flex`                                           |
-| `position`, `borderWidth`, `borderColor` on layout | Pass via `style`                                 |
-| `backgroundColor`, `padded`, `bordered` on Card    | Use `style`, `padding`, `variant="outlined"`     |
-| `chromeless` on Button                             | `variant="text"`                                 |
-| `fontFamily`, `mt`, `textAlign` on Paragraph       | Use `style` or `align`                           |
-| `"outlined"` (ButtonVariant)                       | `"outline"`                                      |
-| `"$red12"`, `"$blue10"` for colors                 | Use semantic: `color="error"`, `color="primary"` |
-
 ---
 
 ## Deployment
@@ -758,8 +741,8 @@ pnpm --filter @scaffald/sdk publish --access public
 
 | Package         | Location                | CI Workflow                | Trigger                                                |
 | --------------- | ----------------------- | -------------------------- | ------------------------------------------------------ |
-| `@scaffald/ui`  | `packages/scaffald-ui`  | `semantic-release-ui.yml`  | Push to `main` when `packages/scaffald-ui/**` changes  |
-| `@scaffald/sdk` | `packages/scaffald-sdk` | `semantic-release-sdk.yml` | Push to `main` when `packages/scaffald-sdk/**` changes |
+| `@scaffald/ui`  | `packages/ui`  | `semantic-release-ui.yml`  | Push to `main` when `packages/ui/**` changes  |
+| `@scaffald/sdk` | `packages/sdk` | `semantic-release-sdk.yml` | Push to `main` when `packages/sdk/**` changes |
 
 ### NPM_TOKEN Requirement
 
@@ -769,18 +752,18 @@ Publishing `@scaffald/ui` and `@scaffald/sdk` to npm requires `NPM_TOKEN` in Git
 - **Scope**: Automation token with publish access for `@scaffald` org/package
 - **Used by**: `semantic-release-ui.yml`, `semantic-release-sdk.yml`
 
-### scaffald-ui Release Workflow
+### @scaffald/ui release workflow
 
-1. Make changes in `packages/scaffald-ui/` (exclude `docs-site/` and `.md`-only changes to trigger release)
+1. Make changes in `packages/ui/` (exclude `docs-site/` and `.md`-only changes to trigger release)
 2. Use [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, or `BREAKING CHANGE:` for version bumps
 3. Push to `main` — CI runs semantic-release, publishes to npm, and creates `ui-vX.Y.Z` tag
 4. Manual trigger: GitHub Actions → "Release @scaffald/ui" → "Run workflow"
 
-### scaffald-ui Docs (GitHub Pages)
+### @scaffald/ui docs (GitHub Pages)
 
 - **Docs site** (e.g. https://ui.scaffald.com) is **not** deployed from this monorepo. It is built and deployed from the **[Scaffald/ui](https://github.com/Scaffald/ui)** repo.
-- **Sync**: Pushing to `main` with `packages/scaffald-ui/**` changes runs **Sync @scaffald/ui to Public Repository**, which updates Scaffald/ui. The workflow **Deploy Docs** (`.github/workflows/deploy-docs.yml`) lives inside `packages/scaffald-ui` and runs in Scaffald/ui after sync.
-- **Enable Pages**: In the Scaffald/ui repo, set Settings → Pages → Source to **GitHub Actions**. See `packages/scaffald-ui/RELEASE.md` and `packages/scaffald-ui/AGENTINFO.md` (synced to Scaffald/ui) for details.
+- **Sync**: Pushing to `main` with `packages/ui/**` changes runs **Sync @scaffald/ui to Public Repository**, which updates Scaffald/ui. The workflow **Deploy Docs** (`.github/workflows/deploy-docs.yml`) lives inside `packages/ui` and runs in Scaffald/ui after sync.
+- **Enable Pages**: In the Scaffald/ui repo, set Settings → Pages → Source to **GitHub Actions**. See `packages/ui/RELEASE.md` and `packages/ui/AGENTINFO.md` (synced to Scaffald/ui) for details.
 
 ### Root Release (App Version)
 
@@ -794,8 +777,8 @@ Publishing `@scaffald/ui` and `@scaffald/sdk` to npm requires `NPM_TOKEN` in Git
 
 - **Main README**: `/README.md`
 - **Supabase README**: `/packages/supabase/README.md`
-- **SDK README**: `/packages/scaffald-sdk/README.md`
-- **UI README**: `/packages/scaffald-ui/README.md`
+- **SDK README**: `/packages/sdk/README.md`
+- **UI README**: `/packages/ui/README.md`
 - **O\*NET Database**: `/packages/supabase/onet/README.md`
 - **Tests README**: `/tests/README.md`
 
@@ -808,4 +791,4 @@ Publishing `@scaffald/ui` and `@scaffald/sdk` to npm requires `NPM_TOKEN` in Git
 - Marc <marc@unicorn.love>
 - Vince <vince@unicorn.love>
 
-**Last Updated**: January 1, 2025
+**Last Updated**: 2026-09-15

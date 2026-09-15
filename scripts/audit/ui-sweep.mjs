@@ -19,9 +19,9 @@
  *       cd /Users/clay/Development/UNI-Construct
  *       node .claude/worktrees/<wt>/scripts/audit/ui-sweep.mjs
  *
- * Output:
- *   docs/agents/audits/2026-05-26-ui-audit/{group}/{route}.png
- *   docs/agents/audits/2026-05-26-ui-audit/manifest.json
+ * Output (gitignored; file findings as GitHub Issues, not markdown):
+ *   screenshots/ui-audit/{group}/{route}.png
+ *   screenshots/ui-audit/manifest.json
  */
 
 import { chromium, devices } from 'playwright'
@@ -36,7 +36,7 @@ const REPO_ROOT = resolve(__dirname, '..')
 const BASE_URL = process.env.AUDIT_BASE_URL || 'http://localhost:8081'
 const OUT_DIR =
   process.env.AUDIT_OUT ||
-  resolve(REPO_ROOT, 'docs/agents/audits/2026-05-26-ui-audit')
+  resolve(REPO_ROOT, 'screenshots/ui-audit')
 const HEADLESS = process.env.AUDIT_HEADFUL !== '1'
 const EMAIL = process.env.AUDIT_EMAIL || 'clay@unicorn.love'
 const PASSWORD = process.env.AUDIT_PASSWORD || 'password123'

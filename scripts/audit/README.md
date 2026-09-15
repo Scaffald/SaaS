@@ -6,7 +6,7 @@ Audit tooling for the Scaffald mobile app.
 
 | Script | Purpose |
 |---|---|
-| [`ui-sweep.mjs`](ui-sweep.mjs) | Playwright walk of every route in `apps/scaffald/app/` at a given viewport. Login via UI, save storageState, then capture each route. Output: `docs/agents/audits/<date>-ui-audit/` of screenshots + manifest. |
+| [`ui-sweep.mjs`](ui-sweep.mjs) | Playwright walk of every route in `apps/scaffald/app/` at a given viewport. Login via UI, save storageState, then capture each route. Output: `screenshots/ui-audit/` (gitignored) of screenshots + manifest; file findings as GitHub Issues. |
 
 ### Prerequisites (all four, or you capture the onboarding gate instead of real screens)
 

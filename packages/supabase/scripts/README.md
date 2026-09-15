@@ -281,5 +281,4 @@ pnpm supa status
 
 - [Migration Consolidation](../migrations/MIGRATION_CONSOLIDATION.md)
 - [Migration Best Practices](../migrations/BEST_PRACTICES.md)
-- [tRPC Supabase Patterns](../../.cursor/rules/trpc-supabase-patterns.mdc)
 - [Job Import README](../functions/README-JOB-IMPORT.md)
