@@ -59,8 +59,13 @@ export const DiscoverMapScreen = () => {
   // Breakpoint: 800px (small/medium layout)
   // Native mobile is always treated as small screen
   const { width } = useWindowDimensions()
-  const isNativeMobile = Platform.OS !== 'web'
-  const isSmallScreen = width <= 800 || isNativeMobile // ensure native mobile always treated as small
+  // Width alone. Phones are well under 800 on every platform, so the old
+  // `|| isNativeMobile` override only ever changed the answer for native
+  // tablets — and it changed it the wrong way: a 1032pt iPad Pro got the
+  // drawer's sidebar layout (DrawerLayout: width < 1024) and this screen's
+  // phone layout at the same time, with the floating Map/List bar drawn over
+  // a desktop-width map (#373).
+  const isSmallScreen = width <= 800
   const resultListRef = useRef<ResultListRef>(null)
   const mapRef = useRef<MapContainerRef>(null)
   const layoutRef = useRef<View>(null)
