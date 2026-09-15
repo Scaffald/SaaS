@@ -64,7 +64,12 @@ jobs:
         run: |
           pnpm web:build
 
-          pnpm web:serve > /tmp/web-serve.log 2>&1 &
+          # `pnpm web:serve` does not exist at the root — only `web:build` is
+          # forwarded there, and the `web:serve` script lives in
+          # apps/scaffald. The root invocation exited immediately with
+          # "Command \"web:serve\" not found. Did you mean pnpm web:remote?",
+          # which nothing noticed because the readiness check was a sleep.
+          pnpm --filter scaffald-app web:serve > /tmp/web-serve.log 2>&1 &
           echo $! > /tmp/web-serve.pid
 
           # `sleep 10` was the whole readiness check, and it is not one. With
