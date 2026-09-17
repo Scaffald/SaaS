@@ -144,6 +144,19 @@ jobs:
       # one. They go back to `error` once the nightly's own harness (server
       # start-up, PROTOCOL_TIMEOUT retries — see #774) stops being the reason
       # a run fails.
+      # Lighthouse measures whatever the server paints, including a page whose
+      # JavaScript died before hydration. With route splitting on, the SSR
+      # HTML once emitted every chunk `async` and the entry chunk raced the
+      # shared one it requires: every page rendered blank with "Requiring
+      # unknown module" and no metric here would have said so (#797). The
+      # boot audit loads each public page in a real browser and fails the job
+      # if any page throws or renders no text, before a single number is
+      # reported for it.
+      - name: Every public page boots
+        run: |
+          pnpm exec playwright install chromium
+          node scripts/audit/boot-pages.mjs http://localhost:8081
+
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v12
         with:

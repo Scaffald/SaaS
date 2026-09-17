@@ -312,7 +312,8 @@
       "webpackbar": "7.0.0"
     },
     "patchedDependencies": {
-      "check-dependency-version-consistency": "patches/check-dependency-version-consistency.patch"
+      "check-dependency-version-consistency": "patches/check-dependency-version-consistency.patch",
+      "@expo/router-server@56.0.18": "patches/@expo__router-server@56.0.18.patch"
     }
   }
 }
