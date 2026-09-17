@@ -5,14 +5,25 @@ import {
   useUserApplications,
 } from '@scf/core/utils/jobs-sdk-hooks'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
-import { extractPlainText, SkeletonList, useThemeContext } from '@scaffald/ui'
+import { extractPlainText, SkeletonCard, useThemeContext } from '@scaffald/ui'
 import type { JSONContent } from '@tiptap/core'
 import { ScrollView, Text, Stack } from '@scaffald/ui'
+import type { ExternalJob as SdkExternalJob, JobListResponse } from '@scaffald/sdk/resources/jobs'
 import { colors } from '@scaffald/ui/tokens'
 import { type ExternalJob, ExternalJobCard } from './components/ExternalJobCard'
 import { type InternalJob, InternalJobCard } from './components/InternalJobCard'
 
+/**
+ * What the public `/jobs` route loader hands the screen: the same two
+ * responses the hooks below would fetch, already fetched on the server.
+ */
+export type DiscoverJobsInitialData = {
+  internal?: JobListResponse
+  external?: SdkExternalJob[]
+}
+
 interface DiscoverJobsLeftProps {
+  initialJobs?: DiscoverJobsInitialData
   searchQuery: string
   selectedIndustries: string[]
   selectedJobTypes: string[]
@@ -23,11 +34,18 @@ interface DiscoverJobsLeftProps {
 
 type MixedJob = { type: 'external'; job: ExternalJob } | { type: 'internal'; job: InternalJob }
 
+/** A rendered job card is ~170–200px tall at the default column width. */
+const JOB_CARD_SKELETON_HEIGHT = 176
+const SKELETON_KEYS = ['a', 'b', 'c', 'd', 'e'] as const
+/** Five cards plus gaps: the space the list will take once it has rows. */
+const JOB_LIST_MIN_HEIGHT = SKELETON_KEYS.length * (JOB_CARD_SKELETON_HEIGHT + 12)
+
 /**
  * Discover Jobs Left Component
  * Left panel content for the jobs discovery page - displays job listings
  */
 export function DiscoverJobsLeft({
+  initialJobs,
   searchQuery,
   selectedIndustries,
   selectedJobTypes,
@@ -44,9 +62,14 @@ export function DiscoverJobsLeft({
   const shouldUseSoftSkillsMatch =
     useSoftSkillsFilter && (jobSource === 'all' || jobSource === 'internal')
 
+  // The loader's rows seed only the queries they answer: the default (empty)
+  // search. A search changes the query key, so it fetches as before.
+  const seedsThisQuery = searchQuery === ''
+
   // Fetch external jobs (SDK)
   const { data: externalData, isLoading: externalLoading } = useExternalJobs({
     enabled: jobSource === 'all' || jobSource === 'external',
+    initialData: seedsThisQuery ? initialJobs?.external : undefined,
   })
 
   // Fetch internal jobs with soft skills match if filter is active (SDK)
@@ -64,7 +87,10 @@ export function DiscoverJobsLeft({
   // Fetch regular internal jobs (SDK)
   const { data: internalData, isLoading: internalLoading } = usePublishedJobs(
     { search: searchQuery },
-    { enabled: jobSource === 'all' || jobSource === 'internal' }
+    {
+      enabled: jobSource === 'all' || jobSource === 'internal',
+      initialData: seedsThisQuery ? initialJobs?.internal : undefined,
+    }
   )
 
   // Fetch user's applications to show applied status.
@@ -209,9 +235,19 @@ export function DiscoverJobsLeft({
     }
 
     if (isLoading) {
+      // Shaped like the cards that replace it — no media block, a fixed height
+      // — so the swap does not move everything below (#774: CLS 0.98 came from
+      // a content-sized skeleton being replaced by rows of a different height).
       return (
-        <Stack flex={1} padding="md">
-          <SkeletonList count={5} gap={12} variant="job" />
+        <Stack flex={1} padding="md" gap={12} style={{ minHeight: JOB_LIST_MIN_HEIGHT }}>
+          {SKELETON_KEYS.map((key) => (
+            <SkeletonCard
+              key={key}
+              hasAvatar
+              textLines={3}
+              style={{ minHeight: JOB_CARD_SKELETON_HEIGHT }}
+            />
+          ))}
         </Stack>
       )
     }
@@ -254,9 +290,5 @@ export function DiscoverJobsLeft({
     )
   }
 
-  return (
-    <Stack style={{ flex: 1, overflow: 'hidden' }}>
-      {renderContent()}
-    </Stack>
-  )
+  return <Stack style={{ flex: 1, overflow: 'hidden' }}>{renderContent()}</Stack>
 }

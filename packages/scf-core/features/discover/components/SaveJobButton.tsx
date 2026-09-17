@@ -10,6 +10,7 @@ import { Bookmark } from 'lucide-react-native'
 import { useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import {
   useIsJobSaved,
   useSaveJobMutation,
@@ -24,7 +25,11 @@ export interface SaveJobButtonProps {
 export function SaveJobButton({ jobId, size = 20 }: SaveJobButtonProps) {
   const { theme } = useThemeContext()
   const queryClient = useQueryClient()
-  const { data: status } = useIsJobSaved(jobId)
+  // /v1/follows/status/job/{id} is per-user, so for an anonymous visitor on the
+  // public /jobs listing it is a guaranteed 401 — one per card, every load.
+  // Nobody signed out has a saved job; skip the request instead of eating it.
+  const { session } = useSessionContext()
+  const { data: status } = useIsJobSaved(jobId, { enabled: !!session?.access_token })
   const saved = !!status?.isFollowing
 
   const invalidate = useCallback(() => {
