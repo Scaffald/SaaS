@@ -1,4 +1,4 @@
-import { MarketingNav, SupportScreen } from '@scf/core/features/marketing'
+import { SupportScreen } from '@scf/core/features/marketing'
 import type { GenerateMetadataFunction } from 'expo-server'
 import { View } from 'react-native'
 import { SITE_ORIGIN } from '../../utils/public-content-loader'
@@ -21,7 +21,6 @@ export const generateMetadata: GenerateMetadataFunction = () => ({
 export default function SupportRoute() {
   return (
     <View style={{ flex: 1 }}>
-      <MarketingNav />
       <SupportScreen />
     </View>
   )

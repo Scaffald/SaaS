@@ -1,4 +1,4 @@
-import { ContactSection, MarketingFooter, MarketingNav } from '@scf/core/features/marketing'
+import { ContactSection, MarketingFooter } from '@scf/core/features/marketing'
 import type { GenerateMetadataFunction } from 'expo-server'
 import { ScrollView, View } from 'react-native'
 import { SITE_ORIGIN } from '../../utils/public-content-loader'
@@ -21,7 +21,6 @@ export const generateMetadata: GenerateMetadataFunction = () => ({
 export default function ContactRoute() {
   return (
     <View style={{ flex: 1 }}>
-      <MarketingNav />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
         <ContactSection headingLevel={1} />
         <MarketingFooter />
