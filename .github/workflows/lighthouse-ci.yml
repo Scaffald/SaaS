@@ -118,9 +118,17 @@ jobs:
       # nightly stops being read.
       #
       # So the job now fails on what it is actually able to police: the build,
-      # the server, and Lighthouse being able to load the pages at all. The
-      # numbers are published in the report and tracked in #774, and go back to
-      # `error` — ratcheted from measurements — as the work there lands.
+      # the server, and Lighthouse being able to load the pages at all.
+      #
+      # The budgets themselves are a ratchet, set from measurement rather than
+      # aspiration (#782, 2026-09-17): the medians of a production export on
+      # this preset after #783 (rows server-rendered) and #782 (the server
+      # renders the phone layout for a phone), plus ~15% headroom — /jobs:
+      # perf 0.53, FCP/LCP 3.0 s, SI 22 s, TBT 1.5 s, CLS 0.0; the other public
+      # pages sit near those. Lower a number when a PR beats it; never raise
+      # one. They go back to `error` once the nightly's own harness (server
+      # start-up, PROTOCOL_TIMEOUT retries — see #774) stops being the reason
+      # a run fails.
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v12
         with:

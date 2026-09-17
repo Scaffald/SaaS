@@ -29,6 +29,7 @@ import {
   type PublicProfile,
 } from '../../../utils/public-content-loader'
 import { useRouteLoaderData } from '../../../utils/use-route-loader-data'
+import { type ViewportLoaderData, viewportFromRequest } from '../../../utils/server-viewport'
 import { ProfileJsonLd } from '../../../components/ProfileJsonLd'
 
 const profileDisplayName = (profile: PublicProfile) =>
@@ -42,12 +43,11 @@ const profileDescription = (profile: PublicProfile) =>
     200
   )
 
-export const loader: LoaderFunction<{ profile: PublicProfile | null }> = async (
-  _request,
-  params
-) => {
+export const loader: LoaderFunction<
+  { profile: PublicProfile | null } & ViewportLoaderData
+> = async (request, params) => {
   const profile = await fetchPublicProfileBySlug(params.slug)
-  return { profile }
+  return { profile, ...viewportFromRequest(request) }
 }
 
 export const generateMetadata: GenerateMetadataFunction = async (_request, params) => {

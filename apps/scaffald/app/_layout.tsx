@@ -11,9 +11,10 @@ import {
 import { initSentry } from '@scf/core/utils/sentry'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { logger } from '@scf/core'
-import { ThemeProvider } from '@scaffald/ui'
+import { ServerViewportProvider, ThemeProvider } from '@scaffald/ui'
 import type { ResolvedThemeMode } from '@scaffald/ui'
 import { useAppFonts } from '../utils/useAppFonts'
+import { useServerViewportHint } from '../utils/use-server-viewport-hint'
 import type { Session } from '@supabase/auth-js'
 import { SplashScreen, Stack, useSegments } from 'expo-router'
 import type { ReactNode } from 'react'
@@ -50,6 +51,11 @@ SplashScreen.preventAutoHideAsync()
 export default function DashboardLayout() {
   const segments = useSegments()
   const [fontLoaded] = useAppFonts()
+  // The device class the route loader inferred from the request, so the
+  // server (and the hydration render) lay the page out for a phone when the
+  // visitor is on one (#782). Undefined when no loader supplied a hint, in
+  // which case the provider keeps the 1280×900 default.
+  const serverViewport = useServerViewportHint()
 
   const [themeLoaded, setThemeLoaded] = useState(false)
   const [sessionLoadAttempted, setSessionLoadAttempted] = useState(false)
@@ -96,33 +102,35 @@ export default function DashboardLayout() {
 
   return (
     <SafeAreaProvider>
-      <UniversalThemeProvider>
-        <ThemeBridge>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-              <Provider initialSession={initialSession}>
-                <ErrorBoundary
-                  context={{
-                    environment: process.env.APP_ENV,
-                    route: segments.join('/') || '/',
-                  }}
-                >
-                  <Stack
-                    screenOptions={{
-                      headerShown: false,
+      <ServerViewportProvider viewport={serverViewport}>
+        <UniversalThemeProvider>
+          <ThemeBridge>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+                <Provider initialSession={initialSession}>
+                  <ErrorBoundary
+                    context={{
+                      environment: process.env.APP_ENV,
+                      route: segments.join('/') || '/',
                     }}
                   >
-                    <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                    <Stack.Screen name="(public)" options={{ headerShown: false }} />
-                    <Stack.Screen name="(protected)" options={{ headerShown: false }} />
-                    <Stack.Screen name="(admin)" options={{ headerShown: false }} />
-                  </Stack>
-                </ErrorBoundary>
-              </Provider>
-            </View>
-          </GestureHandlerRootView>
-        </ThemeBridge>
-      </UniversalThemeProvider>
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                      }}
+                    >
+                      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                      <Stack.Screen name="(public)" options={{ headerShown: false }} />
+                      <Stack.Screen name="(protected)" options={{ headerShown: false }} />
+                      <Stack.Screen name="(admin)" options={{ headerShown: false }} />
+                    </Stack>
+                  </ErrorBoundary>
+                </Provider>
+              </View>
+            </GestureHandlerRootView>
+          </ThemeBridge>
+        </UniversalThemeProvider>
+      </ServerViewportProvider>
     </SafeAreaProvider>
   )
 }
