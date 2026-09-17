@@ -4,24 +4,29 @@
  * Requires CookieConsentProvider (or equivalent) to have written state to storage.
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useCallback, useEffect, useState } from 'react'
 import { Platform } from 'react-native'
 
-import { getConsentState } from './cookieConsentStorage'
+import { getConsentState, NATIVE_IMPLICIT_CONSENT } from './cookieConsentStorage'
 
 export function useCookieConsentState(): {
   isReady: boolean
   hasConsentedTo: (categoryId: string) => boolean
 } {
-  const [state, setState] = useState<{ selections: Record<string, boolean> } | null>(null)
-  const [isReady, setIsReady] = useState(false)
+  // Native never asks (#764) — see NATIVE_IMPLICIT_CONSENT — so it is ready
+  // with that answer from the first render; only web has a stored decision.
+  const isNative = Platform.OS !== 'web'
+  const [state, setState] = useState<{ selections: Record<string, boolean> } | null>(
+    isNative ? { selections: NATIVE_IMPLICIT_CONSENT.selections } : null
+  )
+  const [isReady, setIsReady] = useState(isNative)
 
   useEffect(() => {
+    if (isNative) return
     let cancelled = false
 
     const load = async () => {
-      const getItem = Platform.OS === 'web' ? getWebStorageItem : getAsyncStorageItem
+      const getItem = getWebStorageItem
       const parsed = await getConsentState(getItem)
       if (cancelled) return
       setState(parsed ? { selections: parsed.selections } : null)
@@ -32,7 +37,7 @@ export function useCookieConsentState(): {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [isNative])
 
   const hasConsentedTo = useCallback(
     (categoryId: string) => Boolean(state?.selections?.[categoryId]),
@@ -40,10 +45,6 @@ export function useCookieConsentState(): {
   )
 
   return { isReady, hasConsentedTo }
-}
-
-async function getAsyncStorageItem(key: string): Promise<string | null> {
-  return AsyncStorage.getItem(key)
 }
 
 function getWebStorageItem(key: string): Promise<string | null> {
