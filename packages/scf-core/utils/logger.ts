@@ -1,5 +1,3 @@
-import * as Sentry from '@sentry/react-native'
-
 interface LogContext {
   [key: string]: unknown
 }
@@ -31,33 +29,26 @@ class Logger {
   }
 
   warn(message: string, context?: LogContext): void {
+    // Warnings print in development only. They used to also go to Sentry in
+    // production; Sentry was removed (#791 — it was 22.9% of the web bundle,
+    // ~2 MB of it the same library bundled five times). Nothing replaced it,
+    // so production warnings now go nowhere by design rather than by accident.
     if (this.shouldLog('warn')) {
       console.warn(`[WARN] ${message}`, context || '')
     }
-
-    // Send warnings to Sentry in production
-    if (!__DEV__) {
-      Sentry.captureMessage(message, {
-        level: 'warning',
-        extra: context,
-      })
-    }
   }
 
+  /**
+   * Errors always print, in every environment — `shouldLog` returns true for
+   * them unconditionally, and that is now the whole of error reporting.
+   *
+   * There is no remote sink any more. On web that means the browser console;
+   * on native, the device log and whatever the store's crash reporting picks
+   * up. Losing aggregated error reporting is a real cost of removing Sentry
+   * and is recorded here rather than left to be discovered.
+   */
   error(message: string, error?: Error | unknown, context?: LogContext): void {
     console.error(`[ERROR] ${message}`, error || '', context || '')
-
-    // Always send errors to Sentry
-    if (error instanceof Error) {
-      Sentry.captureException(error, {
-        extra: { message, ...context },
-      })
-    } else {
-      Sentry.captureMessage(message, {
-        level: 'error',
-        extra: { error, ...context },
-      })
-    }
   }
 }
 

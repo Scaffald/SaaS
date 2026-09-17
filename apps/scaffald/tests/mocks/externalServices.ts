@@ -15,33 +15,6 @@
 import { vi } from "vitest";
 
 /**
- * Sentry Mock
- * Used for error tracking and monitoring
- */
-export const mockSentry = {
-  init: vi.fn(),
-  captureException: vi.fn((error: Error) => {
-    console.log("[Mock Sentry] Captured exception:", error.message);
-    return "mock-event-id";
-  }),
-  captureMessage: vi.fn((message: string) => {
-    console.log("[Mock Sentry] Captured message:", message);
-    return "mock-event-id";
-  }),
-  setUser: vi.fn((user: { id: string; email?: string }) => {
-    console.log("[Mock Sentry] Set user:", user);
-  }),
-  setContext: vi.fn((name: string, context: Record<string, unknown>) => {
-    console.log("[Mock Sentry] Set context:", name, context);
-  }),
-  addBreadcrumb: vi.fn(
-    (breadcrumb: { message: string; level?: string; category?: string }) => {
-      console.log("[Mock Sentry] Added breadcrumb:", breadcrumb);
-    },
-  ),
-};
-
-/**
  * Mapbox Mock (for @rnmapbox/maps)
  * Used for geocoding and map services
  */
@@ -122,11 +95,6 @@ export const mockGoogleSignIn = {
  * Call this in afterEach to reset mock state between tests
  */
 export function clearExternalServiceMocks(): void {
-  mockSentry.captureException.mockClear();
-  mockSentry.captureMessage.mockClear();
-  mockSentry.setUser.mockClear();
-  mockSentry.setContext.mockClear();
-  mockSentry.addBreadcrumb.mockClear();
 
   mockMapbox.geocode.forward.mockClear();
   mockMapbox.geocode.reverse.mockClear();
@@ -138,19 +106,6 @@ export function clearExternalServiceMocks(): void {
   mockGoogleSignIn.isSignedIn.mockClear();
 }
 
-/**
- * Helper: Assert Sentry exception was captured
- */
-export function assertSentryCaptured(errorMessage: string): void {
-  const calls = mockSentry.captureException.mock.calls;
-  const found = calls.some(([error]) => error.message.includes(errorMessage));
-  if (!found) {
-    throw new Error(
-      `Expected Sentry to capture error containing "${errorMessage}", ` +
-        `but found: ${calls.map(([e]) => e.message).join(", ")}`,
-    );
-  }
-}
 
 /**
  * Helper: Assert Google Sign-In was called

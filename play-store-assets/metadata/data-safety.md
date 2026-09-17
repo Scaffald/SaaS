@@ -69,10 +69,16 @@ privacy policy must describe plainly; Data safety has nowhere to put it.
 
 ## "Shared" is No everywhere — the reasoning
 
-Play defines *sharing* as transfer to a **third party**. PostHog and Sentry are
-service providers processing on Scaffald's behalf under contract, which Play
-explicitly excludes from "shared". Same conclusion the privacy checklist reaches
-for Apple's tracking question, by a different route.
+Play defines *sharing* as transfer to a **third party**. PostHog is a service
+provider processing on Scaffald's behalf under contract, which Play explicitly
+excludes from "shared". Same conclusion the privacy checklist reaches for
+Apple's tracking question, by a different route.
+
+Sentry used to sit alongside PostHog in that sentence and no longer does — it
+was removed entirely (Scaffald/SaaS#791: 22.9% of the web bundle, most of it one
+library bundled five times). No crash or error data leaves the device to any
+processor now. That makes this section *more* conservative than it was, not
+less, but it is a change to what the app does and so belongs in the record.
 
 This holds only while:
 

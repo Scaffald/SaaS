@@ -42,13 +42,11 @@ const SECTIONS: LegalSection[] = [
           ['Photos / video', 'Profile photo and optional project photos'],
           ['Messages', 'In-app direct messaging between workers and employers'],
           ['User ID', 'Internal account identifier'],
-          ['Device ID', 'Crash diagnostics and analytics (not linked to your identity)'],
+          ['Device ID', 'Product analytics (not linked to your identity)'],
           [
             'Usage data — product interaction',
             'Feature analytics to improve the app (not linked to your identity)',
           ],
-          ['Crash data', 'Sentry crash reporting'],
-          ['Performance data', 'App stability monitoring'],
         ],
       },
     ],
@@ -110,7 +108,7 @@ const SECTIONS: LegalSection[] = [
           },
           {
             label: 'Service providers:',
-            text: 'Supabase (database and authentication), Sentry (crash reporting), Expo/EAS (build delivery), Apple Push Notification Service (push notifications), NationSearch (background check services — only when you or your employer initiates a background check), Stripe (payment processing), Resend (transactional email). All service providers are bound by data processing agreements and may not use your data for their own purposes.',
+            text: 'Supabase (database and authentication), Expo/EAS (build delivery), Apple Push Notification Service (push notifications), NationSearch (background check services — only when you or your employer initiates a background check), Stripe (payment processing), Resend (transactional email). All service providers are bound by data processing agreements and may not use your data for their own purposes.',
           },
           {
             label: 'Legal:',

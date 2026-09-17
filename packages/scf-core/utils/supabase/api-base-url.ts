@@ -88,8 +88,9 @@ export function warnOnBackendMismatch(): void {
 
   warned = true
   // console.error rather than logger.error: this is a dev-only message for
-  // whoever is running the server, and logger.error unconditionally reports to
-  // Sentry and prefixes every call, which mangles a formatted block.
+  // whoever is running the server, and logger.error prefixes every call, which
+  // mangles a formatted block. (It also used to report to Sentry; that is gone
+  // as of #791, but the prefixing reason stands.)
   console.error(
     [
       'Supabase backend mismatch — auth and the Scaffald SDK are talking to different projects.',

@@ -111,17 +111,12 @@ beforeAll(async () => {
   const framework = MockValidationFramework.getInstance();
 
   // Register all mock validators
-  const { SentryValidator } = await import(
-    "./mockValidation/validators/SentryValidator"
-  );
   const { MapboxValidator } = await import(
     "./mockValidation/validators/MapboxValidator"
   );
   const { GoogleSignInValidator } = await import(
     "./mockValidation/validators/GoogleSignInValidator"
   );
-
-  framework.registerValidator(new SentryValidator());
   framework.registerValidator(new MapboxValidator());
   framework.registerValidator(new GoogleSignInValidator());
 

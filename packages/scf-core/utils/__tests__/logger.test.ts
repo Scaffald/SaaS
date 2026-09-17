@@ -1,11 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-vi.mock('@sentry/react-native', () => ({
-  captureException: vi.fn(),
-  captureMessage: vi.fn(),
-  addBreadcrumb: vi.fn(),
-  Severity: { Error: 'error', Warning: 'warning', Info: 'info', Debug: 'debug' },
-}))
+// The '@sentry/react-native' mock that used to sit here existed only so the
+// import in logger.ts would resolve. Sentry is gone (#791); the logger writes
+// to the console and nowhere else, which is what these assertions check.
 
 const { logger } = await import('../logger')
 

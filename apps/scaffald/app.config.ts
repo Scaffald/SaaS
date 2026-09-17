@@ -100,8 +100,6 @@ const EXPO_PUBLIC_POSTHOG_HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST;
 const EXPO_PUBLIC_POSTHOG_PROJECT = process.env.EXPO_PUBLIC_POSTHOG_PROJECT;
 const EXPO_PUBLIC_SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const EXPO_PUBLIC_SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
-const EXPO_PUBLIC_SENTRY_DSN_NATIVE = process.env.EXPO_PUBLIC_SENTRY_DSN_NATIVE;
-const EXPO_PUBLIC_SENTRY_DSN_WEB = process.env.EXPO_PUBLIC_SENTRY_DSN_WEB;
 
 // Fallback for app.config.ts (only used during build, not in client bundle)
 const POSTHOG_HOST = EXPO_PUBLIC_POSTHOG_HOST || "https://app.posthog.com";
@@ -164,7 +162,7 @@ export default {
           "Scaffald uses the camera so you can take a profile photo or capture jobsite images for listings.",
         // No NSUserTrackingUsageDescription: Scaffald does not "track" under
         // Apple Guideline 5.1.2(i). PostHog (first-party product analytics,
-        // geoip disabled) and Sentry (error monitoring) are first-party
+        // geoip disabled) is first-party
         // service providers — no IDFA, no ad networks, no data brokers, no
         // cross-app linking. Analytics identity is gated on the in-app
         // performance/cookie consent, not ATT.
@@ -177,7 +175,7 @@ export default {
       privacyManifests: {
         // Scaffald does not track (Apple Guideline 5.1.2(i)). Data goes only
         // to first-party service providers (PostHog product analytics with
-        // geoip disabled, Sentry error monitoring) — never combined with
+        // geoip disabled) — never combined with
         // other companies' data for advertising and never shared with a data
         // broker. Therefore NSPrivacyTracking is false and there are no
         // NSPrivacyTrackingDomains. If a true cross-app/advertising tracker
@@ -476,12 +474,6 @@ export default {
           env: APP_ENV,
           project: EXPO_PUBLIC_POSTHOG_PROJECT,
         },
-      },
-      sentry: {
-        // Only use EXPO_PUBLIC variables - these are safe to expose to clients
-        dsnNative: EXPO_PUBLIC_SENTRY_DSN_NATIVE || "",
-        dsnWeb: EXPO_PUBLIC_SENTRY_DSN_WEB || "",
-        env: APP_ENV,
       },
       supabase: {
         url: EXPO_PUBLIC_SUPABASE_URL,
