@@ -10,9 +10,13 @@ import type { Locator, Page } from '@playwright/test'
 /**
  * Application status columns in the Kanban board
  */
+// Every column the board renders (ApplicationsKanbanBoard STATUSES), so a
+// summary over these equals the cards on the page. `inquired` sits between
+// screen and interview; leaving it out made every total one short (#553).
 export const KANBAN_COLUMNS = {
   NEW: 'new',
   SCREEN: 'screen',
+  INQUIRED: 'inquired',
   INTERVIEW: 'interview',
   OFFER: 'offer',
   HIRED: 'hired',
@@ -54,11 +58,11 @@ export async function getCardsInColumn(
 
   const columnLocator = await getKanbanColumn(page, column, { timeout })
 
-  // Find all draggable cards within the column
-  const cards = columnLocator
-    .locator('[draggable="true"]')
-    .or(columnLocator.locator('[data-draggable="true"]'))
-    .or(columnLocator.locator('[role="button"]'))
+  // A card is the @scaffald/ui KanbanCard, which carries testID
+  // `kanban-card-<applicationId>`. Not `[draggable="true"]` (dnd-kit uses
+  // pointer sensors and sets no draggable attribute) and not `[role="button"]`
+  // (which also matched every card's Move menu, doubling the count) — #553.
+  const cards = columnLocator.locator('[data-testid^="kanban-card-"]')
 
   const count = await cards.count()
   const cardArray: Locator[] = []
@@ -93,16 +97,19 @@ export async function findApplicationCard(
   const timeout = options?.timeout ?? 5000
 
   try {
-    // Try finding by text content (candidate name)
-    const cardByText = page.getByText(identifier).locator('..').locator('[draggable="true"]')
-    await cardByText.first().waitFor({ state: 'visible', timeout })
-    return cardByText.first()
+    // By candidate name: the KanbanCard whose text carries it.
+    const cardByText = page
+      .locator('[data-testid^="kanban-card-"]')
+      .filter({ hasText: identifier })
+      .first()
+    await cardByText.waitFor({ state: 'visible', timeout })
+    return cardByText
   } catch {
-    // Try finding by data attribute (application ID)
+    // By application id: the testID itself.
     try {
-      const cardById = page.locator(`[data-application-id="${identifier}"]`)
-      await cardById.first().waitFor({ state: 'visible', timeout })
-      return cardById.first()
+      const cardById = page.getByTestId(`kanban-card-${identifier}`).first()
+      await cardById.waitFor({ state: 'visible', timeout })
+      return cardById
     } catch {
       return null
     }

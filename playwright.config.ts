@@ -23,6 +23,7 @@ export default defineConfig({
     "**/console-audit.spec.ts", // Console audit – writes docs/console-audit.md
     "**/profile-audit-magiclink.spec.ts", // Profile audit (magic link + Mailpit)
     "**/test-supabase-hardening-regression.spec.ts", // Supabase hardening regression
+    "**/test-office-applications-kanban.spec.ts", // ATS kanban: drag, status modals, hire/reject (#553)
     // The 26 specs under tests/e2e/profile/ are NOT here yet, and that is a
     // deliberate two-step (#592).
     //

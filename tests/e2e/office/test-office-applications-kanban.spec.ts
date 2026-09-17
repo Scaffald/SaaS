@@ -22,12 +22,45 @@ import {
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
-test.use({ storageState: 'tests/.auth/super-admin.json' })
+test.use({
+  storageState: 'tests/.auth/super-admin.json',
+  // The desktop board is a horizontal ScrollView of seven ~340px columns
+  // beside a 300px sidebar. At the default 1280px only three are on screen,
+  // and a mouse drag cannot reach a column that is off the viewport (dnd-kit
+  // does not auto-scroll a react-native-web ScrollView). Wide enough to show
+  // every column, so every drag target has a bounding box to drop on.
+  viewport: { width: 2800, height: 1200 },
+})
+
+/**
+ * A card's first text line is the candidate name (KanbanCard renders name,
+ * then role, then age). react-native-web renders Text as `<div dir="auto">`,
+ * so there is no `<text>` element to select — the old `locator('text')`
+ * never matched anything (#553).
+ */
+function cardTitle(text: string): string {
+  return text.split('\n').map((l) => l.trim()).find(Boolean) ?? ''
+}
 
 test.describe('Office • /office/applications - Kanban Board', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/super-admin.json)
+    // Pre-answer the cookie banner: it floats over the bottom of the board and
+    // swallows the pointer-up of a drag that ends under it.
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        'scf-cookie-consent',
+        JSON.stringify({
+          version: '1',
+          updatedAt: new Date().toISOString(),
+          selections: { 'strictly-necessary': true },
+        })
+      )
+    })
     await page.goto('/office/applications', { waitUntil: 'domcontentloaded' })
+    // The page opens in the Lanes view; the board this suite drives sits
+    // behind the "Board" segment (office-applications-screen.tsx, #553).
+    await page.getByTestId('applications-view-switch').getByText('Board', { exact: true }).click()
     await waitForKanbanLoad(page)
   })
 
@@ -106,7 +139,9 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       expect(pageContent).toContain('Interview')
       expect(pageContent).toContain('Offer')
       expect(pageContent).toContain('Hired')
-      expect(pageContent).toContain('Rejected')
+      // The rejected column reads "Closed" (ApplicationsKanbanBoard STATUS_LABELS):
+      // rejected and withdrawn share one terminal label on the board.
+      expect(pageContent).toContain('Closed')
     })
 
     test('displays card counts for each column', async ({ page }: { page: Page }) => {
@@ -170,7 +205,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       const applicationId = cardId?.replace('kanban-card-', '') || ''
 
       // Get candidate name for verification
-      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
+      const candidateName = cardTitle(await firstCard.innerText())
 
       // Drag to screen column
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.SCREEN, {
@@ -205,7 +240,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       // Find first card in screen column
       const screenColumn = await getKanbanColumn(page, KANBAN_COLUMNS.SCREEN)
       const firstCard = screenColumn.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
+      const candidateName = cardTitle(await firstCard.innerText())
 
       // Drag to interview column
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.INTERVIEW, {
@@ -237,7 +272,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const interviewColumn = await getKanbanColumn(page, KANBAN_COLUMNS.INTERVIEW)
       const firstCard = interviewColumn.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
+      const candidateName = cardTitle(await firstCard.innerText())
 
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.OFFER, {
         waitForConfirmation: false,
@@ -274,7 +309,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const column = await getKanbanColumn(page, sourceColumn)
       const firstCard = column.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
+      const candidateName = cardTitle(await firstCard.innerText())
 
       // Drag to rejected column
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.REJECTED, {
@@ -311,7 +346,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const column = await getKanbanColumn(page, sourceColumn)
       const firstCard = column.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
+      const candidateName = cardTitle(await firstCard.innerText())
 
       // Drag to rejected
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.REJECTED)
@@ -319,11 +354,11 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       await page.waitForTimeout(1000)
 
       // Try to confirm without reason (should be disabled)
-      const confirmButton = page.getByTestId('status-change-confirm-button')
+      const confirmButton = page.getByRole('button', { name: /^(Reject Application|Confirm Hire)$/ })
       await expect(confirmButton).toBeDisabled()
 
       // Fill in rejection reason
-      const reasonInput = page.getByTestId('status-change-reason-input')
+      const reasonInput = page.getByPlaceholder(/reason for rejection|notes about this hire/i)
       await reasonInput.fill('Candidate does not meet required qualifications')
 
       // Confirm button should now be enabled
@@ -371,7 +406,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const column = await getKanbanColumn(page, sourceColumn)
       const firstCard = column.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
+      const candidateName = cardTitle(await firstCard.innerText())
 
       // Drag to hired
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.HIRED, {
@@ -388,7 +423,17 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       expect(modalContent).toMatch(/hired|hire/i)
     })
 
-    test('confirms hiring with optional notes', async ({ page }: { page: Page }) => {
+    test('hiring is gated behind the success-fee clickwrap, not a plain confirm', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
+      // Confirming a hire used to be notes + Confirm. It now runs through the
+      // upfront success-fee flow (ApplicationStatusChangeModal: `isHire` hides
+      // the confirm button and `handleConfirm` returns early), which an e2e
+      // cannot complete without a card. So this pins the gate: the hire modal
+      // opens with the optional notes field and no bare confirm button, and
+      // cancelling leaves the card where it was.
       const initialSummary = await getKanbanSummary(page)
 
       let sourceColumn: KanbanColumn = KANBAN_COLUMNS.OFFER
@@ -399,32 +444,31 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       } else {
         test.skip(
           true,
-          'No applications available to test hiring with notes. ' +
+          'No applications available to test the hire gate. ' +
             'The Fixture preconditions suite explains how to load them.'
         )
       }
 
       const column = await getKanbanColumn(page, sourceColumn)
       const firstCard = column.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
+      const candidateName = cardTitle(await firstCard.innerText())
 
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.HIRED)
-
       await page.waitForTimeout(1000)
 
-      // Add optional notes
-      const reasonInput = page.getByTestId('status-change-reason-input')
-      await reasonInput.fill('Great culture fit, strong technical skills')
+      const notes = page.getByPlaceholder(/notes about this hire/i)
+      await expect(notes).toBeVisible()
+      await notes.fill('Great culture fit, strong technical skills')
 
-      // Confirm
-      const confirmButton = page.getByTestId('status-change-confirm-button')
-      await confirmButton.click()
+      await expect(page.getByRole('button', { name: 'Confirm Hire', exact: true })).toHaveCount(0)
 
-      await page.waitForTimeout(2000)
+      await page.getByRole('button', { name: 'Cancel', exact: true }).click()
+      await page.waitForTimeout(1000)
 
-      // Verify moved to hired
-      const isInHired = await verifyApplicationInColumn(page, candidateName, KANBAN_COLUMNS.HIRED)
-      expect(isInHired).toBe(true)
+      const isInOriginal = await verifyApplicationInColumn(page, candidateName, sourceColumn)
+      expect(isInOriginal).toBe(true)
+      const newSummary = await getKanbanSummary(page)
+      expect(newSummary.hired).toBe(initialSummary.hired)
     })
   })
 
@@ -451,7 +495,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const column = await getKanbanColumn(page, sourceColumn)
       const firstCard = column.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
+      const candidateName = cardTitle(await firstCard.innerText())
 
       // Drag to rejected
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.REJECTED)
@@ -459,7 +503,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       await page.waitForTimeout(1000)
 
       // Click cancel button
-      const cancelButton = page.getByTestId('status-change-cancel-button')
+      const cancelButton = page.getByRole('button', { name: 'Cancel', exact: true })
       await expect(cancelButton).toBeVisible()
       await cancelButton.click()
 
@@ -497,7 +541,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const column = await getKanbanColumn(page, sourceColumn)
       const firstCard = column.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
+      const candidateName = cardTitle(await firstCard.innerText())
 
       // Drag to hired
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.HIRED)
@@ -505,7 +549,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       await page.waitForTimeout(1000)
 
       // Cancel
-      const cancelButton = page.getByTestId('status-change-cancel-button')
+      const cancelButton = page.getByRole('button', { name: 'Cancel', exact: true })
       await cancelButton.click()
 
       await page.waitForTimeout(1000)
@@ -546,7 +590,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       // For each column, verify the count badge matches the summary
       for (const [columnKey, columnValue] of Object.entries(KANBAN_COLUMNS)) {
         const column = await getKanbanColumn(page, columnValue)
-        const countBadge = column.locator('text').filter({ hasText: /^\d+$/ })
+        const countBadge = column.locator('[dir="auto"]').filter({ hasText: /^\d+$/ }).first()
 
         const displayedCount = await countBadge.textContent()
         const numericCount = parseInt(displayedCount || '0', 10)
@@ -597,7 +641,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       const firstCard = newColumn.locator('[data-testid^="kanban-card-"]').first()
 
       // Capture card details before drag
-      const beforeName = await firstCard.locator('text').first().textContent()
+      const beforeName = cardTitle(await firstCard.innerText())
       const beforeContent = await firstCard.textContent()
 
       // Drag to screen
