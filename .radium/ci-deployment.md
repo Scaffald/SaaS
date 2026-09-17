@@ -110,7 +110,11 @@ Pin `stripe: "20.0.0"` (exact version) as devDep in the supabase package.
 `patches/@expo__router-server@56.0.18.patch` back-ports one change from
 `@expo/router-server@57.0.10`: the streaming SSR renderer stops passing the
 JS chunks to React as `bootstrapScripts` (which emits them `async`) and emits
-`<link rel="preload">` + `<script defer>` in asset order instead. Without it,
+`<link rel="preload">` + `<script defer>` in asset order instead. The preload
+links carry `fetchPriority="low"` (as React's did; upstream's do not) — at
+default priority the shared chunk contends with fonts and first paint on a
+throttled connection slipped from 2 s to 10 s in the Lighthouse run. Without
+the patch,
 `asyncRoutes: { web: true }` in `apps/scaffald/app.config.ts` produces a build
 where the 1 MB entry chunk can execute before the 7 MB `__common` chunk it
 requires, and every page dies with `Requiring unknown module` — a race that
