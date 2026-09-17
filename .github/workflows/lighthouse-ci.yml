@@ -64,12 +64,27 @@ jobs:
         run: |
           pnpm web:build
 
-          # `pnpm web:serve` does not exist at the root — only `web:build` is
-          # forwarded there, and the `web:serve` script lives in
-          # apps/scaffald. The root invocation exited immediately with
-          # "Command \"web:serve\" not found. Did you mean pnpm web:remote?",
-          # which nothing noticed because the readiness check was a sleep.
-          pnpm --filter scaffald-app web:serve > /tmp/web-serve.log 2>&1 &
+          # `web:server` (apps/scaffald/server/index.js), not `web:serve`
+          # (`expo serve`). The two differ in the one way that decides every
+          # number this job reports: `expo serve` sends the entry bundle
+          # **uncompressed**.
+          #
+          #   expo serve       17.42 MB
+          #   production (br)   3.27 MB
+          #   production (gzip) 3.64 MB
+          #
+          # Lighthouse runs `formFactor: mobile` with simulated Slow 4G
+          # (1474 Kbps down). 17.4 MB at that rate is 97 seconds, which is
+          # exactly what it was reporting — LCP ~93s and TTI ~94s, capped by
+          # maxWaitForLoad. Those were never page bugs (#787); they were an
+          # honest simulation of a bundle five times larger than the one
+          # production actually ships.
+          #
+          # server/index.js applies `compression()` and serves `/_expo` as
+          # immutable, which is what production does, so the audit measures
+          # something a real visitor could experience. The root has no
+          # `web:serve` either — that was the previous fault here.
+          pnpm --filter scaffald-app web:server > /tmp/web-serve.log 2>&1 &
           echo $! > /tmp/web-serve.pid
 
           # `sleep 10` was the whole readiness check, and it is not one. With
