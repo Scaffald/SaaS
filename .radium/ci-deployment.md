@@ -182,6 +182,25 @@ Execution order:
 
 **Note:** Always use `pnpm exec nx run-many` in CI, not just `nx run-many` (nx may not be in PATH).
 
+## Reading a red check
+
+Judge a red check by its `conclusion`, not its colour or duration. Two
+failure modes look identical on the PR page — both finish in 2–3 seconds with
+no logs — and want opposite responses:
+
+| `conclusion` | What it is | What to do |
+|---|---|---|
+| `action_required` | GitHub is holding the run for a maintainer to approve (fork-PR approval policy is `first_time_contributors`, kept deliberately — #730) | Click **Approve and run** on the PR, or `gh api -X POST repos/Scaffald/SaaS/actions/runs/<id>/approve` |
+| `failure` with no jobs started | The org's Actions minutes are exhausted (#375) | Wait for the monthly reset; nothing to fix in the repo |
+
+```bash
+gh api repos/Scaffald/SaaS/actions/runs/<id> -q '.status + " " + .conclusion'
+```
+
+Do not move `ci.yml` to `pull_request_target` to dodge the approval gate: it
+would run the PR's own code against a writable token, which is what the gate
+exists to prevent.
+
 ## Docusaurus Build
 
 `@scaffald/ui-docs` must be excluded from `nx run-many` and built separately with `pnpm --filter`, because pnpm 10 in CI doesn't reliably add workspace root `node_modules/.bin` to PATH.

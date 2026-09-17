@@ -135,11 +135,13 @@ on another delivery:
 3. Realign that package against the bundled `expo-modules-core`, in one
    coordinated bump (#483), and re-inspect before delivering
 
-Two things stay open on #683: whether `1.17.1 / 11701` drew the email again —
-nobody has checked App Store Connect since it submitted — and whether Scaffald
-should be offered on Apple silicon Macs at all. That listing is an App Store
-Connect setting (Pricing and Availability), not something this repo controls,
-and we neither build nor test for that platform today.
+**Scaffald is not offered on Apple silicon Macs** (decided 2026-09-17, #683).
+The listing is an App Store Connect setting — Pricing and Availability → the
+Mac availability checkbox — not something this repo controls, and we neither
+build nor test for that platform. With the listing off, Apple no longer runs
+the macOS symbol check, so a fresh ITMS-90863 after that date means the box
+has been re-ticked, not that the binary regressed. Keep `supportsTablet: true`
+either way.
 
 ---
 
