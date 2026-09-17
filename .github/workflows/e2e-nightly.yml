@@ -89,3 +89,111 @@ jobs:
       - name: Stop Supabase
         if: always()
         run: pnpm supa stop || true
+
+  # The root playwright.config.ts — the office suites under tests/e2e/ and the
+  # auth setup project — was run by nothing: the job above executes the
+  # app-level config only, so the office kanban suite had never run in CI
+  # (#553, #807).
+  #
+  # It runs against a production web export served statically, not against
+  # `expo start --web`. Three parallel setup workers doing SSR page loads
+  # OOM'd Metro's 8 GB heap in nine minutes locally; the export served the
+  # same suite in 31 s. `workers: 1` in CI comes from the config itself.
+  e2e-office:
+    name: E2E Office suites (root config, static export)
+    if: github.event_name != 'pull_request' || github.event.label.name == 'ci:full'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      EXPO_PUBLIC_SUPABASE_URL: http://localhost:54321
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+      EXPO_PUBLIC_URL: http://localhost:8081
+      PLAYWRIGHT_BASE_URL: http://localhost:8081
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - uses: ./.github/actions/install
+
+      - name: Build workspace packages
+        run: pnpm nx run scf-core:build
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v3
+        with:
+          version: latest
+
+      # `supa start` applies migrations, runs every seeds/*.sql (the ATS
+      # fixtures the kanban suite's precondition block insists on), and boots
+      # the edge runtime that serves the `api` function.
+      - name: Start Supabase local instance
+        run: pnpm supa start
+
+      - name: Wait for Supabase to be ready
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:54321/rest/v1/ -H "apikey: ${{ env.EXPO_PUBLIC_SUPABASE_ANON_KEY }}"; do sleep 2; done'
+
+      - name: Export the web app
+        run: pnpm --filter scaffald-app exec expo export --platform web
+
+      - name: Serve the export
+        run: |
+          cd apps/scaffald
+          nohup pnpm exec expo serve --port 8081 > /tmp/expo-serve.log 2>&1 &
+          timeout 90 bash -c 'until curl -sf http://localhost:8081/ > /dev/null; do sleep 2; done'
+
+      # The root config's testMatch allow-list is wider than what is green: the
+      # auth, hardening, api-keys, webhooks, user-journeys and profile-audit
+      # specs it lists were red on their first run against the export (29 of
+      # 123 tests, stale selectors rather than product faults; #810). Running
+      # the whole list would ship a permanently red nightly, so this job names
+      # the files with a verified green run. Add one file per PR, after its
+      # green run; do not widen this to the whole config until the allow-list
+      # itself is green.
+      - name: Run the office suites
+        run: >-
+          pnpm exec playwright test --project=chromium
+          tests/e2e/office/test-office-applications-kanban.spec.ts
+        env:
+          CI: true
+
+      # The suite must be red when the applications endpoint is broken, or a
+      # green run proves nothing (#553's third acceptance box, #807). With
+      # E2E_BREAK_APPLICATIONS=1 the spec answers the endpoint with an empty
+      # list; the fixture-precondition block has to fail. This step passes only
+      # if that run fails.
+      - name: Prove the red path
+        run: |
+          if E2E_BREAK_APPLICATIONS=1 pnpm exec playwright test --project=chromium \
+               tests/e2e/office/test-office-applications-kanban.spec.ts \
+               --grep "Fixture preconditions" --retries=0; then
+            echo "::error::the kanban suite stayed green with an empty applications endpoint"
+            exit 1
+          fi
+          echo "red path confirmed: the suite fails when the endpoint returns nothing"
+        env:
+          CI: true
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: playwright-report-office
+          path: tests/reports/playwright/
+          retention-days: 30
+
+      - name: Server log on failure
+        if: failure()
+        run: tail -100 /tmp/expo-serve.log || true
+
+      - name: Stop Supabase
+        if: always()
+        run: pnpm supa stop || true
