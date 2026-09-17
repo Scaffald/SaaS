@@ -1,0 +1,14 @@
+{
+  "Name": "scaffald-immutable-assets",
+  "Comment": "Content-hashed /_expo/static/* may live a year in browsers. Scaffald/SaaS#788",
+  "CustomHeadersConfig": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "Header": "Cache-Control",
+        "Value": "public, max-age=31536000, immutable",
+        "Override": true
+      }
+    ]
+  }
+}

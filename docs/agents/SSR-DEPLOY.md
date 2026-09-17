@@ -31,9 +31,42 @@ CloudFront config that matters:
   This is not just a perf win: with `CachingDisabled` every request hit the
   origin and **~10% returned 504 through CloudFront while 0% failed
   direct-to-origin**.
-- `/_expo/*` uses `Managed-CachingOptimized`; `/api/*` uses
-  `Managed-CachingDisabled` so POSTs are never cached.
+- `/_expo/static/*` (content-hashed bundles, CSS, fonts): `Managed-CachingOptimized`
+  plus response headers policy **`scaffald-immutable-assets`**
+  (`260ff2ed-5e41-4d44-b320-fd767d111371`), which overrides the origin's
+  `max-age=3600` with `public, max-age=31536000, immutable` for browsers. EAS
+  Hosting hard-codes the hour on assets with no override, so this is the only
+  place it can be set (#788). A hashed URL can never serve different bytes, so
+  a year is safe; the edge itself still revalidates hourly, which is cheap.
+- `/_expo/loaders/*` (the JSON that client-side navigation fetches for route
+  loaders): the same **`scaffald-ssr-html`** cache policy and origin request
+  policy as the HTML. Before this behaviour existed it fell under `/_expo/*`,
+  and because the origin sends no `Cache-Control` on loader JSON,
+  `CachingOptimized` kept it for its 24 h default — a client-side jump to
+  `/jobs` could show a day-old listing while the server-rendered page was
+  60 s old. Verified with `curl -sI …/_expo/loaders/jobs` showing
+  `x-cache: Hit` with a growing `age`.
+- `/_expo/*` (everything else under it) uses `Managed-CachingOptimized`;
+  `/api/*` uses `Managed-CachingDisabled` so POSTs are never cached.
 - Viewer-request function `scaffald-redirect-to-apex` on every behaviour.
+- The live config is exported to `infra/aws/cloudfront/apex-distribution-config.json`
+  (and the policy to `response-headers-immutable-assets.json`). Re-export after
+  any console change: `aws cloudfront get-distribution-config --id E1JU35IZ18YNEL`.
+  Behaviour order matters — CloudFront matches the first path pattern in the
+  list, so `/_expo/static/*` and `/_expo/loaders/*` must precede `/_expo/*`.
+  The dev (`E3J4DOM99FE5N`) and preview (`E1YYVZYC1XER5O`) distributions carry
+  the same two behaviours in front of their default, so every custom domain
+  answers the same way; only the raw `*.expo.app` URLs keep EAS's hour.
+
+Expected headers on production, which `scripts/deploy-web-eas.sh prod` now
+asserts after every deploy:
+
+```
+curl -sI https://scaffald.com/_expo/static/js/web/entry-<hash>.js | grep -i cache-control
+#   cache-control: public, max-age=31536000, immutable
+curl -sI https://scaffald.com/ | grep -i cache-control
+#   cache-control: s-maxage=3600   (origin value; HTML unchanged)
+```
 
 **After any distribution update, expect transient 500/504 for a minute or two**
 while config propagates. Wait for status `Deployed`, then re-test before
