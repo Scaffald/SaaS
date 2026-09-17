@@ -5,7 +5,7 @@
         "categories:accessibility": [
           "warn",
           {
-            "minScore": 0.85
+            "minScore": 0.95
           }
         ],
         "categories:best-practices": [

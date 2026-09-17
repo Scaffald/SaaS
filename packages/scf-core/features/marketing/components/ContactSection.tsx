@@ -239,7 +239,17 @@ export function ContactSection({ headingLevel = 2 }: ContactSectionProps) {
             </Field>
 
             <Field label="Organization type" required error={errorFor('orgType')}>
-              <Row gap={8} style={{ flexWrap: 'wrap' }}>
+              {/* A group of radios needs a radiogroup parent, and each radio
+                  needs `aria-checked` on web: react-native-web has no mapping
+                  for `accessibilityState` (#638), so without the explicit aria
+                  prop the role reaches the DOM and the state never does —
+                  Lighthouse fails `aria-required-attr` on every pill (#774). */}
+              <Row
+                gap={8}
+                style={{ flexWrap: 'wrap' }}
+                role="radiogroup"
+                aria-label="Organization type"
+              >
                 {ORG_TYPES.map((type) => (
                   <Pressable
                     key={type}
@@ -248,7 +258,8 @@ export function ContactSection({ headingLevel = 2 }: ContactSectionProps) {
                       markTouched('orgType')()
                     }}
                     accessibilityRole="radio"
-                    accessibilityState={{ selected: form.orgType === type }}
+                    accessibilityState={{ checked: form.orgType === type }}
+                    aria-checked={form.orgType === type}
                     style={{
                       paddingHorizontal: 14,
                       paddingVertical: 8,
