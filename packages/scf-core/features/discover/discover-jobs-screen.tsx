@@ -9,7 +9,7 @@ import type { FilterPillConfig } from '@scf/core/components/PageHeader'
 import { SortDropdown } from './components/SortDropdown'
 import { JobsBottomToolbar } from './components/JobsBottomToolbar'
 import type { JobSortBy, JobSource } from './components/JobsBottomToolbar'
-import { DiscoverJobsLeft } from './discover-jobs-left'
+import { DiscoverJobsLeft, type DiscoverJobsInitialData } from './discover-jobs-left'
 import { DiscoverJobsRight } from './discover-jobs-right'
 
 /**
@@ -19,7 +19,17 @@ import { DiscoverJobsRight } from './discover-jobs-right'
  *   - Desktop+: PageHeader with search + filter pills (header)
  *   - Mobile: BottomToolbar with Sheets/ActionSheet (footer)
  */
-export function DiscoverJobsScreen() {
+export type DiscoverJobsScreenOptions = {
+  /**
+   * Rows a route loader fetched on the server, so the listing renders with
+   * content on the first paint instead of a skeleton (#774). Only the public
+   * `/jobs` route has a loader; everywhere else this is undefined and the
+   * screen fetches as it always did.
+   */
+  initialJobs?: DiscoverJobsInitialData
+}
+
+export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = {}) {
   const [searchQuery, setSearchQuery] = useState('')
   const debouncedSearch = useDebounce(searchQuery, 300)
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
@@ -59,7 +69,14 @@ export function DiscoverJobsScreen() {
   const sourcePopoverContent = useMemo(
     () => (
       <Stack gap={4} style={{ minWidth: 200, padding: 8 }}>
-        <Text style={{ fontSize: 13, color: colors.text[t].secondary, paddingHorizontal: 8, paddingBottom: 4 }}>
+        <Text
+          style={{
+            fontSize: 13,
+            color: colors.text[t].secondary,
+            paddingHorizontal: 8,
+            paddingBottom: 4,
+          }}
+        >
           Job Source
         </Text>
         {SOURCE_OPTIONS.map((option) => {
@@ -80,7 +97,9 @@ export function DiscoverJobsScreen() {
               accessibilityRole="radio"
               accessibilityState={{ selected: isSelected }}
             >
-              <Text style={{ color: isSelected ? colors.text[t].primary : colors.text[t].secondary }}>
+              <Text
+                style={{ color: isSelected ? colors.text[t].primary : colors.text[t].secondary }}
+              >
                 {option.label}
               </Text>
               {isSelected ? <Check size={16} color={colors.fg[t].active} /> : null}
@@ -109,9 +128,10 @@ export function DiscoverJobsScreen() {
       pills.push({
         id: 'jobType',
         label: 'Job Type',
-        value: selectedJobTypes.length === 1
-          ? selectedJobTypes[0]
-          : `${selectedJobTypes.length} selected`,
+        value:
+          selectedJobTypes.length === 1
+            ? selectedJobTypes[0]
+            : `${selectedJobTypes.length} selected`,
         isActive: true,
         onPress: () => {},
       })
@@ -165,6 +185,7 @@ export function DiscoverJobsScreen() {
     header,
     left: (
       <DiscoverJobsLeft
+        initialJobs={initialJobs}
         searchQuery={debouncedSearch}
         selectedIndustries={selectedIndustries}
         selectedJobTypes={selectedJobTypes}

@@ -1,5 +1,6 @@
 import { useFilterOptions } from '@scf/core/utils/jobs-sdk-hooks'
 import { useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { DashboardWidget } from '@scaffald/ui'
 import { Filter, X } from 'lucide-react-native'
 import { useState } from 'react'
@@ -49,9 +50,13 @@ export function DiscoverJobsRight({
   const INDUSTRIES = filterData?.industries ?? []
   const JOB_TYPES = filterData?.jobTypes ?? []
 
-  // Check if user has soft skills assessment
+  // Check if user has soft skills assessment. Per-user, so an anonymous
+  // visitor on the public /jobs listing would get a guaranteed 401 — skip it
+  // (the match filter it unlocks is meaningless without a session anyway).
+  const { session } = useSessionContext()
   const { data: softSkillsData } = useSoftSkills(undefined, {
     staleTime: 5 * 60 * 1000,
+    enabled: !!session?.access_token,
   })
   const hasSoftSkillsAssessment = (softSkillsData?.skills.length ?? 0) > 0
 

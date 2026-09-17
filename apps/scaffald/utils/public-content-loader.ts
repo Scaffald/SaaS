@@ -110,16 +110,33 @@ export async function fetchPublicProfileBySlug(
  * The open jobs shown on the public `/jobs` listing.
  *
  * `/v1/jobs` defaults to `status=published`, which the route maps to the `open`
- * status the column actually stores. Rows without a slug are dropped: the
- * listing's only job of work is to point crawlers at `/jobs/<slug>` detail
- * pages, and a row that cannot produce that link has nothing to contribute to
- * a sitemap or to an ItemList.
+ * status the column actually stores. This is the same request the listing's
+ * `usePublishedJobs` hook makes with an empty search, and the route hands the
+ * rows to that hook as its initial data so the first paint has them (#774).
+ * Rows without a slug stay in: the cards link by id. Callers building a
+ * sitemap or an ItemList filter on `slug` themselves — see `hasSlug`.
  */
 export async function fetchPublicJobs(limit = 50): Promise<PublicJob[]> {
   const page = await getFromApi<PublicJob[]>(`/v1/jobs?limit=${limit}`)
-  if (!page) return []
-  return page.filter((job) => !!job.slug)
+  return page ?? []
 }
+
+/** Only a job with a slug has a `/jobs/<slug>` page to point a crawler at. */
+export const hasSlug = (job: PublicJob): boolean => !!job.slug
+
+/**
+ * The aggregated external postings the listing interleaves ahead of the
+ * internal rows. Fetched here for the same reason as `fetchPublicJobs`: the
+ * listing puts these first, so without them the first paint is still a
+ * skeleton, and when they arrive after hydration everything below shifts.
+ * The shape is the API's; the discover feature owns its typing of it.
+ */
+export async function fetchPublicExternalJobs(): Promise<PublicExternalJob[]> {
+  const rows = await getFromApi<PublicExternalJob[]>('/v1/jobs/external')
+  return rows ?? []
+}
+
+export type PublicExternalJob = { id: string; title: string } & Record<string, unknown>
 
 export async function fetchPublicJobBySlug(
   slug: string | string[] | undefined

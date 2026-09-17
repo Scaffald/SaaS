@@ -5,8 +5,19 @@
 
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
-import type { OfficeListJobsParams, OfficeCreateJobParams, OfficeUpdateJobParams, ListApplicationsParams, OfficeJob, GetUploadUrlParams, ConfirmUploadParams, SendMessageParams, CreateApplicationParams, UpdateApplicationParams } from '@scaffald/sdk'
-import type { Job } from '@scaffald/sdk/resources/jobs'
+import type {
+  OfficeListJobsParams,
+  OfficeCreateJobParams,
+  OfficeUpdateJobParams,
+  ListApplicationsParams,
+  OfficeJob,
+  GetUploadUrlParams,
+  ConfirmUploadParams,
+  SendMessageParams,
+  CreateApplicationParams,
+  UpdateApplicationParams,
+} from '@scaffald/sdk'
+import type { ExternalJob, Job, JobListResponse } from '@scaffald/sdk/resources/jobs'
 import type { Follow } from '@scaffald/sdk'
 
 /** Office list jobs (office role). Organization/team filtering. */
@@ -40,7 +51,14 @@ export function useJobDetails(jobId: string | undefined, options?: { enabled?: b
   })
 }
 
-export function useExternalJobs(options?: { enabled?: boolean }) {
+/**
+ * `initialData` seeds the cache with rows the route loader already fetched on
+ * the server, so the first render — server and client alike — has rows and
+ * the listing is not a skeleton until react-query resolves after hydration
+ * (#774). It counts as fresh for `staleTime`, which is right: it is the same
+ * response the client would have asked for, seconds younger.
+ */
+export function useExternalJobs(options?: { enabled?: boolean; initialData?: ExternalJob[] }) {
   const client = useScaffaldJobsClient()
   return useQuery({
     queryKey: ['jobs', 'external'],
@@ -50,12 +68,14 @@ export function useExternalJobs(options?: { enabled?: boolean }) {
     },
     enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
+    initialData: options?.initialData,
   })
 }
 
+/** See `useExternalJobs` for what `initialData` is for. */
 export function usePublishedJobs(
   params?: { search?: string; limit?: number; offset?: number },
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean; initialData?: JobListResponse }
 ) {
   const client = useScaffaldJobsClient()
   return useQuery({
@@ -67,6 +87,7 @@ export function usePublishedJobs(
     enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
     placeholderData: (previousData) => previousData,
+    initialData: options?.initialData,
   })
 }
 
