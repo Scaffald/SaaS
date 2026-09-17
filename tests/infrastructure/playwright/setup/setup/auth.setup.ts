@@ -81,12 +81,13 @@ setup('authenticate as admin', async ({ page }) => {
       let authKey = keys.find((k) => k.includes('sb-') && k.includes('-auth-token'))
 
       if (!authKey) {
-        // Create the key based on current hostname (matches create-auth-states.ts)
-        // Use IP address format (127) instead of localhost for consistency with working files
-        const hostname = window.location.hostname
-        // Convert localhost to 127, or use hostname as-is
-        const normalizedHost = hostname === 'localhost' ? '127' : hostname.split('.')[0]
-        authKey = `sb-${normalizedHost}-auth-token`
+        // The key the client reads is derived from the SUPABASE url, not the
+        // app's hostname (supabase-js: `sb-<first hostname label>-auth-token`).
+        // This used to map the app host "localhost" to "127", which only holds
+        // when EXPO_PUBLIC_SUPABASE_URL is 127.0.0.1. CI builds the app with
+        // http://localhost:54321, so the client read `sb-localhost-auth-token`,
+        // found nothing, and every run bounced to /auth (#807).
+        authKey = sessionData.storageKey
       }
 
       // Store session in localStorage as flat object (not wrapped in currentSession)
@@ -114,6 +115,7 @@ setup('authenticate as admin', async ({ page }) => {
       }
     },
     {
+      storageKey: getStorageKey(),
       access_token: session.session.access_token,
       refresh_token: session.session.refresh_token,
       expires_at: session.session.expires_at,
@@ -235,12 +237,13 @@ setup('authenticate as user', async ({ page }) => {
       let authKey = keys.find((k) => k.includes('sb-') && k.includes('-auth-token'))
 
       if (!authKey) {
-        // Create the key based on current hostname (matches create-auth-states.ts)
-        // Use IP address format (127) instead of localhost for consistency with working files
-        const hostname = window.location.hostname
-        // Convert localhost to 127, or use hostname as-is
-        const normalizedHost = hostname === 'localhost' ? '127' : hostname.split('.')[0]
-        authKey = `sb-${normalizedHost}-auth-token`
+        // The key the client reads is derived from the SUPABASE url, not the
+        // app's hostname (supabase-js: `sb-<first hostname label>-auth-token`).
+        // This used to map the app host "localhost" to "127", which only holds
+        // when EXPO_PUBLIC_SUPABASE_URL is 127.0.0.1. CI builds the app with
+        // http://localhost:54321, so the client read `sb-localhost-auth-token`,
+        // found nothing, and every run bounced to /auth (#807).
+        authKey = sessionData.storageKey
       }
 
       // Store session in localStorage as flat object (not wrapped in currentSession)
@@ -268,6 +271,7 @@ setup('authenticate as user', async ({ page }) => {
       }
     },
     {
+      storageKey: getStorageKey(),
       access_token: session.session.access_token,
       refresh_token: session.session.refresh_token,
       expires_at: session.session.expires_at,
