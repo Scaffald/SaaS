@@ -12,6 +12,7 @@ import {
   type TableColumnVisibilityModalProps,
   Row,
   Stack,
+  Text,
   type BreadcrumbItemData,
 } from '@scaffald/ui'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
@@ -142,14 +143,12 @@ export function OfficePageLayout<TData>({
         renderLoading={() => (
           <Stack align="center" justify="center" paddingVertical={24} gap={8}>
             <Spinner variant="ios" size="lg" />
-            <Stack>Loading…</Stack>
+            <Text>Loading…</Text>
           </Stack>
         )}
         pageSize={pageSize}
         emptyMessage={emptyMessage}
-        columnVisibility={
-          columnVisibility as Record<string, boolean> | undefined
-        }
+        columnVisibility={columnVisibility as Record<string, boolean> | undefined}
         onRowPress={
           onRowView || onRowEdit || _onRowDelete || _onRowDuplicate
             ? (row) => {
