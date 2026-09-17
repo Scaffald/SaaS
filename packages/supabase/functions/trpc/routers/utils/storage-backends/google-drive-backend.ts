@@ -17,7 +17,7 @@ import type {
   SignedUrlResult,
   UploadOptions,
   UploadResult,
-} from "./index.ts";
+} from "./types.ts";
 
 // Google Drive API endpoints
 const GOOGLE_DRIVE_API = "https://www.googleapis.com/drive/v3";
