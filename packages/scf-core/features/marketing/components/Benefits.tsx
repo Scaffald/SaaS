@@ -165,13 +165,24 @@ export function Benefits() {
               : 'Showcase Your Skills. Get Hired Faster.'}
           </MarketingHeading>
 
-          <Row gap={4} style={{ backgroundColor: brand.surfaceSunk, borderRadius: 12, padding: 4 }}>
+          {/* Tabs need a tablist parent, and `aria-selected` on web:
+              react-native-web has no mapping for `accessibilityState` (#638),
+              so without the explicit aria prop the role reaches the DOM and
+              the selection never does (Lighthouse `aria-required-parent` /
+              `aria-required-attr`, #774). */}
+          <Row
+            gap={4}
+            style={{ backgroundColor: brand.surfaceSunk, borderRadius: 12, padding: 4 }}
+            role="tablist"
+            aria-label="Audience"
+          >
             {(['orgs', 'workers'] as const).map((value) => (
               <Pressable
                 key={value}
                 onPress={() => selectTab(value)}
                 accessibilityRole="tab"
                 accessibilityState={{ selected: tab === value }}
+                aria-selected={tab === value}
                 style={{
                   paddingHorizontal: 24,
                   paddingVertical: 10,
