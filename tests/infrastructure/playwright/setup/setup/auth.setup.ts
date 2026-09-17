@@ -420,7 +420,11 @@ setup('authenticate as super admin', async ({ page }) => {
 
   console.log('✓ Browser session initialized')
 
-  await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'networkidle', timeout: 30000 })
+  // `domcontentloaded`, like the admin and user steps above, not `networkidle`:
+  // the Expo dev server keeps an HMR socket open and a cold Metro bundle takes
+  // longer than 30s to first paint, so `networkidle` timed out on every fresh
+  // run and only the retry produced the file (#553).
+  await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded', timeout: 30000 })
 
   // Verify we're authenticated (not redirected to /auth)
   await expect(page).toHaveURL(/dashboard/)
