@@ -7,7 +7,6 @@ import { useJobBySlug } from '@scf/core/utils/useJobBySlug'
 import type { BreadcrumbItemData } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
 import type { GenerateMetadataFunction, LoaderFunction } from 'expo-server'
-import { getCanonicalUrl } from '@scf/core/utils/platform'
 import { Spinner, Text, Stack } from '@scaffald/ui'
 import {
   extractPlainText,
@@ -133,8 +132,13 @@ export default function PublicJobDetailPage() {
   // Use existing job detail screen component
   const { left, right } = DiscoverJobDetailScreen({ jobId: jobData.id })
 
-  // Build canonical URL for SEO (web only; native has no concept of a canonical URL)
-  const canonicalUrl = getCanonicalUrl(`/jobs/${slug}`)
+  // The canonical URL is built from SITE_ORIGIN, the same way `generateMetadata`
+  // above and the profile route do — never from `window.location`. The
+  // previous `getCanonicalUrl()` returned undefined on the server (no window)
+  // and the real origin on the client, so the JSON-LD script's text had a
+  // `url` field on the client only and React threw the whole server tree away
+  // on every load of this page (#786).
+  const canonicalUrl = `${SITE_ORIGIN}/jobs/${slug}`
 
   // The loader's PublicJob and the SDK's Job describe the same row but type
   // `description` differently (raw column vs. string). Both SEO helpers read

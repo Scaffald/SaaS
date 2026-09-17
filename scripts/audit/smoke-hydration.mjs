@@ -42,8 +42,12 @@ await requireServer(BASE)
 // startup log line `{rootTag: #root, hydrate: true}`, which is not an error —
 // it made a clean logged-out load look like a failure and nearly produced the
 // opposite verdict.
+// Production builds throw the same failure minified — `Minified React error
+// #418` (HTML mismatch) / #423 / #425 (text) — with none of these words in
+// it, which is how #786 sat unseen on every production load of the detail
+// pages while this script read "clean". Match the codes too.
 const HYDRATION_FAILURE =
-  /Hydration failed|did not match|server rendered HTML didn't match|Text content does not match/i
+  /Hydration failed|did not match|server rendered HTML didn't match|Text content does not match|Minified React error #4(18|23|25)\b/i
 
 const browser = await chromium.launch()
 

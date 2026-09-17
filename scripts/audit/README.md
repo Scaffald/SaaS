@@ -57,6 +57,7 @@ particular pass. Keep them around as the audit log.
 ```
 audit/
   ui-sweep.mjs              # reusable
+  hydration-pages.mjs       # reusable: public pages × phone/tablet/desktop, counts hydration failures incl. minified #418
   2026-05-26/
     file-findings.ts        # filed 19 findings as in-product Tasks
   2026-06-10/
