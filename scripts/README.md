@@ -405,6 +405,32 @@ This serves all Edge Functions (including `trpc` and `api`) using `.env`. Leave 
 
 **Summary:** Terminal 1 → `pnpm supa:start:full`; Terminal 2 → `pnpm supa:functions`; then run `pnpm test:api` or `pnpm verify:api:e2e`.
 
+## Dependency checks
+
+```bash
+pnpm test:deps          # check-deps (advisory) + check-circular-deps
+pnpm test:deps:strict   # both, neither advisory
+pnpm check-circular-deps
+```
+
+`check-circular-deps` runs `scripts/check-circular-deps.sh` against
+`apps/scaffald`, `packages/scf-core` and `packages/supabase/functions` — about
+12s for ~1,770 files, so it is fine on the pre-push path.
+
+Two notes, both learned by the script reporting success wrongly:
+
+* madge defaults to JavaScript extensions. Without `--extensions ts,tsx` it
+  processes **0 files** here and prints "No circular dependency found" — a green
+  check that read nothing. The script treats a root that yields no files as an
+  error for that reason.
+* It reads madge's exit code rather than string-matching its success message,
+  which changes between versions.
+
+`pnpm check-circular-deps` was `nx show projects --json > /dev/null` until #777 —
+it listed projects and discarded them, so `test:deps` had always passed. The
+first real run found three cycles in `trpc/routers/utils/storage-backends`,
+fixed in the same change.
+
 ## Manual tools (not wired to package.json)
 
 Run these by path. Each has usage notes in its header comment.
@@ -412,7 +438,6 @@ Run these by path. Each has usage notes in its header comment.
 | Script | Purpose |
 |---|---|
 | `apply-migration.sh` | Apply one migration to a remote Supabase project and record it in the ledger (`--dry-run`, `--status`). |
-| `check-circular-deps.sh` | Run `madge -c` against a source dir; exits non-zero on a cycle. |
 | `check-supabase.sh` | Exit 0 if the local Supabase stack answers, 1 otherwise. |
 | `coverage-merger.ts` | Merge `coverage/worker-*.json` from parallel test workers into one report. |
 | `fix-gotrue-env.sh` | Patch the local GoTrue container's site URL after `supa start` so magic links resolve. |
