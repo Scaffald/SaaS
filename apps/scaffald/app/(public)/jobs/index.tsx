@@ -14,17 +14,18 @@ import {
   type PublicJob,
 } from '../../../utils/public-content-loader'
 import { useRouteLoaderData } from '../../../utils/use-route-loader-data'
+import { type ViewportLoaderData, viewportFromRequest } from '../../../utils/server-viewport'
 
 const PAGE_SIZE = 50
 
-type JobsLoaderData = { jobs: PublicJob[]; externalJobs: PublicExternalJob[] }
+type JobsLoaderData = { jobs: PublicJob[]; externalJobs: PublicExternalJob[] } & ViewportLoaderData
 
-export const loader: LoaderFunction<JobsLoaderData> = async () => {
+export const loader: LoaderFunction<JobsLoaderData> = async (request) => {
   const [jobs, externalJobs] = await Promise.all([
     fetchPublicJobs(PAGE_SIZE),
     fetchPublicExternalJobs(),
   ])
-  return { jobs, externalJobs }
+  return { jobs, externalJobs, ...viewportFromRequest(request) }
 }
 
 export const generateMetadata: GenerateMetadataFunction = async () => {

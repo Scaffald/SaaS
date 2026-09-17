@@ -12,6 +12,10 @@ import { SITE_ORIGIN } from '../utils/public-content-loader'
 import { OG_IMAGE } from '../utils/og'
 import { resolveRootRoute, shouldRenderLanding, type RootRouteInput } from '../utils/root-route'
 import { MarketingJsonLd } from '../components/MarketingJsonLd'
+import { viewportLoader } from '../utils/server-viewport'
+
+/** No data of its own; the loader exists so the server lays the page out for the visitor's device (#782). */
+export const loader = viewportLoader
 
 const TITLE = 'Scaffald — Hiring built for the skilled trades'
 const DESCRIPTION =

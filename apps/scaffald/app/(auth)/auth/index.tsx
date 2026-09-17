@@ -7,6 +7,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect, useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { viewportLoader } from '../../../utils/server-viewport'
+
+/** No data of its own; the loader exists so the server lays the page out for the visitor's device (#782). */
+export const loader = viewportLoader
 
 // Persisted so returning users (e.g. right after signing out) land on the
 // login screen instead of re-watching the 3-slide marketing carousel (#387).

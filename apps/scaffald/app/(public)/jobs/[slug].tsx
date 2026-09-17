@@ -18,6 +18,7 @@ import {
   type PublicJob,
 } from '../../../utils/public-content-loader'
 import { useRouteLoaderData } from '../../../utils/use-route-loader-data'
+import { type ViewportLoaderData, viewportFromRequest } from '../../../utils/server-viewport'
 
 const jobDescription = (job: PublicJob) => {
   const body = truncate(extractPlainText(job.description), 200)
@@ -27,9 +28,12 @@ const jobDescription = (job: PublicJob) => {
   return `${job.title}${org}${where}. Apply on Scaffald.`
 }
 
-export const loader: LoaderFunction<{ job: PublicJob | null }> = async (_request, params) => {
+export const loader: LoaderFunction<{ job: PublicJob | null } & ViewportLoaderData> = async (
+  request,
+  params
+) => {
   const job = await fetchPublicJobBySlug(params.slug)
-  return { job }
+  return { job, ...viewportFromRequest(request) }
 }
 
 export const generateMetadata: GenerateMetadataFunction = async (_request, params) => {
