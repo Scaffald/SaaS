@@ -47,10 +47,48 @@ The Express server + Dockerfile below are still valid and tested (72 MB image,
 verified serving), but are **not** what production runs. They remain the escape
 hatch if EAS is ever unsuitable.
 
+## Which route deploys what
+
+| target | how | trigger |
+|---|---|---|
+| **production** `scaffald.com` | `pnpm deploy:web:prod` (`scripts/deploy-web-eas.sh`) | a person, from a clean worktree |
+| **preview** `preview.scaffald.com` | `.github/workflows/deploy-web.yml` | push to `preview`, or Run workflow |
+| **dev** `dev.scaffald.com` | same workflow | push to `main`, or Run workflow |
+| **edge functions**, any environment | `scripts/deploy-functions.sh <env>` | a person |
+
+**CI does not deploy production, and does not deploy edge functions.** Both were
+wired to look as if they did, and neither worked (#772, #773):
+
+* the `prod` branch was a `push:` trigger on the workflow while sitting 479
+  commits behind `main`, last touched 2026-04-21, having never run it once — and
+  the job carried a comment promising "production requires manual approval",
+  which no plan this org is on can enforce (every environment reports
+  `protection_rules=0`);
+* the edge-function step selected its project from `DEV_SUPABASE_BRANCH_ID` /
+  `PREVIEW_SUPABASE_BRANCH_ID`, neither of which exists, so it printed
+  "⏭️ Supabase secrets not configured" and exited 0 on every run, under a
+  `continue-on-error: true` that would have hidden a real failure too. The web
+  half of a deploy advanced while the API half stayed wherever the last manual
+  run left it.
+
+So `prod` is off the triggers and the edge-function step is gone. Production
+ships through the script that asks you to type `deploy prod` and invalidates
+CloudFront afterwards; functions ship through the script that deploys all twelve,
+bakes `GIT_COMMIT` into the project so `/v1/api/v1/health` reports it, and runs
+`smoke-remote.sh`, which fails on commit skew.
+
+**Check what is actually deployed** before assuming a merge shipped:
+
+```bash
+curl -s "$SUPABASE_URL/functions/v1/api/v1/health"   # {"commit":"…","deployedAt":"…"}
+curl -s https://scaffald.com/ | grep -oE 'entry-[a-f0-9]+\.js'
+```
+
 Deploy a change:
 
 ```bash
 pnpm deploy:web:prod   # scripts/deploy-web-eas.sh — export + eas deploy + CF invalidation + smoke test
+pnpm deploy:functions:prod  # scripts/deploy-functions.sh — functions + GIT_COMMIT + smoke suite
 ```
 
 Or by hand (what the script runs):
@@ -140,8 +178,11 @@ them for the **build**, not just the container.
    JSON-LD, sitemaps (75 users / 3 jobs), the contact endpoint, and the auth
    page with its intent banner. No console errors.
 5. ✅ **Canonical origin flipped** to `https://scaffald.com` in `.env.production`
-   and `deploy-web.yml`. The workflow's auth step now *appends* the legacy
-   origins rather than clobbering the allow-list on every prod deploy.
+   and `deploy-web.yml`. The workflow's auth step *appends* rather than
+   clobbering the allow-list. (As of #772 that step no longer runs for
+   production at all — the workflow does not deploy production, so the legacy
+   `app.scaffald.com` / `www` origins are maintained through the production
+   release path instead.)
 
 ### Remaining follow-ups
 
