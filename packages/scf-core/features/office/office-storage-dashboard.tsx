@@ -241,8 +241,11 @@ export function OfficeStorageDashboard() {
 
   return (
     <Stack flex={1} padding="md" gap={16}>
-      <Row justify="space-between" align="center">
-        <Stack>
+      <Row justify="space-between" align="center" gap={12}>
+        {/* flex={1} so the description wraps inside the row. Without it the
+            Stack took its text's full width and pushed the Refresh button off
+            the right edge of a phone (#799 check, #796 note). */}
+        <Stack flex={1}>
           <Text>Storage Analytics</Text>
           <Text style={{ color: colors.text[theme].secondary }}>
             Monitor how workers consume storage across work logs, portfolios,
