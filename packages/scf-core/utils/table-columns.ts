@@ -17,6 +17,15 @@ import type { TableColumn, TableRowData } from '@scaffald/ui'
  * column without a custom cell (and for custom cells that return a string).
  * Primitives get a <Text>; elements pass through untouched.
  */
+function isClassComponent(component: unknown): boolean {
+  return (
+    typeof component === 'function' &&
+    Boolean(
+      (component as { prototype?: { isReactComponent?: unknown } }).prototype?.isReactComponent
+    )
+  )
+}
+
 function asRenderable(result: unknown) {
   if (result === null || result === undefined || result === false) return null
   if (isValidElement(result)) return result
@@ -34,7 +43,8 @@ export function columnsFromTanStack<TData extends Record<string, unknown>>(
   defs: ColumnDef<TData, unknown>[]
 ): TableColumn[] {
   return defs.map((def) => {
-    const id = (def as { id?: string }).id ?? (def as { accessorKey?: string }).accessorKey ?? 'unknown'
+    const id =
+      (def as { id?: string }).id ?? (def as { accessorKey?: string }).accessorKey ?? 'unknown'
     const accessorKey = (def as { accessorKey?: string }).accessorKey
     const meta = def.meta as { width?: number | string } | undefined
 
@@ -53,7 +63,20 @@ export function columnsFromTanStack<TData extends Record<string, unknown>>(
           column: { columnDef: def },
           getContext: () => cellContext,
         }
-        return asRenderable(flexRender(def.cell, cellContext as never))
+        // flexRender turns ANY function into a React component. A formatter
+        // like `cell: (info) => info.getValue()` therefore comes back as an
+        // element, `isValidElement` waves it through, and its string return
+        // renders as a bare child of the stacked <View> — the "Text strings
+        // must be rendered within a <Text> component" error on every Office
+        // table the first time native stacked (#768). Call plain functions
+        // ourselves so the primitive reaches asRenderable; class and exotic
+        // (memo/forwardRef) components still go through flexRender.
+        const cell = def.cell
+        const output =
+          typeof cell === 'function' && !isClassComponent(cell)
+            ? cell(cellContext as never)
+            : flexRender(cell, cellContext as never)
+        return asRenderable(output)
       },
     }
   })
