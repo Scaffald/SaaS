@@ -57,10 +57,24 @@ test.describe('Office • /office/applications - Kanban Board', () => {
         })
       )
     })
+    // The red path, on demand: with E2E_BREAK_APPLICATIONS=1 the employer
+    // applications endpoint answers an empty list, and the fixture-precondition
+    // block below must fail. This is how "the suite goes red when the endpoint
+    // breaks" is proved without editing an edge function that a running local
+    // stack may be serving from another checkout (#807).
+    if (process.env.E2E_BREAK_APPLICATIONS === '1') {
+      await page.route('**/v1/employer/applications*', (route) =>
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ data: [], total: 0 }),
+        })
+      )
+    }
     await page.goto('/office/applications', { waitUntil: 'domcontentloaded' })
     // The page opens in the Lanes view; the board this suite drives sits
     // behind the "Board" segment (office-applications-screen.tsx, #553).
-    await page.getByTestId('applications-view-switch').getByText('Board', { exact: true }).click()
+    await page.getByTestId('applications-view-switch').getByText('Board', { exact: true }).first().click()
     await waitForKanbanLoad(page)
   })
 
