@@ -5,14 +5,10 @@
  * import it without importing the barrel that exports them (#777).
  */
 
-export type {
-  IStorageBackend,
-  SignedUrlResult,
-  StorageBackendType,
-  StorageError,
-  UploadOptions,
-  UploadResult,
-} from "./types.ts";
+// `export *` rather than a hand-listed set: enumerating them by hand dropped
+// `StorageRouterResult` and broke storage-router.ts, which is exactly the
+// breakage a barrel exists to prevent.
+export * from "./types.ts";
 
 export { SupabaseStorageBackend } from "./supabase-backend.ts";
 export { DropboxStorageBackend } from "./dropbox-backend.ts";
