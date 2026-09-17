@@ -156,19 +156,24 @@ describe('GeneralInfoStep', () => {
 
     await waitFor(() => expect(nextButton).toBeEnabled())
 
-    const latestSnapshot =
-      onStepStateChange.mock.calls[onStepStateChange.mock.calls.length - 1]?.[0]
-
-    expect(latestSnapshot).toMatchObject({
-      data: {
-        firstName: '  Jane ',
-        lastName: ' Doe ',
-        headline: '  Master Electrician  ',
-        bio: ' Experienced and reliable. ',
-      },
-      isValid: true,
-      isDirty: true,
-    })
+    // The snapshot is reported from a passive effect after the commit that
+    // enables the button, so "button enabled" does not mean "last call is the
+    // valid snapshot" yet — on a loaded CI runner it was not, twice in a row
+    // (#753). Wait for the call itself.
+    await waitFor(() =>
+      expect(onStepStateChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          data: {
+            firstName: '  Jane ',
+            lastName: ' Doe ',
+            headline: '  Master Electrician  ',
+            bio: ' Experienced and reliable. ',
+          },
+          isValid: true,
+          isDirty: true,
+        })
+      )
+    )
   })
 
   it('submits trimmed values on continue and save for later actions', async () => {
