@@ -30,9 +30,13 @@ the serving path for the app itself. Full runbook: `docs/agents/SSR-DEPLOY.md`.
   production stack (`app-scaffald-com` bucket behind `E22499AF1OBX1Y`).
   **Never sync a build into that bucket** — it would silently replace the
   redirect for every old bookmark and OAuth callback.
-- CloudFront origin config that matters (prod): origin request policy must be
+- CloudFront config that matters (prod): origin request policy must be
   `Managed-AllViewerExceptHostHeader`, HTML cached by the custom
-  `scaffald-ssr-html` policy (60s default). See `docs/agents/SSR-DEPLOY.md`.
+  `scaffald-ssr-html` policy (60s default); `/_expo/static/*` carries the
+  `scaffald-immutable-assets` response headers policy (a year, `immutable` —
+  EAS Hosting itself hard-codes one hour on assets, #788); `/_expo/loaders/*`
+  is cached like the HTML, not like the assets. The live config is exported to
+  `cloudfront/apex-distribution-config.json`. See `docs/agents/SSR-DEPLOY.md`.
 
 ### History
 

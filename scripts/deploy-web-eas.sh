@@ -146,6 +146,20 @@ for path in / /robots.txt; do
   echo "${APP_URL}${path} → HTTP ${STATUS}"
   [ "${STATUS}" = "200" ] || FAILED=1
 done
+# Cache headers are set by CloudFront, not by the deploy, so a console edit can
+# silently undo them (#788). Assert the two that matter on every deploy: the
+# content-hashed bundle is immutable for a year, and the HTML is not.
+ENTRY=$(curl -s --max-time 20 "${APP_URL}/" | grep -oE '/_expo/static/js/web/entry-[a-f0-9]+\.js' | head -1 || true)
+if [ -n "${ENTRY}" ]; then
+  ENTRY_CC=$(curl -sI --max-time 20 "${APP_URL}${ENTRY}" | tr -d '\r' | grep -i '^cache-control:' || true)
+  HTML_CC=$(curl -sI --max-time 20 "${APP_URL}/" | tr -d '\r' | grep -i '^cache-control:' || true)
+  echo "${ENTRY} → ${ENTRY_CC:-<no cache-control>}"
+  echo "/ → ${HTML_CC:-<no cache-control>}"
+  case "${ENTRY_CC}" in *immutable*) ;; *) echo "❌ entry bundle is not immutable — check the /_expo/static/* behaviour on CloudFront (docs/agents/SSR-DEPLOY.md)"; FAILED=1;; esac
+  case "${HTML_CC}" in *immutable*) echo "❌ the HTML is immutable — a behaviour is matching too much"; FAILED=1;; esac
+else
+  echo "⚠️  could not find the entry bundle in ${APP_URL}/ — skipping the cache-header check"
+fi
 if [ "${FAILED}" = "0" ]; then
   echo "✅ Smoke test passed"
 else
