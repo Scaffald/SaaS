@@ -404,7 +404,15 @@ export default {
         {
           unstable_useServerRendering: true,
           unstable_useServerDataLoaders: true,
-          // NOTE: asyncRoutes is disabled — see below.
+          // Route-level code splitting on web exports: mapbox-gl and the
+          // assessment corpus ship in their own chunks instead of every page's
+          // bundle. 'production' only — the dev server keeps eager bundling,
+          // so `pnpm web` and the Playwright e2e run are unchanged.
+          // Needs patches/@expo__router-server@56.0.18.patch — without it the
+          // SSR HTML emits the chunks `async` and the entry chunk races the
+          // shared one (upstream fix is @expo/router-server 57.0.10; drop the
+          // patch with the SDK 57 bump). https://github.com/Scaffald/SaaS/issues/797
+          asyncRoutes: { web: "production", default: false },
         },
       ],
       [

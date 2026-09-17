@@ -105,6 +105,31 @@ Pin `stripe: "20.0.0"` (exact version) as devDep in the supabase package.
 - `LatestApiVersion` type changes with each patch, breaking type checks
 - Using `declare module 'stripe'` in `.d.ts` files **merges** with npm types — don't do this
 
+## @expo/router-server Patch (drop with SDK 57)
+
+`patches/@expo__router-server@56.0.18.patch` back-ports one change from
+`@expo/router-server@57.0.10`: the streaming SSR renderer stops passing the
+JS chunks to React as `bootstrapScripts` (which emits them `async`) and emits
+`<link rel="preload">` + `<script defer>` in asset order instead. The preload
+links carry `fetchPriority="low"` (as React's did; upstream's do not) — at
+default priority the shared chunk contends with fonts and first paint on a
+throttled connection slipped from 2 s to 10 s in the Lighthouse run. Without
+the patch,
+`asyncRoutes: { web: true }` in `apps/scaffald/app.config.ts` produces a build
+where the 1 MB entry chunk can execute before the 7 MB `__common` chunk it
+requires, and every page dies with `Requiring unknown module` — a race that
+depends on chunk sizes, so it can pass on one build and fail on the next.
+See [#797](https://github.com/Scaffald/SaaS/issues/797).
+
+- The patch is applied by `pnpm install` (recorded in `pnpm-lock.yaml`'s
+  `patchedDependencies`) and compiled into `dist/server/_expo/server/render.js`
+  at export, so it covers every runtime: the Express server CI measures with,
+  the EAS Hosting worker, and `expo serve`.
+- **When the Expo SDK 57 bump lands (#483), delete the patch and its
+  `patchedDependencies` entry** — the fix ships upstream. Keep `asyncRoutes` on.
+- `scripts/audit/boot-pages.mjs` is the regression check (the Lighthouse job
+  runs it); `hydration-pages.mjs` alone cannot see this failure.
+
 ## NX Root Project Recursion
 
 The root `package.json` has scripts like `lint: "nx run-many -t lint ..."`. When NX infers these as targets for the root project, running `nx run-many -t lint` enters infinite recursion.

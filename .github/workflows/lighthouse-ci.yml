@@ -21,7 +21,8 @@ jobs:
     name: Lighthouse Performance Audit
     if: github.event_name != 'pull_request' || github.event.label.name == 'ci:full'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # 18 throttled runs at ~35 s each, after a ~7 min export.
+    timeout-minutes: 35
 
     steps:
       - name: Checkout code
@@ -144,6 +145,31 @@ jobs:
       # one. They go back to `error` once the nightly's own harness (server
       # start-up, PROTOCOL_TIMEOUT retries — see #774) stops being the reason
       # a run fails.
+      # Lighthouse measures whatever the server paints, including a page whose
+      # JavaScript died before hydration. With route splitting on, the SSR
+      # HTML once emitted every chunk `async` and the entry chunk raced the
+      # shared one it requires: every page rendered blank with "Requiring
+      # unknown module" and no metric here would have said so (#797). The
+      # boot audit loads each public page in a real browser and fails the job
+      # if any page throws or renders no text, before a single number is
+      # reported for it.
+      - name: Every public page boots
+        run: |
+          pnpm exec playwright install chromium
+          node scripts/audit/boot-pages.mjs http://localhost:8081
+
+      # `.lighthouserc.json` sets `throttlingMethod: devtools` (real CPU and
+      # network throttling) rather than Lighthouse's default `simulate`. The
+      # simulated LCP is a Lantern estimate built from an unthrottled trace,
+      # and on this build it is bimodal: the deferred chunks download and
+      # execute within ~450 ms on localhost, so whenever Chrome's unthrottled
+      # first paint happens to land after them, Lantern folds the entire
+      # hydration cost into LCP and reports ~13 s for a paint that observably
+      # happened at 0.9 s. Same commit, same page: 2.2 s or 13 s, two runs out
+      # of three (#797). Devtools throttling measures the paint that actually
+      # happens under throttling — 1.3 s, three runs within 60 ms. Each run
+      # takes ~35 s instead of ~13 s; the numbers are not comparable with
+      # runs before this change.
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v12
         with:
