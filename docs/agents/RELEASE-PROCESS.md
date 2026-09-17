@@ -143,6 +143,41 @@ and we neither build nor test for that platform today.
 
 ---
 
+## Native privacy answers
+
+Written down so the App Store privacy labels, Play's Data Safety form, and
+the next reviewer question get the same answer.
+
+- **Cookie consent on iOS/Android: none.** An app sets no cookies. The
+  native provider (`packages/scf-core/provider/cookie-consent/CookieConsentProvider.native.tsx`)
+  reports a fixed, implicit state (`NATIVE_IMPLICIT_CONSENT`) to everything
+  that gates on consent, renders no banner or dialog, and writes nothing to
+  `consent_records`. The web "This site uses cookies" sheet is web-only (#764).
+- **App Tracking Transparency: not applicable.** PostHog and Sentry are
+  first-party service providers; nothing in the binary tracks users across
+  other companies' apps or sites. The app declares no
+  `NSUserTrackingUsageDescription` and does not install
+  `expo-tracking-transparency`. If that ever changes — an ad SDK, a
+  cross-app attribution SDK — this section and the labels change with it.
+- **Analytics identity** (PostHog identify, Sentry user) is gated on the
+  performance-consent flag in `AuthProvider`; on native that flag is the
+  implicit state above, so identity runs.
+
+## Pre-submit checklist
+
+Things a build, a typecheck and a web sweep cannot catch. Do them on a
+device or simulator with the exact build you are about to submit.
+
+- [ ] Open the **Workers map** in light and dark appearance and confirm tiles
+      render. Every build from `app-v1.0.1` to `app-v1.17.1` shipped a black
+      map — a Mapbox Standard style on a v10 SDK answers 200 and paints nothing
+      (#765) — and no automated check noticed for six months.
+- [ ] Open **Office → Workers → Storage Analytics** on an iPad and confirm the
+      table reads as cards with column labels (#768).
+- [ ] Confirm the first screen carries **no cookie sheet** (#764).
+- [ ] Note the build's ITMS emails against the section above before deciding
+      any of them is new.
+
 ## Linear coordination
 
 ### Version labels

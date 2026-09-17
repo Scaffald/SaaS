@@ -1,97 +1,40 @@
 import {
-  CookieConsentBanner,
-  type CookieConsentStorage,
-  type CookieConsentState,
-  CookiePreferencesDialog,
   CookieConsentProvider as BeyondCookieConsentProvider,
+  type CookieConsentStorage,
 } from '@scaffald/ui'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Platform } from 'react-native'
 import type { ReactNode } from 'react'
-import { useCallback } from 'react'
-import { supabase } from '@scf/core/utils/supabase/client'
+import {
+  COOKIE_CONSENT_STORAGE_KEY,
+  NATIVE_IMPLICIT_CONSENT,
+} from '@scf/core/utils/cookieConsent/cookieConsentStorage'
 
-const STORAGE_KEY = 'scf-cookie-consent'
-const POLICY_VERSION = '1'
-
-const storageAdapter: CookieConsentStorage = {
-  getItem: async (key) => {
-    try {
-      return await AsyncStorage.getItem(key)
-    } catch (error) {
-      console.warn('CookieConsent: unable to read AsyncStorage value', error)
-      return null
-    }
-  },
-  setItem: async (key, value) => {
-    try {
-      await AsyncStorage.setItem(key, value)
-    } catch (error) {
-      console.warn('CookieConsent: unable to write AsyncStorage value', error)
-    }
-  },
-  removeItem: async (key) => {
-    try {
-      await AsyncStorage.removeItem(key)
-    } catch (error) {
-      console.warn('CookieConsent: unable to remove AsyncStorage value', error)
-    }
-  },
+/**
+ * Native cookie consent: none (#764).
+ *
+ * This used to be a copy of the web provider — the "This site uses cookies"
+ * sheet pinned to every screen of the iOS app, writing `consent_records` rows
+ * tagged `ReactNative/ios`. An app sets no cookies, its analytics are
+ * first-party (no cross-app tracking, so no App Tracking Transparency
+ * prompt), and the sheet read to a reviewer as an unfinished web port.
+ *
+ * The provider stays so `useCookieConsent()` keeps working for anything
+ * shared with web; it is fed NATIVE_IMPLICIT_CONSENT through a storage that
+ * never persists, renders no banner and no dialog, and records nothing.
+ * The privacy-label / Data Safety answers this implies are in
+ * docs/agents/RELEASE-PROCESS.md.
+ */
+const implicitStorage: CookieConsentStorage = {
+  getItem: async () => JSON.stringify(NATIVE_IMPLICIT_CONSENT),
+  setItem: async () => {},
+  removeItem: async () => {},
 }
 
-const CATEGORY_TO_CONSENT_TYPE: Record<string, string> = {
-  'strictly-necessary': 'cookies_essential',
-  performance: 'cookies_analytics',
-}
-
-async function recordConsentToDb(state: CookieConsentState) {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  if (!session?.user?.id) return
-
-  const userAgent = `ReactNative/${Platform.OS}`
-  const deviceType = Platform.OS === 'ios' || Platform.OS === 'android' ? 'mobile' : 'desktop'
-
-  const records = Object.entries(state.selections)
-    .map(([categoryId, given]) => {
-      const consentType = CATEGORY_TO_CONSENT_TYPE[categoryId]
-      if (!consentType) return null
-      return {
-        user_id: session.user.id,
-        consent_type: consentType,
-        consent_given: given,
-        consent_version: state.version,
-        consent_method: 'toggle_switch',
-        consent_text: given
-          ? `User enabled ${categoryId} cookies (policy v${state.version})`
-          : `User disabled ${categoryId} cookies (policy v${state.version})`,
-        user_agent: userAgent,
-        device_type: deviceType,
-        metadata: { category_id: categoryId, recorded_at: state.updatedAt },
-      }
-    })
-    .filter((r): r is NonNullable<typeof r> => r != null)
-
-  if (records.length === 0) return
-  await supabase.from('consent_records').insert(records)
-}
-
-export const CookieConsentProvider = ({ children }: { children: ReactNode }) => {
-  const handleConsentChange = useCallback((state: CookieConsentState) => {
-    void recordConsentToDb(state)
-  }, [])
-
-  return (
-    <BeyondCookieConsentProvider
-      storage={storageAdapter}
-      storageKey={STORAGE_KEY}
-      policyVersion={POLICY_VERSION}
-      onConsentChange={handleConsentChange}
-    >
-      {children}
-      <CookieConsentBanner />
-      <CookiePreferencesDialog />
-    </BeyondCookieConsentProvider>
-  )
-}
+export const CookieConsentProvider = ({ children }: { children: ReactNode }) => (
+  <BeyondCookieConsentProvider
+    storage={implicitStorage}
+    storageKey={COOKIE_CONSENT_STORAGE_KEY}
+    policyVersion={NATIVE_IMPLICIT_CONSENT.version}
+  >
+    {children}
+  </BeyondCookieConsentProvider>
+)
