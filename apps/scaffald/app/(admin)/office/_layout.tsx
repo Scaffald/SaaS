@@ -1,4 +1,5 @@
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
+import { scrollingScreenLayout } from '@scf/core/components/layouts/ScreenScroll'
 import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
 import { useOfficeRouteProtection } from '@scf/core/utils/auth/useOfficeRouteProtection'
 import { useRoleProtectedRoute } from '@scf/core/utils/auth/useRoleProtectedRoute'
@@ -41,12 +42,17 @@ export default function OfficeLayout() {
       }}
     >
       <View style={{ flex: 1 }}>
-      {/* Screen names must match the route files under this directory. The
+        {/* Screen names must match the route files under this directory. The
           previous list named jobs/, teams/, organizations/, universities/ and
           background-checks/ at the top level; those all moved under cms/ and
           ats/, so every entry was a silent no-op and the routes that do exist
           had none. */}
-        <DrawerLayout protectionComponent={null}>
+        {/* Every Office screen scrolls on a phone through the navigator's
+            screenLayout (#796). Fourteen screens are rooted in a plain Stack
+            with no ScrollView of their own; on web the document scrolls so it
+            never showed. A screen that must own its full height can override
+            this with `layout` on its own Stack.Screen. */}
+        <DrawerLayout protectionComponent={null} screenLayout={scrollingScreenLayout}>
           <Stack.Screen name="index" options={{ title: 'Office' }} />
 
           <Stack.Screen name="applications/index" options={{ title: 'Applications' }} />
@@ -54,7 +60,10 @@ export default function OfficeLayout() {
             name="applications/[applicationId]/index"
             options={{ title: 'Candidate' }}
           />
-          <Stack.Screen name="applications/[applicationId]/inquiry" options={{ title: 'Inquiry' }} />
+          <Stack.Screen
+            name="applications/[applicationId]/inquiry"
+            options={{ title: 'Inquiry' }}
+          />
 
           <Stack.Screen name="ats/index" options={{ title: 'ATS' }} />
           <Stack.Screen name="ats/metrics" options={{ title: 'Hiring Metrics' }} />
@@ -78,8 +87,14 @@ export default function OfficeLayout() {
           <Stack.Screen name="cms/teams/[id]/analytics" options={{ title: 'Team Analytics' }} />
           <Stack.Screen name="cms/teams/[id]/settings" options={{ title: 'Team Settings' }} />
           <Stack.Screen name="cms/organizations/index" options={{ title: 'Organizations' }} />
-          <Stack.Screen name="cms/organizations/create" options={{ title: 'Create Organization' }} />
-          <Stack.Screen name="cms/organizations/[id]/edit" options={{ title: 'Edit Organization' }} />
+          <Stack.Screen
+            name="cms/organizations/create"
+            options={{ title: 'Create Organization' }}
+          />
+          <Stack.Screen
+            name="cms/organizations/[id]/edit"
+            options={{ title: 'Edit Organization' }}
+          />
           <Stack.Screen name="cms/projects/index" options={{ title: 'Projects' }} />
           <Stack.Screen name="cms/projects/create" options={{ title: 'Create Project' }} />
           <Stack.Screen name="cms/projects/[id]/index" options={{ title: 'Project Detail' }} />
@@ -91,10 +106,10 @@ export default function OfficeLayout() {
           <Stack.Screen name="compliance/eeo-reports" options={{ title: 'EEO Reports' }} />
           <Stack.Screen name="compliance/project-hiring" options={{ title: 'Project Hiring' }} />
           <Stack.Screen name="integrations/hris" options={{ title: 'HRIS & Payroll' }} />
-            <Stack.Screen
-          name="integrations/background-checks"
-          options={{ title: 'Background Check Providers' }}
-        />
+          <Stack.Screen
+            name="integrations/background-checks"
+            options={{ title: 'Background Check Providers' }}
+          />
 
           <Stack.Screen name="storage/index" options={{ title: 'Storage Analytics' }} />
           <Stack.Screen name="payments/index" options={{ title: 'Payment Analytics' }} />
@@ -107,10 +122,10 @@ export default function OfficeLayout() {
           <Stack.Screen name="oauth-apps/[id]/index" options={{ title: 'OAuth App' }} />
           <Stack.Screen name="webhooks/index" options={{ title: 'Webhooks' }} />
           <Stack.Screen name="webhooks/create" options={{ title: 'Create Webhook' }} />
-            <Stack.Screen
-          name="communities/verification"
-          options={{ title: 'Community Verification' }}
-        />
+          <Stack.Screen
+            name="communities/verification"
+            options={{ title: 'Community Verification' }}
+          />
         </DrawerLayout>
         {showOverlay && (
           <View

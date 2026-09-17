@@ -14,7 +14,14 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { ArrowLeft, Search, X } from 'lucide-react-native'
 import { Stack } from 'expo-router'
 import { useRouter } from 'expo-router'
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+  type ReactNode,
+} from 'react'
 import { Pressable, TextInput, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { CustomDrawer } from './CustomDrawer'
@@ -37,6 +44,11 @@ interface DrawerLayoutProps {
    * Whether to hide the drawer and header (e.g., during prerequisites completion)
    */
   hideDrawer?: boolean
+  /**
+   * Wraps every screen the navigator renders. The Office stack passes
+   * `scrollingScreenLayout` so its screens scroll on a phone (#796).
+   */
+  screenLayout?: ComponentProps<typeof Stack>['screenLayout']
 }
 
 const DRAWER_WIDTH_FULL = 300
@@ -64,7 +76,12 @@ function shouldForceMobile(): boolean {
   return new URLSearchParams(window.location.search).has('forceMobile') // platform-allow: web-only dev flag
 }
 
-function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: DrawerLayoutProps) {
+function DrawerLayoutInner({
+  protectionComponent,
+  children,
+  hideDrawer,
+  screenLayout,
+}: DrawerLayoutProps) {
   const { width } = useResponsive()
   const { theme } = useThemeContext()
   const router = useRouter()
@@ -331,6 +348,7 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
         panelBackgroundColor={colors.bg[theme].default}
       >
         <Stack
+          screenLayout={screenLayout}
           screenOptions={{
             headerShown: showHeader,
             header: showHeader ? renderMobileHeader : undefined,
