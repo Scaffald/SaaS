@@ -1,4 +1,4 @@
-import { MarketingNav, TermsScreen } from '@scf/core/features/marketing'
+import { TermsScreen } from '@scf/core/features/marketing'
 import type { GenerateMetadataFunction } from 'expo-server'
 import { View } from 'react-native'
 import { SITE_ORIGIN } from '../../utils/public-content-loader'
@@ -21,7 +21,6 @@ export const generateMetadata: GenerateMetadataFunction = () => ({
 export default function TermsRoute() {
   return (
     <View style={{ flex: 1 }}>
-      <MarketingNav />
       <TermsScreen />
     </View>
   )

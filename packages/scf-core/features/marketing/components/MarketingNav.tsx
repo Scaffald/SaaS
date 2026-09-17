@@ -1,7 +1,9 @@
 import { Row, Stack, Text, useResponsive } from '@scaffald/ui'
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
-import { AUTH_ROUTES } from '../../../constants/routes'
+import { AUTH_ROUTES, ROUTES } from '../../../constants/routes'
+import { useHydrated } from '../../../hooks/useHydrated'
+import { useAuthStatus } from '../../../provider/auth/useAuth'
 import { brand, layout } from '../theme'
 import { MarketingLink } from './MarketingLink'
 import { useHover } from './useHover'
@@ -23,12 +25,43 @@ export type MarketingNavProps = {
   sectionBasePath?: string
 }
 
+/**
+ * The signed-out site header, and the only navigation on public pages (#762).
+ *
+ * Every public route renders it from `app/(public)/_layout.tsx`; the landing
+ * page renders it itself so it can wire smooth-scrolling. It links to the
+ * public surfaces that exist — the jobs listing and the landing sections — and
+ * carries the account area: Sign in / Get started for a visitor, a Dashboard
+ * link for someone who is already signed in.
+ *
+ * The account area is deliberately rendered signed-out on the server AND on
+ * the first client render, even when a session is already in localStorage.
+ * The server cannot see the session, so this is the only way the two trees
+ * agree; see `useHydrated`. A signed-in user therefore sees Sign in for one
+ * frame before it becomes Dashboard, which is the cheaper of the two flashes —
+ * the alternative hides the sign-in CTA from every anonymous visitor for the
+ * whole of hydration, and anonymous visitors are who this header is for.
+ */
 export function MarketingNav({ onNavigate, sectionBasePath = '' }: MarketingNavProps) {
   const { isMobile } = useResponsive()
   const [open, setOpen] = useState(false)
+  const hydrated = useHydrated()
+  const { isAuthenticated } = useAuthStatus()
+  const showSignedIn = hydrated && isAuthenticated
 
   const signInHref = AUTH_ROUTES.LOGIN.path
   const startHref = `${AUTH_ROUTES.LOGIN.path}?intent=worker`
+  const dashboardHref = ROUTES.DASHBOARD.path
+
+  const primaryLinks = [
+    { key: 'jobs', href: ROUTES.JOBS.path, label: 'Jobs', onPress: undefined },
+    ...SECTIONS.map((section) => ({
+      key: section.id,
+      href: `${sectionBasePath}#${section.id}`,
+      label: section.label,
+      onPress: onNavigate ? () => onNavigate(section.id) : undefined,
+    })),
+  ]
 
   return (
     <View
@@ -57,12 +90,12 @@ export function MarketingNav({ onNavigate, sectionBasePath = '' }: MarketingNavP
 
         {!isMobile ? (
           <Row gap={32} align="center">
-            {SECTIONS.map((section) => (
+            {primaryLinks.map((link) => (
               <NavSectionLink
-                key={section.id}
-                href={`${sectionBasePath}#${section.id}`}
-                label={section.label}
-                onPress={onNavigate ? () => onNavigate(section.id) : undefined}
+                key={link.key}
+                href={link.href}
+                label={link.label}
+                onPress={link.onPress}
               />
             ))}
           </Row>
@@ -82,20 +115,22 @@ export function MarketingNav({ onNavigate, sectionBasePath = '' }: MarketingNavP
           </Pressable>
         ) : (
           <Row gap={12} align="center">
-            <NavSectionLink href={signInHref} label="Sign in" />
-            <MarketingLink
-              href={startHref}
-              style={{
-                backgroundColor: brand.teal,
-                paddingHorizontal: 16,
-                paddingVertical: 8,
-                borderRadius: 8,
-              }}
-            >
-              <Text size="sm" weight="medium" color="#ffffff">
-                Get started
-              </Text>
-            </MarketingLink>
+            {showSignedIn ? (
+              <MarketingLink href={dashboardHref} style={ctaStyle}>
+                <Text size="sm" weight="medium" color="#ffffff">
+                  Dashboard
+                </Text>
+              </MarketingLink>
+            ) : (
+              <>
+                <NavSectionLink href={signInHref} label="Sign in" />
+                <MarketingLink href={startHref} style={ctaStyle}>
+                  <Text size="sm" weight="medium" color="#ffffff">
+                    Get started
+                  </Text>
+                </MarketingLink>
+              </>
+            )}
           </Row>
         )}
       </Row>
@@ -111,39 +146,58 @@ export function MarketingNav({ onNavigate, sectionBasePath = '' }: MarketingNavP
             paddingVertical: 16,
           }}
         >
-          {SECTIONS.map((section) => (
+          {primaryLinks.map((link) => (
             <NavSectionLink
-              key={section.id}
-              href={`${sectionBasePath}#${section.id}`}
-              label={section.label}
+              key={link.key}
+              href={link.href}
+              label={link.label}
               onPress={() => {
                 setOpen(false)
-                onNavigate?.(section.id)
+                link.onPress?.()
               }}
             />
           ))}
           <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.1)' }} />
-          <NavSectionLink href={signInHref} label="Sign in" onPress={() => setOpen(false)} />
-          <MarketingLink
-            href={startHref}
-            onPress={() => setOpen(false)}
-            style={{
-              backgroundColor: brand.teal,
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-              borderRadius: 8,
-              textAlign: 'center',
-            }}
-          >
-            <Text size="sm" weight="medium" color="#ffffff">
-              Get started
-            </Text>
-          </MarketingLink>
+          {showSignedIn ? (
+            <MarketingLink
+              href={dashboardHref}
+              onPress={() => setOpen(false)}
+              style={mobileCtaStyle}
+            >
+              <Text size="sm" weight="medium" color="#ffffff">
+                Dashboard
+              </Text>
+            </MarketingLink>
+          ) : (
+            <>
+              <NavSectionLink href={signInHref} label="Sign in" onPress={() => setOpen(false)} />
+              <MarketingLink href={startHref} onPress={() => setOpen(false)} style={mobileCtaStyle}>
+                <Text size="sm" weight="medium" color="#ffffff">
+                  Get started
+                </Text>
+              </MarketingLink>
+            </>
+          )}
         </Stack>
       ) : null}
     </View>
   )
 }
+
+const ctaStyle = {
+  backgroundColor: brand.teal,
+  paddingHorizontal: 16,
+  paddingVertical: 8,
+  borderRadius: 8,
+} as const
+
+const mobileCtaStyle = {
+  backgroundColor: brand.teal,
+  paddingHorizontal: 16,
+  paddingVertical: 10,
+  borderRadius: 8,
+  textAlign: 'center',
+} as const
 
 function NavSectionLink({
   href,
