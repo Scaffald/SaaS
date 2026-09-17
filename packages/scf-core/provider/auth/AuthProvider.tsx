@@ -8,7 +8,6 @@ import {
 } from '@scf/core/utils/analytics/client'
 import { captureEventWithQueue, flushQueue } from '@scf/core/utils/analytics/queue'
 import { clearAllAuthStorage } from '@scf/core/utils/auth/clearAuthStorage'
-import { clearSentryUser, setSentryUser } from '@scf/core/utils/sentry'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useCookieConsentState } from '@scf/core/utils/cookieConsent'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -50,10 +49,11 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
   const [isLoading, setIsLoading] = useState(true)
   const { isReady: isConsentReady, hasConsentedTo } = useCookieConsentState()
   const hasPerformanceConsent = isConsentReady && hasConsentedTo(PERFORMANCE_CATEGORY_ID)
-  // Analytics identity (PostHog identify/alias, Sentry setUser with PII) is
-  // gated solely on the in-app performance/cookie consent. Scaffald does not
-  // "track" under Apple Guideline 5.1.2(i) — PostHog and Sentry are
-  // first-party service providers, so there is no ATT prompt to consult.
+  // Analytics identity (PostHog identify/alias) is gated solely on the in-app
+  // performance/cookie consent. Scaffald does not "track" under Apple
+  // Guideline 5.1.2(i) — PostHog is a first-party service provider, so there is
+  // no ATT prompt to consult. Sentry was named here too until it was removed
+  // (#791); nothing replaced it, so there is now one processor, not two.
   const lastSignedInUserRef = useRef<string | null>(null)
   const previousUserIdRef = useRef<string | null>(initialSession?.user?.id ?? null)
   const lastSignOutReasonRef = useRef<'sign_out' | 'auth_cleared' | 'consent_revoked' | null>(null)
@@ -304,32 +304,6 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
     }
   }, [hasPerformanceConsent, session?.user])
 
-  // Sentry user context. Error reports themselves are not "tracking" under
-  // Apple's definition (Guideline 5.1.2(i)), and neither is linking them to a
-  // stable user identity for a first-party service provider. We still gate the
-  // user object on performance consent so error reports stay anonymous until
-  // the user opts in.
-  useEffect(() => {
-    if (session?.user && hasPerformanceConsent) {
-      const traits: Record<string, unknown> = {
-        created_at: session.user.created_at,
-      }
-
-      if (session.user.email_confirmed_at) {
-        traits.email_confirmed_at = session.user.email_confirmed_at
-      }
-
-      const authProvider =
-        session.user.app_metadata?.provider ?? session.user.user_metadata?.provider ?? null
-      if (authProvider) {
-        traits.auth_provider = authProvider
-      }
-
-      setSentryUser(session.user.id, session.user.email, traits)
-    } else {
-      clearSentryUser()
-    }
-  }, [session?.user, hasPerformanceConsent])
 
   // Auth state change listener with proper typing
   useEffect(() => {

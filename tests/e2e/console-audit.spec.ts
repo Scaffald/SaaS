@@ -89,7 +89,6 @@ function isLikelyNoise(msg: ConsoleEntry): boolean {
   if (/\[TEST AUTH\]/i.test(t)) return true
   // Browser logs failed fetches as console.error; allowlist so we only count JS/React errors
   if (/Failed to load resource:.*status of \d+/.test(t)) return true
-  if (/\[sentry\] DSN not configured/i.test(t)) return true
   if (/Animated:.*useNativeDriver.*not supported/i.test(t)) return true
   if (/Route.*missing the required default export/i.test(t)) return true
   if (/shadow\*.*deprecated.*boxShadow/i.test(t)) return true

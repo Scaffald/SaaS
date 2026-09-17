@@ -28,8 +28,6 @@
     "@scaffald/ui": "workspace:*",
     "@scf/schemas": "workspace:*",
     "@scf/supabase": "workspace:*",
-    "@sentry/react": "^10.72.0",
-    "@sentry/react-native": "^7.7.0",
     "@supabase/supabase-js": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-table": "catalog:",

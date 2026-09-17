@@ -8,7 +8,6 @@ import {
   useThemeSetting,
   ThemeContext,
 } from '@scf/core/provider'
-import { initSentry } from '@scf/core/utils/sentry'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { logger } from '@scf/core'
 import { ServerViewportProvider, ThemeProvider } from '@scaffald/ui'
@@ -42,9 +41,6 @@ function ThemeBridge({ children }: { children: ReactNode }) {
     </ThemeProvider>
   )
 }
-
-// Initialize Sentry as early as possible (before any other initialization)
-initSentry()
 
 SplashScreen.preventAutoHideAsync()
 
