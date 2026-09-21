@@ -133,3 +133,7 @@ google-play-service-account.json
 **/metro-cache/
 infra/aws/dist/
 *.bak
+
+# The SCF prototype (Claude Design). Its home is Scaffald/Prototype; sync it
+# there, not here. Reference screenshots live in docs/plans/redesign/shots/.
+/redesign/
