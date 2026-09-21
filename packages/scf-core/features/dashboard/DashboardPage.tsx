@@ -26,6 +26,16 @@ type DashboardPageProps = Omit<DashboardLayoutProps, 'breadcrumbItems'> & {
   formatDocumentTitle?: (title: string) => string
 }
 
+/**
+ * Screens whose own content opens with a title, so the shared header would
+ * be the second one on the page. They are opted out by name rather than by
+ * each screen remembering to pass a flag, so the list is reviewable.
+ */
+const SCREENS_WITHOUT_SHARED_HEADER = new Set<string>([
+  // The dashboard opens with the profile hero, which carries the name.
+  ROUTES.DASHBOARD.path,
+])
+
 const ALL_ROUTES = flattenRoutes()
 
 const findRouteForPath = (path: string | null): RouteConfig | null => {
@@ -109,5 +119,35 @@ export function DashboardPage({
     formatDocumentTitle,
   })
 
-  return <DashboardLayout {...layoutProps} breadcrumbItems={computedBreadcrumbItems} />
+  // The visible heading. A screen may pass `screenTitle` explicitly; nothing
+  // else needs to, because the route already knows what it is called — which
+  // is why 120 of 200 captured screens had no programmatic heading (#860)
+  // while all of them showed a title.
+  //
+  // The nav label and the page title are deliberately the same string: the
+  // prototype's audit called a nav item that opens a differently-named page
+  // an inconsistency, and taking both from `titleKey` makes them agree by
+  // construction.
+  const resolvedScreenTitle = useMemo(() => {
+    if (layoutProps.screenTitle !== undefined) return layoutProps.screenTitle
+    if (typeof pageTitle === 'function') return pageTitle()
+    if (typeof pageTitle === 'string') return pageTitle
+    return matchedRoute ? t(matchedRoute.titleKey) : null
+    // `pageTitleDeps` carries whatever a dynamic title closes over.
+    // biome-ignore lint/correctness/useExhaustiveDependencies: callers declare their own deps
+  }, [layoutProps.screenTitle, pageTitle, matchedRoute, t, locale, ...pageTitleDeps])
+
+  const hideScreenHeader =
+    layoutProps.hideScreenHeader ??
+    (pathname ? SCREENS_WITHOUT_SHARED_HEADER.has(pathname) : false)
+
+  return (
+    <DashboardLayout
+      {...layoutProps}
+      breadcrumbItems={computedBreadcrumbItems}
+      screenTitle={resolvedScreenTitle}
+      screenKey={layoutProps.screenKey ?? pathname ?? null}
+      hideScreenHeader={hideScreenHeader}
+    />
+  )
 }

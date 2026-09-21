@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react'
 import { ScrollView } from 'react-native'
-import { Grid, Stack, useResponsive, useThemeContext } from '@scaffald/ui'
+import { Grid, ScreenHeader, Stack, useResponsive, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 import { AssessmentsTabs } from '../navigation/AssessmentsTabs'
+import { useRouteScreenTitle } from '../../hooks/useRouteScreenTitle'
+import { useScreenHeaderCollapse } from '../../hooks/useScreenHeaderCollapse'
 
 /** Golden ratio (φ) for column proportion: left ~61.8%, right ~38.2% */
 const GOLDEN_RATIO_TEMPLATE = 'minmax(300px, 1.618fr) minmax(300px, 1fr)'
@@ -12,12 +14,27 @@ type AssessmentsLayoutProps = {
   leftContent?: ReactNode
   rightContent?: ReactNode
   showTabs?: boolean
+  /** The screen's title. Taken from the route when not supplied. */
+  screenTitle?: string | null
+  /** Uppercase letterspaced line above the title. */
+  screenKicker?: string
+  /** One sentence on what this screen is for. Collapsible. */
+  screenTip?: ReactNode
+  /** Page-level primary actions, at header right. */
+  screenActions?: ReactNode
+  /** Opt out of the shared header. */
+  hideScreenHeader?: boolean
 }
 
 export const AssessmentsLayout = ({
   leftContent,
   rightContent,
   showTabs = false,
+  screenTitle,
+  screenKicker,
+  screenTip,
+  screenActions,
+  hideScreenHeader = false,
 }: AssessmentsLayoutProps) => {
   const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
@@ -25,6 +42,11 @@ export const AssessmentsLayout = ({
   const contentPadding = isDesktop ? '2xl' : 'lg'
   const columnGap = isDesktop ? 44 : 24
   const bgColor = colors.bg[theme].emphasis
+  const routeTitle = useRouteScreenTitle()
+  const resolvedTitle = screenTitle !== undefined ? screenTitle : routeTitle.title
+  const { collapsed, toggleCollapsed } = useScreenHeaderCollapse(
+    hideScreenHeader ? null : routeTitle.routeKey,
+  )
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: bgColor }} showsVerticalScrollIndicator={false}>
@@ -34,6 +56,19 @@ export const AssessmentsLayout = ({
             <AssessmentsTabs />
           </Stack>
         )}
+
+        {!hideScreenHeader && resolvedTitle ? (
+          <Stack paddingHorizontal={contentPadding}>
+            <ScreenHeader
+              kicker={screenKicker}
+              title={resolvedTitle}
+              tip={screenTip}
+              actions={screenActions}
+              collapsed={screenTip ? collapsed : undefined}
+              onToggleCollapsed={screenTip ? toggleCollapsed : undefined}
+            />
+          </Stack>
+        ) : null}
 
         {/* Content Area - Two-column golden ratio (lg+) or single column */}
         <Stack paddingHorizontal={contentPadding}>

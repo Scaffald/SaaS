@@ -1,6 +1,6 @@
 import {
   Button,
-  H2,
+  ScreenHeader,
   Input,
   Spinner,
   Table,
@@ -110,14 +110,20 @@ export function OfficePageLayout<TData>({
     <Stack flex={1} padding="md" gap={16}>
       {beforeContent}
       {!hideHeader && (
-        <Row justify="space-between" align="center">
-          <H2>{title}</H2>
-          {!actionBarConfig && !hideCreateButton && (
-            <Button iconStart={Plus} onPress={onCreateClick}>
-              {createButtonLabel}
-            </Button>
-          )}
-        </Row>
+        /* The same header the rest of the app uses, so an Office screen and a
+           worker screen open the same way. The create button sits in the
+           actions slot because page-level primary actions live at header
+           right, always — not inside the filter bar. */
+        <ScreenHeader
+          title={title}
+          actions={
+            !actionBarConfig && !hideCreateButton ? (
+              <Button iconStart={Plus} onPress={onCreateClick}>
+                {createButtonLabel}
+              </Button>
+            ) : undefined
+          }
+        />
       )}
 
       {actionBarConfig ? (
