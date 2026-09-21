@@ -1,5 +1,5 @@
 import { useAuth } from '@scf/core/provider/auth/useAuth'
-import { type RefObject, useMemo } from 'react'
+import { type RefObject, useEffect, useMemo } from 'react'
 import { Stack } from '@scaffald/ui'
 import type { ResultListRef } from './components/ResultList'
 import { ResultList } from './components/ResultList'
@@ -17,6 +17,11 @@ interface DiscoverWorkersLeftProps {
   resultListRef: RefObject<ResultListRef | null>
   /** Sort order for the results list */
   sortBy?: WorkerSortBy
+  /**
+   * Reports how many workers survive the filters, so the toolbar can show
+   * the count in the one template the rest of the app uses.
+   */
+  onResultCount?: (count: number) => void
 }
 
 /**
@@ -33,6 +38,7 @@ export function DiscoverWorkersLeft({
   onSelect,
   resultListRef,
   sortBy = 'score',
+  onResultCount,
 }: DiscoverWorkersLeftProps) {
   // Fetch workers using the same hook as the map page
   const { data: talentProfiles = [], isLoading, error, refetch } = useTalentProfiles()
@@ -85,6 +91,12 @@ export function DiscoverWorkersLeft({
       return true
     })
   }, [talentProfiles, searchQuery, minScore, selectedSkills, selectedCertifications, currentUserId])
+
+  // Hand the count up so the toolbar renders it in the shared template.
+  const resultCount = filteredProfiles.length
+  useEffect(() => {
+    onResultCount?.(resultCount)
+  }, [onResultCount, resultCount])
 
   // Sort filtered results
   const sortedProfiles = useMemo(() => {

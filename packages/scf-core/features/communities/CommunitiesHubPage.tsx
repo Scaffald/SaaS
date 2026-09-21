@@ -1,12 +1,11 @@
-import { useState, useCallback } from 'react'
-import { Tabs, Text, Stack, useThemeContext, useResponsive } from '@scaffald/ui'
+import { useCallback, useMemo, useState } from 'react'
+import { ListToolbar, SegmentedControl, Stack, Tabs, Text, useResponsive, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { PageHeader } from '@scf/core/components/PageHeader'
-import type { FilterPillConfig } from '@scf/core/components/PageHeader'
-import { SortDropdown } from '@scf/core/features/discover/components/SortDropdown'
+import type { FilterPillConfig } from '@scf/core/components/toolbarFilters'
 import { AllCommunitiesList } from './components/AllCommunitiesList'
 import { MyCommunitiesList } from './components/MyCommunitiesList'
+import { useToolbarFilters } from '@scf/core/components/toolbarFilters'
 
 type TabValue = 'all' | 'my'
 type CommunitySortBy = 'most_active' | 'name' | 'newest'
@@ -57,6 +56,38 @@ export function CommunitiesHubPage() {
     })
   }
 
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const openFilters = useCallback(() => setFiltersOpen(true), [])
+  const toolbarPills = useMemo<FilterPillConfig[]>(
+    () => [
+      ...filterPills,
+      {
+        id: 'sort',
+        label: 'Sort',
+        value: sortOptions.find((option) => option.value === sortBy)?.label,
+        isActive: sortBy !== sortOptions[0]?.value,
+        onPress: () => {},
+        popoverContent: (
+          <SegmentedControl
+            segments={sortOptions.map((option) => option.label)}
+            selectedIndex={Math.max(
+              0,
+              sortOptions.findIndex((option) => option.value === sortBy),
+            )}
+            onSelectionChange={(index) =>
+              setSortBy(sortOptions[index]?.value as CommunitySortBy)
+            }
+          />
+        ),
+      },
+    ],
+    [filterPills, sortBy, sortOptions],
+  )
+  const { filterContent, chips, activeFilterCount } = useToolbarFilters(
+    toolbarPills,
+    openFilters,
+  )
+
   return (
     <Stack gap={16}>
       <Stack gap={4}>
@@ -66,24 +97,24 @@ export function CommunitiesHubPage() {
         </Text>
       </Stack>
 
-      {/* Desktop: header with search + sort pill */}
+      {/* Desktop: the one search row — search, Filters & sort, count right.
+          Sort moved into the flyout: it was the last screen keeping a
+          separate control beside the search field. */}
       {!isMobile && (
-        <PageHeader
+        <ListToolbar
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
           searchPlaceholder="Search communities..."
-          searchVariant="pill"
-          filterPills={filterPills}
+          filterContent={filterContent}
+          activeFilterCount={activeFilterCount}
+          filtersOpen={filtersOpen}
+          onFiltersOpenChange={setFiltersOpen}
+          chips={chips}
+          onClearAll={hasFilters ? handleReset : undefined}
           resultCount={resultCount}
-          resultLabel={resultCount === 1 ? 'Community' : 'Communities'}
-          onReset={hasFilters ? handleReset : undefined}
-        >
-          <SortDropdown
-            value={sortBy}
-            onChange={(v) => setSortBy(v as CommunitySortBy)}
-            options={sortOptions}
-          />
-        </PageHeader>
+          resultNoun="community"
+          resultNounPlural="communities"
+        />
       )}
 
       <Tabs

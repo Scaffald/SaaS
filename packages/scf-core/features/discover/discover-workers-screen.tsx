@@ -1,10 +1,9 @@
-import { useMemo, useRef, useState } from 'react'
-import { Row, Stack, Text, RangeSlider, useThemeContext, useResponsive } from '@scaffald/ui'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import { ListToolbar, RangeSlider, Row, Stack, Text, useResponsive, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { PageHeader } from '@scf/core/components/PageHeader'
-import type { FilterPillConfig } from '@scf/core/components/PageHeader'
+import type { FilterPillConfig } from '@scf/core/components/toolbarFilters'
 import { useRouter } from 'expo-router'
 import type { ResultListRef } from './components/ResultList'
 import { WorkerPreviewModal } from './components/WorkerPreviewModal'
@@ -12,13 +11,14 @@ import { WorkersBottomToolbar } from './components/WorkersBottomToolbar'
 import type { WorkerSortBy } from './components/WorkersBottomToolbar'
 import { DiscoverWorkersLeft } from './discover-workers-left'
 import { DiscoverWorkersRight } from './discover-workers-right'
+import { useToolbarFilters } from '@scf/core/components/toolbarFilters'
 
 /**
  * Discover Workers Screen Component
  *
  * Search/filter/sort state lives here as the single source of truth.
  * Two UIs control the same state:
- *   - Desktop+: PageHeader with search input + filter pills (header)
+ *   - Desktop+: ListToolbar — search, one Filters & sort flyout, chips
  *   - Mobile: BottomToolbar with Sheets/ActionSheet (footer)
  */
 export function DiscoverWorkersScreen() {
@@ -132,14 +132,27 @@ export function DiscoverWorkersScreen() {
   ) : null
 
   // Header — desktop+ only (mobile uses footer instead)
+  const [resultCount, setResultCount] = useState<number | undefined>(undefined)
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const openFilters = useCallback(() => setFiltersOpen(true), [])
+  const { filterContent, chips, activeFilterCount } = useToolbarFilters(
+    filterPills,
+    openFilters,
+  )
+
   const header = isMobile ? null : (
-    <PageHeader
+    <ListToolbar
       searchValue={searchQuery}
       onSearchChange={setSearchQuery}
       searchPlaceholder="Search workers, skills, or locations..."
-      searchVariant="pill"
-      filterPills={filterPills}
-      onReset={hasFilters ? handleReset : undefined}
+      filterContent={filterContent}
+      activeFilterCount={activeFilterCount}
+      filtersOpen={filtersOpen}
+      onFiltersOpenChange={setFiltersOpen}
+      chips={chips}
+      onClearAll={hasFilters ? handleReset : undefined}
+      resultCount={resultCount}
+      resultNoun="worker"
     />
   )
 
@@ -148,6 +161,7 @@ export function DiscoverWorkersScreen() {
     left: (
       <>
         <DiscoverWorkersLeft
+          onResultCount={setResultCount}
           searchQuery={debouncedSearch}
           selectedIndustries={selectedIndustries}
           minScore={minScore}

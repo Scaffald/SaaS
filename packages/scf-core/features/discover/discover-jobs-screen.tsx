@@ -1,22 +1,32 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Pressable } from 'react-native'
-import { Stack, Text, useResponsive, useThemeContext } from '@scaffald/ui'
+import {
+  ListToolbar,
+  SegmentedControl,
+  Stack,
+  Text,
+  useResponsive,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Check } from 'lucide-react-native'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { PageHeader } from '@scf/core/components/PageHeader'
-import type { FilterPillConfig } from '@scf/core/components/PageHeader'
-import { SortDropdown } from './components/SortDropdown'
+import type { FilterPillConfig } from '@scf/core/components/toolbarFilters'
+import { useToolbarFilters } from '@scf/core/components/toolbarFilters'
 import { JobsBottomToolbar } from './components/JobsBottomToolbar'
 import type { JobSortBy, JobSource } from './components/JobsBottomToolbar'
 import { DiscoverJobsLeft, type DiscoverJobsInitialData } from './discover-jobs-left'
 import { DiscoverJobsRight } from './discover-jobs-right'
 
+/** Sort options, as parallel arrays because SegmentedControl works by index. */
+const SORT_VALUES = ['relevance', 'match_score'] as const
+const SORT_LABELS = ['Relevance', 'Best Match']
+
 /**
  * Discover Jobs Screen Component
  *
  * Search/filter/sort state lives here as the single source of truth.
- *   - Desktop+: PageHeader with search + filter pills (header)
+ *   - Desktop+: ListToolbar — search, one Filters & sort flyout, chips
  *   - Mobile: BottomToolbar with Sheets/ActionSheet (footer)
  */
 export type DiscoverJobsScreenOptions = {
@@ -140,27 +150,55 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
     return pills
   }, [jobSource, selectedJobTypes, sourcePopoverContent])
 
-  // Header — desktop+ only
+  // Header — desktop+ only.
+  //
+  // One row: search, one Filters & sort flyout, the active filters as chips,
+  // the result count at the right. Sort lives inside the flyout rather than
+  // beside it — the audit's "the search row has three grammars" finding was
+  // about exactly this kind of per-screen extra.
+  const [resultCount, setResultCount] = useState<number | undefined>(undefined)
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const openFilters = useCallback(() => setFiltersOpen(true), [])
+  const sortPill: FilterPillConfig | null =
+    jobSource !== 'external'
+      ? {
+          id: 'sort',
+          label: 'Sort',
+          value: sortBy === 'match_score' ? 'Best Match' : 'Relevance',
+          isActive: sortBy !== 'relevance',
+          onPress: () => {},
+          popoverContent: (
+            <SegmentedControl
+              segments={SORT_LABELS}
+              selectedIndex={SORT_VALUES.indexOf(sortBy)}
+              onSelectionChange={(index) => setSortBy(SORT_VALUES[index] as JobSortBy)}
+            />
+          ),
+        }
+      : null
+  const toolbarPills = useMemo(
+    () => (sortPill ? [...filterPills, sortPill] : filterPills),
+    [filterPills, sortPill],
+  )
+  const { filterContent, chips, activeFilterCount } = useToolbarFilters(
+    toolbarPills,
+    openFilters,
+  )
+
   const header = isMobile ? null : (
-    <PageHeader
+    <ListToolbar
       searchValue={searchQuery}
       onSearchChange={setSearchQuery}
       searchPlaceholder="Search jobs by title, company..."
-      searchVariant="pill"
-      filterPills={filterPills}
-      onReset={hasFilters ? handleReset : undefined}
-    >
-      {jobSource !== 'external' && (
-        <SortDropdown
-          value={sortBy}
-          onChange={(v) => setSortBy(v as JobSortBy)}
-          options={[
-            { value: 'relevance', label: 'Relevance' },
-            { value: 'match_score', label: 'Best Match' },
-          ]}
-        />
-      )}
-    </PageHeader>
+      filterContent={filterContent}
+      activeFilterCount={activeFilterCount}
+      filtersOpen={filtersOpen}
+      onFiltersOpenChange={setFiltersOpen}
+      chips={chips}
+      onClearAll={hasFilters ? handleReset : undefined}
+      resultCount={resultCount}
+      resultNoun="job"
+    />
   )
 
   // Footer — mobile only
@@ -185,6 +223,7 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
     header,
     left: (
       <DiscoverJobsLeft
+          onResultCount={setResultCount}
         initialJobs={initialJobs}
         searchQuery={debouncedSearch}
         selectedIndustries={selectedIndustries}
