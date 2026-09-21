@@ -12,7 +12,14 @@ import {
 } from "@tanstack/react-table";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-import { Paragraph, Stack, useThemeContext } from "@scaffald/ui";
+import {
+  Button,
+  Paragraph,
+  Stack,
+  TableAddRecordModal,
+  TableColumnVisibilityModal,
+  useThemeContext,
+} from "@scaffald/ui";
 import { OfficePageLayout } from "./components/OfficePageLayout";
 import { QuickActionsWidget } from "./components/QuickActionsWidget";
 import { colors } from "@scaffald/ui/tokens";
@@ -171,6 +178,7 @@ export function OfficeUsersList({
 
   return (
     <OfficePageLayout
+      resultNoun="user"
       wrapWithOfficeLayout
       showBreadcrumb
       title="Users"
@@ -201,50 +209,35 @@ export function OfficeUsersList({
           isLoading={isLoading}
         />
       }
-      actionBarConfig={{
-        bar: {
-          addLabel: "Add",
-          onAddPress: () => setAddModalOpen(true),
-          showLabel: "Show",
-          onShowPress: () => setColumnModalOpen(true),
-          searchValue: search,
-          onSearchChange: setSearch,
-          searchPlaceholder: "Search users...",
-          helperText: "List all the filterable items.",
-        },
-        addModalProps: {
-          open: addModalOpen,
-          onOpenChange: setAddModalOpen,
-          title: "Create User",
-          description:
-            "Quickly add a new office user. The fully featured form is coming soon, but you can jump to the dedicated page now.",
-          primaryActionLabel: "Open full create flow",
-          onPrimaryAction: () => {
-            setAddModalOpen(false);
-            router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path);
-          },
-          children: (
-            <Stack gap={12}>
-              <Paragraph
-                size="md"
-                style={{ color: colors.text[theme].secondary }}
-              >
-                This modal will collect user details in an upcoming iteration.
-                Until then, use the primary action below to launch the full
-                create page.
-              </Paragraph>
-            </Stack>
-          ),
-        },
-        columnVisibilityModalProps: {
-          open: columnModalOpen,
-          onOpenChange: setColumnModalOpen,
-          columns: columnVisibilityOptions,
-          visibility: columnVisibility,
-          onVisibilityChange: handleColumnVisibilityChange,
-          minimumVisibleColumns: 2,
-        },
-      }}
+      toolbarActions={
+        <Button size="sm" variant="outline" onPress={() => setColumnModalOpen(true)}>
+          Columns
+        </Button>
+      }
+      toolbarModals={
+        <>
+          <TableAddRecordModal
+            open={addModalOpen}
+            onOpenChange={setAddModalOpen}
+            title="Create User"
+            description="Quickly add a new office user. The fully featured form is coming soon, but you can jump to the dedicated page now."
+            primaryActionLabel="Open full create flow"
+            onPrimaryAction={() => {
+              setAddModalOpen(false);
+              router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path);
+            }}
+          />
+          <TableColumnVisibilityModal
+            open={columnModalOpen}
+            onOpenChange={setColumnModalOpen}
+            columns={columnVisibilityOptions}
+            visibility={columnVisibility}
+            onVisibilityChange={(columnId, visible) =>
+              setColumnVisibility((previous) => ({ ...previous, [columnId]: visible }))
+            }
+          />
+        </>
+      }
     />
   );
 }

@@ -263,6 +263,7 @@ export function OrganizationBackgroundChecksPage() {
 
       {selectedOrganizationId ? (
         <OfficePageLayout
+      resultNoun="check"
           title="Background Checks"
           searchPlaceholder="Filter results..."
           searchValue={searchQuery}

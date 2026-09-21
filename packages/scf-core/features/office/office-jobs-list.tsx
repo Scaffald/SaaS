@@ -7,7 +7,11 @@ import {
 import { useTeams } from "@scf/core/utils/teams-sdk-hooks";
 import { useOfficeOrganizations } from "@scf/core/utils/office-organizations-sdk-hooks";
 import { OfficeLayout } from "@scf/core/components/layouts";
-import { ResponsiveSelect, useThemeContext } from "@scaffald/ui";
+import {
+  ResponsiveSelect,
+  SegmentedControl,
+  useThemeContext,
+} from "@scaffald/ui";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
@@ -315,6 +319,22 @@ export function OfficeJobsList({
   );
 
   // Kanban view
+  // Inline in the search row, shared by both views — a view toggle is part
+  // of the control band, not a line of its own.
+  const viewToggle = (
+    <SegmentedControl
+      // "Board", not "Kanban": it is the prototype's word for this view and
+      // it fits the segment without truncating to "Kan…".
+      segments={["List", "Board"]}
+      selectedIndex={viewMode === "kanban" ? 1 : 0}
+      onSelectionChange={(index: number) => setViewMode(index === 1 ? "kanban" : "list")}
+      // The toolbar's action slot shrinks to whatever the search row leaves,
+      // and the control clipped its own labels to "Kan…" / "Boar…" without a
+      // floor.
+      style={{ minWidth: 148 }}
+    />
+  );
+
   if (viewMode === "kanban") {
     return (
       <OfficeLayout
@@ -374,6 +394,7 @@ export function OfficeJobsList({
 
   return (
     <OfficePageLayout
+      resultNoun="job"
       wrapWithOfficeLayout
       showBreadcrumb
       title="Jobs"
@@ -393,31 +414,11 @@ export function OfficeJobsList({
       onRowDuplicate={handleRowDuplicate}
       getItemName={getItemName}
       itemType="job"
-      actionBarConfig={{
-        bar: {
-          addLabel: "Create Job",
-          onAddPress: () => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path),
-          showDisabled: true,
-          searchValue: search,
-          onSearchChange: setSearch,
-          searchPlaceholder: "Search jobs...",
-          rightAccessory: (
-            <Row gap={8} align="center">
-              {filtersAccessory}
-              <Button
-                size="sm"
-                onPress={() => setViewMode("kanban")}
-                variant="outline"
-              >
-                Kanban
-              </Button>
-              <Button size="sm" onPress={() => setViewMode("list")}>
-                List
-              </Button>
-            </Row>
-          ),
-        },
-      }}
+      filterContent={filtersAccessory}
+      activeFilterCount={
+        (statusFilter ? 1 : 0) + (organizationFilter ? 1 : 0) + (teamFilter ? 1 : 0)
+      }
+      toolbarActions={viewToggle}
       rightContent={
         <QuickActionsWidget
           context="list"

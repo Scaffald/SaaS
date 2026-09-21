@@ -112,6 +112,8 @@ export function AdminAuditLogPanel({
 
   return (
     <OfficePageLayout<AuditRow>
+      resultNoun="entry"
+      resultNounPlural="entries"
       title="Access audit log"
       searchPlaceholder="Search by actor, package, worker, or IP address"
       searchValue={searchValue}

@@ -284,6 +284,7 @@ export function OfficeOrganizationsList() {
       </Modal>
 
       <OfficePageLayout
+      resultNoun="organization"
         wrapWithOfficeLayout
         showBreadcrumb
         title="Organizations"

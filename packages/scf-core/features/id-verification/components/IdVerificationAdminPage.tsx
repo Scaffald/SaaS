@@ -317,6 +317,7 @@ export function IdVerificationAdminPage({
       </Stack>
 
       <OfficePageLayout
+      resultNoun="verification"
         title="ID Verifications"
         searchPlaceholder="Search worker, organization, or status"
         searchValue={searchValue}

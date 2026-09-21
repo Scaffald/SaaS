@@ -614,6 +614,7 @@ export function AdminBackgroundChecksPage() {
 
       {activeTab === 'checks' ? (
         <OfficePageLayout
+      resultNoun="check"
           title="Screenings under review"
           searchPlaceholder="Search by worker, organization, or package"
           searchValue={searchQuery}

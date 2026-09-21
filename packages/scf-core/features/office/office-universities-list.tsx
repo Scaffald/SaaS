@@ -81,6 +81,8 @@ export function OfficeUniversitiesList() {
 
   return (
     <OfficePageLayout
+      resultNoun="university"
+      resultNounPlural="universities"
       wrapWithOfficeLayout
       showBreadcrumb
       title="Universities"
