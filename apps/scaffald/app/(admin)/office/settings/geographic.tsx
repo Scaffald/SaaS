@@ -1,49 +1,46 @@
-import { supabase } from '@scf/core/utils/supabase/client'
 import { useEffect, useState } from 'react'
 import { Button, Card, Input, Spinner, Text, Row, Stack, useToast } from '@scaffald/ui'
+import {
+  useGeographicSettings,
+  useUpdateGeographicSettings,
+} from '@scf/core/utils/office-settings-sdk-hooks'
 
 export default function GeographicSettingsPage() {
   const toast = useToast()
   const [threshold, setThreshold] = useState<string>('2.0')
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
 
-  // Load current threshold
+  // Read through the office API rather than PostgREST. `core.system_config`
+  // is service-role only by design, so the previous direct
+  // `supabase.schema('core')` read answered 42501 on every load (#856).
+  const { data, isLoading, isError, error, refetch } = useGeographicSettings()
+
+  // Seed the field once the real value arrives. The effect depends on the
+  // value, not on the toast hook: ToastContext memoises on the live `toasts`
+  // array, so an effect that both shows a toast and depends on `toast` never
+  // settles (#852).
   useEffect(() => {
-    const loadThreshold = async () => {
-      try {
-        const { data, error } = await supabase
-          .schema('core')
-          .from('system_config')
-          .select('value')
-          .eq('key', 'site_overlap_threshold_percent')
-          .single()
+    if (data) setThreshold(String(data.siteOverlapThresholdPercent))
+  }, [data])
 
-        if (error && error.code !== 'PGRST116') {
-          throw error
-        }
+  const updateMutation = useUpdateGeographicSettings({
+    onSuccess: () => {
+      toast.show({
+        title: 'Success',
+        message: 'Overlap threshold updated successfully',
+        variant: 'success',
+      })
+    },
+    onError: (mutationError) => {
+      toast.show({
+        title: 'Error',
+        message: mutationError.message || 'Failed to save threshold',
+        variant: 'error',
+      })
+    },
+  })
+  const isSaving = updateMutation.isPending
 
-        if (data?.value) {
-          const value =
-            typeof data.value === 'string' ? Number.parseFloat(data.value) : (data.value as number)
-          setThreshold(value.toString())
-        }
-      } catch (error) {
-        console.error('Failed to load threshold:', error)
-        toast.show({
-          title: 'Error',
-          message: 'Failed to load current threshold setting',
-          variant: 'error',
-        })
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadThreshold()
-  }, [toast])
-
-  const handleSave = async () => {
+  const handleSave = () => {
     const numValue = Number.parseFloat(threshold)
 
     // Validate range
@@ -56,31 +53,7 @@ export default function GeographicSettingsPage() {
       return
     }
 
-    setIsSaving(true)
-    try {
-      const { error } = await supabase.schema('core').from('system_config').upsert({
-        description: 'Percentage threshold for site overlap notifications',
-        key: 'site_overlap_threshold_percent',
-        value: numValue.toString(),
-      })
-
-      if (error) throw error
-
-      toast.show({
-        title: 'Success',
-        message: 'Overlap threshold updated successfully',
-        variant: 'success',
-      })
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to save threshold'
-      toast.show({
-        title: 'Error',
-        message,
-        variant: 'error',
-      })
-    } finally {
-      setIsSaving(false)
-    }
+    updateMutation.mutate({ siteOverlapThresholdPercent: numValue })
   }
 
   if (isLoading) {
@@ -88,6 +61,24 @@ export default function GeographicSettingsPage() {
       <Stack padding={16} gap={16} align="center" justify="center">
         <Text>Geographic Settings</Text>
         <Spinner />
+      </Stack>
+    )
+  }
+
+  // A failed read is shown once, with a way out. It used to raise a toast
+  // from inside the effect that fetched, which re-ran the fetch.
+  if (isError) {
+    return (
+      <Stack padding={16} gap={16}>
+        <Text>Geographic Settings</Text>
+        <Text>
+          {error instanceof Error ? error.message : 'Failed to load the current threshold.'}
+        </Text>
+        <Row>
+          <Button variant="outline" onPress={() => refetch()}>
+            Try again
+          </Button>
+        </Row>
       </Stack>
     )
   }
