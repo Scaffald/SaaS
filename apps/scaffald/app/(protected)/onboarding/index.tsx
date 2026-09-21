@@ -467,7 +467,7 @@ export default function OnboardingPage() {
                           {t("auth.legal.onboardingAgreeTo")}
                           <Text
                             style={{ textDecorationLine: "underline" }}
-                            onPress={() => router.push(ROUTES.AUTH.PRIVACY.path)}
+                            onPress={() => router.push(ROUTES.LEGAL.PRIVACY.path)}
                           >
                             {t("auth.legal.onboardingPrivacyLink")}
                           </Text>
@@ -506,7 +506,7 @@ export default function OnboardingPage() {
                           {t("auth.legal.onboardingAgreeTo")}
                           <Text
                             style={{ textDecorationLine: "underline" }}
-                            onPress={() => router.push(ROUTES.AUTH.TERMS.path)}
+                            onPress={() => router.push(ROUTES.LEGAL.TERMS.path)}
                           >
                             {t("auth.legal.onboardingTermsLink")}
                           </Text>

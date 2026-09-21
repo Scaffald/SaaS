@@ -204,10 +204,10 @@ describe('LoginScreen', () => {
     expect(getByTestId('login-legal-notice')).toBeInTheDocument()
 
     fireEvent.click(getByText('auth.login.legalNotice.terms'))
-    expect(mockPush).toHaveBeenCalledWith(ROUTES.AUTH.TERMS.path)
+    expect(mockPush).toHaveBeenCalledWith(ROUTES.LEGAL.TERMS.path)
 
     fireEvent.click(getByText('auth.login.legalNotice.privacy'))
-    expect(mockPush).toHaveBeenCalledWith(ROUTES.AUTH.PRIVACY.path)
+    expect(mockPush).toHaveBeenCalledWith(ROUTES.LEGAL.PRIVACY.path)
   })
 
   it('submits without any consent interaction (no checkbox gate)', async () => {
