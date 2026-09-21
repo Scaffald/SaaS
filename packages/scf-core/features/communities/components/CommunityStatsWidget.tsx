@@ -101,7 +101,7 @@ export function CommunityStatsWidget() {
       <Stack
         gap={0}
         style={{
-          borderRadius: 8,
+          borderRadius: 7,
           overflow: 'hidden',
         }}
       >

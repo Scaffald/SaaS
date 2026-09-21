@@ -1085,7 +1085,7 @@ function Depth2Certifications({
             key={cert.id}
             style={{
               padding: 12,
-              borderRadius: 16,
+              borderRadius: 7,
               borderWidth: 1,
               backgroundColor:
                 changeStatus === "added"

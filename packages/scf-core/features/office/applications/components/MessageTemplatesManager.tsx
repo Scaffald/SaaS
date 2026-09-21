@@ -145,7 +145,7 @@ export function MessageTemplatesManager({
                           formStage === stage
                             ? colors.fg[theme].active
                             : colors.bg[theme].default,
-                        borderRadius: 6,
+                        borderRadius: 4,
                         paddingHorizontal: 10,
                         paddingVertical: 4,
                         borderWidth: 1,

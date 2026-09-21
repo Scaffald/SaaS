@@ -184,7 +184,7 @@ export function ReportSheet({
                     style={{
                       paddingVertical: 12,
                       paddingHorizontal: 12,
-                      borderRadius: 10,
+                      borderRadius: 7,
                       backgroundColor: selected
                         ? colors.bg[theme].emphasis
                         : 'transparent',

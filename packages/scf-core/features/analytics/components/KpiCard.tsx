@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   },
   skeleton: {
     height: 40,
-    borderRadius: 8,
+    borderRadius: 7,
     backgroundColor: 'rgba(128,128,128,0.1)',
   },
 })

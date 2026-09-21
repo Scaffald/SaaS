@@ -19,7 +19,7 @@ const itemStyle = (
   _pressed: boolean,
   resolvedTheme: 'light' | 'dark',
   _activeBg: string,
-  borderRadius = 12,
+  borderRadius = 4,
 ) => ({
   flexDirection: 'row' as const,
   alignItems: 'center' as const,
@@ -29,11 +29,13 @@ const itemStyle = (
   borderRadius,
   width: '100%' as const,
   alignSelf: 'stretch' as const,
-  backgroundColor: active
-    ? resolvedTheme === 'dark'
-      ? 'rgba(80,73,64,0.6)'
-      : 'rgba(200,195,188,0.6)'
-    : 'transparent',
+  // The active item is marked by a 2px accent rule on its left edge, the way
+  // the SCF prototype's nav does it — not by a grey pill behind the label.
+  // The rule is always drawn (transparent when inactive) so labels do not
+  // shift by two pixels when the route changes.
+  borderLeftWidth: 2,
+  borderLeftColor: active ? colors.primary[600] : 'transparent',
+  backgroundColor: 'transparent',
 })
 
 export const DrawerLink = ({
@@ -199,7 +201,7 @@ export const DrawerLink = ({
               style={{
                 width: 56,
                 height: 56,
-                borderRadius: 32,
+                borderRadius: 7,
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: pressed ? colors.bg[resolvedTheme].muted : 'transparent',

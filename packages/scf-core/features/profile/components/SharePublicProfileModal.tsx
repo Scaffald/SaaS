@@ -160,7 +160,7 @@ export function SharePublicProfileModal({
                 alignSelf: 'center',
                 padding: spacing[12],
                 backgroundColor: '#FFFFFF',
-                borderRadius: 12,
+                borderRadius: 7,
                 borderWidth: 1,
                 borderColor: colors.border[theme].subtle,
               }}
@@ -183,7 +183,7 @@ export function SharePublicProfileModal({
                 padding={spacing[10]}
                 style={{
                   backgroundColor: colors.bg[theme].subtle,
-                  borderRadius: 8,
+                  borderRadius: 7,
                   borderWidth: 1,
                   borderColor: colors.border[theme].subtle,
                 }}

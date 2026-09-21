@@ -174,7 +174,7 @@ export function IPIPTestStep({
           padding="md"
           style={{
             backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
-            borderRadius: 16,
+            borderRadius: 7,
             borderWidth: 1,
             borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
           }}
@@ -208,7 +208,7 @@ export function IPIPTestStep({
         padding="xl"
         style={{
           backgroundColor: colors.bg[theme].subtle,
-          borderRadius: 16,
+          borderRadius: 7,
           borderWidth: 1,
           borderColor: colors.border[theme].default,
         }}

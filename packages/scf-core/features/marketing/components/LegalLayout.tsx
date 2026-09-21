@@ -179,7 +179,7 @@ function LegalTable({
       style={{
         borderWidth: 1,
         borderColor: brand.border,
-        borderRadius: 12,
+        borderRadius: 7,
         overflow: 'hidden',
       }}
     >

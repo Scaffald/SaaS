@@ -175,7 +175,7 @@ export function SkillSuggestionsModal({
                   backgroundColor: colors.bg[theme].subtle,
                   paddingHorizontal: 8,
                   paddingVertical: 2,
-                  borderRadius: 10,
+                  borderRadius: 7,
                 }}
               >
                 <Text style={{ fontSize: 12, color: colors.text[theme].secondary }}>
@@ -205,7 +205,7 @@ export function SkillSuggestionsModal({
                     style={{
                       paddingVertical: 8,
                       paddingHorizontal: 12,
-                      borderRadius: 8,
+                      borderRadius: 7,
                       backgroundColor: isSelected
                         ? colors.bg[theme].selected
                         : colors.bg[theme].default,
@@ -244,7 +244,7 @@ export function SkillSuggestionsModal({
                         backgroundColor: colors.bg[theme].subtle,
                         paddingHorizontal: 8,
                         paddingVertical: 2,
-                        borderRadius: 10,
+                        borderRadius: 7,
                       }}
                     >
                       <Text style={{ fontSize: 11, color: colors.text[theme].secondary }}>
@@ -278,7 +278,7 @@ export function SkillSuggestionsModal({
                     style={{
                       paddingHorizontal: 12,
                       paddingVertical: 6,
-                      borderRadius: 16,
+                      borderRadius: 7,
                       backgroundColor:
                         idx === selectedOccupationIdx
                           ? colors.fg[theme].active

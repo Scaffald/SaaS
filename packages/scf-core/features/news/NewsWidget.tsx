@@ -473,7 +473,7 @@ export function NewsWidget({
                     {item.image ? (
                       <Image
                         source={{ uri: item.image }}
-                        style={{ width: 72, height: 72, borderRadius: 8 }}
+                        style={{ width: 72, height: 72, borderRadius: 7 }}
                         resizeMode="cover"
                       />
                     ) : null}

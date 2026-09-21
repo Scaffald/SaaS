@@ -93,7 +93,7 @@ function SlotCard({ slot, isSelected, onSelect }: { slot: AvailableSlot; isSelec
         padding="md"
         style={{
           backgroundColor: isSelected ? colors.bg[theme].selected : colors.bg[theme].subtle,
-          borderRadius: 10,
+          borderRadius: 7,
           borderWidth: isSelected ? 2 : 1,
           borderColor: isSelected ? colors.border[theme].active : colors.border[theme].default,
         }}

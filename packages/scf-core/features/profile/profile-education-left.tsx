@@ -427,7 +427,7 @@ export function ProfileEducationLeft({
             borderWidth: 1,
             borderColor: colors.error[300],
             backgroundColor: colors.error[50],
-            borderRadius: 16,
+            borderRadius: 7,
           }}
         >
           <Text style={{ color: colors.error[700] }}>
@@ -526,7 +526,7 @@ export function ProfileEducationLeft({
                         ? colors.error[50]
                         : colors.error[900]
                       : colors.bg[theme].default,
-                    borderRadius: 16,
+                    borderRadius: 7,
                   }}
                 >
                   <Row justify="space-between" align="center">

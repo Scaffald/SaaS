@@ -116,7 +116,7 @@ export function SkillsGapWidget() {
             padding="sm"
             style={{
               backgroundColor: colors.bg[theme].subtle,
-              borderRadius: 6,
+              borderRadius: 4,
             }}
           >
             <AlertCircle size={14} color={getImportanceColor(skill.importance)} />

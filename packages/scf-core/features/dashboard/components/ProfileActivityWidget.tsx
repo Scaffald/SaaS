@@ -222,7 +222,7 @@ export function ProfileActivityWidget() {
             marginBottom: 12,
             padding: 12,
             backgroundColor: theme === 'dark' ? colors.bg[theme].selected : colors.primary[50],
-            borderRadius: 10,
+            borderRadius: 7,
             borderWidth: 1,
             borderColor: theme === 'dark' ? colors.primary[700] : colors.primary[200],
           }}

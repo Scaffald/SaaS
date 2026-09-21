@@ -39,7 +39,7 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
                   backgroundColor: 'var(--color-4)',
                   paddingHorizontal: 8,
                   paddingVertical: 4,
-                  borderRadius: 8,
+                  borderRadius: 7,
                 }}
               >
                 {skill}
