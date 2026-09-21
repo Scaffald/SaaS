@@ -29,14 +29,32 @@ const itemStyle = (
   borderRadius,
   width: '100%' as const,
   alignSelf: 'stretch' as const,
-  // The active item is marked by a 2px accent rule on its left edge, the way
-  // the SCF prototype's nav does it — not by a grey pill behind the label.
-  // The rule is always drawn (transparent when inactive) so labels do not
-  // shift by two pixels when the route changes.
-  borderLeftWidth: 2,
-  borderLeftColor: active ? colors.primary[600] : 'transparent',
+  position: 'relative' as const,
   backgroundColor: 'transparent',
 })
+
+/**
+ * The active-item marker: a 2px accent rule down the left edge, the way the
+ * SCF prototype's nav does it, rather than a grey pill behind the label.
+ *
+ * It is a positioned bar and not a `borderLeftWidth`, because the item itself
+ * is rounded (16px on the expandable variant). A border follows the corner
+ * radius, so on a 44px-tall item it curves away at both ends and renders as a
+ * crescent rather than a rule.
+ */
+const ActiveRule = ({ active }: { active: boolean }) => (
+  <View
+    pointerEvents="none"
+    style={{
+      position: 'absolute',
+      left: 0,
+      top: 6,
+      bottom: 6,
+      width: 2,
+      backgroundColor: active ? colors.primary[600] : 'transparent',
+    }}
+  />
+)
 
 export const DrawerLink = ({
   item,
@@ -343,6 +361,7 @@ export const DrawerLink = ({
         <Pressable accessibilityLabel={title}>
           {({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => (
             <View style={itemStyle(active, pressed, resolvedTheme, activeBg, 16)}>
+              <ActiveRule active={active} />
               {renderContent(hovered)}
               {renderRightSide()}
             </View>
@@ -387,6 +406,7 @@ export const DrawerLink = ({
       <Pressable accessibilityLabel={title}>
         {({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => (
           <View style={itemStyle(active, pressed, resolvedTheme, activeBg)}>
+            <ActiveRule active={active} />
             {renderContent(hovered)}
             {renderRightSide()}
           </View>
