@@ -403,7 +403,7 @@ export function EEOReportScreen() {
                   <Card key={group.jobGroup} variant="glass" padding="md">
                     <Stack gap={12}>
                       <Row justify="space-between" align="center">
-                        <Stack>
+                        <Stack flex={1} minWidth={0}>
                           <Text
                             style={{
                               fontWeight: '600',

@@ -227,8 +227,11 @@ export function ProjectForm({
             />
           </Stack>
 
-          <Row gap={16}>
-            <Stack gap={8} flex={1}>
+          {/* Wrap, and give each field a floor: React Native defaults
+              flexShrink to 0, so three side-by-side fields keep their
+              content width and push the form off a 390px screen. */}
+          <Row gap={16} wrap>
+            <Stack gap={8} flex={1} minWidth={200}>
               <Text>Status</Text>
               <ResponsiveSelect
                 value={formData.status}
@@ -250,7 +253,7 @@ export function ProjectForm({
               />
             </Stack>
 
-            <Stack gap={8} flex={1}>
+            <Stack gap={8} flex={1} minWidth={200}>
               <Text>Start Date</Text>
               <Input
                 value={formData.start_date}
@@ -261,7 +264,7 @@ export function ProjectForm({
               />
             </Stack>
 
-            <Stack gap={8} flex={1}>
+            <Stack gap={8} flex={1} minWidth={200}>
               <Text>End Date</Text>
               <Input
                 value={formData.end_date}

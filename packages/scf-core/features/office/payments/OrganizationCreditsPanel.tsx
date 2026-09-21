@@ -93,7 +93,7 @@ export function OrganizationCreditsPanel({
     <Card bordered padding="md">
       <Stack gap={12}>
         <Row justify="space-between" align="center">
-          <Stack>
+          <Stack flex={1} minWidth={0}>
             <Text>Account Credits</Text>
             <Text style={{ color: colors.text[theme].secondary }}>
               Pre-funded balance for automatic payments
