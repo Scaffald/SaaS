@@ -13,6 +13,7 @@ import { useMemo, useState } from "react";
 import { Button, Card, Spinner, Text, Row, Stack } from "@scaffald/ui";
 import { TransactionReceiptModal } from "./TransactionReceiptModal";
 import { colors } from "@scaffald/ui/tokens";
+import { useScreenRhythm } from '@scf/core/constants/layout'
 
 type Transaction = PaymentTransaction;
 
@@ -54,6 +55,7 @@ const getStatusColor = (status: string, theme: "light" | "dark") => {
 };
 
 export function OfficeTransactionHistory() {
+  const { gutter, verticalPadding } = useScreenRhythm()
   const { theme } = useThemeContext();
   const [selectedOrganizationId, _setSelectedOrganizationId] = useState<
     string | undefined
@@ -162,7 +164,7 @@ export function OfficeTransactionHistory() {
   );
 
   return (
-    <Stack flex={1} padding="md" gap={16}>
+    <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Transaction History</Text>

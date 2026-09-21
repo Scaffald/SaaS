@@ -10,6 +10,7 @@ import { useMemo, useState } from "react";
 import { Button, H2, Text, Row, Stack } from "@scaffald/ui";
 import { QuickActionsWidget } from "../components/QuickActionsWidget";
 import { colors } from "@scaffald/ui/tokens";
+import { useScreenRhythm } from '@scf/core/constants/layout'
 
 type ProjectStatus = "planning" | "active" | "completed" | "on_hold";
 
@@ -118,6 +119,7 @@ export function OfficeProjectsList({
 }: {
   showHeader?: boolean;
 }) {
+  const { gutter, verticalPadding } = useScreenRhythm()
   const { theme } = useThemeContext();
   const router = useRouter();
   const { data: organizationsData } = useAllOrganizations();
@@ -149,7 +151,7 @@ export function OfficeProjectsList({
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <Stack flex={1} padding="md" gap={16}>
+        <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
           {showHeader && (
             <Stack gap={8}>
               <H2>Projects</H2>

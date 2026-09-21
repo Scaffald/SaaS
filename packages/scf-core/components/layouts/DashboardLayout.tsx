@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react'
 import { Platform, ScrollView } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Grid, Row, Stack, useThemeContext, useResponsive, useBottomBarContext } from '@scaffald/ui'
+import { Grid, Row, Stack, useThemeContext, useBottomBarContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Breadcrumb, ScreenHeader, type BreadcrumbItemData } from '@scaffald/ui'
+import { useScreenRhythm } from '../../constants/layout'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { useScreenHeaderCollapse } from '../../hooks/useScreenHeaderCollapse'
 
@@ -61,7 +62,6 @@ export const DashboardLayout = ({
   screenKey,
   hideScreenHeader = false,
 }: DashboardLayoutProps) => {
-  const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
   const insets = useSafeAreaInsets()
   // The mobile bottom nav floats over content (position: fixed/absolute at
@@ -72,9 +72,8 @@ export const DashboardLayout = ({
     hideScreenHeader ? null : (screenKey ?? null),
   )
   const bottomNavInset = navBarHeight > 0 ? navBarHeight + insets.bottom : 0
-  const contentPadding = isDesktop ? 32 : 16
-  const verticalPadding = isDesktop ? 32 : 16
-  const columnGap = isDesktop ? 32 : 16
+  const { gutter: contentPadding, verticalPadding, sectionGap, columnGap, rowGap } =
+    useScreenRhythm()
   const hasRightContent = rightContent != null
   const columnTemplate = fullWidth || !hasRightContent ? '1fr' : GOLDEN_RATIO_TEMPLATE
 
@@ -106,7 +105,7 @@ export const DashboardLayout = ({
       style={bgStyle}
       showsVerticalScrollIndicator={false}
     >
-      <Stack gap={20} paddingTop={verticalPadding} paddingBottom={verticalPadding + bottomNavInset}>
+      <Stack gap={sectionGap} paddingTop={verticalPadding} paddingBottom={verticalPadding + bottomNavInset}>
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <Row paddingHorizontal={contentPadding}>
@@ -139,7 +138,7 @@ export const DashboardLayout = ({
           <Grid
             columns={{ base: 1, lg: columnTemplate }}
             gap={columnGap}
-            rowGap={isDesktop ? 40 : 28}
+            rowGap={rowGap}
           >
             {leftContent ? <Stack>{leftContent}</Stack> : null}
             {rightContent ? <Stack>{rightContent}</Stack> : null}

@@ -18,6 +18,7 @@ import {
   Stack,
   useThemeContext,
 } from "@scaffald/ui";
+import { useScreenRhythm } from '@scf/core/constants/layout'
 
 type StorageTableRow = {
   userId: string;
@@ -55,6 +56,7 @@ const formatPercent = (value: number | null | undefined): string => {
 };
 
 export function OfficeStorageDashboard() {
+  const { gutter, verticalPadding } = useScreenRhythm()
   const { theme } = useThemeContext();
   const [search, setSearch] = useState("");
   const analyticsQuery = useOfficeStorageAnalytics({ staleTime: 60_000 });
@@ -240,7 +242,7 @@ export function OfficeStorageDashboard() {
   const isLoading = analyticsQuery.isLoading;
 
   return (
-    <Stack flex={1} padding="md" gap={16}>
+    <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
       <Row justify="space-between" align="center" gap={12}>
         {/* flex={1} so the description wraps inside the row. Without it the
             Stack took its text's full width and pushed the Refresh button off
