@@ -12,11 +12,13 @@
 import { useState } from "react";
 import {
   Button,
+  MetricBlock,
+  MetricRow,
+  Row,
   ScrollView,
   Spinner,
-  Text,
-  Row,
   Stack,
+  Text,
   useThemeContext,
 } from "@scaffald/ui";
 import { reloadPage } from "@scf/core/utils/platform";
@@ -166,52 +168,6 @@ function PriorityBadge({ priority }: { priority: string }) {
 /**
  * Metric card component
  */
-function MetricCard({
-  label,
-  value,
-  trend,
-  color,
-}: {
-  label: string;
-  value: string | number;
-  trend?: "up" | "down" | "neutral";
-  color?: string;
-}) {
-  const { theme } = useThemeContext();
-  const defaultColor = color || colors.text[theme].primary;
-  const trendColor =
-    trend === "up"
-      ? theme === "light"
-        ? colors.green[700]
-        : colors.green[300]
-      : trend === "down"
-      ? theme === "light"
-        ? colors.error[700]
-        : colors.error[300]
-      : colors.text[theme].secondary;
-
-  return (
-    <Stack
-      padding="md"
-      style={{ backgroundColor: colors.bg[theme].subtle }}
-      borderRadius={12}
-      borderWidth={1}
-      borderColor={colors.border[theme].default}
-      flex={1}
-      minWidth={150}
-      gap={4}
-    >
-      <Text style={{ color: colors.text[theme].secondary }}>{label}</Text>
-      <Text style={{ color: defaultColor }}>{value}</Text>
-      {trend && (
-        <Text style={{ color: trendColor }}>
-          {trend === "up" ? "↑" : trend === "down" ? "↓" : "→"} vs last month
-        </Text>
-      )}
-    </Stack>
-  );
-}
-
 /**
  * Request row component for admin table
  */
@@ -521,80 +477,41 @@ export function CCPAAdminDashboard() {
               <Spinner variant="ios" size="lg" />
             </Row>
           ) : (
-            <Row gap={12} wrap>
-              <MetricCard
-                label="Total Requests"
-                value={metrics?.total_requests || 0}
-                trend="neutral"
-              />
-              <MetricCard
+            /* The page's own metrics, on the hairline band. A card grid is
+               reserved for the public transparency pages; seven bordered,
+               tinted boxes for one page's own numbers was the "four ways to
+               draw a stat block" finding. Tone is stated, not inferred: a
+               rising overdue count is not good news. */
+            <MetricRow minColumnWidth={150} bordered>
+              <MetricBlock label="Total requests" value={metrics?.total_requests ?? 0} />
+              <MetricBlock
                 label="Pending"
-                value={metrics?.pending_requests || 0}
-                color={
-                  metrics?.pending_requests
-                    ? theme === "light"
-                      ? colors.yellow[700]
-                      : colors.yellow[300]
-                    : colors.text[theme].primary
-                }
+                value={metrics?.pending_requests ?? 0}
+                emphasis={Boolean(metrics?.pending_requests)}
               />
-              <MetricCard
-                label="Processing"
-                value={metrics?.processing_requests || 0}
-                color={theme === "light" ? colors.blue[700] : colors.blue[300]}
-              />
-              <MetricCard
+              <MetricBlock label="Processing" value={metrics?.processing_requests ?? 0} />
+              <MetricBlock
                 label="Completed"
-                value={metrics?.completed_requests || 0}
-                color={
-                  theme === "light" ? colors.green[700] : colors.green[300]
-                }
-                trend="up"
+                value={metrics?.completed_requests ?? 0}
+                tone={metrics?.completed_requests ? 'positive' : 'neutral'}
               />
-              <MetricCard
-                label="Avg Processing Days"
-                value={`${metrics?.average_processing_days?.toFixed(1) || 0}`}
-                color={
-                  (metrics?.average_processing_days || 0) > 30
-                    ? theme === "light"
-                      ? colors.yellow[700]
-                      : colors.yellow[300]
-                    : theme === "light"
-                    ? colors.green[700]
-                    : colors.green[300]
-                }
+              <MetricBlock
+                label="Avg processing days"
+                value={(metrics?.average_processing_days ?? 0).toFixed(1)}
+                tone={(metrics?.average_processing_days ?? 0) > 30 ? 'attention' : 'neutral'}
               />
-              <MetricCard
-                label="Compliance Rate"
-                value={`${((metrics?.compliance_rate || 0) * 100).toFixed(1)}%`}
-                color={
-                  (metrics?.compliance_rate || 0) >= 0.95
-                    ? theme === "light"
-                      ? colors.green[700]
-                      : colors.green[300]
-                    : (metrics?.compliance_rate || 0) >= 0.8
-                    ? theme === "light"
-                      ? colors.yellow[700]
-                      : colors.yellow[300]
-                    : theme === "light"
-                    ? colors.error[700]
-                    : colors.error[300]
-                }
+              <MetricBlock
+                label="Compliance rate"
+                value={`${((metrics?.compliance_rate ?? 0) * 100).toFixed(1)}%`}
+                tone={(metrics?.compliance_rate ?? 0) >= 0.95 ? 'positive' : 'attention'}
               />
-              <MetricCard
-                label="Overdue Requests"
-                value={metrics?.overdue_count || 0}
-                color={
-                  metrics?.overdue_count
-                    ? theme === "light"
-                      ? colors.error[700]
-                      : colors.error[300]
-                    : theme === "light"
-                    ? colors.green[700]
-                    : colors.green[300]
-                }
+              <MetricBlock
+                label="Overdue requests"
+                value={metrics?.overdue_count ?? 0}
+                tone={metrics?.overdue_count ? 'attention' : 'positive'}
+                emphasis={Boolean(metrics?.overdue_count)}
               />
-            </Row>
+            </MetricRow>
           )}
         </Stack>
 
