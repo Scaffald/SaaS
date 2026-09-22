@@ -41,7 +41,16 @@ export default function GeographicSettingsPage() {
     }
 
     loadThreshold()
-  }, [toast])
+    // Runs once on mount. `toast` must NOT be a dependency: ToastContext's
+    // value is memoised on the live `toasts` array, so showing a toast gives
+    // the hook a new identity — and this effect shows one when the load
+    // fails. With `[toast]` that is a closed loop, and the load does always
+    // fail today (core.system_config grants nothing to `authenticated`,
+    // PostgREST 42501). Measured before this change: ~35,000 requests to
+    // /rest/v1/system_config per visit, the page never reaching networkidle,
+    // and an unbounded stack of error toasts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleSave = async () => {
     const numValue = Number.parseFloat(threshold)
