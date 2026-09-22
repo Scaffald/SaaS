@@ -164,7 +164,7 @@ export function OfficeTransactionHistory() {
   return (
     <Stack flex={1} padding="md" gap={16}>
       <Row justify="space-between" align="center">
-        <Stack>
+        <Stack flex={1} minWidth={0}>
           <Text>Transaction History</Text>
           <Text style={{ color: colors.text[theme].secondary }}>
             View and export payment transaction records.
