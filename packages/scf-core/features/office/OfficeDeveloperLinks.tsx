@@ -73,7 +73,7 @@ export function OfficeDeveloperLinks() {
             style={({ pressed }) => ({
               paddingVertical: 10,
               paddingHorizontal: 12,
-              borderRadius: 10,
+              borderRadius: 7,
               borderWidth: 1,
               borderColor: colors.border[theme].subtle,
               backgroundColor: pressed ? colors.bg[theme].muted : colors.bg[theme].subtle,

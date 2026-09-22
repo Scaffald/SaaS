@@ -54,7 +54,7 @@ export function ProgressIndicator({
           style={{
             height: 8,
             backgroundColor: colors.bg[theme].muted,
-            borderRadius: 10,
+            borderRadius: 7,
             overflow: "hidden",
           }}
         >

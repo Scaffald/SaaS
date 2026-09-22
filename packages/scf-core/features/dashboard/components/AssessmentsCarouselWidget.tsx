@@ -103,7 +103,7 @@ function AssessmentCard({ card, isFirst }: { card: AssessmentCardData; isFirst: 
       onPress={() => router.push(card.route as never)}
       style={{
         padding: 24,
-        borderRadius: 20,
+        borderRadius: 7,
         minWidth: 240,
         maxWidth: 260,
         backgroundColor: isFeatured ? colors.bg[theme].default : colors.bg[theme].subtle,

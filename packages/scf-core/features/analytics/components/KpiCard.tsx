@@ -1,4 +1,4 @@
-import { Card, Row, Stack, Text, useThemeContext } from '@scaffald/ui'
+import { MetricBlock, Row, Stack } from '@scaffald/ui'
 import { SparkLine, DeltaBadge } from '@scaffald/ui/chart'
 import { colors } from '@scaffald/ui/tokens'
 import { StyleSheet } from 'react-native'
@@ -11,59 +11,63 @@ interface KpiCardProps {
   color?: string
 }
 
+/**
+ * One analytics figure, on the shared metric block.
+ *
+ * It used to be a bordered card with its own 12px label and 28px figure —
+ * the fourth way this app drew a stat, alongside the dashboard widgets, the
+ * CCPA dashboard's `MetricCard` and the ATS metrics header. The prototype's
+ * audit ("metric labels change position", "four ways to draw a stat block")
+ * asks for one: label above, figure below, delta beneath.
+ *
+ * The sparkline survives as an adornment in the delta line rather than a
+ * second column, so the label-figure-delta order holds whether or not a
+ * metric has one.
+ */
 export function KpiCard({ title, metric, isLoading, color }: KpiCardProps) {
-  const { theme } = useThemeContext()
-  const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
-
   const total = metric?.total ?? 0
   const previous = metric?.previous ?? 0
 
   if (isLoading) {
     return (
-      <Card variant="outlined" radius="lg" padding="md" style={styles.card}>
-        <Stack gap={8}>
-          <Text style={{ fontSize: 12, color: colors.text[resolvedTheme].secondary }}>{title}</Text>
-          <Stack style={styles.skeleton} />
-        </Stack>
-      </Card>
+      <MetricBlock
+        label={title}
+        value={<Stack style={styles.skeleton} />}
+        style={styles.block}
+      />
     )
   }
 
   return (
-    <Card variant="outlined" radius="lg" padding="md" style={styles.card}>
-      <Stack gap={8}>
-        <Text style={{ fontSize: 12, color: colors.text[resolvedTheme].secondary, fontWeight: '500' }}>
-          {title}
-        </Text>
-        <Row align="flex-end" justify="space-between">
-          <Stack gap={4}>
-            <Text style={{ fontSize: 28, fontWeight: '700', color: colors.text[resolvedTheme].primary }}>
-              {total.toLocaleString()}
-            </Text>
-            <DeltaBadge current={total} previous={previous} format="percentage" />
-          </Stack>
+    <MetricBlock
+      label={title}
+      value={total.toLocaleString()}
+      delta={
+        <Row align="center" gap={8}>
+          <DeltaBadge current={total} previous={previous} format="percentage" />
           {metric?.sparkline && metric.sparkline.length > 0 ? (
             <SparkLine
               data={metric.sparkline}
-              width={80}
-              height={32}
+              width={64}
+              height={20}
               color={color ?? colors.primary[500]}
             />
           ) : null}
         </Row>
-      </Stack>
-    </Card>
+      }
+      style={styles.block}
+    />
   )
 }
 
 const styles = StyleSheet.create({
-  card: {
+  block: {
     flex: 1,
     minWidth: 160,
   },
   skeleton: {
-    height: 40,
-    borderRadius: 8,
+    height: 32,
+    borderRadius: 4,
     backgroundColor: 'rgba(128,128,128,0.1)',
   },
 })

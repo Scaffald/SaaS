@@ -117,7 +117,7 @@ export function TechnologySkillsWidget() {
                   backgroundColor: isKnown
                     ? `${colors.success[500]}10`
                     : colors.bg[theme].subtle,
-                  borderRadius: 6,
+                  borderRadius: 4,
                   borderWidth: 1,
                   borderColor: isKnown
                     ? `${colors.success[500]}40`

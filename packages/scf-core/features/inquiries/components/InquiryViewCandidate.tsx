@@ -451,7 +451,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {acceptedSections}/{totalSections}
             </Text>
           </Row>
-          <Stack style={{ height: 8, overflow: 'hidden', borderRadius: 10, backgroundColor: colors.bg[theme].muted }}>
+          <Stack style={{ height: 8, overflow: 'hidden', borderRadius: 7, backgroundColor: colors.bg[theme].muted }}>
             <Stack
               style={{ height: '100%', width: `${progress}%`, backgroundColor: colors.info[500] }}
             />

@@ -102,7 +102,7 @@ function RenewalSettingsSection({ organizationId }: RenewalSettingsSectionProps)
           <Text>Reminder intervals (days before expiry)</Text>
           <Row gap={8} style={{ flexWrap: 'wrap' }}>
             {currentIntervals.map((day) => (
-              <Row key={day} align="center" gap={4} style={{ paddingVertical: 2, paddingHorizontal: 8, borderRadius: 8, backgroundColor: 'var(--color-3)' }}>
+              <Row key={day} align="center" gap={4} style={{ paddingVertical: 2, paddingHorizontal: 8, borderRadius: 7, backgroundColor: 'var(--color-3)' }}>
                 <Text>{day}d</Text>
                 <Button
                   size="sm"

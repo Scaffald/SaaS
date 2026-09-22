@@ -149,14 +149,14 @@ function JobRecommendationCard({ job, onPress }: { job: RecommendedJob; onPress:
       <Stack
         gap={8}
         padding="sm"
-        style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 10 }}
+        style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 7 }}
       >
         <Row gap={10} align="flex-start">
           <Stack
             style={{
               width: 36,
               height: 36,
-              borderRadius: 8,
+              borderRadius: 7,
               backgroundColor: `${scoreColor}15`,
               alignItems: 'center',
               justifyContent: 'center',

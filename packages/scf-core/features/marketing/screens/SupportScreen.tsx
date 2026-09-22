@@ -70,7 +70,7 @@ function ContactCard() {
         style={{
           alignSelf: 'flex-start',
           backgroundColor: brand.teal,
-          borderRadius: 12,
+          borderRadius: 7,
           paddingHorizontal: 20,
           paddingVertical: 12,
         }}
@@ -92,7 +92,7 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
         backgroundColor: brand.surface,
         borderWidth: 1,
         borderColor: brand.border,
-        borderRadius: 12,
+        borderRadius: 7,
         overflow: 'hidden',
       }}
     >

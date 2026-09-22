@@ -87,14 +87,14 @@ export function CareerPathWidget() {
               padding="sm"
               style={{
                 backgroundColor: colors.bg[theme].subtle,
-                borderRadius: 8,
+                borderRadius: 7,
               }}
             >
               <Stack
                 style={{
                   width: 32,
                   height: 32,
-                  borderRadius: 6,
+                  borderRadius: 4,
                   backgroundColor: career.direction === 'up'
                     ? `${colors.success[500]}20`
                     : `${colors.blue[500]}20`,

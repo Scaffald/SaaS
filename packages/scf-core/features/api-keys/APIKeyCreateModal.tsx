@@ -347,7 +347,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
           <Stack gap={16}>
             {/* Success Header */}
             <Stack align="center" gap={12}>
-              <Card variant="glass" padding="md" style={{ backgroundColor: colors.success[100], borderRadius: 8 }}>
+              <Card variant="glass" padding="md" style={{ backgroundColor: colors.success[100], borderRadius: 7 }}>
                 <CheckCircle size={48} color={colors.fg[theme].success} />
               </Card>
               <H3>API Key Created!</H3>
@@ -382,7 +382,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
             {/* API Key Display */}
             <Stack gap={12}>
               <Label>API Key</Label>
-              <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].muted, borderRadius: 16 }}>
+              <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].muted, borderRadius: 7 }}>
                 <Stack gap={12}>
                   <Paragraph color={colors.text[theme].primary} style={{ fontFamily: 'monospace' as const }}>
                     {createdKey?.key}
@@ -418,7 +418,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                     padding="sm"
                     style={{
                       backgroundColor: colors.blue[200],
-                      borderRadius: 8,
+                      borderRadius: 7,
                     }}
                   >
                     <Paragraph size="sm" color={colors.blue[700]}>

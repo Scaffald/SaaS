@@ -101,7 +101,7 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
                 justifyContent: 'space-between',
                 paddingVertical: 8,
                 paddingHorizontal: 8,
-                borderRadius: 6,
+                borderRadius: 4,
                 backgroundColor: isSelected ? colors.bg[t].muted : 'transparent',
               }}
               accessibilityRole="radio"

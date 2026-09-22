@@ -390,7 +390,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
                 backgroundColor: getRateLimitColor(),
                 paddingHorizontal: 12,
                 paddingVertical: 4,
-                borderRadius: 12,
+                borderRadius: 7,
               }}
             >
               <Paragraph size="sm" color={colors.text[theme].primary}>
@@ -412,7 +412,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
 
               {/* Progress Bar */}
               <View
-                style={{ height: 8, backgroundColor: colors.gray[400], borderRadius: 10, overflow: 'hidden' }}
+                style={{ height: 8, backgroundColor: colors.gray[400], borderRadius: 7, overflow: 'hidden' }}
               >
                 <View
                   style={{
@@ -459,7 +459,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
                         flex: 1,
                         height: 24,
                         backgroundColor: colors.gray[300],
-                        borderRadius: 8,
+                        borderRadius: 7,
                         overflow: 'hidden',
                         marginHorizontal: 8,
                       }}
@@ -510,7 +510,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
                                   : colors.orange[300],
                             paddingHorizontal: 8,
                             paddingVertical: 4,
-                            borderRadius: 8,
+                            borderRadius: 7,
                           }}
                         >
                           <Paragraph
@@ -567,7 +567,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
                     backgroundColor: isSuccess ? colors.green[100] : isClientError ? colors.orange[100] : colors.error[50],
                     borderColor: isSuccess ? colors.success[500] : isClientError ? colors.orange[500] : colors.error[400],
                     borderWidth: 1,
-                    borderRadius: 12,
+                    borderRadius: 7,
                     minWidth: 100,
                   }}
                   padding="sm"

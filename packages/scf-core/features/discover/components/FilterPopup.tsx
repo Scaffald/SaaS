@@ -145,7 +145,7 @@ export const FilterPopup = ({
                     style={{
                       paddingHorizontal: 12,
                       paddingVertical: 8,
-                      borderRadius: 12,
+                      borderRadius: 7,
                     }}
                   >
                     <Row justify="space-between" align="center" flex={1}>

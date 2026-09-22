@@ -554,7 +554,7 @@ export function WorkLogDetailScreen() {
                       : (theme === "dark" ? colors.yellow[300] : colors.yellow[700]),
                     paddingHorizontal: 12,
                     paddingVertical: 4,
-                    borderRadius: 16,
+                    borderRadius: 7,
                   }}
                 >
                   {isVerified ? "Verified" : "Pending"}
@@ -640,7 +640,7 @@ export function WorkLogDetailScreen() {
                     style={{
                       paddingHorizontal: 12,
                       paddingVertical: 4,
-                      borderRadius: 16,
+                      borderRadius: 7,
                       backgroundColor: colors.bg[theme].muted,
                     }}
                   >

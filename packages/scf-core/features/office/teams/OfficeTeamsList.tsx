@@ -185,7 +185,7 @@ export function OfficeTeamsList() {
               backgroundColor: colors.bg[theme].subtle,
               alignSelf: "flex-end",
               padding: 8,
-              borderRadius: 16,
+              borderRadius: 7,
               shadowColor: colors.text[theme].tertiary,
               marginRight: 16,
               marginBottom: 16,

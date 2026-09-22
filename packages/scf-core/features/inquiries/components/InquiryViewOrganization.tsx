@@ -169,7 +169,7 @@ export function InquiryViewOrganization({
   const jobTitle = providedJobTitle || 'Job'
 
   const NonNegotiableBadge = () => (
-    <Row style={{ backgroundColor: colors.bg[t].muted, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}>
+    <Row style={{ backgroundColor: colors.bg[t].muted, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 7 }}>
       <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
     </Row>
   )

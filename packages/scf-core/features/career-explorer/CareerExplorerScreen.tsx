@@ -87,7 +87,7 @@ export function CareerExplorerScreen() {
           align="center"
           style={{
             backgroundColor: colors.bg[theme].subtle,
-            borderRadius: 10,
+            borderRadius: 7,
             paddingHorizontal: 12,
             borderWidth: 1,
             borderColor: colors.border[theme].default,

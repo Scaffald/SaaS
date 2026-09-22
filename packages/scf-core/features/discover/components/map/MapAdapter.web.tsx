@@ -975,7 +975,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
     )
 
     return (
-      <View style={[{ flex: 1, position: 'relative', overflow: 'hidden', borderRadius: 20 }, style]}>
+      <View style={[{ flex: 1, position: 'relative', overflow: 'hidden', borderRadius: 7 }, style]}>
         <MapMarkers
           map={mapInstance}
           pins={pins as MapPinData[]}

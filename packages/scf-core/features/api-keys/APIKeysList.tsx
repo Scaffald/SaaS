@@ -145,7 +145,7 @@ export function APIKeysList({
                             backgroundColor: colors.error[100],
                             paddingHorizontal: 8,
                             paddingVertical: 4,
-                            borderRadius: 8,
+                            borderRadius: 7,
                           }}
                         >
                           <Paragraph size="sm" color={colors.fg[theme].error}>
@@ -162,7 +162,7 @@ export function APIKeysList({
                           backgroundColor: colors.bg[theme].muted,
                           paddingHorizontal: 12,
                           paddingVertical: 8,
-                          borderRadius: 12,
+                          borderRadius: 7,
                         }}
                       >
                         <Paragraph size="sm" style={{ fontFamily: 'monospace' }}>
@@ -196,7 +196,7 @@ export function APIKeysList({
                         backgroundColor: getRateLimitBadgeColor(key.rate_limit_tier),
                         paddingHorizontal: 8,
                         paddingVertical: 4,
-                        borderRadius: 8,
+                        borderRadius: 7,
                       }}
                     >
                       <Paragraph size="sm" color={colors.text[theme].primary}>
@@ -219,7 +219,7 @@ export function APIKeysList({
                             backgroundColor: colors.blue[200],
                             paddingHorizontal: 8,
                             paddingVertical: 4,
-                            borderRadius: 8,
+                            borderRadius: 7,
                           }}
                         >
                           <Paragraph size="sm" color={colors.blue[700]}>

@@ -27,14 +27,14 @@ export const LEGAL_DOCUMENTS_FALLBACK: LegalDocumentInfo[] = [
     doc_type: 'terms_of_service',
     version: 'v1.0',
     effective_at: '2025-03-01T00:00:00Z',
-    url: '/auth/terms',
+    url: '/terms',
     title: 'Terms of Service',
   },
   {
     doc_type: 'privacy_policy',
     version: 'v1.0',
     effective_at: '2025-03-01T00:00:00Z',
-    url: '/auth/privacy',
+    url: '/privacy',
     title: 'Privacy Policy',
   },
 ]

@@ -61,7 +61,7 @@ export function UnionStatusBadge({ unionStatus, compact }: UnionStatusBadgeProps
             style={{
               width: 32,
               height: 32,
-              borderRadius: 8,
+              borderRadius: 7,
               backgroundColor: unionStatus.isUnionMember
                 ? `${colors.blue[500]}20`
                 : `${colors.gray[400]}20`,

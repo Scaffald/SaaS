@@ -271,7 +271,7 @@ export function APIKeyScopesManager({
                                       backgroundColor: colors.bg[t].muted,
                                       paddingHorizontal: 8,
                                       paddingVertical: 4,
-                                      borderRadius: 8,
+                                      borderRadius: 7,
                                     }}
                                   >
                                     <Paragraph size="sm" style={{ color: colors.text[t].secondary, fontFamily: 'monospace' }}>
@@ -346,7 +346,7 @@ export function APIKeyScopesManager({
                                       backgroundColor: colors.bg[t].muted,
                                       paddingHorizontal: 8,
                                       paddingVertical: 4,
-                                      borderRadius: 8,
+                                      borderRadius: 7,
                                     }}
                                   >
                                     <Paragraph size="sm" style={{ color: colors.text[t].secondary, fontFamily: 'monospace' }}>
@@ -383,7 +383,7 @@ export function APIKeyScopesManager({
                           backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100],
                           paddingHorizontal: 8,
                           paddingVertical: 4,
-                          borderRadius: 8,
+                          borderRadius: 7,
                         }}
                       >
                         <Paragraph size="sm" style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>

@@ -1,4 +1,4 @@
-import { Card, Row, Spinner, Stack, Text, useThemeContext } from '@scaffald/ui'
+import { Card, MetricRow, Row, Spinner, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { LinearChart } from '@scaffald/ui/chart'
 import { colors } from '@scaffald/ui/tokens'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
@@ -51,8 +51,9 @@ export function AnalyticsOverviewScreen() {
       {/* Tab bar */}
       <AnalyticsTabBar />
 
-      {/* KPI Cards */}
-      <Row gap={12} style={{ flexWrap: 'wrap' }}>
+      {/* The page's own metrics, on the hairline band — a card grid is
+          reserved for the public transparency pages. */}
+      <MetricRow minColumnWidth={160} bordered>
         <KpiCard
           title="Profile Views"
           metric={summary?.profileViews}
@@ -77,7 +78,7 @@ export function AnalyticsOverviewScreen() {
           isLoading={summaryLoading}
           color={colors.orange[500]}
         />
-      </Row>
+      </MetricRow>
 
       {!summaryLoading && !hasData ? (
         <AnalyticsEmptyState />

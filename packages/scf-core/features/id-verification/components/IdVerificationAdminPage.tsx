@@ -142,7 +142,7 @@ export function IdVerificationAdminPage({
                 backgroundColor: meta.backgroundColor,
                 paddingHorizontal: 8,
                 paddingVertical: 4,
-                borderRadius: 12,
+                borderRadius: 7,
               }}
             >
               {meta.label}
@@ -187,7 +187,7 @@ export function IdVerificationAdminPage({
                 backgroundColor: meta.backgroundColor,
                 paddingHorizontal: 8,
                 paddingVertical: 4,
-                borderRadius: 12,
+                borderRadius: 7,
               }}
             >
               {meta.label}

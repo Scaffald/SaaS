@@ -339,7 +339,7 @@ export function SettingsNotificationsSection() {
               key={notification.id}
               style={{
                 backgroundColor: colors.bg[theme].subtle,
-                borderRadius: 12,
+                borderRadius: 7,
                 overflow: 'hidden',
               }}
             >
@@ -649,7 +649,7 @@ export function SettingsNotificationsSection() {
                   gap={8}
                   style={{
                     padding: 8,
-                    borderRadius: 8,
+                    borderRadius: 7,
                     backgroundColor: colors.bg[theme].muted,
                   }}
                 >
@@ -667,7 +667,7 @@ export function SettingsNotificationsSection() {
                   <Row
                     key={device.id}
                     gap={8}
-                    style={{ padding: 8, borderRadius: 8 }}
+                    style={{ padding: 8, borderRadius: 7 }}
                   >
                     <Text
                       style={{ flex: 1, fontSize: 12, color: colors.text[theme].tertiary }}

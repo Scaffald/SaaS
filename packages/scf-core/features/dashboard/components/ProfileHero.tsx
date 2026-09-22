@@ -170,7 +170,7 @@ export function ProfileHero() {
               // buttons and clipping longer labels (e.g. "Assessments" → "As…") (SC-88).
               flexShrink: 0,
               backgroundColor: colors.bg[theme].default,
-              borderRadius: 20,
+              borderRadius: 7,
               paddingHorizontal: 14,
               paddingVertical: 10,
               borderWidth: 1,

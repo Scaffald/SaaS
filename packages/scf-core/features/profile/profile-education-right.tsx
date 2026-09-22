@@ -162,7 +162,7 @@ export function ProfileEducationRight({
                   backgroundColor: colors.bg[theme].default,
                   borderWidth: 1,
                   borderColor: colors.border[theme].default,
-                  borderRadius: 16,
+                  borderRadius: 7,
                 }}
               >
                 {/* Institution Name with Verification Badge */}
