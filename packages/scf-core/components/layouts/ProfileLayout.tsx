@@ -5,12 +5,15 @@ import {
   Row,
   Stack,
   Breadcrumb,
+  ScreenHeader,
   type BreadcrumbItemData,
   useResponsive,
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
+import { useRouteScreenTitle } from '../../hooks/useRouteScreenTitle'
+import { useScreenHeaderCollapse } from '../../hooks/useScreenHeaderCollapse'
 
 /** Golden ratio (φ) for column proportion: left ~61.8%, right ~38.2% */
 const GOLDEN_RATIO_TEMPLATE = 'minmax(300px, 1.618fr) minmax(300px, 1fr)'
@@ -24,6 +27,21 @@ type ProfileLayoutProps = {
   breadcrumbItems?: BreadcrumbItemData[]
   /** Whether to auto-generate breadcrumbs from route (default: true) */
   autoGenerateBreadcrumbs?: boolean
+  /**
+   * The screen's title, rendered as a real heading. Supplied by the route
+   * when the caller does not pass one — see `useRouteScreenTitle`.
+   */
+  screenTitle?: string | null
+  /** Uppercase letterspaced line above the title. */
+  screenKicker?: string
+  /** One sentence on what this screen is for. Collapsible. */
+  screenTip?: ReactNode
+  /** Page-level primary actions, at header right. */
+  screenActions?: ReactNode
+  /** Identity for remembering the collapsed state. Defaults to the route. */
+  screenKey?: string | null
+  /** Opt out of the shared header. */
+  hideScreenHeader?: boolean
 }
 
 export const ProfileLayout = ({
@@ -32,6 +50,12 @@ export const ProfileLayout = ({
   showBreadcrumb = false,
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
+  screenTitle,
+  screenKicker,
+  screenTip,
+  screenActions,
+  screenKey,
+  hideScreenHeader = false,
 }: ProfileLayoutProps) => {
   const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
@@ -39,6 +63,12 @@ export const ProfileLayout = ({
   const hasRightContent = rightContent != null
   const contentPadding = isDesktop ? '2xl' : 'lg'
   const columnGap = isDesktop ? 44 : 24
+
+  const routeTitle = useRouteScreenTitle()
+  const resolvedTitle = screenTitle !== undefined ? screenTitle : routeTitle.title
+  const { collapsed, toggleCollapsed } = useScreenHeaderCollapse(
+    hideScreenHeader ? null : (screenKey ?? routeTitle.routeKey),
+  )
 
   const { breadcrumbs } = useBreadcrumbs({
     autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,
@@ -58,6 +88,19 @@ export const ProfileLayout = ({
             <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
           </Row>
         )}
+
+        {!hideScreenHeader && resolvedTitle ? (
+          <Stack paddingHorizontal={contentPadding}>
+            <ScreenHeader
+              kicker={screenKicker}
+              title={resolvedTitle}
+              tip={screenTip}
+              actions={screenActions}
+              collapsed={screenTip ? collapsed : undefined}
+              onToggleCollapsed={screenTip ? toggleCollapsed : undefined}
+            />
+          </Stack>
+        ) : null}
 
         {/* Content Area - Two-column golden ratio (lg+) or single column */}
         <Stack paddingHorizontal={contentPadding}>

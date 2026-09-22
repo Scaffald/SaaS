@@ -47,6 +47,40 @@ function formatRelative(value: string): string {
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
+/**
+ * Rendered as the layout's `screenActions`, so the Settings control sits at
+ * header right with every other page-level action rather than in a row of
+ * its own beneath the title.
+ */
+export function NotificationsSettingsAction() {
+  const router = useRouter()
+  const { theme } = useThemeContext()
+  return (
+    <Pressable
+      onPress={() => router.push('/dashboard/notifications/settings' as Href)}
+      accessibilityRole="button"
+      accessibilityLabel="Notification settings"
+      hitSlop={8}
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        minHeight: 44,
+        paddingHorizontal: 12,
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: colors.border[theme].default,
+        backgroundColor: pressed ? colors.bg[theme].subtle : 'transparent',
+      })}
+    >
+      <SettingsIcon size={16} color={colors.icon[theme].default} />
+      <Text size="sm" style={{ color: colors.text[theme].primary }}>
+        Settings
+      </Text>
+    </Pressable>
+  )
+}
+
 export function NotificationsCenterScreen() {
   const { theme } = useThemeContext()
   const router = useRouter()
@@ -72,34 +106,6 @@ export function NotificationsCenterScreen() {
 
   return (
     <Stack gap={12} style={{ padding: 16 }} testID="notifications-center">
-      <Row align="center" justify="space-between">
-        <Text style={{ color: colors.text[theme].primary, fontSize: 20, fontWeight: '700' }}>
-          Notifications
-        </Text>
-        <Pressable
-          onPress={() => router.push('/dashboard/notifications/settings' as Href)}
-          accessibilityRole="button"
-          accessibilityLabel="Notification settings"
-          hitSlop={8}
-          style={({ pressed }) => ({
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 6,
-            minHeight: 44,
-            paddingHorizontal: 12,
-            borderRadius: 999,
-            borderWidth: 1,
-            borderColor: colors.border[theme].default,
-            backgroundColor: pressed ? colors.bg[theme].subtle : 'transparent',
-          })}
-        >
-          <SettingsIcon size={16} color={colors.icon[theme].default} />
-          <Text size="sm" style={{ color: colors.text[theme].primary }}>
-            Settings
-          </Text>
-        </Pressable>
-      </Row>
-
       {query.isLoading ? (
         <Stack align="center" justify="center" gap={12} style={{ paddingVertical: 48 }}>
           <Spinner size="lg" />
