@@ -7,6 +7,7 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
 import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import { firstOf } from "../lib/postgrest.ts";
+import { booleanQueryParam } from "../../_shared/query-schemas.ts";
 import {
   buildWorkLogCsv,
   buildWorkLogPdf,
@@ -561,7 +562,7 @@ app.openapi(
       query: z.object({
         organizationId: z.string().uuid().optional(),
         search: z.string().optional(),
-        includeArchived: z.coerce.boolean().optional(),
+        includeArchived: booleanQueryParam.optional(),
       }),
     },
     responses: {

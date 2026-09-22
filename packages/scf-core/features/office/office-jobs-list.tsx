@@ -324,7 +324,7 @@ export function OfficeJobsList({
             {showHeader && (
               <Stack padding="md" paddingBottom={12} gap={12}>
                 <Row justify="space-between" align="center">
-                  <Stack>
+                  <Stack flex={1} minWidth={0}>
                     <H2>Jobs</H2>
                     <Text style={{ color: colors.text[theme].secondary }}>
                       {filteredAndSortedJobs.length} total jobs

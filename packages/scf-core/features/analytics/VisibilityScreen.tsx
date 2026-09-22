@@ -1,4 +1,4 @@
-import { Card, Row, Spinner, Stack, Text, useThemeContext } from '@scaffald/ui'
+import { Card, MetricBlock, MetricRow, Row, Spinner, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { LinearChart, CircleChart } from '@scaffald/ui/chart'
 import { colors } from '@scaffald/ui/tokens'
 import { useVisibilityTimeline } from '@scf/core/utils/analytics-sdk-hooks'
@@ -62,42 +62,21 @@ export function VisibilityScreen() {
         />
       ) : (
         <>
-          {/* Summary metrics */}
-          <Row gap={12} style={{ flexWrap: 'wrap' }}>
-            <Card variant="outlined" radius="lg" padding="md" style={{ flex: 1, minWidth: 140 }}>
-              <Stack gap={4}>
-                <Text style={{ fontSize: 12, color: colors.text[resolvedTheme].secondary, fontWeight: '500' }}>
-                  Total Impressions
-                </Text>
-                <Text style={{ fontSize: 28, fontWeight: '700', color: colors.text[resolvedTheme].primary }}>
-                  {totals.impressions.toLocaleString()}
-                </Text>
-              </Stack>
-            </Card>
-            <Card variant="outlined" radius="lg" padding="md" style={{ flex: 1, minWidth: 140 }}>
-              <Stack gap={4}>
-                <Text style={{ fontSize: 12, color: colors.text[resolvedTheme].secondary, fontWeight: '500' }}>
-                  Clicks
-                </Text>
-                <Text style={{ fontSize: 28, fontWeight: '700', color: colors.text[resolvedTheme].primary }}>
-                  {totals.clicks.toLocaleString()}
-                </Text>
-              </Stack>
-            </Card>
-            <Card variant="outlined" radius="lg" padding="md" style={{ flex: 1, minWidth: 140 }}>
-              <Stack gap={4} align="center">
-                <Text style={{ fontSize: 12, color: colors.text[resolvedTheme].secondary, fontWeight: '500' }}>
-                  Click-Through Rate
-                </Text>
-                <CircleChart
-                  value={ctr}
-                  size="sm"
-                  color={colors.green[500]}
-                  showLabel
-                />
-              </Stack>
-            </Card>
-          </Row>
+          {/* Summary metrics — the page's own numbers, on the hairline
+              band rather than three bordered cards. */}
+          <MetricRow minColumnWidth={140} bordered>
+            <MetricBlock
+              label="Total impressions"
+              value={totals.impressions.toLocaleString()}
+            />
+            <MetricBlock label="Clicks" value={totals.clicks.toLocaleString()} />
+            <MetricBlock
+              label="Click-through rate"
+              value={
+                <CircleChart value={ctr} size="sm" color={colors.green[500]} showLabel />
+              }
+            />
+          </MetricRow>
 
           {/* Impressions Timeline */}
           <Card variant="outlined" radius="lg" padding="lg">

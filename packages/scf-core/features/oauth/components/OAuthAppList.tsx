@@ -33,7 +33,10 @@ export function OAuthAppList() {
         </Text>
       </Stack>
 
-      <Row gap={8}>
+      {/* Six status filters do not fit one line on a phone. Wrapping beats
+          clipping: a filter scrolled out of frame is one the user does not
+          know exists. */}
+      <Row gap={8} wrap>
         {(['all', 'pending', 'active', 'trusted', 'suspended', 'revoked'] as AppStatus[]).map(
           (status) => (
             <Button
