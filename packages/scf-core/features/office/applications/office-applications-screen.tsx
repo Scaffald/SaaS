@@ -28,6 +28,7 @@ import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
 import { STATUS_MAP } from './hooks/useApplicationStatusChange'
 import { toATSApplication } from './transform'
 import { colors } from '@scaffald/ui/tokens'
+import { useScreenRhythm } from '@scf/core/constants/layout'
 
 /** `lanes` is the default — see ApplicationsLanes for why it beats the board. */
 export type OfficeApplicationsView = 'lanes' | 'kanban' | 'metrics'
@@ -49,6 +50,7 @@ export const OfficeApplicationsScreen = ({
   initialView = 'lanes',
 }: OfficeApplicationsScreenProps = {}) => {
   const { theme } = useThemeContext()
+  const { gutter, verticalPadding } = useScreenRhythm()
   const [viewMode, setViewMode] = useState<OfficeApplicationsView>(initialView)
   const [tipCollapsed, setTipCollapsed] = useState(false)
   const [filters, setFilters] = useState<ApplicationFilterState>(EMPTY_FILTERS)
@@ -124,7 +126,7 @@ export const OfficeApplicationsScreen = ({
       : 'Failed to load applications. Please try again.'
 
   return (
-    <Stack flex={1} padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+    <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} style={{ backgroundColor: colors.bg[theme].default }}>
       {/* Header — the shared ScreenHeader, so this screen reads the same as
           every other one. The count moved out of the subtitle and into the
           toolbar's result slot, which owns the "{n} {noun}" template. */}

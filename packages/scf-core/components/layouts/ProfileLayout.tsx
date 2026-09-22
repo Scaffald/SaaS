@@ -7,10 +7,10 @@ import {
   Breadcrumb,
   ScreenHeader,
   type BreadcrumbItemData,
-  useResponsive,
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { useScreenRhythm } from '../../constants/layout'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { useRouteScreenTitle } from '../../hooks/useRouteScreenTitle'
 import { useScreenHeaderCollapse } from '../../hooks/useScreenHeaderCollapse'
@@ -57,12 +57,11 @@ export const ProfileLayout = ({
   screenKey,
   hideScreenHeader = false,
 }: ProfileLayoutProps) => {
-  const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
   const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
   const hasRightContent = rightContent != null
-  const contentPadding = isDesktop ? '2xl' : 'lg'
-  const columnGap = isDesktop ? 44 : 24
+  const { gutter: contentPadding, verticalPadding, sectionGap, columnGap, rowGap } =
+    useScreenRhythm()
 
   const routeTitle = useRouteScreenTitle()
   const resolvedTitle = screenTitle !== undefined ? screenTitle : routeTitle.title
@@ -81,7 +80,7 @@ export const ProfileLayout = ({
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: bgColor }} showsVerticalScrollIndicator={false}>
-      <Stack gap={24} paddingTop="sm" paddingBottom="lg">
+      <Stack gap={sectionGap} paddingTop={verticalPadding} paddingBottom={verticalPadding}>
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <Row paddingHorizontal={contentPadding}>
@@ -107,7 +106,7 @@ export const ProfileLayout = ({
           <Grid
             columns={{ base: 1, lg: hasRightContent ? GOLDEN_RATIO_TEMPLATE : '1fr' }}
             gap={columnGap}
-            rowGap={isDesktop ? 40 : 28}
+            rowGap={rowGap}
           >
             <Stack>{leftContent}</Stack>
             {rightContent ? <Stack>{rightContent}</Stack> : null}

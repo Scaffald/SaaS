@@ -106,8 +106,11 @@ export function OfficePageLayout<TData>({
   afterContent,
   children,
 }: OfficePageLayoutProps<TData>) {
+  // No gutter here: OfficeLayout supplies it. This used to add its own 8px on
+  // top, which is why Office titles sat 8px to the right of every other
+  // screen's.
   const content = (
-    <Stack flex={1} padding="md" gap={16}>
+    <Stack flex={1} gap={16}>
       {beforeContent}
       {!hideHeader && (
         /* The same header the rest of the app uses, so an Office screen and a

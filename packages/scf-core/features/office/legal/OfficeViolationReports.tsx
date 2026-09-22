@@ -21,6 +21,7 @@ import {
   useUpdateViolationReportMutation,
 } from "@scf/core/utils/legal-agreements-sdk-hooks";
 import type { ViolationReport } from "@scaffald/sdk";
+import { useScreenRhythm } from '@scf/core/constants/layout'
 
 type ViolationReportRow = ViolationReport & Record<string, unknown>;
 const columnHelper = createColumnHelper<ViolationReportRow>();
@@ -57,6 +58,7 @@ const getStatusColor = (status: string, theme: "light" | "dark") => {
 };
 
 export function OfficeViolationReports() {
+  const { gutter, verticalPadding } = useScreenRhythm()
   const { theme } = useThemeContext();
   const reportsQuery = useViolationReports(undefined, { staleTime: 30_000 });
 
@@ -143,7 +145,7 @@ export function OfficeViolationReports() {
   );
 
   return (
-    <Stack flex={1} padding="md" gap={16}>
+    <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
       {/* The shared header — this screen drew its own title as a plain
           <Text>, so it had no heading in the accessibility tree (#860). */}
       <ScreenHeader

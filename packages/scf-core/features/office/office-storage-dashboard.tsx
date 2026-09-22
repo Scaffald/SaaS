@@ -19,6 +19,7 @@ import {
   Text,
   useThemeContext,
 } from "@scaffald/ui";
+import { useScreenRhythm } from '@scf/core/constants/layout'
 
 type StorageTableRow = {
   userId: string;
@@ -56,6 +57,7 @@ const formatPercent = (value: number | null | undefined): string => {
 };
 
 export function OfficeStorageDashboard() {
+  const { gutter, verticalPadding } = useScreenRhythm()
   const { theme } = useThemeContext();
   const [search, setSearch] = useState("");
   const analyticsQuery = useOfficeStorageAnalytics({ staleTime: 60_000 });
@@ -241,7 +243,7 @@ export function OfficeStorageDashboard() {
   const isLoading = analyticsQuery.isLoading;
 
   return (
-    <Stack flex={1} padding="md" gap={16}>
+    <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
       {/* The shared header, so this screen opens the way every other one
           does. It drew its own title as a plain <Text>, which is why it was
           one of the two screens the route sweep found with no heading in the

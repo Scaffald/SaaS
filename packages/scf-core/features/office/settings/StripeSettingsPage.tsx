@@ -22,6 +22,7 @@ import {
   Stack,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { useScreenRhythm } from '@scf/core/constants/layout'
 
 function formatDate(value?: string | null): string | null {
   if (!value) return null
@@ -35,6 +36,7 @@ function formatDate(value?: string | null): string | null {
 
 export function StripeSettingsPage() {
   const { theme } = useThemeContext()
+  const { gutter, verticalPadding } = useScreenRhythm()
   const toast = useToast()
   const queryClient = useQueryClient()
 
@@ -159,7 +161,7 @@ export function StripeSettingsPage() {
   }
 
   return (
-    <Stack flex={1} padding="md" gap={16}>
+    <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
       <Stack gap={8}>
         <Text>Stripe Payments</Text>
         <Paragraph size="md" style={{ color: colors.text[theme].secondary }}>

@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react'
 import { ScrollView } from 'react-native'
-import { Grid, ScreenHeader, Stack, useResponsive, useThemeContext } from '@scaffald/ui'
+import { Grid, ScreenHeader, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 import { AssessmentsTabs } from '../navigation/AssessmentsTabs'
+import { useScreenRhythm } from '../../constants/layout'
 import { useRouteScreenTitle } from '../../hooks/useRouteScreenTitle'
 import { useScreenHeaderCollapse } from '../../hooks/useScreenHeaderCollapse'
 
@@ -36,11 +37,10 @@ export const AssessmentsLayout = ({
   screenActions,
   hideScreenHeader = false,
 }: AssessmentsLayoutProps) => {
-  const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
   const hasRightContent = rightContent != null
-  const contentPadding = isDesktop ? '2xl' : 'lg'
-  const columnGap = isDesktop ? 44 : 24
+  const { gutter: contentPadding, verticalPadding, sectionGap, columnGap, rowGap } =
+    useScreenRhythm()
   const bgColor = colors.bg[theme].emphasis
   const routeTitle = useRouteScreenTitle()
   const resolvedTitle = screenTitle !== undefined ? screenTitle : routeTitle.title
@@ -50,9 +50,9 @@ export const AssessmentsLayout = ({
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: bgColor }} showsVerticalScrollIndicator={false}>
-      <Stack gap={20} paddingTop="sm" paddingBottom="lg">
+      <Stack gap={sectionGap} paddingTop={verticalPadding} paddingBottom={verticalPadding}>
         {showTabs && (
-          <Stack marginHorizontal={28} marginTop={12}>
+          <Stack marginHorizontal={contentPadding} marginTop={0}>
             <AssessmentsTabs />
           </Stack>
         )}
@@ -75,7 +75,7 @@ export const AssessmentsLayout = ({
           <Grid
             columns={{ base: 1, lg: hasRightContent ? GOLDEN_RATIO_TEMPLATE : '1fr' }}
             gap={columnGap}
-            rowGap={isDesktop ? 40 : 28}
+            rowGap={rowGap}
           >
             {leftContent ? <Stack>{leftContent}</Stack> : null}
             {rightContent ? <Stack>{rightContent}</Stack> : null}

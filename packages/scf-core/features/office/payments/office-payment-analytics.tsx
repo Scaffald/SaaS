@@ -16,6 +16,7 @@ import {
   useThemeContext,
 } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
+import { useScreenRhythm } from '@scf/core/constants/layout'
 
 const columnHelper = createColumnHelper<FailedTransactionRow>();
 
@@ -35,6 +36,7 @@ const formatTransactionType = (type: string): string => {
 };
 
 export function OfficePaymentAnalytics() {
+  const { gutter, verticalPadding } = useScreenRhythm()
   const { theme } = useThemeContext();
   const analyticsQuery = usePaymentAnalytics();
 
@@ -144,7 +146,7 @@ export function OfficePaymentAnalytics() {
   const isLoading = analyticsQuery.isLoading;
 
   return (
-    <Stack flex={1} padding="md" gap={16}>
+    <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
       <Row justify="space-between" align="center">
         <Stack flex={1} minWidth={0}>
           <Text>Payment Analytics</Text>
