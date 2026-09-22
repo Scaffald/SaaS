@@ -49,6 +49,7 @@ import personalityAssessmentRouter from "./routes/personality-assessment.ts";
 import feedbackRouter from "./routes/feedback.ts";
 import officeJobsRouter from "./routes/office-jobs.ts";
 import officeOrganizationsRouter from "./routes/office-organizations.ts";
+import officeSettingsRouter from "./routes/office-settings.ts";
 import officeStorageRouter from "./routes/office-storage.ts";
 import officeUsersRouter from "./routes/office-users.ts";
 import officeUniversitiesRouter from "./routes/office-universities.ts";
@@ -181,6 +182,7 @@ app.route("/v1/personality-assessment", personalityAssessmentRouter);
 app.route("/v1/feedback", feedbackRouter); // User feedback (submit, upload-url)
 app.route("/v1/office/jobs", officeJobsRouter); // Office jobs list (office role)
 app.route("/v1/office/organizations", officeOrganizationsRouter); // Office organizations management (office role)
+app.route("/v1/office/settings", officeSettingsRouter); // Office platform settings (office role)
 app.route("/v1/office/storage", officeStorageRouter); // Office storage analytics (office role)
 app.route("/v1/office/users", officeUsersRouter); // Office users management (office role)
 app.route("/v1/office/universities", officeUniversitiesRouter); // University catalog management (office role)
