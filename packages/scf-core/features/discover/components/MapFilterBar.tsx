@@ -1,11 +1,10 @@
 import type { AddressResult } from '@scaffald/ui'
-import { AddressAutocomplete } from '@scaffald/ui'
+import { AddressAutocomplete, ListToolbar } from '@scaffald/ui'
 import { createMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
 import { List } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
 import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { PageHeader } from '@scf/core/components/PageHeader'
 import { FilterDropdown } from './FilterDropdown'
 
 type MapFilterBarProps = {
@@ -46,7 +45,7 @@ function validateMapboxToken(token: string | undefined): { valid: boolean; error
 }
 
 /**
- * Map-specific filter bar that composes PageHeader with AddressAutocomplete search,
+ * Map-specific filter bar that composes ListToolbar with AddressAutocomplete search,
  * filter toggles, and a results count button.
  */
 export const MapFilterBar = ({
@@ -117,35 +116,33 @@ export const MapFilterBar = ({
   }, [tokenValidation, mapboxToken, searchQuery, handleLocationSelect, t])
 
   return (
-    <PageHeader
+    <ListToolbar
       renderSearch={renderSearch}
-      onReset={onReset}
-      style={{ backgroundColor: colors.bg[t].default }}
-    >
-      <FilterDropdown
-        showWorkers={showWorkers}
-        showOrganizations={showOrganizations}
-        showJobs={showJobs}
-        onShowWorkersChange={onShowWorkersChange}
-        onShowOrganizationsChange={onShowOrganizationsChange}
-        onShowJobsChange={onShowJobsChange}
-      />
-
-      <Button
-        size="md"
-        variant="outline"
-        onPress={onResultsPress}
-        color="gray"
-        iconStart={resultsCount > 0 ? undefined : List}
-      >
-        {resultsCount > 0 ? (
-          <Text>
-            {resultsCount} {resultsCount === 1 ? 'result' : 'results'}
-          </Text>
-        ) : (
+      onClearAll={onReset}
+      filterContent={
+        <FilterDropdown
+          showWorkers={showWorkers}
+          showOrganizations={showOrganizations}
+          showJobs={showJobs}
+          onShowWorkersChange={onShowWorkersChange}
+          onShowOrganizationsChange={onShowOrganizationsChange}
+          onShowJobsChange={onShowJobsChange}
+        />
+      }
+      resultCount={resultsCount}
+      resultNoun="result"
+      actions={
+        <Button
+          size="md"
+          variant="outline"
+          onPress={onResultsPress}
+          color="gray"
+          iconStart={resultsCount > 0 ? undefined : List}
+        >
           <Text>Results</Text>
-        )}
-      </Button>
-    </PageHeader>
+        </Button>
+      }
+      style={{ backgroundColor: colors.bg[t].default }}
+    />
   )
 }

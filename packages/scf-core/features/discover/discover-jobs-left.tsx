@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import {
   useExternalJobs,
   useJobsWithSoftSkillsMatch,
@@ -30,6 +31,13 @@ interface DiscoverJobsLeftProps {
   jobSource?: 'all' | 'internal' | 'external'
   minSoftSkillsMatch?: number | null
   sortBy?: 'relevance' | 'match_score'
+  /**
+   * Reports how many jobs survive the filters, so the toolbar can show the
+   * count in the one template the rest of the app uses. The column used to
+   * print its own "n Jobs Available" line, which was a second grammar for
+   * the same number.
+   */
+  onResultCount?: (count: number) => void
 }
 
 type MixedJob = { type: 'external'; job: ExternalJob } | { type: 'internal'; job: InternalJob }
@@ -52,6 +60,7 @@ export function DiscoverJobsLeft({
   jobSource = 'all',
   minSoftSkillsMatch,
   sortBy,
+  onResultCount,
 }: DiscoverJobsLeftProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
@@ -221,6 +230,12 @@ export function DiscoverJobsLeft({
     return true
   })
 
+  // Hand the count up so the toolbar renders it in the shared template.
+  const resultCount = filteredJobs.length
+  useEffect(() => {
+    onResultCount?.(resultCount)
+  }, [onResultCount, resultCount])
+
   const renderContent = () => {
     // Handle soft skills assessment required state
     if (shouldUseSoftSkillsMatch && softSkillsMatchData?.needsSelfAssessment) {
@@ -268,10 +283,6 @@ export function DiscoverJobsLeft({
     return (
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         <Stack gap={12} padding="md">
-          <Text style={{ color: colors.text[t].secondary }}>
-            {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
-          </Text>
-
           {filteredJobs.map((item) => {
             if (item.type === 'external') {
               return <ExternalJobCard key={`external-${item.job.id}`} job={item.job} />

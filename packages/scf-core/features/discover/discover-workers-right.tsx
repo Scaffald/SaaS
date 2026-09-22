@@ -13,7 +13,7 @@ import { colors } from '@scaffald/ui/tokens'
 /**
  * Discover Workers Right Panel — Sidebar widgets
  * Shows insights, top trades distribution, and community hub.
- * All search/filter functionality is handled by the PageHeader.
+ * All search/filter functionality is handled by the ListToolbar.
  */
 export function DiscoverWorkersRight() {
   const { theme } = useThemeContext()

@@ -1,14 +1,14 @@
 import { useEmployers } from '@scf/core/utils/employers-sdk-hooks'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { useMemo, useState } from 'react'
-import { useResponsive } from '@scaffald/ui'
-import { PageHeader } from '@scf/core/components/PageHeader'
-import type { FilterPillConfig } from '@scf/core/components/PageHeader'
+import { useCallback, useMemo, useState } from 'react'
+import { ListToolbar, useResponsive } from '@scaffald/ui'
+import type { FilterPillConfig } from '@scf/core/components/toolbarFilters'
 import { EmployersBottomToolbar } from './components/EmployersBottomToolbar'
 import { DiscoverEmployersLeft } from './discover-employers-left'
 import { DiscoverEmployersRight } from './discover-employers-right'
 import { getAvailableIndustries, getSelectedIndustryCounts } from './utils/employerFilters'
 import type { Employer } from './components/EmployerCard'
+import { useToolbarFilters } from '@scf/core/components/toolbarFilters'
 
 /**
  * Transform API EmployerRecord to component Employer type
@@ -38,7 +38,7 @@ function transformEmployerRecord(record: unknown): Employer | unknown {
  * Discover Employers Screen Component
  *
  * Search/filter state lives here as the single source of truth.
- *   - Desktop+: PageHeader with search + filter pills (header)
+ *   - Desktop+: ListToolbar — search, one Filters & sort flyout, chips
  *   - Mobile: BottomToolbar with Sheets (footer)
  */
 export function DiscoverEmployersScreen() {
@@ -145,16 +145,26 @@ export function DiscoverEmployersScreen() {
   }, [selectedIndustries])
 
   // Header — desktop+ only
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const openFilters = useCallback(() => setFiltersOpen(true), [])
+  const { filterContent, chips, activeFilterCount } = useToolbarFilters(
+    filterPills,
+    openFilters,
+  )
+
   const header = isMobile ? null : (
-    <PageHeader
+    <ListToolbar
       searchValue={searchQuery}
       onSearchChange={setSearchQuery}
       searchPlaceholder="Search employers..."
-      searchVariant="pill"
-      filterPills={filterPills}
+      filterContent={filterContent}
+      activeFilterCount={activeFilterCount}
+      filtersOpen={filtersOpen}
+      onFiltersOpenChange={setFiltersOpen}
+      chips={chips}
+      onClearAll={hasActiveFilters ? handleClearFilters : undefined}
       resultCount={employers.length}
-      resultLabel={employers.length === 1 ? 'Employer' : 'Employers'}
-      onReset={hasActiveFilters ? handleClearFilters : undefined}
+      resultNoun="employer"
     />
   )
 
