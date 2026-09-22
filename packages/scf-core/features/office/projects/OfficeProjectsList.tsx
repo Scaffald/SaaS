@@ -2,7 +2,11 @@ import { ROUTES, buildPath } from "@scf/core/constants/routes";
 import { useProjects } from "@scf/core/utils/projects-sdk-hooks";
 import { useAllOrganizations } from "@scf/core/utils/useAllOrganizations";
 import { OfficeLayout } from "@scf/core/components/layouts";
-import { ResponsiveSelect, useThemeContext } from "@scaffald/ui";
+import {
+  ResponsiveSelect,
+  ScreenHeader,
+  useThemeContext,
+} from "@scaffald/ui";
 import { Eye, EyeOff, Pencil } from "lucide-react-native";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useRouter } from "expo-router";
@@ -10,7 +14,6 @@ import { useMemo, useState } from "react";
 import { Button, H2, Text, Row, Stack } from "@scaffald/ui";
 import { QuickActionsWidget } from "../components/QuickActionsWidget";
 import { colors } from "@scaffald/ui/tokens";
-import { useScreenRhythm } from '@scf/core/constants/layout'
 
 type ProjectStatus = "planning" | "active" | "completed" | "on_hold";
 
@@ -119,7 +122,6 @@ export function OfficeProjectsList({
 }: {
   showHeader?: boolean;
 }) {
-  const { gutter, verticalPadding } = useScreenRhythm()
   const { theme } = useThemeContext();
   const router = useRouter();
   const { data: organizationsData } = useAllOrganizations();
@@ -150,15 +152,19 @@ export function OfficeProjectsList({
   return (
     <OfficeLayout
       showBreadcrumb
+      // No gutter on the inner Stack: this screen wraps itself in
+      // OfficeLayout, which already supplies one. Paying it twice put the
+      // title 32px right of every other Office list.
       leftContent={
-        <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
+        <Stack flex={1} gap={16}>
           {showHeader && (
-            <Stack gap={8}>
-              <H2>Projects</H2>
-              <Text style={{ color: colors.text[theme].secondary }}>
-                Manage construction projects with geographic data
-              </Text>
-            </Stack>
+            /* The shared header, like every other Office list. This drew its
+               own H2 and description, which is a fourth way to open a screen
+               in a section that now has one. */
+            <ScreenHeader
+              title="Projects"
+              tip="Manage construction projects with geographic data"
+            />
           )}
           <Stack gap={16}>
             <Row gap={16} align="center" justify="space-between" wrap>
