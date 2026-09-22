@@ -71,7 +71,7 @@ export function AuthorizedAppsList() {
                     <Stack
                       width={64}
                       height={64}
-                      style={{ borderRadius: 8, overflow: 'hidden', backgroundColor: colors.bg[t].muted }}
+                      style={{ borderRadius: 7, overflow: 'hidden', backgroundColor: colors.bg[t].muted }}
                     >
                       <img
                         src={app.logo_url}

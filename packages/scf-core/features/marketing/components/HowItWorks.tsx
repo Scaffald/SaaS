@@ -50,7 +50,7 @@ function FeatureCard({ feature }: { feature: Feature }) {
         gap={16}
         style={{
           backgroundColor: brand.surface,
-          borderRadius: 16,
+          borderRadius: 7,
           padding: 24,
           borderWidth: 1,
           borderColor: hovered ? brand.teal : brand.border,
@@ -61,7 +61,7 @@ function FeatureCard({ feature }: { feature: Feature }) {
           style={{
             width: 48,
             height: 48,
-            borderRadius: 12,
+            borderRadius: 7,
             backgroundColor: brand.tealWash,
             alignItems: 'center',
             justifyContent: 'center',

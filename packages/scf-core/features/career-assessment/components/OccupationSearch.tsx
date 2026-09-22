@@ -160,7 +160,7 @@ export function OccupationSearch({
             marginTop: 4,
             borderWidth: 1,
             borderColor: 'var(--color-border)',
-            borderRadius: 12,
+            borderRadius: 7,
             backgroundColor: 'var(--color-background)',
             maxHeight: 300,
             overflow: 'scroll',
@@ -198,7 +198,7 @@ export function OccupationSearch({
             marginTop: 4,
             borderWidth: 1,
             borderColor: 'var(--color-border)',
-            borderRadius: 12,
+            borderRadius: 7,
             backgroundColor: 'var(--color-background)',
             zIndex: 1000,
           }}
@@ -220,7 +220,7 @@ export function OccupationSearch({
             marginTop: 4,
             borderWidth: 1,
             borderColor: 'var(--color-border)',
-            borderRadius: 12,
+            borderRadius: 7,
             backgroundColor: 'var(--color-background)',
             zIndex: 1000,
           }}

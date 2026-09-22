@@ -172,7 +172,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                       backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50],
                       paddingHorizontal: 12,
                       paddingVertical: 6,
-                      borderRadius: 20,
+                      borderRadius: 7,
                       borderWidth: 1,
                       borderColor: t === 'dark' ? colors.green[700] : colors.green[200],
                     }}
@@ -189,7 +189,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                   style={{
                     backgroundColor: colors.bg[t].muted,
                     padding: 8,
-                    borderRadius: 12,
+                    borderRadius: 7,
                   }}
                 >
                   <Text style={{ color: colors.text[t].secondary }}>Current Role</Text>
@@ -222,7 +222,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     style={{
                       backgroundColor: colors.bg[t].muted,
                       padding: 8,
-                      borderRadius: 12,
+                      borderRadius: 7,
                     }}
                     align="center"
                   >
@@ -239,7 +239,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     style={{
                       backgroundColor: colors.bg[t].muted,
                       padding: 8,
-                      borderRadius: 12,
+                      borderRadius: 7,
                     }}
                     align="center"
                   >
@@ -256,7 +256,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     style={{
                       backgroundColor: colors.bg[t].muted,
                       padding: 8,
-                      borderRadius: 12,
+                      borderRadius: 7,
                     }}
                     align="center"
                   >
@@ -289,7 +289,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                             backgroundColor: colors.bg[t].muted,
                             paddingHorizontal: 10,
                             paddingVertical: 6,
-                            borderRadius: 8,
+                            borderRadius: 7,
                             borderWidth: 1,
                             borderColor: skill.verified
                               ? (t === 'dark' ? colors.green[700] : colors.green[200])

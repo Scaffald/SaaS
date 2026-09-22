@@ -123,7 +123,7 @@ function RequestStatusBadge({ status }: { status: string }) {
       style={{
         paddingHorizontal: 8,
         paddingVertical: 2,
-        borderRadius: 10,
+        borderRadius: 7,
         backgroundColor: config.bg,
       }}
     >

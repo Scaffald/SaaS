@@ -92,7 +92,7 @@ function FeatureCard({
         accessibilityState={{ selected }}
         style={{
           padding: 24,
-          borderRadius: 16,
+          borderRadius: 7,
           borderWidth: 1,
           height: '100%',
           backgroundColor: selected ? brand.deep : brand.surfaceAlt,
@@ -172,7 +172,7 @@ export function Benefits() {
               `aria-required-attr`, #774). */}
           <Row
             gap={4}
-            style={{ backgroundColor: brand.surfaceSunk, borderRadius: 12, padding: 4 }}
+            style={{ backgroundColor: brand.surfaceSunk, borderRadius: 7, padding: 4 }}
             role="tablist"
             aria-label="Audience"
           >
@@ -186,7 +186,7 @@ export function Benefits() {
                 style={{
                   paddingHorizontal: 24,
                   paddingVertical: 10,
-                  borderRadius: 8,
+                  borderRadius: 7,
                   backgroundColor: tab === value ? brand.deep : 'transparent',
                 }}
               >
@@ -214,7 +214,7 @@ export function Benefits() {
           gap={32}
           style={{
             backgroundColor: brand.surfaceAlt,
-            borderRadius: 16,
+            borderRadius: 7,
             borderWidth: 1,
             borderColor: brand.border,
             padding: 32,

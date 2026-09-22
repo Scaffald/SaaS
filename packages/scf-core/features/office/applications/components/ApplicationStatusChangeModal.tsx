@@ -345,7 +345,7 @@ export const ApplicationStatusChangeModal = ({
                       <Text style={{ flex: 1, color: colors.text[theme].secondary }}>
                         I confirm this hire and agree it is subject to the Scaffald{' '}
                         <Text
-                          onPress={() => router.push(ROUTES.AUTH.TERMS.path)}
+                          onPress={() => router.push(ROUTES.LEGAL.TERMS.path)}
                           style={{
                             color: colors.text[theme].emphasis,
                             textDecorationLine: 'underline',

@@ -333,7 +333,7 @@ export function ProfileExperienceLeft() {
                 padding: 8,
                 borderWidth: 1,
                 borderColor: "#e2e8f0",
-                borderRadius: 16,
+                borderRadius: 7,
               }}
             >
               <Row justify="space-between" align="center">
@@ -582,7 +582,7 @@ export function ProfileExperienceLeft() {
                 saveBanner.type === "success" ? "#86efac" : "#fca5a5",
               backgroundColor:
                 saveBanner.type === "success" ? "#f0fdf4" : "#fef2f2",
-              borderRadius: 16,
+              borderRadius: 7,
             }}
           >
             <Row gap={8} align="center">

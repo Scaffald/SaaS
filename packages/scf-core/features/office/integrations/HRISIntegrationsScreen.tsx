@@ -122,12 +122,12 @@ function ProviderCard({ provider, onConnect }: { provider: HRISProvider; onConne
       padding="md"
       style={{
         backgroundColor: colors.bg[theme].subtle,
-        borderRadius: 10,
+        borderRadius: 7,
         borderWidth: 1,
         borderColor: provider.is_connected ? colors.border[theme].active : colors.border[theme].default,
       }}
     >
-      <Stack style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: colors.bg[theme].default, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border[theme].default }}>
+      <Stack style={{ width: 40, height: 40, borderRadius: 7, backgroundColor: colors.bg[theme].default, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border[theme].default }}>
         <Database size={20} color={colors.icon[theme].default} />
       </Stack>
       <Stack style={{ flex: 1 }} gap={2}>
@@ -159,7 +159,7 @@ function SyncLogRow({ log }: { log: SyncLog }) {
   const startDate = new Date(log.started_at)
 
   return (
-    <Row gap={12} align="center" padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 8 }}>
+    <Row gap={12} align="center" padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 7 }}>
       <Stack style={{ width: 80 }}>
         <Text style={{ color: colors.text[theme].primary, fontSize: 13 }}>
           {startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -307,7 +307,7 @@ export function HRISIntegrationsScreen() {
                     </Row>
                     <Separator />
                     {DEFAULT_FIELD_MAPPINGS.map((mapping, idx) => (
-                      <Row key={idx} gap={12} align="center" padding="sm" style={{ backgroundColor: idx % 2 === 0 ? colors.bg[theme].subtle : 'transparent', borderRadius: 6 }}>
+                      <Row key={idx} gap={12} align="center" padding="sm" style={{ backgroundColor: idx % 2 === 0 ? colors.bg[theme].subtle : 'transparent', borderRadius: 4 }}>
                         <Text style={{ flex: 1, color: colors.text[theme].primary, fontSize: 13 }}>{mapping.scaffald_field}</Text>
                         <Stack style={{ width: 80, alignItems: 'center' }}>
                           <DirectionBadge direction={mapping.direction} />

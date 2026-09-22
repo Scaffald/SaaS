@@ -84,7 +84,7 @@ function WorkerGrowthWidget({ theme }: { theme: 'light' | 'dark' }) {
             height: 48,
             width: '100%',
             marginTop: 4,
-            borderRadius: 8,
+            borderRadius: 7,
             backgroundColor: theme === 'dark'
               ? 'rgba(79, 100, 91, 0.1)'
               : 'rgba(79, 100, 91, 0.05)',
@@ -205,7 +205,7 @@ function CommunityHubWidget({ theme }: { theme: 'light' | 'dark' }) {
               ? colors.bg.dark.subtle
               : colors.bg.light.subtle,
             padding: 14,
-            borderRadius: 12,
+            borderRadius: 7,
           }}
         >
           <Text

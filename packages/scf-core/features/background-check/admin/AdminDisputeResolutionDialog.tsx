@@ -119,7 +119,7 @@ export function AdminDisputeResolutionDialog({
               <Stack gap={12}>
                 <Stack
                   gap={8}
-                  style={{ padding: 8, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 16 }}
+                  style={{ padding: 8, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 7 }}
                 >
                   <Row gap={8} align="center">
                     <AlertTriangle size={18} color="#b45309" />

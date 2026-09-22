@@ -47,7 +47,7 @@ export function MessageTemplateSelector({
           padding="sm"
           style={{
             backgroundColor: colors.bg[theme].subtle,
-            borderRadius: 8,
+            borderRadius: 7,
             borderWidth: 1,
             borderColor: colors.border[theme].default,
           }}

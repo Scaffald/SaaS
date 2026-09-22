@@ -173,7 +173,7 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
               style={{
                 paddingHorizontal: 10,
                 paddingVertical: 4,
-                borderRadius: 12,
+                borderRadius: 7,
                 backgroundColor: statusStyle.bg,
               }}
             >
@@ -234,7 +234,7 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
                 style={{
                   paddingHorizontal: 8,
                   paddingVertical: 4,
-                  borderRadius: 8,
+                  borderRadius: 7,
                   backgroundColor: colors.bg[theme].subtle,
                 }}
               >
@@ -298,7 +298,7 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
                   style={{
                     paddingVertical: 10,
                     paddingHorizontal: 12,
-                    borderRadius: 8,
+                    borderRadius: 7,
                     backgroundColor: isSelected ? colors.bg[theme].selected : colors.bg[theme].subtle,
                     borderWidth: isSelected ? 1 : 0,
                     borderColor: colors.border[theme].active,
@@ -343,7 +343,7 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
                           style={{
                             paddingHorizontal: 6,
                             paddingVertical: 1,
-                            borderRadius: 6,
+                            borderRadius: 4,
                             backgroundColor: colors.bg[theme].muted,
                           }}
                         >
@@ -544,7 +544,7 @@ export function ProjectHiringScreen() {
                 style={{
                   paddingHorizontal: 14,
                   paddingVertical: 6,
-                  borderRadius: 16,
+                  borderRadius: 7,
                   backgroundColor:
                     statusFilter === s ? colors.fg[theme].active : colors.bg[theme].subtle,
                 }}

@@ -94,7 +94,7 @@ function WorkerPreview({ pinId, visible }: { pinId: string; visible: boolean }) 
             style={{
               width: 48,
               height: 48,
-              borderRadius: 12,
+              borderRadius: 7,
               overflow: 'hidden',
               backgroundColor: colors.gray[t === 'dark' ? 700 : 100],
             }}
@@ -332,7 +332,7 @@ export function ProfileHoverCard({
           backgroundColor: colors.bg[t].subtle,
           borderWidth: 1,
           borderColor: colors.border[t].default,
-          borderRadius: 16,
+          borderRadius: 7,
           padding: 16,
           minWidth: 280,
           maxWidth: 320,

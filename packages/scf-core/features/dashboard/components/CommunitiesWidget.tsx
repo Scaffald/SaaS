@@ -177,7 +177,7 @@ function PostPreview({
           style={{
             width: '100%',
             height: 160,
-            borderRadius: 10,
+            borderRadius: 7,
             marginTop: 10,
             backgroundColor: colors.bg[theme].muted,
           }}

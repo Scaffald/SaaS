@@ -108,7 +108,7 @@ export function CooldownStep({
         padding="xl"
         style={{
           backgroundColor: colors.bg[theme].muted,
-          borderRadius: 16,
+          borderRadius: 7,
           borderWidth: 1,
           borderColor: colors.border[theme].subtle,
         }}
@@ -141,7 +141,7 @@ export function CooldownStep({
             gap={16}
             padding="md"
             style={{
-              borderRadius: 16,
+              borderRadius: 7,
               borderWidth: 1,
               borderColor: colors.border[theme].default,
             }}

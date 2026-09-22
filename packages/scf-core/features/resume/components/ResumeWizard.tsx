@@ -619,7 +619,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       {hasExistingProfileData ? (
         <Stack
           gap={8}
-          style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100], borderRadius: 16 }}
+          style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100], borderRadius: 7 }}
           padding="sm"
         >
           <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
@@ -635,7 +635,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       {mergedErrors && mergedErrors.length > 0 && (
         <Stack
           gap={8}
-          style={{ backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[100], borderRadius: 16 }}
+          style={{ backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[100], borderRadius: 7 }}
           padding="sm"
         >
           <Text style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[700] }}>
@@ -1018,7 +1018,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         />
         <Stack
           gap={8}
-          style={{ backgroundColor: t === 'dark' ? colors.green[900] : colors.green[100], borderRadius: 16 }}
+          style={{ backgroundColor: t === 'dark' ? colors.green[900] : colors.green[100], borderRadius: 7 }}
           padding="sm"
         >
           <Row gap={8} align="center">
@@ -1041,7 +1041,7 @@ function EmptyState({ message }: { message: string }) {
   return (
     <Stack
       gap={8}
-      style={{ backgroundColor: t === 'dark' ? colors.gray[800] : colors.gray[100], borderRadius: 16 }}
+      style={{ backgroundColor: t === 'dark' ? colors.gray[800] : colors.gray[100], borderRadius: 7 }}
       padding="sm"
     >
       <Text style={{ color: colors.text[t].secondary }}>{message}</Text>
@@ -1072,7 +1072,7 @@ function SelectableCard({
         borderWidth: 1,
         borderColor: checked ? colors.blue[500] : colors.border[t].default,
         backgroundColor: checked ? (t === 'dark' ? colors.blue[900] : colors.blue[100]) : colors.bg[t].default,
-        borderRadius: 16,
+        borderRadius: 7,
       }}
     >
       <Row gap={8} align="center">
@@ -1178,7 +1178,7 @@ function MergeStrategySelector({
   return (
     <Stack
       gap={8}
-      style={{ backgroundColor: t === 'dark' ? colors.gray[800] : colors.gray[50], borderRadius: 16 }}
+      style={{ backgroundColor: t === 'dark' ? colors.gray[800] : colors.gray[50], borderRadius: 7 }}
       padding="sm"
     >
       <Text>Merge strategy</Text>

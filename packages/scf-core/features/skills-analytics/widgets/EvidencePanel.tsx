@@ -173,7 +173,7 @@ export function EvidencePanel({
                 style={{
                   paddingVertical: 8,
                   paddingHorizontal: 8,
-                  borderRadius: 6,
+                  borderRadius: 4,
                   backgroundColor: colors.bg[theme].subtle,
                 }}
               >

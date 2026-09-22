@@ -8,6 +8,7 @@ import { Platform } from 'react-native'
 import type { ReactNode } from 'react'
 import { useCallback } from 'react'
 import { supabase } from '@scf/core/utils/supabase/client'
+import { ROUTES } from '@scf/core/constants/routes'
 
 const STORAGE_KEY = 'scf-cookie-consent'
 const POLICY_VERSION = '1'
@@ -73,7 +74,7 @@ export const CookieConsentProvider = ({ children }: { children: ReactNode }) => 
         gates on `isReady`, which is false until its storage effect runs, so
         the server and the client's first render emit the same markup.
       */}
-      <CookieConsentBanner privacyPolicyUrl="/auth/privacy" />
+      <CookieConsentBanner privacyPolicyUrl={ROUTES.LEGAL.PRIVACY.path} />
       <CookiePreferencesDialog />
     </BeyondCookieConsentProvider>
   )

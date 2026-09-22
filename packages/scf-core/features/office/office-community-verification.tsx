@@ -190,7 +190,7 @@ function VerificationCard({
           style={{
             padding: 12,
             backgroundColor: colors.bg[t].muted,
-            borderRadius: 8,
+            borderRadius: 7,
           }}
         >
           <Text style={{ fontWeight: '500', fontSize: 13 }}>License Information</Text>

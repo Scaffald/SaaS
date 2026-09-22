@@ -114,7 +114,7 @@ export function RowActionOverlay<TData>({
         zIndex: 1000,
         borderWidth: 1,
         borderColor: colors.border[theme].default,
-        borderRadius: 16,
+        borderRadius: 7,
         padding: 8,
         backgroundColor: colors.bg[theme].subtle,
         ...(typeof window !== "undefined"

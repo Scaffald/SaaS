@@ -202,7 +202,7 @@ function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; va
       style={{
         borderWidth: 1,
         borderColor: colors.border[theme].default,
-        borderRadius: 8,
+        borderRadius: 7,
         paddingHorizontal: 8,
         paddingVertical: 4,
         backgroundColor: colors.bg[theme].muted,

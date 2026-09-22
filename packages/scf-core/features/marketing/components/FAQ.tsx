@@ -71,7 +71,7 @@ export function FAQ() {
           style={{
             backgroundColor: brand.surfaceSunk,
             padding: 4,
-            borderRadius: 12,
+            borderRadius: 7,
             marginBottom: 32,
           }}
         >
@@ -84,7 +84,7 @@ export function FAQ() {
               style={{
                 flex: 1,
                 paddingVertical: 10,
-                borderRadius: 8,
+                borderRadius: 7,
                 alignItems: 'center',
                 backgroundColor: tab === name ? brand.surface : 'transparent',
               }}
@@ -99,7 +99,7 @@ export function FAQ() {
         <View
           style={{
             backgroundColor: brand.surface,
-            borderRadius: 16,
+            borderRadius: 7,
             borderWidth: 1,
             borderColor: brand.border,
             paddingHorizontal: 24,

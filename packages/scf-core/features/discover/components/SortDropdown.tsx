@@ -52,7 +52,7 @@ export const SortDropdown = ({ value, onChange, options }: SortDropdownProps) =>
               justifyContent: 'space-between',
               paddingVertical: 8,
               paddingHorizontal: 8,
-              borderRadius: 6,
+              borderRadius: 4,
               backgroundColor: isSelected ? colors.bg[t].muted : 'transparent',
               opacity: option.disabled ? 0.5 : 1,
             }}

@@ -332,7 +332,7 @@ export const LoginScreen = () => {
                     fontSize: 12,
                     lineHeight: 18,
                   }}
-                  onPress={() => router.push(ROUTES.AUTH.TERMS.path)}
+                  onPress={() => router.push(ROUTES.LEGAL.TERMS.path)}
                 >
                   {t('auth.login.legalNotice.terms')}
                 </Text>
@@ -344,7 +344,7 @@ export const LoginScreen = () => {
                     fontSize: 12,
                     lineHeight: 18,
                   }}
-                  onPress={() => router.push(ROUTES.AUTH.PRIVACY.path)}
+                  onPress={() => router.push(ROUTES.LEGAL.PRIVACY.path)}
                 >
                   {t('auth.login.legalNotice.privacy')}
                 </Text>

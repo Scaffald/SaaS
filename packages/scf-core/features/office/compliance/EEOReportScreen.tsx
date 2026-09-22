@@ -162,7 +162,7 @@ function AdverseImpactBadge({ ratio }: { ratio: number | null }) {
       style={{
         paddingHorizontal: 8,
         paddingVertical: 2,
-        borderRadius: 10,
+        borderRadius: 7,
         backgroundColor: isFlagged
           ? theme === 'dark'
             ? colors.error[900]
@@ -337,7 +337,7 @@ export function EEOReportScreen() {
                 style={{
                   paddingHorizontal: 16,
                   paddingVertical: 8,
-                  borderRadius: 20,
+                  borderRadius: 7,
                   backgroundColor:
                     period === p.value ? colors.fg[theme].active : colors.bg[theme].subtle,
                 }}
@@ -403,7 +403,7 @@ export function EEOReportScreen() {
                   <Card key={group.jobGroup} variant="glass" padding="md">
                     <Stack gap={12}>
                       <Row justify="space-between" align="center">
-                        <Stack>
+                        <Stack flex={1} minWidth={0}>
                           <Text
                             style={{
                               fontWeight: '600',
@@ -837,7 +837,7 @@ export function EEOReportScreen() {
                               </Row>
                               <Row
                                 gap={1}
-                                style={{ height: 24, borderRadius: 6, overflow: 'hidden' }}
+                                style={{ height: 24, borderRadius: 4, overflow: 'hidden' }}
                               >
                                 {group.categories.map((cat) => {
                                   const value = cat[key]

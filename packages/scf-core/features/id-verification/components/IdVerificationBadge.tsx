@@ -82,7 +82,7 @@ export function IdVerificationBadge({
       gap={6}
       paddingHorizontal={size === 'sm' ? 8 : 12}
       paddingVertical={size === 'sm' ? 4 : 8}
-      style={{ borderRadius: 10 }}
+      style={{ borderRadius: 7 }}
       backgroundColor={muted ? mutedBackground : copy.background}
       borderWidth={1}
       borderColor={muted ? mutedBorder : copy.border}

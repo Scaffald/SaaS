@@ -253,7 +253,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
             style={{
               height: 10,
               backgroundColor: colors.bg[t].muted,
-              borderRadius: 16,
+              borderRadius: 7,
               overflow: "hidden",
             }}
           >
@@ -396,7 +396,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                   style={{
                     height: 8,
                     backgroundColor: colors.bg[t].muted,
-                    borderRadius: 16,
+                    borderRadius: 7,
                     overflow: "hidden",
                   }}
                 >

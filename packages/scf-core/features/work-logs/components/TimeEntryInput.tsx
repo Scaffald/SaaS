@@ -43,7 +43,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
   return (
     <Stack
       borderWidth={1}
-      style={{ borderColor: colors.border[theme].default, borderRadius: 16, padding: 8 }}
+      style={{ borderColor: colors.border[theme].default, borderRadius: 7, padding: 8 }}
       gap={8}
     >
       <Row gap={12} align="center">

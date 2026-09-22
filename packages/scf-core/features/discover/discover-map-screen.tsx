@@ -964,7 +964,7 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
         left: 12,
         right: 12,
         backgroundColor: bgColor,
-        borderRadius: 24,
+        borderRadius: 7,
         padding: 4,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: -2 },
@@ -985,7 +985,7 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
             containerStyle={{
               flex: 1,
               backgroundColor: activeView === 'map' ? activeBg : 'transparent',
-              borderRadius: 20,
+              borderRadius: 7,
               paddingHorizontal: 16,
               paddingVertical: 12,
             }}
@@ -1001,7 +1001,7 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
             containerStyle={{
               flex: 1,
               backgroundColor: activeView === 'list' ? activeBg : 'transparent',
-              borderRadius: 20,
+              borderRadius: 7,
               paddingHorizontal: 16,
               paddingVertical: 12,
             }}
@@ -1108,7 +1108,7 @@ const MapLoadingOverlay = ({ theme }: { theme: 'light' | 'dark' }) => (
       top: 12,
       right: 12,
       backgroundColor: theme === 'dark' ? 'rgba(30, 28, 25, 0.85)' : 'rgba(255, 255, 255, 0.85)',
-      borderRadius: 12,
+      borderRadius: 7,
       paddingHorizontal: 12,
       paddingVertical: 8,
       zIndex: 20,
@@ -1159,7 +1159,7 @@ const SearchLocationLabel = ({ label, theme }: { label: string; theme: 'light' |
       top: 12,
       left: 60,
       backgroundColor: theme === 'dark' ? 'rgba(30, 28, 25, 0.85)' : 'rgba(255, 255, 255, 0.85)',
-      borderRadius: 20,
+      borderRadius: 7,
       paddingHorizontal: 14,
       paddingVertical: 6,
       zIndex: 20,

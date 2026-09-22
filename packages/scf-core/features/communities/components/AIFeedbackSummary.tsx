@@ -12,7 +12,7 @@ export function AIFeedbackSummary({ summary }: Props) {
       gap={8}
       style={{
         padding: 16,
-        borderRadius: 12,
+        borderRadius: 7,
         backgroundColor: theme === 'dark' ? colors.info[900] : colors.info[50],
         borderWidth: 1,
         borderColor: colors.info[200],

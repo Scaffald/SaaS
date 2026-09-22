@@ -137,12 +137,12 @@ function ProviderCard({ provider, onConfigure }: { provider: BGCheckProvider; on
       padding="md"
       style={{
         backgroundColor: colors.bg[theme].subtle,
-        borderRadius: 10,
+        borderRadius: 7,
         borderWidth: 1,
         borderColor: provider.is_connected ? colors.border[theme].active : colors.border[theme].default,
       }}
     >
-      <Stack style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: colors.bg[theme].default, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border[theme].default }}>
+      <Stack style={{ width: 40, height: 40, borderRadius: 7, backgroundColor: colors.bg[theme].default, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border[theme].default }}>
         <ShieldCheck size={20} color={provider.is_connected ? colors.fg[theme].active : colors.icon[theme].subtle} />
       </Stack>
       <Stack style={{ flex: 1 }} gap={2}>
@@ -174,7 +174,7 @@ function WebhookEventRow({ event }: { event: WebhookEvent }) {
   const date = new Date(event.received_at)
 
   return (
-    <Row gap={12} align="center" padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 8 }}>
+    <Row gap={12} align="center" padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 7 }}>
       <Stack style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: event.processed ? `${colors.success[500]}20` : `${colors.warning[500]}20`, alignItems: 'center', justifyContent: 'center' }}>
         {event.processed ? <Check size={12} color={colors.success[500]} /> : <Clock size={12} color={colors.warning[500]} />}
       </Stack>
@@ -307,7 +307,7 @@ export function BackgroundCheckProvidersScreen() {
                 {/* Webhook URL */}
                 <DashboardWidget>
                   <DashboardWidgetHeader title="Webhook Configuration" />
-                  <Row gap={8} align="center" padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 8 }}>
+                  <Row gap={8} align="center" padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 7 }}>
                     <Webhook size={16} color={colors.icon[theme].default} />
                     <Text style={{ flex: 1, color: colors.text[theme].primary, fontSize: 12, fontFamily: 'monospace' }}>
                       https://api.scaffald.com/webhooks/checkr/abc123

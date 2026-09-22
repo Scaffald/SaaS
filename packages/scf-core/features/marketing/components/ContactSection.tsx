@@ -24,7 +24,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const baseFieldStyle = {
   backgroundColor: 'rgba(255,255,255,0.1)',
   borderWidth: 1,
-  borderRadius: 8,
+  borderRadius: 7,
   paddingHorizontal: 16,
   paddingVertical: 12,
   color: '#ffffff',
@@ -178,7 +178,7 @@ export function ContactSection({ headingLevel = 2 }: ContactSectionProps) {
               backgroundColor: 'rgba(29,114,130,0.3)',
               borderWidth: 1,
               borderColor: 'rgba(63,181,199,0.4)',
-              borderRadius: 16,
+              borderRadius: 7,
               padding: 32,
             }}
           >
@@ -195,7 +195,7 @@ export function ContactSection({ headingLevel = 2 }: ContactSectionProps) {
               backgroundColor: 'rgba(255,255,255,0.05)',
               borderWidth: 1,
               borderColor: 'rgba(255,255,255,0.1)',
-              borderRadius: 16,
+              borderRadius: 7,
               padding: 32,
             }}
           >
@@ -342,7 +342,7 @@ export function ContactSection({ headingLevel = 2 }: ContactSectionProps) {
                 style={{
                   backgroundColor: hovered ? brand.tealHover : brand.teal,
                   paddingVertical: 14,
-                  borderRadius: 12,
+                  borderRadius: 7,
                   alignItems: 'center',
                 }}
               >

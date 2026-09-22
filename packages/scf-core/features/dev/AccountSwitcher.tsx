@@ -85,7 +85,7 @@ export function AccountSwitcher() {
           style={{
             marginBottom: 8,
             backgroundColor: colors.bg[theme].default,
-            borderRadius: 12,
+            borderRadius: 7,
             borderWidth: 1,
             borderColor: colors.border[theme].default,
             width: 280,
