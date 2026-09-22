@@ -7,11 +7,12 @@ import type { TableRowData } from "@scaffald/ui";
 import {
   Button,
   Card,
+  Row,
+  ScreenHeader,
   Spinner,
+  Stack,
   Table,
   Text,
-  Row,
-  Stack,
   useThemeContext,
 } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
@@ -143,23 +144,23 @@ export function OfficeViolationReports() {
 
   return (
     <Stack flex={1} padding="md" gap={16}>
-      <Row justify="space-between" align="center">
-        <Stack flex={1} minWidth={0}>
-          <Text>Anti-Circumvention Violation Reports</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>
-            Review and manage reports of off-platform hires and fee avoidance.
-          </Text>
-        </Stack>
-        <Button
-          size="sm"
-          variant="outline"
-          iconStart={RefreshCw}
-          onPress={() => reportsQuery.refetch()}
-          disabled={reportsQuery.isRefetching}
-        >
-          Refresh
-        </Button>
-      </Row>
+      {/* The shared header — this screen drew its own title as a plain
+          <Text>, so it had no heading in the accessibility tree (#860). */}
+      <ScreenHeader
+        title="Anti-Circumvention Violation Reports"
+        tip="Review and manage reports of off-platform hires and fee avoidance."
+        actions={
+          <Button
+            size="sm"
+            variant="outline"
+            iconStart={RefreshCw}
+            onPress={() => reportsQuery.refetch()}
+            disabled={reportsQuery.isRefetching}
+          >
+            Refresh
+          </Button>
+        }
+      />
 
       {reportsQuery.isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>
