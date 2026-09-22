@@ -54,7 +54,7 @@ export function ReviewStepCategoryTags({
                   backgroundColor: isSelected ? colors.green[100] : colors.gray[100],
                   borderWidth: 2,
                   borderColor: isSelected ? colors.green[300] : colors.gray[200],
-                  borderRadius: 12,
+                  borderRadius: 7,
                   gap: 8,
                   alignItems: 'center',
                 }}
@@ -88,7 +88,7 @@ export function ReviewStepCategoryTags({
                   backgroundColor: isSelected ? colors.error[50] : colors.gray[100],
                   borderWidth: 2,
                   borderColor: isSelected ? colors.error[300] : colors.gray[200],
-                  borderRadius: 12,
+                  borderRadius: 7,
                   gap: 8,
                   alignItems: 'center',
                 }}

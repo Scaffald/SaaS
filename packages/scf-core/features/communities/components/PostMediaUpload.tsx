@@ -227,7 +227,7 @@ export function PostMediaUpload({ value, onChange, disabled }: PostMediaUploadPr
                 style={{
                   width: 96,
                   height: 96,
-                  borderRadius: 8,
+                  borderRadius: 7,
                   borderWidth: 1,
                   borderColor: colors.border[t].default,
                 }}
@@ -262,7 +262,7 @@ export function PostMediaUpload({ value, onChange, disabled }: PostMediaUploadPr
           justify="center"
           style={{
             height: 120,
-            borderRadius: 12,
+            borderRadius: 7,
             borderWidth: 2,
             borderStyle: isDragActive ? 'solid' : 'dashed',
             borderColor: isDragActive
@@ -317,7 +317,7 @@ export function PostMediaUpload({ value, onChange, disabled }: PostMediaUploadPr
           align="center"
           style={{
             padding: 8,
-            borderRadius: 8,
+            borderRadius: 7,
             backgroundColor: t === 'dark' ? colors.error[900] : colors.error[50],
           }}
         >

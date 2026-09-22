@@ -138,7 +138,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
       <Stack
         gap={2}
         style={{
-          borderRadius: 16,
+          borderRadius: 7,
           backgroundColor: colors.bg[theme].subtle,
           borderWidth: 1,
           borderColor: colors.border[theme].subtle,
@@ -174,7 +174,7 @@ function DrawerRow({ icon: Icon, label, onPress, tone = 'default' }: DrawerRowPr
       style={({ pressed }) => ({
         opacity: pressed ? 0.7 : 1,
         backgroundColor: pressed ? colors.bg[theme].muted : 'transparent',
-        borderRadius: 12,
+        borderRadius: 7,
       })}
     >
       <Row align="center" gap={12} style={{ paddingHorizontal: 8, paddingVertical: 12 }}>

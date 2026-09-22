@@ -231,7 +231,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
               padding="sm"
               style={{
                 backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50],
-                borderRadius: 16,
+                borderRadius: 7,
                 borderWidth: 1,
                 borderColor: t === 'dark' ? colors.green[700] : colors.green[300],
               }}
@@ -308,7 +308,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
           {/* Benefits Summary */}
           {job.benefits_summary && (
-            <Stack gap={8} padding="sm" style={{ backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50], borderRadius: 16 }}>
+            <Stack gap={8} padding="sm" style={{ backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50], borderRadius: 7 }}>
               <Row gap={8} align="center">
                 <Heart size={20} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
                 <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>Benefits</Text>
@@ -443,7 +443,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           {intJob.application_deadline && (
             <>
               <Separator />
-              <Stack gap={8} padding="sm" style={{ backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[50], borderRadius: 16 }}>
+              <Stack gap={8} padding="sm" style={{ backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[50], borderRadius: 7 }}>
                 <Row gap={8} align="center">
                   <Calendar size={20} color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]} />
                   <Text style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[700] }}>Application Deadline</Text>
@@ -551,7 +551,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     padding="md"
                     style={{
                       backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50],
-                      borderRadius: 16,
+                      borderRadius: 7,
                       borderWidth: 1,
                       borderColor: t === 'dark' ? colors.blue[700] : colors.blue[300],
                     }}
@@ -591,7 +591,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                         padding="md"
                         style={{
                           backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[50],
-                          borderRadius: 16,
+                          borderRadius: 7,
                           borderWidth: 1,
                           borderColor: t === 'dark' ? colors.yellow[700] : colors.yellow[300],
                         }}
@@ -715,7 +715,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           )}
 
           {/* External Link Notice */}
-          <Stack gap={8} padding="sm" style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], borderRadius: 16 }}>
+          <Stack gap={8} padding="sm" style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], borderRadius: 7 }}>
             <Row gap={8} align="center">
               <ExternalLink size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
               <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>External Application</Text>

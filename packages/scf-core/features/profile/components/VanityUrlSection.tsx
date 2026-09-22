@@ -369,7 +369,7 @@ export function VanityUrlSection() {
             gap={8}
             align="center"
             padding={8}
-            style={{ backgroundColor: '#fefce8', borderRadius: 8, borderWidth: 1, borderColor: '#fde047' }}
+            style={{ backgroundColor: '#fefce8', borderRadius: 7, borderWidth: 1, borderColor: '#fde047' }}
           >
             <Clock size={16} color="#f97316" />
             <Stack style={{ flex: 1 }} gap={4}>

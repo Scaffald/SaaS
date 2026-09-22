@@ -51,7 +51,7 @@ export function InquiryHelpSidebar() {
         </Stack>
 
         {/* Negotiation Help */}
-        <Stack gap={8} padding="sm" style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], borderRadius: 12 }}>
+        <Stack gap={8} padding="sm" style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], borderRadius: 7 }}>
           <Row align="center" gap={8}>
             <Info size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
             <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>About Negotiation</Text>

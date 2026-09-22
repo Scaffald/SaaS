@@ -586,7 +586,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                   {imageUrl && (
                     <Image
                       source={{ uri: imageUrl }}
-                      style={{ width: "100%", height: 200, borderRadius: 12 }}
+                      style={{ width: "100%", height: 200, borderRadius: 7 }}
                       resizeMode="cover"
                     />
                   )}

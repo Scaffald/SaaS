@@ -320,7 +320,7 @@ export function ProfileCertificationsRight() {
                                 backgroundColor: pal.pillBg,
                                 paddingHorizontal: 8,
                                 paddingVertical: 2,
-                                borderRadius: 8,
+                                borderRadius: 7,
                               }}
                             >
                               Top Level
@@ -414,7 +414,7 @@ export function ProfileCertificationsRight() {
                                     : colors.success[900],
                                 paddingHorizontal: 8,
                                 paddingVertical: 2,
-                                borderRadius: 8,
+                                borderRadius: 7,
                               }}
                             >
                               Category
@@ -527,7 +527,7 @@ export function ProfileCertificationsRight() {
                                       : colors.purple[900],
                                   paddingHorizontal: 8,
                                   paddingVertical: 2,
-                                  borderRadius: 8,
+                                  borderRadius: 7,
                                 }}
                               >
                                 Certification

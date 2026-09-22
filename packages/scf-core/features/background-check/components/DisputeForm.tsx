@@ -91,7 +91,7 @@ export function DisputeForm({
               paddingHorizontal: 12,
               paddingVertical: 8,
               gap: 8,
-              borderRadius: 16,
+              borderRadius: 7,
             }}
           >
             <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>Dispute already in review</Text>

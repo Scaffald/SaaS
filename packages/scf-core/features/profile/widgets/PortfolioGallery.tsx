@@ -80,7 +80,7 @@ export function PortfolioGallery({
                         style={{
                           width: "100%",
                           height: variant === "compact" ? 150 : 200,
-                          borderRadius: 12,
+                          borderRadius: 7,
                         }}
                         resizeMode="cover"
                       />
@@ -131,7 +131,7 @@ export function PortfolioGallery({
                   {imageUrl && (
                     <Image
                       source={{ uri: imageUrl }}
-                      style={{ width: "100%", height: 400, borderRadius: 12 }}
+                      style={{ width: "100%", height: 400, borderRadius: 7 }}
                       resizeMode="contain"
                     />
                   )}

@@ -195,7 +195,7 @@ function ProviderLogo({ provider: _provider }: { provider: string }) {
       style={{
         width: 36,
         height: 36,
-        borderRadius: 8,
+        borderRadius: 7,
         backgroundColor: colors.bg[theme].subtle,
         alignItems: 'center',
         justifyContent: 'center',
@@ -219,7 +219,7 @@ function ConnectionCard({ connection }: { connection: CalendarConnection }) {
       gap={12}
       align="center"
       padding="md"
-      style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 10 }}
+      style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 7 }}
     >
       <ProviderLogo provider={connection.provider} />
       <Stack style={{ flex: 1 }} gap={2}>
@@ -250,7 +250,7 @@ function AvailabilityRow({ window: avail }: { window: AvailabilityWindow }) {
       gap={12}
       align="center"
       padding="sm"
-      style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 8 }}
+      style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 7 }}
     >
       <Stack style={{ width: 40, alignItems: 'center' }}>
         <Text style={{ color: colors.text[theme].primary, fontWeight: '600', fontSize: 13 }}>
@@ -304,7 +304,7 @@ function InterviewSlotCard({ slot }: { slot: InterviewSlot }) {
       gap={12}
       align="center"
       padding="sm"
-      style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 8 }}
+      style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 7 }}
     >
       <Stack style={{ width: 50, alignItems: 'center' }}>
         <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
@@ -384,7 +384,7 @@ function ApplicationPicker({
                 align="center"
                 padding="sm"
                 style={{
-                  borderRadius: 8,
+                  borderRadius: 7,
                   backgroundColor:
                     selectedId === app.id ? colors.bg[theme].selected : colors.bg[theme].subtle,
                 }}
@@ -870,7 +870,7 @@ export function CalendarSchedulingScreen() {
                           gap={12}
                           align="center"
                           padding="md"
-                          style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 10 }}
+                          style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 7 }}
                         >
                           <Link2 size={18} color={colors.icon[theme].default} />
                           <Stack style={{ flex: 1 }} gap={2}>

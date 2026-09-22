@@ -119,7 +119,7 @@ export function DrawerNotificationsFeed({ onNavigate }: DrawerNotificationsFeedP
     <Stack
       gap={8}
       style={{
-        borderRadius: 16,
+        borderRadius: 7,
         backgroundColor: colors.bg[theme].subtle,
         borderWidth: 1,
         borderColor: colors.border[theme].subtle,
@@ -181,7 +181,7 @@ export function DrawerNotificationsFeed({ onNavigate }: DrawerNotificationsFeedP
                     opacity: pressed ? 0.7 : 1,
                     paddingVertical: 8,
                     paddingHorizontal: 4,
-                    borderRadius: 10,
+                    borderRadius: 7,
                     backgroundColor: pressed ? colors.bg[theme].muted : 'transparent',
                   })}
                 >

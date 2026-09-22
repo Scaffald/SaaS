@@ -42,7 +42,7 @@ export const RadiusSlider = ({
           flex: 1,
           height: 20,
           backgroundColor: 'var(--color-3)',
-          borderRadius: 8,
+          borderRadius: 7,
         }}
         trackStyle={{ backgroundColor: theme === 'light' ? colors.blue[50] : colors.blue[900] }}
         handleStyle={{

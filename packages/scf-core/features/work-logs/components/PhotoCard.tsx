@@ -153,7 +153,7 @@ export function PhotoCard({
       style={{
         borderWidth: 1,
         borderColor: colors.border[theme].default,
-        borderRadius: 16,
+        borderRadius: 7,
         overflow: "hidden",
       }}
       width="100%"

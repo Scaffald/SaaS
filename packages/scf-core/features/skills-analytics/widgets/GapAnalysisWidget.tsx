@@ -180,7 +180,7 @@ export function GapAnalysisWidget() {
             paddingVertical: 8,
             paddingHorizontal: 12,
             backgroundColor: colors.green[50],
-            borderRadius: 6,
+            borderRadius: 4,
             marginTop: 8,
           }}
         >

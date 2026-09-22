@@ -48,7 +48,7 @@ function StatCard({
       style={{
         paddingVertical: 12,
         paddingHorizontal: 8,
-        borderRadius: 8,
+        borderRadius: 7,
         backgroundColor: colors.bg[theme].subtle,
         flex: 1,
       }}

@@ -98,7 +98,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
               style={{
                 width: 48,
                 height: 48,
-                borderRadius: 12,
+                borderRadius: 7,
                 overflow: 'hidden',
                 backgroundColor: colors.gray[t === 'dark' ? 700 : 100],
               }}

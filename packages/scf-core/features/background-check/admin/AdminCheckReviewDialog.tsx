@@ -336,7 +336,7 @@ export function AdminCheckReviewDialog({
             ) : detailQuery.isError ? (
               <Stack
                 gap={12}
-                style={{ padding: 16, borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0' }}
+                style={{ padding: 16, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
               >
                 <Text style={{ color: '#414e62' }}>
                   We couldn't load this background check. Please try again.
@@ -357,7 +357,7 @@ export function AdminCheckReviewDialog({
               <Stack gap={16}>
                 <Stack
                   gap={12}
-                  style={{ padding: 8, borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0' }}
+                  style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
                 >
                   <Stack gap={4}>
                     <Text style={{ color: '#414e62' }}>{workerName}</Text>
@@ -400,7 +400,7 @@ export function AdminCheckReviewDialog({
                         backgroundColor: statusColors.background,
                         borderWidth: 1,
                         borderColor: statusColors.border,
-                        borderRadius: 12,
+                        borderRadius: 7,
                         alignSelf: 'flex-start',
                       }}
                       align="center"
@@ -535,7 +535,7 @@ export function AdminCheckReviewDialog({
                             key={document.id}
                             justify="space-between"
                             align="center"
-                            style={{ padding: 8, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0' }}
+                            style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
                             gap={12}
                           >
                             <Stack gap={4} flex={1}>
@@ -575,7 +575,7 @@ export function AdminCheckReviewDialog({
 
                   <Stack
                     gap={12}
-                    style={{ padding: 8, borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0' }}
+                    style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
                   >
                     <Row justify="space-between" align="center">
                       <Stack gap={4} flex={1} style={{ paddingRight: 12 }}>
@@ -599,7 +599,7 @@ export function AdminCheckReviewDialog({
                     <Text style={{ color: '#414e62' }}>Shared with organizations</Text>
                     {sharedOrganizations.length === 0 ? (
                       <Stack
-                        style={{ padding: 8, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0' }}
+                        style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
                       >
                         <Text style={{ color: '#414e62' }}>
                           No organizations currently have access to this background check.
@@ -612,7 +612,7 @@ export function AdminCheckReviewDialog({
                             key={organizationId}
                             justify="space-between"
                             align="center"
-                            style={{ padding: 8, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0' }}
+                            style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
                           >
                             <Text style={{ color: '#414e62' }}>{organizationId}</Text>
                             <Button
@@ -645,7 +645,7 @@ export function AdminCheckReviewDialog({
                           <Stack
                             key={dispute.id}
                             gap={4}
-                            style={{ padding: 8, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0' }}
+                            style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
                           >
                             <Text style={{ color: '#414e62' }}>{dispute.status}</Text>
                             <Text style={{ color: '#414e62' }}>
@@ -685,7 +685,7 @@ export function AdminCheckReviewDialog({
                             return (
                               <Stack
                                 key={`${entry?.occurred_at ?? index}`}
-                                style={{ borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 16, padding: 8 }}
+                                style={{ borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 7, padding: 8 }}
                                 gap={4}
                               >
                                 <Text style={{ color: '#414e62' }}>

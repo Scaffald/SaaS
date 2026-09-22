@@ -80,7 +80,7 @@ export function SkillTagPicker({ communityId, selectedTags, onTagsChange }: Prop
           style={{
             borderWidth: 1,
             borderColor: colors.border[t].default,
-            borderRadius: 8,
+            borderRadius: 7,
             maxHeight: 200,
             overflow: 'hidden',
           }}

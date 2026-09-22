@@ -495,7 +495,7 @@ export function UserProfileHeaderEnhanced({
           {/* Scaffald Score */}
           {profile.gamified_score !== null && (
             <Row
-              style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], paddingHorizontal: 16, paddingVertical: 8, borderRadius: 16, borderWidth: 1, borderColor: t === 'dark' ? colors.blue[700] : colors.blue[200] }}
+              style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], paddingHorizontal: 16, paddingVertical: 8, borderRadius: 7, borderWidth: 1, borderColor: t === 'dark' ? colors.blue[700] : colors.blue[200] }}
               gap={8}
               align="center"
             >
@@ -514,7 +514,7 @@ export function UserProfileHeaderEnhanced({
               align="center"
               paddingHorizontal={12}
               paddingVertical={8}
-              style={{ backgroundColor: colors.bg[t].subtle, borderRadius: 12 }}
+              style={{ backgroundColor: colors.bg[t].subtle, borderRadius: 7 }}
             >
               <Award size={18} color={colors.text[t].tertiary} />
               <Text style={{ color: colors.text[t].secondary }}>{formattedYears} years experience</Text>
@@ -528,7 +528,7 @@ export function UserProfileHeaderEnhanced({
               align="center"
               paddingHorizontal={12}
               paddingVertical={8}
-              style={{ backgroundColor: colors.bg[t].subtle, borderRadius: 12 }}
+              style={{ backgroundColor: colors.bg[t].subtle, borderRadius: 7 }}
             >
               <DollarSign size={18} color={colors.text[t].tertiary} />
               <Text style={{ color: colors.text[t].secondary }}>{formatHourlyRate(profile.hourly_rate_cents)}</Text>
@@ -538,7 +538,7 @@ export function UserProfileHeaderEnhanced({
           {/* Open to Work Badge */}
           {profile.open_to_work && (
             <Row
-              style={{ paddingHorizontal: 12, paddingVertical: 8, backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50], borderRadius: 12, borderWidth: 1, borderColor: t === 'dark' ? colors.green[700] : colors.green[200] }}
+              style={{ paddingHorizontal: 12, paddingVertical: 8, backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50], borderRadius: 7, borderWidth: 1, borderColor: t === 'dark' ? colors.green[700] : colors.green[200] }}
             >
               <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>✓ Available for Work</Text>
             </Row>

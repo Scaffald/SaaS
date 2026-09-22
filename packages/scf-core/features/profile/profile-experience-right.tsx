@@ -149,7 +149,7 @@ export function ProfileExperienceRight() {
           backgroundColor: "#ffffff",
           borderWidth: 1,
           borderColor: "#e2e8f0",
-          borderRadius: 16,
+          borderRadius: 7,
         }}
       >
         <H4>Experience Summary</H4>
@@ -187,7 +187,7 @@ export function ProfileExperienceRight() {
                   backgroundColor: "#ffffff",
                   borderWidth: 1,
                   borderColor: "#e2e8f0",
-                  borderRadius: 16,
+                  borderRadius: 7,
                 }}
               >
                 {/* Job Title */}

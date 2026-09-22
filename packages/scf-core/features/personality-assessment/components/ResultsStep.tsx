@@ -97,7 +97,7 @@ export function ResultsStep({
           padding="xl"
           style={{
             backgroundColor: colors.bg[theme].subtle,
-            borderRadius: 16,
+            borderRadius: 7,
             borderWidth: 1,
             borderColor: colors.border[theme].default,
           }}
@@ -132,7 +132,7 @@ export function ResultsStep({
           style={{
             backgroundColor:
               theme === "light" ? colors.blue[50] : colors.blue[900],
-            borderRadius: 16,
+            borderRadius: 7,
             borderWidth: 1,
             borderColor:
               theme === "light" ? colors.blue[300] : colors.blue[700],
@@ -185,7 +185,7 @@ export function ResultsStep({
                   padding="md"
                   style={{
                     backgroundColor: colors.bg[theme].subtle,
-                    borderRadius: 16,
+                    borderRadius: 7,
                     borderWidth: 1,
                     borderColor: colors.border[theme].default,
                   }}

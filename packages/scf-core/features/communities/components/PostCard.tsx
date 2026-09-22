@@ -80,7 +80,7 @@ export function PostCard({ post, onPress }: Props) {
                   flex: post.media_thumbnails.length === 1 ? 1 : undefined,
                   width: post.media_thumbnails.length === 1 ? '100%' : 180,
                   height: 180,
-                  borderRadius: 8,
+                  borderRadius: 7,
                   overflow: 'hidden',
                   backgroundColor: colors.bg[t].muted,
                 }}
@@ -99,7 +99,7 @@ export function PostCard({ post, onPress }: Props) {
                 style={{
                   width: 60,
                   height: 180,
-                  borderRadius: 8,
+                  borderRadius: 7,
                   backgroundColor: colors.bg[t].muted,
                 }}
               >

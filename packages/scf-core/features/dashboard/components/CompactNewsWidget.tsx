@@ -58,7 +58,7 @@ function NewsItem({
           style={{
             width: 72,
             height: 56,
-            borderRadius: 8,
+            borderRadius: 7,
             backgroundColor: colors.bg[theme].muted,
           }}
           resizeMode="cover"
@@ -68,7 +68,7 @@ function NewsItem({
           style={{
             width: 72,
             height: 56,
-            borderRadius: 8,
+            borderRadius: 7,
             backgroundColor: colors.bg[theme].muted,
           }}
         />

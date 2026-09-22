@@ -432,7 +432,7 @@ export function InquiryCreateForm({
                 paddingHorizontal: 8,
                 paddingVertical: 4,
                 backgroundColor: `${colors.success[500]}18`,
-                borderRadius: 8,
+                borderRadius: 7,
               }}
             >
               <Text style={{ color: colors.success[600] }}>Auto-filled</Text>
@@ -460,7 +460,7 @@ export function InquiryCreateForm({
                   style={{
                     borderColor: colors.border[t].default,
                     backgroundColor: colors.bg[t].default,
-                    borderRadius: 16,
+                    borderRadius: 7,
                   }}
                 >
                   <Row justify="space-between" align="center" gap={12}>
@@ -529,7 +529,7 @@ export function InquiryCreateForm({
                     style={{
                       borderColor: colors.border[t].default,
                       backgroundColor: colors.bg[t].default,
-                      borderRadius: 16,
+                      borderRadius: 7,
                     }}
                   >
                     <Row justify="space-between" align="center" gap={12}>
@@ -572,7 +572,7 @@ export function InquiryCreateForm({
                               paddingHorizontal: 8,
                               paddingVertical: 4,
                               backgroundColor: colors.bg[t].muted,
-                              borderRadius: 12,
+                              borderRadius: 7,
                             }}
                           >
                             <Text style={{ color: colors.text[t].secondary }}>{label}</Text>
@@ -785,7 +785,7 @@ export function InquiryCreateForm({
                                   }
                                 }}
                                 size="sm"
-                                style={{ paddingHorizontal: 12, borderRadius: 10 }}
+                                style={{ paddingHorizontal: 12, borderRadius: 7 }}
                               >
                                 {day.label}
                               </Button>
@@ -1223,7 +1223,7 @@ export function InquiryCreateForm({
                     borderWidth={1}
                     style={{
                       borderColor: colors.border[t].default,
-                      borderRadius: 16,
+                      borderRadius: 7,
                       backgroundColor: colors.bg[t].default,
                     }}
                   >

@@ -124,7 +124,7 @@ export function NotificationsCenterScreen() {
                   style={({ pressed }) => ({
                     paddingVertical: 12,
                     paddingHorizontal: 8,
-                    borderRadius: 12,
+                    borderRadius: 7,
                     backgroundColor: pressed ? colors.bg[theme].muted : 'transparent',
                   })}
                 >

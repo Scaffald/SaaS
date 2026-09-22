@@ -419,7 +419,7 @@ function PaymentSection({
         <Stack
           gap={8}
           padding="sm"
-          style={{ backgroundColor: colors.error[50], borderColor: colors.border[theme].error, borderWidth: 1, borderRadius: 16 }}
+          style={{ backgroundColor: colors.error[50], borderColor: colors.border[theme].error, borderWidth: 1, borderRadius: 7 }}
         >
           <Row gap={8} align="center">
             <AlertCircle size={18} color={colors.fg[theme].error} />

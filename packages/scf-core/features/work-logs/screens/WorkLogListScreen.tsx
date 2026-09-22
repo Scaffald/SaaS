@@ -722,7 +722,7 @@ function SummaryTile({ t, label, value, subtitle, color, tone = "default" }: Sum
   return (
     <Stack
       style={{
-        borderRadius: 12,
+        borderRadius: 7,
         paddingHorizontal: 16,
         paddingVertical: 12,
         backgroundColor: toneBg,

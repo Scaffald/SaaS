@@ -239,7 +239,7 @@ export function UserProfileReviews({
                         style={{
                           height: 6,
                           backgroundColor: colors.bg[t].muted,
-                          borderRadius: 8,
+                          borderRadius: 7,
                           overflow: "hidden",
                         }}
                       >
