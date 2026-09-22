@@ -23,7 +23,7 @@ import { readdirSync, statSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { chromium } from 'playwright'
 import { createClient } from '@supabase/supabase-js'
-import { requireServer } from './lib/dev-server.mjs'
+import { EXIT_INFRA, isServerGone, requireServer } from './lib/dev-server.mjs'
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
 const ANON = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
@@ -164,9 +164,30 @@ for (const [w, h, tag] of [
         await page.screenshot({ path: file, fullPage: false })
         Object.assign(row, facts, { errors: consoleErrors.slice(before) })
       } catch (e) {
+        // A dead dev server is not a finding about this route. Metro OOMs
+        // partway through a long run (#680), and the first version of this
+        // harness recorded the rest of the sweep as ~140 route failures —
+        // indistinguishable from real ones, and the natural response
+        // (re-run and see) is how a real failure gets waved through.
+        if (isServerGone(e)) {
+          console.error(
+            `\n  Dev server stopped answering at ${route} (${results.length} of the run done).\n` +
+              '  This is NOT a sweep finding — most likely Metro out of heap (#680).\n' +
+              `  Restart it and re-run, narrowing with SWEEP_ONLY=${route.split('/')[1] ? '/' + route.split('/')[1] : '/'}.\n`,
+          )
+          writeFileSync(join(OUT, 'sweep.json'), JSON.stringify(results, null, 1))
+          console.error(`  ${results.length} captures already written to ${OUT}/sweep.json.\n`)
+          await browser.close()
+          process.exit(EXIT_INFRA)
+        }
         Object.assign(row, { failed: String(e).slice(0, 160), errors: consoleErrors.slice(before) })
       }
       results.push(row)
+      // Write as we go. Metro OOMs partway through a long run (#680) and the
+      // report used to be written only at the end, so a crash at capture 150
+      // lost all 150. The PNGs were already on disk; the facts that make them
+      // readable were not.
+      writeFileSync(join(OUT, 'sweep.json'), JSON.stringify(results, null, 1))
       const flags = [
         row.failed ? 'FAILED' : null,
         row.landed && row.landed !== route ? `→ ${row.landed}` : null,
