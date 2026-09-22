@@ -145,7 +145,7 @@ export function ReviewImpactSummary({
                 paddingVertical: 8,
                 paddingHorizontal: 12,
                 backgroundColor: colors.bg[theme].subtle,
-                borderRadius: 6,
+                borderRadius: 4,
               }}
             >
               <Text

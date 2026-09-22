@@ -363,7 +363,7 @@ export function ApplicationWizard({
             style={{
               backgroundColor: colors.bg[theme].default,
               borderColor: colors.border[theme].default,
-              borderRadius: 16,
+              borderRadius: 7,
               maxWidth: 400,
               width: '100%',
               borderWidth: 1,

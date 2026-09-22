@@ -100,18 +100,6 @@ const ROUTES_CONFIG = {
       protected: false,
       exact: true,
     },
-    TERMS: {
-      path: '/auth/terms',
-      titleKey: 'routes.auth.terms',
-      protected: false,
-      exact: true,
-    },
-    PRIVACY: {
-      path: '/auth/privacy',
-      titleKey: 'routes.auth.privacy',
-      protected: false,
-      exact: true,
-    },
     CALLBACK: {
       path: '/auth/callback',
       titleKey: 'routes.auth.callback',
@@ -137,6 +125,31 @@ const ROUTES_CONFIG = {
   },
 
   /** Public profile by slug - /u/:slug (no auth) */
+  /**
+   * The legal documents, at one canonical URL each.
+   *
+   * They used to live inside the `(auth)` group, which is guest-only: the
+   * route guard sends any signed-in visitor to the dashboard, so a user asked
+   * to accept new terms, or ticking the clickwrap on the hire payment screen,
+   * could not open the document they were agreeing to. The `(public)` copies
+   * are the current text and carry the canonical SEO metadata, so those are
+   * the ones every link points at now.
+   */
+  LEGAL: {
+    TERMS: {
+      path: '/terms',
+      titleKey: 'routes.auth.terms',
+      protected: false,
+      exact: true,
+    },
+    PRIVACY: {
+      path: '/privacy',
+      titleKey: 'routes.auth.privacy',
+      protected: false,
+      exact: true,
+    },
+  },
+
   PUBLIC_PROFILE: {
     path: '/users/:slug',
     titleKey: 'routes.publicProfile',

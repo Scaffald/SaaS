@@ -11,11 +11,12 @@ import {
   Card,
   Input,
   ProgressBarBase,
+  Row,
+  ScreenHeader,
   Spinner,
+  Stack,
   Table,
   Text,
-  Row,
-  Stack,
   useThemeContext,
 } from "@scaffald/ui";
 import { useScreenRhythm } from '@scf/core/constants/layout'
@@ -243,27 +244,25 @@ export function OfficeStorageDashboard() {
 
   return (
     <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
-      <Row justify="space-between" align="center" gap={12}>
-        {/* flex={1} so the description wraps inside the row. Without it the
-            Stack took its text's full width and pushed the Refresh button off
-            the right edge of a phone (#799 check, #796 note). */}
-        <Stack flex={1}>
-          <Text>Storage Analytics</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>
-            Monitor how workers consume storage across work logs, portfolios,
-            and certifications.
-          </Text>
-        </Stack>
-        <Button
-          size="sm"
-          variant="outline"
-          iconStart={RefreshCw}
-          onPress={() => analyticsQuery.refetch()}
-          disabled={analyticsQuery.isRefetching}
-        >
-          Refresh
-        </Button>
-      </Row>
+      {/* The shared header, so this screen opens the way every other one
+          does. It drew its own title as a plain <Text>, which is why it was
+          one of the two screens the route sweep found with no heading in the
+          accessibility tree at all (#860). */}
+      <ScreenHeader
+        title="Storage Analytics"
+        tip="Monitor how workers consume storage across work logs, portfolios, and certifications."
+        actions={
+          <Button
+            size="sm"
+            variant="outline"
+            iconStart={RefreshCw}
+            onPress={() => analyticsQuery.refetch()}
+            disabled={analyticsQuery.isRefetching}
+          >
+            Refresh
+          </Button>
+        }
+      />
 
       {isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>

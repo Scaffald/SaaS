@@ -90,12 +90,12 @@ function OccupationResultItem({ occupation, isSelected, onSelect }: { occupation
         padding="sm"
         style={{
           backgroundColor: isSelected ? colors.bg[theme].selected : colors.bg[theme].subtle,
-          borderRadius: 8,
+          borderRadius: 7,
           borderWidth: isSelected ? 1 : 0,
           borderColor: colors.border[theme].active,
         }}
       >
-        <Stack style={{ width: 32, height: 32, borderRadius: 6, backgroundColor: colors.bg[theme].default, alignItems: 'center', justifyContent: 'center' }}>
+        <Stack style={{ width: 32, height: 32, borderRadius: 4, backgroundColor: colors.bg[theme].default, alignItems: 'center', justifyContent: 'center' }}>
           <Briefcase size={16} color={isSelected ? colors.fg[theme].active : colors.icon[theme].subtle} />
         </Stack>
         <Stack style={{ flex: 1 }} gap={1}>
@@ -217,7 +217,7 @@ export function OccupationSelectorField({ value, onSelect, onClear }: Occupation
             gap={10}
             align="center"
             padding="md"
-            style={{ backgroundColor: colors.bg[theme].selected, borderRadius: 10, borderWidth: 1, borderColor: colors.border[theme].active }}
+            style={{ backgroundColor: colors.bg[theme].selected, borderRadius: 7, borderWidth: 1, borderColor: colors.border[theme].active }}
           >
             <Zap size={18} color={colors.fg[theme].active} />
             <Stack style={{ flex: 1 }} gap={1}>

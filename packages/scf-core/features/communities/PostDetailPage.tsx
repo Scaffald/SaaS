@@ -103,7 +103,7 @@ export function PostDetailPage({ postId }: Props) {
                     key={`media-${i}`}
                     style={{
                       height: 300,
-                      borderRadius: 12,
+                      borderRadius: 7,
                       overflow: 'hidden',
                       backgroundColor: colors.bg[t].muted,
                     }}

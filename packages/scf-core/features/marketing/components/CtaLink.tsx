@@ -37,7 +37,7 @@ export function CtaLink({ href, label, variant = 'primary', fullWidth, withArrow
         href={href}
         style={{
           backgroundColor: hovered ? palette.bgHover : palette.bg,
-          borderRadius: 12,
+          borderRadius: 7,
           paddingHorizontal: 32,
           paddingVertical: 16,
           textAlign: 'center',

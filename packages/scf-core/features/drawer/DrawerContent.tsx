@@ -229,7 +229,7 @@ export const DrawerContent = ({
             style={{
               backgroundColor:
                 glassTheme === 'dark' ? 'rgba(80,73,64,0.4)' : 'rgba(200,195,188,0.4)',
-              borderRadius: 16,
+              borderRadius: 7,
               padding: 8,
               width: '100%',
             }}
@@ -317,7 +317,7 @@ const DrawerProfileCard = ({
       gap={12}
       style={{
         padding: 12,
-        borderRadius: 20,
+        borderRadius: 7,
         backgroundColor: glassVibrantColors[theme === 'dark' ? 'dark' : 'light'].tertiaryFill,
         borderWidth: 1,
         borderColor: glassVibrantColors[theme === 'dark' ? 'dark' : 'light'].separator,
@@ -330,7 +330,7 @@ const DrawerProfileCard = ({
             height: avatarSize,
             overflow: 'hidden',
             backgroundColor: colors.gray[100],
-            borderRadius: 14,
+            borderRadius: 7,
             alignItems: 'center',
             justifyContent: 'center',
           }}
@@ -349,7 +349,7 @@ const DrawerProfileCard = ({
           justify="center"
           style={{
             backgroundColor: colors.primary[600],
-            borderRadius: 14,
+            borderRadius: 7,
           }}
         >
           <Text style={{ color: colors.white, fontWeight: '700', fontSize: 18 }}>

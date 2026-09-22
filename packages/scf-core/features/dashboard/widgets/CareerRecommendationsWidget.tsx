@@ -142,7 +142,7 @@ export function CareerRecommendationsWidget() {
                 padding="sm"
                 style={{
                   backgroundColor: colors.bg[theme].subtle,
-                  borderRadius: 8,
+                  borderRadius: 7,
                   borderWidth: 1,
                   borderColor: isSelected ? colors.border[theme].active : colors.border[theme].default,
                 }}
@@ -151,7 +151,7 @@ export function CareerRecommendationsWidget() {
                   style={{
                     width: 36,
                     height: 36,
-                    borderRadius: 8,
+                    borderRadius: 7,
                     backgroundColor: `${getMatchColor(rec.matchPercent)}20`,
                     alignItems: 'center',
                     justifyContent: 'center',

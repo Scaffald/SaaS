@@ -188,14 +188,14 @@ const ctaStyle = {
   backgroundColor: brand.teal,
   paddingHorizontal: 16,
   paddingVertical: 8,
-  borderRadius: 8,
+  borderRadius: 7,
 } as const
 
 const mobileCtaStyle = {
   backgroundColor: brand.teal,
   paddingHorizontal: 16,
   paddingVertical: 10,
-  borderRadius: 8,
+  borderRadius: 7,
   textAlign: 'center',
 } as const
 

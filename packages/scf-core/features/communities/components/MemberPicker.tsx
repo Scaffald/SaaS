@@ -53,7 +53,7 @@ export function MemberPicker({ selected, onSelect, disabled }: MemberPickerProps
         gap={8}
         style={{
           padding: 8,
-          borderRadius: 8,
+          borderRadius: 7,
           backgroundColor: t === 'dark' ? colors.info[900] : colors.info[50],
         }}
       >
@@ -148,7 +148,7 @@ export function MemberPicker({ selected, onSelect, disabled }: MemberPickerProps
             paddingHorizontal: 16,
             borderWidth: 1,
             borderColor: colors.border[t].default,
-            borderRadius: 12,
+            borderRadius: 7,
             backgroundColor: colors.bg[t].muted,
           }}
         >
@@ -162,7 +162,7 @@ export function MemberPicker({ selected, onSelect, disabled }: MemberPickerProps
           style={{
             borderWidth: 1,
             borderColor: colors.border[t].default,
-            borderRadius: 12,
+            borderRadius: 7,
             maxHeight: 320,
             overflow: 'hidden',
             backgroundColor: colors.bg[t].default,

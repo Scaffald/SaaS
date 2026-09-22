@@ -128,7 +128,7 @@ function Checkbox({
         padding="sm"
         style={{
           backgroundColor: checked ? colors.bg[theme].selected : colors.bg[theme].subtle,
-          borderRadius: 8,
+          borderRadius: 7,
           borderWidth: 1,
           borderColor: checked ? colors.border[theme].active : colors.border[theme].default,
         }}
@@ -182,7 +182,7 @@ function RadioButton({
         padding="sm"
         style={{
           backgroundColor: selected ? colors.bg[theme].selected : colors.bg[theme].subtle,
-          borderRadius: 8,
+          borderRadius: 7,
           borderWidth: 1,
           borderColor: selected ? colors.border[theme].active : colors.border[theme].default,
         }}
@@ -193,7 +193,7 @@ function RadioButton({
           width={20}
           height={20}
           style={{
-            borderRadius: 10,
+            borderRadius: 7,
             borderWidth: 2,
             borderColor: selected ? colors.fg[theme].active : colors.border[theme].muted,
             marginTop: 2,
@@ -206,7 +206,7 @@ function RadioButton({
               width={10}
               height={10}
               style={{
-                borderRadius: 5,
+                borderRadius: 4,
                 backgroundColor: colors.fg[theme].active,
               }}
             />
@@ -377,7 +377,7 @@ export function DataRequestForm({
                 style={{
                   minHeight: 150,
                   backgroundColor: colors.bg[theme].subtle,
-                  borderRadius: 8,
+                  borderRadius: 7,
                   borderWidth: 1,
                   borderColor: colors.border[theme].default,
                 }}
@@ -432,7 +432,7 @@ export function DataRequestForm({
             padding="sm"
             style={{
               backgroundColor: colors.bg[theme].subtle,
-              borderRadius: 8,
+              borderRadius: 7,
             }}
             gap={8}
           >
@@ -457,7 +457,7 @@ export function DataRequestForm({
               padding="sm"
               style={{
                 backgroundColor: theme === 'dark' ? colors.error[900] : colors.error[50],
-                borderRadius: 8,
+                borderRadius: 7,
                 borderWidth: 1,
                 borderColor: colors.border[theme].error,
               }}
@@ -471,7 +471,7 @@ export function DataRequestForm({
             padding="sm"
             style={{
               backgroundColor: theme === 'dark' ? colors.info[900] : colors.info[50],
-              borderRadius: 8,
+              borderRadius: 7,
             }}
           >
             <Text style={{ color: colors.info[600] }}>

@@ -55,7 +55,7 @@ export function CommunityMembersPage({ slug }: Props) {
                 gap={12}
                 style={{
                   padding: 12,
-                  borderRadius: 8,
+                  borderRadius: 7,
                   borderWidth: 1,
                   borderColor: colors.border[t].default,
                 }}

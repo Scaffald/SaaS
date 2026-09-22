@@ -298,7 +298,7 @@ export function CareerDetailScreen({ onetCode }: CareerDetailScreenProps) {
                   key={tech}
                   style={{
                     backgroundColor: colors.bg[theme].subtle,
-                    borderRadius: 6,
+                    borderRadius: 4,
                     paddingHorizontal: 10,
                     paddingVertical: 4,
                     borderWidth: 1,

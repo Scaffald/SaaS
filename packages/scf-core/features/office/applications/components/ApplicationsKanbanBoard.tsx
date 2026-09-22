@@ -618,7 +618,7 @@ function DraggableCard({
                   alignSelf: 'flex-start',
                   paddingHorizontal: 8,
                   paddingVertical: 2,
-                  borderRadius: 10,
+                  borderRadius: 7,
                   backgroundColor: colors.bg[theme].subtle,
                 }}
               >

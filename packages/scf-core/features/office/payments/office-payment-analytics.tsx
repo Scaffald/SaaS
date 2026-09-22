@@ -148,7 +148,7 @@ export function OfficePaymentAnalytics() {
   return (
     <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
       <Row justify="space-between" align="center">
-        <Stack>
+        <Stack flex={1} minWidth={0}>
           <Text>Payment Analytics</Text>
           <Text style={{ color: colors.text[theme].secondary }}>
             Monitor payment transactions, revenue, and failure rates across all

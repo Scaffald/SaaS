@@ -93,7 +93,7 @@ export function DisputeBackgroundCheckDialog({
             </Row>
 
             {check ? (
-              <Stack gap={8} style={{ borderRadius: 16, padding: 8 }}>
+              <Stack gap={8} style={{ borderRadius: 7, padding: 8 }}>
                 <Row gap={8} align="center">
                   <AlertTriangle size={18} color={colors.warning[700]} />
                   <Text style={{ color: colors.text[theme].secondary }}>{statusMeta?.label ?? 'Background check'}</Text>

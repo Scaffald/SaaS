@@ -93,7 +93,7 @@ export function FollowingList() {
           style={{
             borderWidth: 1,
             borderColor: colors.border[t].default,
-            borderRadius: 12,
+            borderRadius: 7,
             overflow: 'hidden',
             backgroundColor: colors.bg[t].default,
           }}

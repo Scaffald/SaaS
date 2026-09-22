@@ -97,7 +97,7 @@ export function SkillsBreakdownWidget() {
                   style={{
                     paddingVertical: 10,
                     paddingHorizontal: 8,
-                    borderRadius: 6,
+                    borderRadius: 4,
                     backgroundColor: isExpanded
                       ? colors.bg[theme].subtle
                       : 'transparent',

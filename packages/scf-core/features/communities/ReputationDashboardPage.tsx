@@ -86,7 +86,7 @@ export function ReputationDashboardPage() {
           padding: 20,
           borderWidth: 1,
           borderColor: colors.border[t].default,
-          borderRadius: 16,
+          borderRadius: 7,
           backgroundColor: colors.bg[t].default,
         }}
       >

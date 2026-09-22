@@ -26,7 +26,7 @@ export function IntentBanner() {
         backgroundColor: 'rgba(29,114,130,0.10)',
         borderWidth: 1,
         borderColor: 'rgba(29,114,130,0.28)',
-        borderRadius: 12,
+        borderRadius: 7,
         paddingHorizontal: 16,
         paddingVertical: 12,
         width: '100%',

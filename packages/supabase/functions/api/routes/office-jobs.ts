@@ -15,12 +15,13 @@ import {
   isSuperAdmin,
   loadUserRoleAssignments,
 } from "../../_shared/permissions/team-permissions.ts";
+import { booleanQueryParam } from "../../_shared/query-schemas.ts";
 
 const listJobsQuerySchema = z.object({
   organization_id: z.string().uuid().optional(),
   status: z.enum(["draft", "open", "paused", "closed"]).optional(),
   team_id: z.string().uuid().optional(),
-  myTeamsOnly: z.coerce.boolean().optional(),
+  myTeamsOnly: booleanQueryParam.optional(),
   limit: z.coerce.number().int().min(1).max(100).default(50),
   offset: z.coerce.number().int().min(0).default(0),
 });

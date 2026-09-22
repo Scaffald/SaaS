@@ -107,7 +107,7 @@ export function CodeConfirmationInput({
               {
                 width: 52,
                 height: 52,
-                borderRadius: 12,
+                borderRadius: 7,
                 borderWidth: 1,
                 borderColor: invalid
                   ? colors.border[theme].error

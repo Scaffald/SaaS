@@ -93,7 +93,7 @@ export function LuscherTestStep({
           style={{
             paddingHorizontal: 12,
             paddingVertical: 4,
-            borderRadius: 12,
+            borderRadius: 7,
             backgroundColor: isComplete ? colors.primary[500] : colors.bg[theme].subtle,
           }}
         >
@@ -131,7 +131,7 @@ export function LuscherTestStep({
                 style={{
                   aspectRatio: 1,
                   backgroundColor: color.hex,
-                  borderRadius: 16,
+                  borderRadius: 7,
                   maxWidth: 200,
                   maxHeight: 200,
                   ...shadowStyle,

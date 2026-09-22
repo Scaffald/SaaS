@@ -95,7 +95,7 @@ export function WorkerMessagesScreen({ applicationId }: WorkerMessagesScreenProp
                   alignSelf: mine ? 'flex-end' : 'flex-start',
                   maxWidth: '85%',
                   backgroundColor: mine ? colors.primary[500] : colors.bg[theme].subtle,
-                  borderRadius: 14,
+                  borderRadius: 7,
                   paddingVertical: 8,
                   paddingHorizontal: 12,
                 }}

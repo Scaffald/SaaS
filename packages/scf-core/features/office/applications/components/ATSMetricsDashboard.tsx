@@ -606,7 +606,7 @@ function MiniStat({
       style={{
         borderWidth: 1,
         borderColor: colors.border[theme].default,
-        borderRadius: 8,
+        borderRadius: 7,
         paddingHorizontal: 10,
         paddingVertical: 6,
         minWidth: 80,
