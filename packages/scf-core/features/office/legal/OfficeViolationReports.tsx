@@ -144,7 +144,7 @@ export function OfficeViolationReports() {
   return (
     <Stack flex={1} padding="md" gap={16}>
       <Row justify="space-between" align="center">
-        <Stack>
+        <Stack flex={1} minWidth={0}>
           <Text>Anti-Circumvention Violation Reports</Text>
           <Text style={{ color: colors.text[theme].secondary }}>
             Review and manage reports of off-platform hires and fee avoidance.
