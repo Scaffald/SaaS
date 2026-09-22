@@ -152,6 +152,7 @@ export function OfficeTeamsList() {
 
   return (
     <OfficePageLayout
+      resultNoun="team"
       wrapWithOfficeLayout
       showBreadcrumb
       title="Teams"

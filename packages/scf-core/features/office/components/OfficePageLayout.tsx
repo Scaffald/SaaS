@@ -1,19 +1,14 @@
 import {
   Button,
   ScreenHeader,
-  Input,
+  ListToolbar,
   Spinner,
   Table,
-  TableActionBar,
-  type TableActionBarProps,
-  TableAddRecordModal,
-  type TableAddRecordModalProps,
-  TableColumnVisibilityModal,
-  type TableColumnVisibilityModalProps,
   Row,
   Stack,
   Text,
   type BreadcrumbItemData,
+  type ListToolbarFilterChip,
 } from '@scaffald/ui'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
@@ -21,17 +16,30 @@ import { Plus } from 'lucide-react-native'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
 import type { Dispatch, ReactNode, SetStateAction } from 'react'
 
-interface OfficeActionBarConfig {
-  bar: TableActionBarProps
-  addModalProps?: TableAddRecordModalProps
-  columnVisibilityModalProps?: TableColumnVisibilityModalProps
-}
-
 interface OfficePageLayoutProps<TData> {
   title: string
   searchPlaceholder: string
   searchValue: string
   onSearchChange: Dispatch<SetStateAction<string>>
+  /** Filter controls for the toolbar's flyout. Omit for a search-only screen. */
+  filterContent?: ReactNode
+  /** Drives the "· n" on the Filters & sort button. */
+  activeFilterCount?: number
+  /** The active filters, shown as chips under the search row. */
+  filterChips?: ListToolbarFilterChip[]
+  /** Clears every filter. Renders "Clear all" when present. */
+  onClearFilters?: () => void
+  /** What the rows are, for the count: "{n} job". Defaults to "result". */
+  resultNoun?: string
+  /** Irregular plural, when "{noun}s" is wrong — "universities", not "universitys". */
+  resultNounPlural?: string
+  /**
+   * Controls that sit inline in the search row: a view toggle, a secondary
+   * action. Not the page's primary action — that belongs in the header.
+   */
+  toolbarActions?: ReactNode
+  /** Modals a screen opens from its toolbar (add record, column visibility). */
+  toolbarModals?: ReactNode
   createButtonLabel: string
   onCreateClick: () => void
   columns: ColumnDef<TData, unknown>[]
@@ -52,7 +60,6 @@ interface OfficePageLayoutProps<TData> {
   pageSize?: number
   emptyMessage?: string
   hideCreateButton?: boolean
-  actionBarConfig?: OfficeActionBarConfig
   columnVisibility?: VisibilityState
   onColumnVisibilityChange?: (updater: Updater<VisibilityState>) => void
   hideHeader?: boolean
@@ -93,7 +100,6 @@ export function OfficePageLayout<TData>({
   pageSize = 50,
   emptyMessage = 'No data found',
   hideCreateButton = false,
-  actionBarConfig,
   columnVisibility,
   onColumnVisibilityChange: _onColumnVisibilityChange,
   hideHeader = false,
@@ -105,6 +111,14 @@ export function OfficePageLayout<TData>({
   beforeContent,
   afterContent,
   children,
+  filterContent,
+  activeFilterCount,
+  filterChips,
+  onClearFilters,
+  resultNoun = 'result',
+  resultNounPlural,
+  toolbarActions,
+  toolbarModals,
 }: OfficePageLayoutProps<TData>) {
   // No gutter here: OfficeLayout supplies it. This used to add its own 8px on
   // top, which is why Office titles sat 8px to the right of every other
@@ -120,7 +134,7 @@ export function OfficePageLayout<TData>({
         <ScreenHeader
           title={title}
           actions={
-            !actionBarConfig && !hideCreateButton ? (
+            !hideCreateButton ? (
               <Button iconStart={Plus} onPress={onCreateClick}>
                 {createButtonLabel}
               </Button>
@@ -129,19 +143,26 @@ export function OfficePageLayout<TData>({
         />
       )}
 
-      {actionBarConfig ? (
-        <>
-          <TableActionBar {...actionBarConfig.bar} />
-          {actionBarConfig.addModalProps ? (
-            <TableAddRecordModal {...actionBarConfig.addModalProps} />
-          ) : null}
-          {actionBarConfig.columnVisibilityModalProps ? (
-            <TableColumnVisibilityModal {...actionBarConfig.columnVisibilityModalProps} />
-          ) : null}
-        </>
-      ) : (
-        <Input placeholder={searchPlaceholder} value={searchValue} onChangeText={onSearchChange} />
-      )}
+      {/* The one search row: search, a Filters & sort flyout when the screen
+          has filters, and the result count at the right. Office used to have
+          two of its own idioms here — a bare `Input` and a `TableActionBar`
+          with its own search, add button and "Show" control. */}
+      <ListToolbar
+        searchValue={searchValue}
+        onSearchChange={onSearchChange}
+        searchPlaceholder={searchPlaceholder}
+        filterContent={filterContent}
+        activeFilterCount={activeFilterCount}
+        chips={filterChips}
+        onClearAll={onClearFilters}
+        // The count is unknown while loading — "0 users" over a spinner
+        // asserts an empty list before anything is known (#623).
+        resultCount={isLoading ? undefined : data.length}
+        resultNoun={resultNoun}
+        resultNounPlural={resultNounPlural}
+        actions={toolbarActions}
+      />
+      {toolbarModals}
 
       {children}
 
