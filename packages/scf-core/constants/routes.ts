@@ -1253,6 +1253,15 @@ const ROUTES_CONFIG = {
         protected: true,
         exact: true,
       },
+      // Hiring is a screen rather than a branch inside the status-change
+      // modal: it carries a fee breakdown, a clickwrap and a card form, and
+      // it is the most consequential thing an employer does here (#836).
+      HIRE: {
+        path: '/office/applications/:applicationId/hire',
+        titleKey: 'routes.office.applications.hire',
+        protected: true,
+        exact: true,
+      },
     },
     COMPLIANCE: {
       path: '/office/compliance',

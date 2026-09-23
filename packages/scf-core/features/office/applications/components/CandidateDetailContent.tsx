@@ -517,7 +517,6 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
           fromStatus={pendingChange.fromStatus}
           toStatus={pendingChange.toStatus}
           isLoading={isChanging}
-          application={application}
         />
       ) : null}
     </>

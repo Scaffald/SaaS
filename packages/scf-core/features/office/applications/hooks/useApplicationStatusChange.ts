@@ -1,6 +1,8 @@
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useUpdateEmployerApplicationMutation } from '@scf/core/utils/applications-sdk-hooks'
 import type { Application } from '@scaffald/sdk/resources/applications'
 import { useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useToast } from '@scaffald/ui'
 import type { ApplicationStatus } from '../types'
@@ -195,6 +197,7 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
     }
   }, [queue])
 
+  const router = useRouter()
   const queryClient = useQueryClient()
   // Employer endpoint, not the applicant one. That endpoint no longer accepts
   // `status` — it authorises on row ownership, so while it did an applicant
@@ -233,7 +236,17 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
         return
       }
 
-      // If critical change, show confirmation modal
+      // Hiring is a screen, not a dialog: it carries a fee breakdown, a
+      // clickwrap and a card form, and every entry point — the board, the
+      // lanes, candidate detail — goes through here, so one redirect covers
+      // all three (#836). The screen performs the status change itself once
+      // the fee is settled.
+      if (toStatus === 'hired') {
+        router.push(buildPath(ROUTES.OFFICE.APPLICATIONS.HIRE, { applicationId }))
+        return
+      }
+
+      // Every other critical change still confirms in the modal.
       if (isCriticalChange(toStatus)) {
         setPendingChange(params)
         return
@@ -283,7 +296,7 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
         },
       })
     },
-    [isValidTransition, isCriticalChange, updateMutation, queryClient, queue, toast]
+    [isValidTransition, isCriticalChange, updateMutation, queryClient, queue, toast, router]
   )
 
   /**

@@ -141,7 +141,8 @@
     "applications": {
       "inquiry": "Inquiry Detail",
       "title": "Applications",
-      "detail": "Candidate Detail"
+      "detail": "Candidate Detail",
+      "hire": "Hire"
     },
     "ats": {
       "checks": {

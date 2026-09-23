@@ -45,6 +45,13 @@ vi.mock('@scf/core/utils/applications-sdk-hooks', () => ({
   },
 }))
 
+// Hiring navigates rather than confirming in place (#836), so the hook now
+// holds a router.
+const pushMock = vi.hoisted(() => vi.fn())
+vi.mock('expo-router', () => ({
+  useRouter: () => ({ push: pushMock, replace: vi.fn(), back: vi.fn() }),
+}))
+
 // A real QueryClient, not a hand-written stand-in.
 //
 // This used to be `{ invalidateQueries }` and nothing else. #648 taught the
@@ -79,6 +86,7 @@ const { useApplicationStatusChange } = await import('../useApplicationStatusChan
 describe('useApplicationStatusChange', () => {
   beforeEach(() => {
     invalidateMock.mockReset()
+    pushMock.mockClear()
     mutateAsyncMock.mockClear()
     mutateShouldFail = false
     lastMutationPayload = undefined
@@ -151,8 +159,8 @@ describe('useApplicationStatusChange', () => {
     const payload = {
       applicationId: 'app-2',
       fromStatus: 'offer' as ApplicationStatus,
-      toStatus: 'hired' as ApplicationStatus,
-      reason: 'accepted offer',
+      toStatus: 'rejected' as ApplicationStatus,
+      reason: 'went with another candidate',
     }
 
     await act(async () => {
@@ -164,13 +172,51 @@ describe('useApplicationStatusChange', () => {
     expect(result.current.isChanging).toBe(false)
   })
 
+  /**
+   * Hiring carries a fee, a clickwrap and a card form, so it is a screen
+   * rather than a branch in the shared dialog (#836). Every entry point — the
+   * board, the lanes, candidate detail — calls `changeStatus`, so this one
+   * redirect is what makes all three open the screen.
+   */
+  it('sends a hire to its own screen rather than the confirmation modal', async () => {
+    const { result } = renderHook(() => useApplicationStatusChange(), { wrapper: TestQueryWrapper })
+
+    await act(async () => {
+      await result.current.changeStatus({
+        applicationId: 'app-hire',
+        fromStatus: 'offer' as ApplicationStatus,
+        toStatus: 'hired' as ApplicationStatus,
+      })
+    })
+
+    expect(pushMock).toHaveBeenCalledWith('/office/applications/app-hire/hire')
+    // Nothing is written here: the screen marks the hire once the fee is paid.
+    expect(mutateAsyncMock).not.toHaveBeenCalled()
+    expect(result.current.pendingChange).toBeNull()
+  })
+
+  it('does not move an invalid transition to the hire screen', async () => {
+    const { result } = renderHook(() => useApplicationStatusChange(), { wrapper: TestQueryWrapper })
+
+    await act(async () => {
+      await result.current.changeStatus({
+        applicationId: 'app-bad',
+        fromStatus: 'new' as ApplicationStatus,
+        toStatus: 'hired' as ApplicationStatus,
+      })
+    })
+
+    expect(pushMock).not.toHaveBeenCalled()
+    expect(result.current.error?.message).toBe('Invalid transition from new to hired')
+  })
+
   it('confirms pending transitions and resets state', async () => {
     const { result } = renderHook(() => useApplicationStatusChange(), { wrapper: TestQueryWrapper })
 
     const payload = {
       applicationId: 'app-3',
       fromStatus: 'offer' as ApplicationStatus,
-      toStatus: 'hired' as ApplicationStatus,
+      toStatus: 'rejected' as ApplicationStatus,
     }
 
     await act(async () => {
@@ -183,7 +229,7 @@ describe('useApplicationStatusChange', () => {
 
     expect(mutateAsyncMock).toHaveBeenCalledWith({
       id: 'app-3',
-      params: { status: 'hired' },
+      params: { status: 'rejected' },
     })
     expect(result.current.pendingChange).toBeNull()
   })
