@@ -1,13 +1,13 @@
-import { useMemo } from "react";
-import { Button, ScrollView, Separator, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
+import { useMemo } from 'react'
+import { Button, ScrollView, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
-import { useBackgroundCheckForm } from "../hooks/useBackgroundCheckForm";
-import { ConsentStep } from "./ConsentStep";
-import { DocumentChecklistStep } from "./DocumentChecklistStep";
-import { PackageSelectionStep } from "./PackageSelectionStep";
-import { PaymentStep } from "./PaymentStep";
-import { ProgressIndicator } from "./ProgressIndicator";
+import { useBackgroundCheckForm } from '../hooks/useBackgroundCheckForm'
+import { ConsentStep } from './ConsentStep'
+import { DocumentChecklistStep } from './DocumentChecklistStep'
+import { PackageSelectionStep } from './PackageSelectionStep'
+import { PaymentStep } from './PaymentStep'
+import { ProgressIndicator } from './ProgressIndicator'
 
 export function BackgroundCheckWizard() {
   const {
@@ -31,26 +31,24 @@ export function BackgroundCheckWizard() {
     createPaymentSession,
     confirmPaymentSession,
     isCreatingPaymentSession,
-  } = useBackgroundCheckForm();
+  } = useBackgroundCheckForm()
 
-  const { theme } = useThemeContext();
-  const t = theme === "dark" ? "dark" : "light";
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
   const requiredDocuments = useMemo(() => {
     const raw = (
-      selectedPackage as unknown as
-        | { metadata?: { required_documents?: unknown[] } }
-        | undefined
-    )?.metadata?.required_documents;
+      selectedPackage as unknown as { metadata?: { required_documents?: unknown[] } } | undefined
+    )?.metadata?.required_documents
     if (Array.isArray(raw)) {
-      return raw.map((item) => String(item));
+      return raw.map((item) => String(item))
     }
-    return [];
-  }, [selectedPackage]);
+    return []
+  }, [selectedPackage])
 
   const renderStepContent = () => {
     switch (currentStep) {
-      case "packages":
+      case 'packages':
         return (
           <PackageSelectionStep
             packages={packagesQuery.data}
@@ -59,16 +57,16 @@ export function BackgroundCheckWizard() {
             isLoading={packagesQuery.isLoading}
             onContinue={() => nextStep()}
           />
-        );
-      case "consent":
+        )
+      case 'consent':
         return (
           <ConsentStep
             consent={state.consent}
             onChange={updateConsent}
             onContinue={() => nextStep()}
           />
-        );
-      case "documents":
+        )
+      case 'documents':
         return (
           <DocumentChecklistStep
             requiredDocuments={requiredDocuments}
@@ -79,17 +77,17 @@ export function BackgroundCheckWizard() {
                   documentType,
                   storagePath: `pending://${documentType}`,
                   fileName: `${documentType}-pending`,
-                  mimeType: "application/octet-stream",
+                  mimeType: 'application/octet-stream',
                   fileSize: 0,
-                });
+                })
               } else {
-                removeDocument(`pending://${documentType}`);
+                removeDocument(`pending://${documentType}`)
               }
             }}
             onContinue={() => nextStep()}
           />
-        );
-      case "payment":
+        )
+      case 'payment':
         return (
           <PaymentStep
             payment={state.payment}
@@ -101,107 +99,86 @@ export function BackgroundCheckWizard() {
             submitError={submitError}
             onCreatePaymentSession={createPaymentSession}
             onPaymentSuccess={async (paymentIntentId) => {
-              await confirmPaymentSession(paymentIntentId);
-              goToStep("confirmation");
+              await confirmPaymentSession(paymentIntentId)
+              goToStep('confirmation')
             }}
           />
-        );
-      case "confirmation":
+        )
+      case 'confirmation':
         return (
           <Stack gap={16} flex={1}>
             <Stack gap={8}>
               <Text color={colors.text[t].secondary}>Background Check Submitted</Text>
               <Text color={colors.text[t].secondary}>
-                We've started your background check request. We'll notify you
-                when results are ready.
+                We've started your background check request. We'll notify you when results are
+                ready.
               </Text>
             </Stack>
 
-            <Stack
-              gap={8}
-              backgroundColor={colors.bg[t].muted}
-              padding="md"
-              borderRadius={16}
-            >
+            <Stack gap={8} backgroundColor={colors.bg[t].muted} padding="md" borderRadius={16}>
               <Text color={colors.text[t].secondary}>Summary</Text>
               <Text color={colors.text[t].secondary}>
-                Package: {selectedPackage?.display_name ?? "Pending"}
+                Package: {selectedPackage?.display_name ?? 'Pending'}
               </Text>
               <Text color={colors.text[t].secondary}>
-                Cost: $
-                {state.payment.costCents
-                  ? (state.payment.costCents / 100).toFixed(2)
-                  : "—"}
+                Cost: ${state.payment.costCents ? (state.payment.costCents / 100).toFixed(2) : '—'}
               </Text>
               <Text color={colors.text[t].secondary}>Payment: {state.payment.paidBy}</Text>
             </Stack>
 
-            <Button
-              size="md"
-              color="primary"
-              onPress={() => goToStep("packages")}
-            >
+            <Button size="md" color="primary" onPress={() => goToStep('packages')}>
               Start another background check
             </Button>
           </Stack>
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
 
+  // The route's own `ScreenHeader` names the screen and says what it is for
+  // (#830); this drew the same two lines again a few pixels lower.
   return (
-    <Stack flex={1} backgroundColor={colors.bg[t].default}>
-      <Stack
-        padding="md"
-        gap={12}
-        style={{ borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
-        backgroundColor={colors.bg[t].default}
-      >
-        <Stack gap={4}>
-          <Text color={colors.text[t].secondary}>Initiate Background Check</Text>
-          <Text color={colors.text[t].secondary}>
-            Complete the steps below to start your background check.
-          </Text>
-        </Stack>
-
-        <ProgressIndicator steps={steps} currentStep={currentStep} />
-      </Stack>
+    <Stack gap={16}>
+      <ProgressIndicator steps={steps} currentStep={currentStep} />
 
       {submitError && (
-        <Stack
-          backgroundColor={t === 'dark' ? colors.error[900] : colors.error[50]}
+        <Row
+          gap={8}
+          align="center"
+          wrap
           padding="sm"
-          style={{ borderBottomWidth: 1, borderBottomColor: t === 'dark' ? colors.error[400] : colors.error[300] }}
+          borderRadius={8}
+          borderWidth={1}
+          borderColor={colors.border[t].error}
+          style={{ backgroundColor: colors.bg[t].subtle }}
         >
-          <Text color={t === 'dark' ? colors.error[300] : colors.error[600]}>
+          <Text style={{ color: colors.text[t].secondary, flex: 1, minWidth: 0 }}>
             We couldn't submit your background check: {submitError.message}
           </Text>
-        </Stack>
+        </Row>
       )}
 
-      <ScrollView style={{ flex: 1 }}>
-        <Stack gap={16} flex={1} paddingHorizontal={16} paddingBottom={24}>
-          {renderStepContent()}
-        </Stack>
-      </ScrollView>
+      {/* The page scrolls; a second scroll view here boxed the wizard inside
+          the profile shell. */}
+      <Stack gap={16}>{renderStepContent()}</Stack>
 
       <Separator />
 
-      <Row padding="md" justify="space-between" backgroundColor={colors.bg[t].default}>
+      <Row justify="space-between" align="center" gap={12} wrap>
         <Button
           size="md"
-          disabled={currentStepIndex === 0 || currentStep === "confirmation"}
+          disabled={currentStepIndex === 0 || currentStep === 'confirmation'}
           onPress={previousStep}
         >
           Back
         </Button>
-        {currentStep !== "confirmation" && (
+        {currentStep !== 'confirmation' && (
           <Text color={colors.text[t].secondary}>
             Step {currentStepIndex + 1} of {steps.length}
           </Text>
         )}
       </Row>
     </Stack>
-  );
+  )
 }
