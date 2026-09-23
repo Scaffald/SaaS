@@ -14,12 +14,11 @@ import type {
   RemoveEmploymentResponse,
 } from '@scaffald/sdk'
 import { useOrganizationOpenJobsCount } from '@scf/core/utils/organizations-sdk-hooks'
-import { DashboardWidget } from '@scaffald/ui'
-import { BellPlus, Briefcase, CheckCircle2, Loader2, Network, UserPlus } from 'lucide-react-native'
+import { Briefcase, CheckCircle2, Loader2, UserPlus } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useMemo } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Button, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, H3, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 type OrganizationIdentifier = { organizationId: string }
@@ -324,39 +323,27 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
   }
 
   return (
-    <DashboardWidget gap={16}>
-      <Stack gap={8}>
-        <Row gap={8} align="center">
-          <Network size={18} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-          <Text style={{ color: colors.text[t].secondary }}>Stay Connected</Text>
-        </Row>
-        <Text style={{ color: colors.text[t].secondary }}>
-          Follow {organizationName} to get updates or claim your role to link your profile to the
-          team.
-        </Text>
-      </Stack>
-
-      <Separator />
+    <Stack gap={16}>
+      <H3 style={{ color: colors.text[t].primary }}>Stay connected</H3>
 
       {isLoading ? (
         <Row gap={8} align="center">
-          <Loader2 size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-          <Text style={{ color: colors.text[t].secondary }}>Loading organization context...</Text>
+          <Loader2 size={18} color={colors.icon[t].muted} />
+          <Text style={{ color: colors.text[t].secondary }}>Loading…</Text>
         </Row>
       ) : (
         <OrganizationSnapshot
-          name={organizationName}
           createdAt={createdAt}
           openJobs={openJobs?.count}
           jobsLoading={jobsLoading}
         />
       )}
 
-      <Separator />
-
-      <Stack gap={8}>
+      <Stack gap={8} align="stretch">
         <Button
           size="md"
+          variant="filled"
+          color="primary"
           iconStart={followButtonIcon}
           onPress={handleFollow}
           disabled={isFollowButtonDisabled}
@@ -365,7 +352,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         </Button>
         <Button
           size="md"
-          color="success"
+          variant="outline"
           iconStart={employmentButtonIcon}
           onPress={handleWorkHere}
           disabled={isEmploymentButtonDisabled}
@@ -376,50 +363,41 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       <Separator />
 
-      <Stack gap={8}>
-        <Row gap={8} align="center">
-          <BellPlus size={20} color={colors.text[t].tertiary} />
-          <Text color="secondary">What happens next?</Text>
-        </Row>
-        <Text color="secondary">
-          Following keeps you updated as teams post new opportunities or updates. Linking your
-          employment adds the organization to your profile immediately so recruiters can see your
-          affiliation right away.
-        </Text>
-      </Stack>
-    </DashboardWidget>
+      {/* One line each, not two paragraphs. The old copy explained both
+          actions twice — once above the buttons and once below them. */}
+      <Text style={{ color: colors.text[t].secondary }}>
+        Following {organizationName} tells you when they post. Saying you work here adds them to
+        your profile straight away.
+      </Text>
+    </Stack>
   )
 }
 
 type OrganizationSnapshotProps = {
-  name: string
   createdAt: string | null
   openJobs?: number | null
   jobsLoading: boolean
 }
 
-function OrganizationSnapshot({
-  name,
-  createdAt,
-  openJobs,
-  jobsLoading,
-}: OrganizationSnapshotProps) {
+/**
+ * The organisation's name is in the screen header; repeating it here in
+ * green beside a tick read as a verification badge, which it never was.
+ */
+function OrganizationSnapshot({ createdAt, openJobs, jobsLoading }: OrganizationSnapshotProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
   return (
-    <Stack gap={8}>
-      <Row gap={8} align="center">
-        <CheckCircle2 size={20} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
-        <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>{name}</Text>
-      </Row>
-      {createdAt && <Text style={{ color: colors.text[t].secondary }}>Onboarded {createdAt}</Text>}
+    <Stack gap={4}>
       <Text style={{ color: colors.text[t].secondary }}>
         {jobsLoading
-          ? 'Checking open roles...'
+          ? 'Checking open roles…'
           : typeof openJobs === 'number'
-            ? `${openJobs} active ${openJobs === 1 ? 'role' : 'roles'}`
-            : 'Open roles data unavailable'}
+            ? `${openJobs} open ${openJobs === 1 ? 'role' : 'roles'}`
+            : 'Open roles unavailable'}
       </Text>
+      {createdAt ? (
+        <Text style={{ color: colors.text[t].tertiary }}>On Scaffald since {createdAt}</Text>
+      ) : null}
     </Stack>
   )
 }

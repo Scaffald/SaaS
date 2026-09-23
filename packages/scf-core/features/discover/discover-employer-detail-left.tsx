@@ -1,183 +1,161 @@
-import { ROUTES } from '@scf/core/constants/routes'
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useEmployer } from '@scf/core/utils/employers-sdk-hooks'
-import { DashboardWidget, extractPlainText, useThemeContext } from '@scaffald/ui'
-import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
+import { usePublishedJobs } from '@scf/core/utils/jobs-sdk-hooks'
+import { extractPlainText, useThemeContext } from '@scaffald/ui'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Skeleton, SkeletonAvatar, SkeletonBox, SkeletonText, Text, Row, Stack } from '@scaffald/ui'
+import { Button, H3, Separator, Skeleton, SkeletonText, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { openExternalLink } from '@scf/core/utils/platform'
 
 type DiscoverEmployerDetailLeftProps = {
   employerId: string
 }
 
 /**
- * DiscoverEmployerDetailLeft
- * Displays the primary organization information within the dashboard layout.
+ * An employer, as a worker reads it.
+ *
+ * The screen carried the organisation's name in a card next to a Back button
+ * the breadcrumb already provides, then four labelled blocks — Industry,
+ * About, Location, Website — each a heading and a line, and closed with
+ * "Created: 3/14/2024", which answers a question nobody asked. What it never
+ * showed was the one thing a worker comes here for: what this employer is
+ * hiring.
+ *
+ * Open roles are rows now, each linking to its posting. The identity moved
+ * to the screen header (#828), so this column is what there is to read.
  */
+function SectionHeading({ children }: { children: string }) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  return <H3 style={{ color: colors.text[t].primary }}>{children}</H3>
+}
+
 export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetailLeftProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
 
-  const {
-    data: employer,
-    isLoading,
-    isFetching,
-  } = useEmployer({ id: employerId }, { enabled: Boolean(employerId) })
+  const { data: employer, isLoading } = useEmployer(
+    { id: employerId },
+    { enabled: Boolean(employerId) }
+  )
+
+  const { data: jobs, isLoading: jobsLoading } = usePublishedJobs(
+    { organizationId: employerId, limit: 20 },
+    { enabled: Boolean(employerId) }
+  )
 
   if (!employerId) {
     return (
-      <DashboardWidget>
-        <Stack align="center" justify="center" padding={32} gap={12}>
-          <Text color="secondary">Employer not specified</Text>
-          <Button
-            onPress={() => {
-              // Try to go back, fallback to employers list if no history
-              try {
-                router.back()
-              } catch {
-                router.replace(ROUTES.EMPLOYERS.path)
-              }
-            }}
-          >
-            Go Back
-          </Button>
-        </Stack>
-      </DashboardWidget>
+      <Stack gap={12} align="flex-start" paddingVertical={24}>
+        <Text style={{ color: colors.text[t].secondary }}>No employer was named in this link.</Text>
+        <Button size="md" variant="outline" onPress={() => router.replace(ROUTES.EMPLOYERS.path)}>
+          Browse employers
+        </Button>
+      </Stack>
     )
   }
 
-  if (isLoading || isFetching) {
+  if (isLoading) {
     return (
-      <DashboardWidget>
-        <Stack gap={16}>
-          <Row gap={12} align="center">
-            <SkeletonAvatar size={48} />
-            <Stack gap={6} style={{ flex: 1 }}>
-              <Skeleton width={160} height={18} shape="text" />
-              <Skeleton width={100} height={14} shape="text" />
-            </Stack>
-          </Row>
-          <SkeletonText lines={3} lastLineWidth="70%" />
-          <Row gap={8} wrap>
-            {[0, 1, 2].map((i) => (
-              <SkeletonBox key={i} width={90} height={28} borderRadius={99} />
-            ))}
-          </Row>
-        </Stack>
-      </DashboardWidget>
+      <Stack gap={16}>
+        <Skeleton width={220} height={20} shape="text" />
+        <SkeletonText lines={3} lastLineWidth="70%" />
+        <SkeletonText lines={2} lastLineWidth="50%" />
+      </Stack>
     )
   }
 
   if (!employer) {
     return (
-      <DashboardWidget>
-        <Stack align="center" justify="center" padding={32} gap={12}>
-          <Text style={{ color: colors.text[t].secondary }}>Employer not found</Text>
-          <Button
-            onPress={() => {
-              // Try to go back, fallback to employers list if no history
-              try {
-                router.back()
-              } catch {
-                router.replace(ROUTES.EMPLOYERS.path)
-              }
-            }}
-          >
-            Go Back
-          </Button>
-        </Stack>
-      </DashboardWidget>
+      <Stack gap={12} align="flex-start" paddingVertical={24}>
+        <Text style={{ color: colors.text[t].secondary }}>This employer is no longer listed.</Text>
+        <Button size="md" variant="outline" onPress={() => router.replace(ROUTES.EMPLOYERS.path)}>
+          Browse employers
+        </Button>
+      </Stack>
     )
   }
 
-  const websiteUrl = employer.website
-    ? employer.website.startsWith('http')
-      ? employer.website
-      : `https://${employer.website}`
-    : null
+  const description =
+    typeof employer.description === 'string'
+      ? employer.description
+      : employer.description
+        ? extractPlainText(employer.description as JSONContent)
+        : ''
+
+  const openRoles = jobs?.data ?? []
 
   return (
-    <DashboardWidget gap={16}>
-      {/* Header with Back Button */}
-      <Row align="center" gap={12}>
-        <Button
-          size="sm"
-          variant="outline"
-          iconStart={ArrowLeft}
-          onPress={() => {
-            // Try to go back, fallback to employers list if no history
-            try {
-              router.back()
-            } catch {
-              router.replace(ROUTES.EMPLOYERS.path)
-            }
-          }}
-        >
-          Back
-        </Button>
-        <Row align="center" gap={8} flex={1}>
-          <Building2 size={24} color={colors.text[t].primary} />
-          <Text>{employer.name}</Text>
-        </Row>
-      </Row>
+    <Stack gap={24}>
+      {description ? (
+        <Stack gap={12}>
+          <SectionHeading>About</SectionHeading>
+          <Text style={{ color: colors.text[t].secondary, lineHeight: 22 }}>{description}</Text>
+        </Stack>
+      ) : null}
 
       <Separator />
 
-      {/* Industry */}
-      {employer.industry && (
-        <Stack gap={8}>
-          <Text>Industry</Text>
-          <Row align="center" gap={8}>
-            <Users size={20} color={colors.text[t].tertiary} />
-            <Text color="secondary">{employer.industry}</Text>
-          </Row>
-        </Stack>
-      )}
+      <Stack gap={12}>
+        <Row justify="space-between" align="center" gap={12} wrap>
+          <SectionHeading>Open roles</SectionHeading>
+          {openRoles.length > 0 ? (
+            <Text style={{ color: colors.text[t].secondary }}>
+              {openRoles.length} {openRoles.length === 1 ? 'role' : 'roles'}
+            </Text>
+          ) : null}
+        </Row>
 
-      {/* Description */}
-      {employer.description && (
-        <Stack gap={8}>
-          <Text>About</Text>
+        {jobsLoading ? (
+          <SkeletonText lines={3} lastLineWidth="60%" />
+        ) : openRoles.length === 0 ? (
           <Text style={{ color: colors.text[t].secondary }}>
-            {typeof employer.description === 'string'
-              ? employer.description
-              : extractPlainText(employer.description as JSONContent)}
+            Nothing open here right now. Following this employer is how you hear when that changes.
           </Text>
-        </Stack>
-      )}
-
-      {/* Location */}
-      {employer.location && (
-        <Stack gap={8}>
-          <Row align="center" gap={8}>
-            <MapPin size={18} color={colors.text[t].tertiary} />
-            <Text>Location</Text>
-          </Row>
-          <Text color="secondary">{employer.location}</Text>
-        </Stack>
-      )}
-
-      {/* Website */}
-      {websiteUrl && (
-        <Stack gap={8}>
-          <Button
-            size="md"
-            variant="outline"
-            iconStart={ExternalLink}
-            onPress={() => openExternalLink(websiteUrl)}
-          >
-            Visit Website
-          </Button>
-        </Stack>
-      )}
-
-      {/* Additional Info */}
-      <Stack gap={8}>
-        <Text style={{ color: colors.text[t].secondary }}>Created: {new Date(employer.created_at).toLocaleDateString()}</Text>
+        ) : (
+          <Stack>
+            {openRoles.map((job) => (
+              <Row
+                key={job.id}
+                gap={12}
+                align="center"
+                wrap
+                paddingVertical={12}
+                style={{ borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
+              >
+                <Stack gap={2} flex={1} minWidth={200}>
+                  <Text style={{ color: colors.text[t].primary }}>{job.title}</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>
+                    {[job.location, formatEmploymentType(job.employment_type)]
+                      .filter(Boolean)
+                      .join(' · ') || 'Details on the posting'}
+                  </Text>
+                </Stack>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onPress={() => router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))}
+                >
+                  View role
+                </Button>
+              </Row>
+            ))}
+          </Stack>
+        )}
       </Stack>
-    </DashboardWidget>
+    </Stack>
   )
+}
+
+function formatEmploymentType(type: string | null | undefined): string | null {
+  if (!type) return null
+  const map: Record<string, string> = {
+    full_time: 'Full-Time',
+    part_time: 'Part-Time',
+    contract: 'Contract',
+    temp: 'Temporary',
+    intern: 'Internship',
+  }
+  return map[type] ?? type
 }

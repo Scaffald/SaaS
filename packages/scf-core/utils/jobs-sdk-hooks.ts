@@ -74,7 +74,7 @@ export function useExternalJobs(options?: { enabled?: boolean; initialData?: Ext
 
 /** See `useExternalJobs` for what `initialData` is for. */
 export function usePublishedJobs(
-  params?: { search?: string; limit?: number; offset?: number },
+  params?: { search?: string; limit?: number; offset?: number; organizationId?: string },
   options?: { enabled?: boolean; initialData?: JobListResponse }
 ) {
   const client = useScaffaldJobsClient()
