@@ -1,7 +1,8 @@
 import { useAdminResolveDisputeMutation } from '@scf/core/utils/background-checks-sdk-hooks'
 import type { AdminDisputeSummary } from '@scaffald/sdk'
 import { AlertTriangle } from 'lucide-react-native'
-import { useToast } from '@scaffald/ui'
+import { useThemeContext, useToast } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@scaffald/ui'
 import { DialogCompound as Dialog } from '@scf/core/components/ui/DialogCompound'
@@ -42,6 +43,8 @@ export function AdminDisputeResolutionDialog({
   onOpenChange,
   onResolved,
 }: AdminDisputeResolutionDialogProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const toast = useToast()
 
   const [resolutionStatus, setResolutionStatus] =
@@ -119,33 +122,33 @@ export function AdminDisputeResolutionDialog({
               <Stack gap={12}>
                 <Stack
                   gap={8}
-                  style={{ padding: 8, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 7 }}
+                  style={{ padding: 8, borderWidth: 1, borderColor: colors.border[t].default, borderRadius: 7 }}
                 >
                   <Row gap={8} align="center">
-                    <AlertTriangle size={18} color="#b45309" />
-                    <Text style={{ color: '#414e62' }}>{workerName}</Text>
+                    <AlertTriangle size={18} color={colors.text[t].attention} />
+                    <Text style={{ color: colors.text[t].secondary }}>{workerName}</Text>
                   </Row>
-                  <Text style={{ color: '#414e62' }}>Submitted {formatDateTime(dispute.created_at)}</Text>
-                  <Text style={{ color: '#414e62' }}>Current status: {dispute.status}</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>Submitted {formatDateTime(dispute.created_at)}</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>Current status: {dispute.status}</Text>
                 </Stack>
 
                 <Stack gap={8}>
-                  <Text style={{ color: '#414e62' }}>Dispute reason</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>Dispute reason</Text>
                   <TextArea
                     value={dispute.dispute_reason ?? ''}
                     editable={false}
                     rows={3}
-                    style={{ backgroundColor: '#f2f4f7' }}
+                    style={{ backgroundColor: colors.bg[t].subtle }}
                   />
                 </Stack>
 
                 <Stack gap={8}>
-                  <Text style={{ color: '#414e62' }}>Dispute details</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>Dispute details</Text>
                   <TextArea
                     value={dispute.dispute_details ?? ''}
                     editable={false}
                     rows={5}
-                    style={{ backgroundColor: '#f2f4f7' }}
+                    style={{ backgroundColor: colors.bg[t].subtle }}
                   />
                 </Stack>
 
@@ -183,7 +186,7 @@ export function AdminDisputeResolutionDialog({
             ) : (
               <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
                 <Spinner variant="ios" size="lg" />
-                <Text style={{ color: '#414e62' }}>Loading dispute…</Text>
+                <Text style={{ color: colors.text[t].secondary }}>Loading dispute…</Text>
               </Stack>
             )}
 
@@ -204,7 +207,7 @@ export function AdminDisputeResolutionDialog({
                 {isSubmitting ? (
                   <Row gap={8} align="center">
                     <Spinner variant="ios" size="sm" color="gray" />
-                    <Text style={{ color: '#414e62' }}>Resolving…</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>Resolving…</Text>
                   </Row>
                 ) : (
                   'Resolve dispute'

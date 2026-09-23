@@ -10,7 +10,8 @@ import type {
   AdminCheckSummary,
 } from '@scaffald/sdk'
 import { DialogCompound as Dialog } from '@scf/core/components/ui/DialogCompound'
-import { Button } from '@scaffald/ui'
+import { Button, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { openExternalLink } from '@scf/core/utils/platform'
 import { CheckCircle2, DownloadCloud, RefreshCcw } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
@@ -122,6 +123,8 @@ export function AdminCheckReviewDialog({
   onOpenChange,
   onUpdated,
 }: AdminCheckReviewDialogProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const toast = useToast()
   const checkId = check?.id ?? undefined
 
@@ -326,19 +329,19 @@ export function AdminCheckReviewDialog({
 
             {!checkId ? (
               <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
-                <Text style={{ color: '#414e62' }}>Select a background check to review the full details.</Text>
+                <Text style={{ color: colors.text[t].secondary }}>Select a background check to review the full details.</Text>
               </Stack>
             ) : detailQuery.isLoading || detailQuery.isFetching ? (
               <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
                 <Spinner variant="ios" size="lg" />
-                <Text style={{ color: '#414e62' }}>Loading background check…</Text>
+                <Text style={{ color: colors.text[t].secondary }}>Loading background check…</Text>
               </Stack>
             ) : detailQuery.isError ? (
               <Stack
                 gap={12}
-                style={{ padding: 16, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
+                style={{ padding: 16, borderRadius: 7, borderWidth: 1, borderColor: colors.border[t].default }}
               >
-                <Text style={{ color: '#414e62' }}>
+                <Text style={{ color: colors.text[t].secondary }}>
                   We couldn't load this background check. Please try again.
                 </Text>
                 <Button size="sm" variant="outline" onPress={() => detailQuery.refetch()}>
@@ -351,26 +354,26 @@ export function AdminCheckReviewDialog({
             ) : !detailedCheck ? (
               <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
                 <Spinner variant="ios" size="lg" />
-                <Text style={{ color: '#414e62' }}>Preparing detailed background check information…</Text>
+                <Text style={{ color: colors.text[t].secondary }}>Preparing detailed background check information…</Text>
               </Stack>
             ) : (
               <Stack gap={16}>
                 <Stack
                   gap={12}
-                  style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
+                  style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: colors.border[t].default }}
                 >
                   <Stack gap={4}>
-                    <Text style={{ color: '#414e62' }}>{workerName}</Text>
-                    {workerEmail ? <Text style={{ color: '#414e62' }}>{workerEmail}</Text> : null}
+                    <Text style={{ color: colors.text[t].secondary }}>{workerName}</Text>
+                    {workerEmail ? <Text style={{ color: colors.text[t].secondary }}>{workerEmail}</Text> : null}
                     {organizationName ? (
-                      <Text style={{ color: '#414e62' }}>Organization: {organizationName}</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>Organization: {organizationName}</Text>
                     ) : null}
                   </Stack>
                   <Row gap={12} wrap>
-                    <Text style={{ color: '#414e62' }}>
-                      Package: <Text style={{ color: '#414e62' }}>{packageLabel}</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>
+                      Package: <Text style={{ color: colors.text[t].secondary }}>{packageLabel}</Text>
                     </Text>
-                    <Text style={{ color: '#414e62' }}>
+                    <Text style={{ color: colors.text[t].secondary }}>
                       Created:{' '}
                       {formatDateTime(
                         typeof detailedCheck.created_at === 'string'
@@ -384,10 +387,10 @@ export function AdminCheckReviewDialog({
                       }
                       const completedAt = checkWithCompletedAt.completed_at
                       if (!completedAt) return null
-                      return <Text style={{ color: '#414e62' }}>Completed: {formatDateTime(completedAt)}</Text>
+                      return <Text style={{ color: colors.text[t].secondary }}>Completed: {formatDateTime(completedAt)}</Text>
                     })()}
                     {typeof detailedCheck.expires_at === 'string' ? (
-                      <Text style={{ color: '#414e62' }}>
+                      <Text style={{ color: colors.text[t].secondary }}>
                         Expires: {formatDateTime(detailedCheck.expires_at)}
                       </Text>
                     ) : null}
@@ -490,26 +493,26 @@ export function AdminCheckReviewDialog({
                       value={expiresAt}
                       onChangeText={setExpiresAt}
                     />
-                    <Text style={{ color: '#414e62' }}>Leave blank to clear expiration.</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>Leave blank to clear expiration.</Text>
                   </Stack>
                 </Stack>
 
                 <Separator />
 
                 <Stack gap={12}>
-                  <Text style={{ color: '#414e62' }}>Provider summary</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>Provider summary</Text>
                   <TextArea
                     rows={6}
                     value={safeJson(detailedCheck.summary)}
                     editable={false}
-                    style={{ backgroundColor: '#f2f4f7' }}
+                    style={{ backgroundColor: colors.bg[t].subtle }}
                   />
-                  <Text style={{ color: '#414e62' }}>Provider findings</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>Provider findings</Text>
                   <TextArea
                     rows={6}
                     value={safeJson(detailedCheck.findings)}
                     editable={false}
-                    style={{ backgroundColor: '#f2f4f7' }}
+                    style={{ backgroundColor: colors.bg[t].subtle }}
                   />
                 </Stack>
 
@@ -517,14 +520,14 @@ export function AdminCheckReviewDialog({
 
                 <Stack gap={12}>
                   <Row justify="space-between" align="center">
-                    <Text style={{ color: '#414e62' }}>Supporting documents</Text>
-                    <Text style={{ color: '#414e62' }}>
+                    <Text style={{ color: colors.text[t].secondary }}>Supporting documents</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>
                       {documents.length} {documents.length === 1 ? 'document' : 'documents'}
                     </Text>
                   </Row>
 
                   {documents.length === 0 ? (
-                    <Text style={{ color: '#414e62' }}>No documents uploaded for this background check.</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>No documents uploaded for this background check.</Text>
                   ) : (
                     <Stack gap={8}>
                       {documents.map((document) => {
@@ -535,14 +538,14 @@ export function AdminCheckReviewDialog({
                             key={document.id}
                             justify="space-between"
                             align="center"
-                            style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
+                            style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: colors.border[t].default }}
                             gap={12}
                           >
                             <Stack gap={4} flex={1}>
-                              <Text style={{ color: '#414e62' }}>
+                              <Text style={{ color: colors.text[t].secondary }}>
                                 {document.file_name ?? document.document_type ?? 'Document'}
                               </Text>
-                              <Text style={{ color: '#414e62' }}>
+                              <Text style={{ color: colors.text[t].secondary }}>
                                 Uploaded {formatDateTime(document.uploaded_at)}
                               </Text>
                             </Stack>
@@ -571,16 +574,16 @@ export function AdminCheckReviewDialog({
                 <Separator />
 
                 <Stack gap={12}>
-                  <Text style={{ color: '#414e62' }}>Privacy controls</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>Privacy controls</Text>
 
                   <Stack
                     gap={12}
-                    style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
+                    style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: colors.border[t].default }}
                   >
                     <Row justify="space-between" align="center">
                       <Stack gap={4} flex={1} style={{ paddingRight: 12 }}>
-                        <Text style={{ color: '#414e62' }}>Show verified badge</Text>
-                        <Text style={{ color: '#414e62' }}>
+                        <Text style={{ color: colors.text[t].secondary }}>Show verified badge</Text>
+                        <Text style={{ color: colors.text[t].secondary }}>
                           Allow organizations to see that this worker's background check is current.
                         </Text>
                       </Stack>
@@ -596,12 +599,12 @@ export function AdminCheckReviewDialog({
                   </Stack>
 
                   <Stack gap={8}>
-                    <Text style={{ color: '#414e62' }}>Shared with organizations</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>Shared with organizations</Text>
                     {sharedOrganizations.length === 0 ? (
                       <Stack
-                        style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
+                        style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: colors.border[t].default }}
                       >
-                        <Text style={{ color: '#414e62' }}>
+                        <Text style={{ color: colors.text[t].secondary }}>
                           No organizations currently have access to this background check.
                         </Text>
                       </Stack>
@@ -612,9 +615,9 @@ export function AdminCheckReviewDialog({
                             key={organizationId}
                             justify="space-between"
                             align="center"
-                            style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
+                            style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: colors.border[t].default }}
                           >
-                            <Text style={{ color: '#414e62' }}>{organizationId}</Text>
+                            <Text style={{ color: colors.text[t].secondary }}>{organizationId}</Text>
                             <Button
                               size="sm"
                               variant="outline"
@@ -639,28 +642,28 @@ export function AdminCheckReviewDialog({
                   <>
                     <Separator />
                     <Stack gap={8}>
-                      <Text style={{ color: '#414e62' }}>Disputes</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>Disputes</Text>
                       <Stack gap={8}>
                         {disputes.map((dispute) => (
                           <Stack
                             key={dispute.id}
                             gap={4}
-                            style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: '#e2e8f0' }}
+                            style={{ padding: 8, borderRadius: 7, borderWidth: 1, borderColor: colors.border[t].default }}
                           >
-                            <Text style={{ color: '#414e62' }}>{dispute.status}</Text>
-                            <Text style={{ color: '#414e62' }}>
+                            <Text style={{ color: colors.text[t].secondary }}>{dispute.status}</Text>
+                            <Text style={{ color: colors.text[t].secondary }}>
                               Submitted {formatDateTime(dispute.created_at)}
                             </Text>
                             {dispute.resolved_at ? (
-                              <Text style={{ color: '#414e62' }}>
+                              <Text style={{ color: colors.text[t].secondary }}>
                                 Resolved {formatDateTime(dispute.resolved_at)}
                               </Text>
                             ) : null}
                             {dispute.dispute_reason ? (
-                              <Text style={{ color: '#414e62' }}>Reason: {dispute.dispute_reason}</Text>
+                              <Text style={{ color: colors.text[t].secondary }}>Reason: {dispute.dispute_reason}</Text>
                             ) : null}
                             {dispute.dispute_details ? (
-                              <Text style={{ color: '#414e62' }}>Details: {dispute.dispute_details}</Text>
+                              <Text style={{ color: colors.text[t].secondary }}>Details: {dispute.dispute_details}</Text>
                             ) : null}
                           </Stack>
                         ))}
@@ -673,7 +676,7 @@ export function AdminCheckReviewDialog({
                   <>
                     <Separator />
                     <Stack gap={8}>
-                      <Text style={{ color: '#414e62' }}>Status history</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>Status history</Text>
                       <Stack gap={8} style={{ maxHeight: 200, overflow: 'scroll' }}>
                         {statusHistory
                           .slice()
@@ -685,19 +688,19 @@ export function AdminCheckReviewDialog({
                             return (
                               <Stack
                                 key={`${entry?.occurred_at ?? index}`}
-                                style={{ borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 7, padding: 8 }}
+                                style={{ borderWidth: 1, borderColor: colors.border[t].default, borderRadius: 7, padding: 8 }}
                                 gap={4}
                               >
-                                <Text style={{ color: '#414e62' }}>
+                                <Text style={{ color: colors.text[t].secondary }}>
                                   {meta?.label ?? entry?.status ?? 'Status update'}
                                 </Text>
-                                <Text style={{ color: '#414e62' }}>
+                                <Text style={{ color: colors.text[t].secondary }}>
                                   {entry?.occurred_at
                                     ? new Date(entry.occurred_at).toLocaleString()
                                     : '—'}
                                 </Text>
                                 {entry?.notes ? (
-                                  <Text style={{ color: '#414e62' }}>Notes: {entry.notes}</Text>
+                                  <Text style={{ color: colors.text[t].secondary }}>Notes: {entry.notes}</Text>
                                 ) : null}
                               </Stack>
                             )
@@ -721,7 +724,7 @@ export function AdminCheckReviewDialog({
                 {isSubmitting ? (
                   <Row gap={8} align="center">
                     <Spinner variant="ios" size="sm" color="gray" />
-                    <Text style={{ color: '#414e62' }}>Saving…</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>Saving…</Text>
                   </Row>
                 ) : (
                   'Save changes'

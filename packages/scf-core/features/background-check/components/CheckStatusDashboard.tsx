@@ -1,10 +1,19 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useBackgroundChecks } from '@scf/core/utils/background-checks-sdk-hooks'
-import { RefreshCcw, ShieldCheck } from 'lucide-react-native'
+import { RefreshCcw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, ScrollView, Separator, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import {
+  Button,
+  Separator,
+  Spinner,
+  Tabs,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 import { CheckStatusCard } from './CheckStatusCard'
@@ -86,144 +95,112 @@ export function CheckStatusDashboard() {
     router.push(disputePath)
   }
 
+  // The page scrolls already; a second scroll view here made the dashboard a
+  // box inside a box inside the verification accordion.
   return (
-    <Stack flex={1} backgroundColor={colors.bg[t].default}>
-      <ScrollView style={{ flex: 1 }}>
-        <Stack gap={16} paddingHorizontal={16} paddingBottom={24}>
-          <Stack
-            gap={12}
-            padding="md"
-            backgroundColor={colors.bg[t].default}
-            style={{ borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
-          >
-            <Row gap={12} align="center">
-              <ShieldCheck size={28} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-              <Stack gap={4}>
-                <Text color={colors.text[t].secondary}>Background check dashboard</Text>
-                <Text color={colors.text[t].secondary}>
-                  Track your screenings, monitor progress, and manage who can see your results.
-                </Text>
-              </Stack>
-            </Row>
-            <Row gap={8} wrap>
-              {FILTER_DEFINITIONS.map((filter) => {
-                const isActive = activeFilter === filter.value
-                return (
-                  <Button
-                    key={filter.value}
-                    size="sm"
-                    variant={isActive ? undefined : 'outline'}
-                    onPress={() => setActiveFilter(filter.value)}
-                  >
-                    {filter.label}
-                    {filter.value === 'active' ? ` (${counts.active})` : ''}
-                    {filter.value === 'completed' ? ` (${counts.completed})` : ''}
-                    {filter.value === 'expired' ? ` (${counts.expired})` : ''}
-                    {filter.value === 'all' ? ` (${counts.total})` : ''}
-                  </Button>
-                )
-              })}
-            </Row>
-          </Stack>
+    <Stack gap={16}>
+      <Text style={{ color: colors.text[t].secondary }}>
+        Track your screenings, and manage who can see the results.
+      </Text>
 
-          {checksQuery.isLoading && (
-            <Stack gap={8} align="center" paddingVertical={24}>
-              <Spinner variant="ios" size="lg" color="gray" />
-              <Text color={colors.text[t].secondary}>Loading your background checks…</Text>
-            </Stack>
-          )}
+      {/* Folder tabs, the treatment the rest of the app uses for a view
+          switch. These were four pill buttons that looked like actions. */}
+      <Tabs
+        type="folder"
+        value={activeFilter}
+        onValueChange={(next) => setActiveFilter(next as FilterValue)}
+      >
+        {FILTER_DEFINITIONS.map((filter) => (
+          <Tabs.Item key={filter.value} value={filter.value}>
+            <Tabs.Trigger>
+              {filter.label} {counts[filter.value === 'all' ? 'total' : filter.value]}
+            </Tabs.Trigger>
+          </Tabs.Item>
+        ))}
+      </Tabs>
 
-          {checksQuery.isError && (
-            <Stack
-              gap={12}
-              padding="md"
-              backgroundColor={colors.bg[t].muted}
-              borderRadius={16}
-              borderWidth={1}
-              borderColor={colors.border[t].default}
-            >
-              <Text color={colors.text[t].secondary}>
-                We couldn't load your background checks. Please try again.
-              </Text>
-              <Button
-                size="sm"
-                variant="outline"
-                iconStart={RefreshCcw}
-                onPress={() => checksQuery.refetch()}
-              >
-                Retry
-              </Button>
-            </Stack>
-          )}
-
-          {!checksQuery.isLoading && !checksQuery.isError && filteredChecks.length === 0 && (
-            <Stack
-              gap={12}
-              padding="md"
-              backgroundColor={colors.bg[t].muted}
-              borderRadius={16}
-              borderWidth={1}
-              borderColor={colors.border[t].default}
-            >
-              <Text color={colors.text[t].secondary}>No background checks found for this filter.</Text>
-              <Button size="sm" color="primary" onPress={handleStartNewCheck}>
-                Start a background check
-              </Button>
-            </Stack>
-          )}
-
-          {filteredChecks.map((check: BackgroundCheckSummary) => (
-            <CheckStatusCard
-              key={check.id}
-              check={check}
-              onViewDetails={handleViewDetails}
-              onRenew={handleRenew}
-              onDispute={
-                canDisputeStatus(check.status)
-                  ? (selected) => {
-                      handleDisputeNavigation(selected)
-                    }
-                  : undefined
-              }
-            />
-          ))}
-
-          <Stack
-            gap={8}
-            padding="sm"
-            backgroundColor={colors.bg[t].muted}
-            borderRadius={16}
-            borderWidth={1}
-            borderColor={colors.border[t].default}
-          >
-            <Text color={colors.text[t].secondary}>Need a new screening?</Text>
-            <Text color={colors.text[t].secondary}>
-              Start a new background check whenever you need to refresh your credentials.
-            </Text>
-            <Button size="sm" color="primary" onPress={handleStartNewCheck}>
-              Start background check
-            </Button>
-          </Stack>
-
-          {selectedCheckId && (
-            <Stack gap={12}>
-              <Separator />
-              <ResultsViewer
-                checkId={selectedCheckId}
-                summary={selectedCheck ?? undefined}
-                onClose={() => setSelectedCheckId(null)}
-                onRequestDispute={(id) => {
-                  const candidate =
-                    checksQuery.data?.find((item: BackgroundCheckSummary) => item.id === id) ?? null
-                  if (candidate) {
-                    handleDisputeNavigation(candidate)
-                  }
-                }}
-              />
-            </Stack>
-          )}
+      {checksQuery.isLoading && (
+        <Stack gap={8} align="center" paddingVertical={24}>
+          <Spinner variant="ios" size="lg" color="gray" />
+          <Text style={{ color: colors.text[t].secondary }}>
+            Loading your background checks…
+          </Text>
         </Stack>
-      </ScrollView>
+      )}
+
+      {checksQuery.isError && (
+        <Stack gap={12} align="flex-start">
+          <Text style={{ color: colors.text[t].secondary }}>
+            We couldn't load your background checks. Please try again.
+          </Text>
+          <Button
+            size="sm"
+            variant="outline"
+            iconStart={RefreshCcw}
+            onPress={() => checksQuery.refetch()}
+          >
+            Retry
+          </Button>
+        </Stack>
+      )}
+
+      {!checksQuery.isLoading && !checksQuery.isError && filteredChecks.length === 0 && (
+        <Stack gap={12} align="flex-start">
+          <Text style={{ color: colors.text[t].secondary }}>
+            {activeFilter === 'all'
+              ? "You haven't had a background check run yet."
+              : 'No background checks in this state.'}
+          </Text>
+          <Button size="sm" variant="filled" color="primary" onPress={handleStartNewCheck}>
+            Start a background check
+          </Button>
+        </Stack>
+      )}
+
+      {filteredChecks.map((check: BackgroundCheckSummary) => (
+        <CheckStatusCard
+          key={check.id}
+          check={check}
+          onViewDetails={handleViewDetails}
+          onRenew={handleRenew}
+          onDispute={
+            canDisputeStatus(check.status)
+              ? (selected) => {
+                  handleDisputeNavigation(selected)
+                }
+              : undefined
+          }
+        />
+      ))}
+
+      {filteredChecks.length > 0 && (
+        <Row gap={12} align="center" wrap>
+          <Text style={{ color: colors.text[t].secondary, flex: 1, minWidth: 200 }}>
+            Screenings go stale. Start another whenever yours needs refreshing.
+          </Text>
+          <Button size="sm" variant="outline" onPress={handleStartNewCheck}>
+            Start a check
+          </Button>
+        </Row>
+      )}
+
+      {selectedCheckId && (
+        <Stack gap={12}>
+          <Separator />
+          <ResultsViewer
+            checkId={selectedCheckId}
+            summary={selectedCheck ?? undefined}
+            onClose={() => setSelectedCheckId(null)}
+            onRequestDispute={(id) => {
+              const candidate =
+                checksQuery.data?.find((item: BackgroundCheckSummary) => item.id === id) ?? null
+              if (candidate) {
+                handleDisputeNavigation(candidate)
+              }
+            }}
+          />
+        </Stack>
+      )}
 
       {isWeb && (
         <DisputeBackgroundCheckDialog
