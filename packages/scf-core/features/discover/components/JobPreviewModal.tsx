@@ -91,6 +91,16 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
     }
   }
 
+  // Applying is a screen now (#829), so the map preview can send someone
+  // straight there instead of making "View Full Details & Apply" do two
+  // jobs at once and neither of them visibly.
+  const handleApply = () => {
+    if (job?.id) {
+      router.push(buildPath(ROUTES.JOBS.DETAIL.APPLY, { id: job.id }))
+      onOpenChange(false)
+    }
+  }
+
   return (
     <ResponsiveModal
       open={open}
@@ -107,7 +117,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
         </Stack>
       ) : !job ? (
         <Stack paddingVertical={32} align="center">
-          <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>Job not found</Text>
+          <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>
+            Job not found
+          </Text>
         </Stack>
       ) : (
         <>
@@ -181,7 +193,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {job.remote_option && (
               <Row gap={8} align="center">
                 <Clock size={18} color={colors.text[t].tertiary} />
-                <Text style={{ color: colors.text[t].secondary }}>{formatRemoteOption(job.remote_option)}</Text>
+                <Text style={{ color: colors.text[t].secondary }}>
+                  {formatRemoteOption(job.remote_option)}
+                </Text>
               </Row>
             )}
 
@@ -206,7 +220,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 paddingVertical={6}
                 borderRadius={12}
               >
-                <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>Accepting Applications</Text>
+                <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>
+                  Accepting Applications
+                </Text>
               </Row>
             )}
           </Stack>
@@ -226,15 +242,26 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
 
           <Separator />
 
-          {/* CTA Button */}
-          <Button
-            size="lg"
-            color="primary"
-            iconEnd={ExternalLink}
-            onPress={handleViewFullDetails}
-          >
-            View Full Details & Apply
-          </Button>
+          <Row gap={12} wrap>
+            <Button
+              size="md"
+              variant="filled"
+              color="primary"
+              onPress={handleApply}
+              style={{ flex: 1, minWidth: 140 }}
+            >
+              Apply
+            </Button>
+            <Button
+              size="md"
+              variant="outline"
+              iconEnd={ExternalLink}
+              onPress={handleViewFullDetails}
+              style={{ flex: 1, minWidth: 140 }}
+            >
+              View job
+            </Button>
+          </Row>
         </>
       )}
     </ResponsiveModal>

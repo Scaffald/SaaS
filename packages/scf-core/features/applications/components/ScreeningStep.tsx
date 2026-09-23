@@ -183,10 +183,13 @@ export function ScreeningStep({
           Are you willing to relocate? <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
         </Label>
         <Row gap={12}>
+          {/* `!answers.willing_to_relocate` was true before anyone answered,
+              so "No" rendered as the chosen option on a question the form
+              then calls required. Both sides now test the value itself. */}
           <Button
             size="md"
-            color={answers.willing_to_relocate ? 'primary' : undefined}
-            variant={answers.willing_to_relocate ? undefined : 'outline'}
+            color="primary"
+            variant={answers.willing_to_relocate === true ? 'filled' : 'outline'}
             style={{ flex: 1 }}
             onPress={() => {
               onAnswersChange({ ...answers, willing_to_relocate: true })
@@ -197,8 +200,8 @@ export function ScreeningStep({
           </Button>
           <Button
             size="md"
-            color={!answers.willing_to_relocate ? 'primary' : undefined}
-            variant={!answers.willing_to_relocate ? undefined : 'outline'}
+            color="primary"
+            variant={answers.willing_to_relocate === false ? 'filled' : 'outline'}
             style={{ flex: 1 }}
             onPress={() => {
               onAnswersChange({ ...answers, willing_to_relocate: false })
@@ -279,8 +282,8 @@ export function ScreeningStep({
         <Row gap={12}>
           <Button
             size="md"
-            color={answers.is_authorized_to_work ? 'primary' : undefined}
-            variant={answers.is_authorized_to_work ? undefined : 'outline'}
+            color="primary"
+            variant={answers.is_authorized_to_work === true ? 'filled' : 'outline'}
             style={{ flex: 1 }}
             onPress={() => {
               onAnswersChange({ ...answers, is_authorized_to_work: true })
@@ -294,8 +297,8 @@ export function ScreeningStep({
           </Button>
           <Button
             size="md"
-            color={!answers.is_authorized_to_work ? 'primary' : undefined}
-            variant={!answers.is_authorized_to_work ? undefined : 'outline'}
+            color="primary"
+            variant={answers.is_authorized_to_work === false ? 'filled' : 'outline'}
             style={{ flex: 1 }}
             onPress={() => {
               onAnswersChange({ ...answers, is_authorized_to_work: false })
@@ -339,6 +342,7 @@ export function ScreeningStep({
       <Button
         size="lg"
         color="primary"
+        variant="filled"
         onPress={validateAndContinue}
         disabled={isSubmitting}
         style={{ marginTop: 16 }}

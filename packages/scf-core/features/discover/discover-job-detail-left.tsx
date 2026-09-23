@@ -1,93 +1,70 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { ApplicationWizard, QuickApplyModal } from '@scf/core/features/applications/components'
-import { getApplicationFlow } from '@scf/core/features/applications/utils/getApplicationFlow'
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { captureEvent } from '@scf/core/utils/analytics/client'
-import { useExternalJobs, useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
+import {
+  useExternalJobs,
+  useJobDetails,
+  useMyApplicationForJob,
+} from '@scf/core/utils/jobs-sdk-hooks'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { ExternalLink } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { useEffect, useRef, useState } from 'react'
-import { Button, H3, Skeleton, SkeletonBox, SkeletonText, Text, Stack, Row } from '@scaffald/ui'
+import { useEffect, useRef } from 'react'
+import {
+  Button,
+  H3,
+  Row,
+  Skeleton,
+  SkeletonBox,
+  SkeletonText,
+  Text,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { openExternalLink } from '@scf/core/utils/platform'
-import { APPLY_PANEL_ANCHOR } from './job-detail-header'
+import { useUser } from '@scf/core/utils/useUser'
 
 interface DiscoverJobDetailLeftProps {
   jobId: string
 }
 
 /**
- * Discover Job Detail Left Component
- * Displays ApplicationWizard for internal jobs or external link for external jobs
+ * The apply panel beside a job posting.
+ *
+ * It used to *be* the application: a four-step wizard, or a modal for
+ * postings with no custom questions, rendered inside a 38% column. Applying
+ * is a screen now (#829), so this is the call to action for it — the panel
+ * states what applying involves and opens the form at its own address.
+ *
+ * The component keeps its historical name: `discover-job-detail-screen`
+ * deliberately renders it as the *right* column (#392), and renaming both
+ * halves is a wider change than this needs.
  */
 export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
-  // Hooks must be called unconditionally at the top level
-  const [showQuickApply, setShowQuickApply] = useState(false)
-
-  // Try fetching as internal job first (SDK)
   const { data: internalJob, isLoading: internalLoading } = useJobDetails(jobId, {
     enabled: !!jobId,
   })
 
-  // If not found as internal, try external (SDK)
   const { data: externalJobsList, isLoading: externalLoading } = useExternalJobs({
     enabled: !!jobId && !internalJob && !internalLoading,
+  })
+
+  // Signed out this endpoint 401s, and the public job page renders this
+  // panel too — two failed requests per anonymous view before the gate.
+  const { user } = useUser()
+  const signedIn = !!user
+  const { data: myApplication } = useMyApplicationForJob(jobId, {
+    enabled: !!jobId && signedIn,
   })
 
   const isLoading = internalLoading || externalLoading
   const externalJob = externalJobsList?.find((j: { id: string }) => j.id === jobId)
   const job = internalJob || externalJob
   const isExternal = !!externalJob
-
-  // Determine which flow to use (must be computed before conditional returns)
-  const flowType =
-    job && !isExternal && 'organization' in job
-      ? getApplicationFlow({
-          id: job.id,
-          title: job.title ?? 'Job',
-          organization: job.organization
-            ? { name: job.organization.name ?? 'Unknown Organization' }
-            : null,
-          custom_application_questions:
-            'custom_application_questions' in job
-              ? (job.custom_application_questions as
-                  | Array<{
-                      id: string
-                      question: string
-                      type:
-                        | 'short_text'
-                        | 'long_text'
-                        | 'single_choice'
-                        | 'multiple_choice'
-                        | 'yes_no'
-                      required: boolean
-                      options?: string[]
-                    }>
-                  | undefined)
-              : undefined,
-          required_attachments:
-            'required_attachments' in job
-              ? (job.required_attachments as
-                  | Record<
-                      string,
-                      {
-                        required: boolean
-                        max_size_mb?: number
-                      }
-                    >
-                  | undefined)
-              : undefined,
-        })
-      : null
-
-  // Track flow selection
-  useEffect(() => {
-    if (job && flowType) {
-      // TODO: Add 'application_flow_selected' to analytics event types
-      console.log('Application flow selected:', { flow_type: flowType, job_id: job.id })
-    }
-  }, [job, flowType])
 
   // Track job view for engagement analytics
   const trackEventMutation = useTrackEngagementMutation()
@@ -96,7 +73,6 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
   useEffect(() => {
     if (job) {
-      // Track in analytics (existing)
       captureEvent('job_viewed', {
         job_id: job.id,
         is_external: isExternal,
@@ -104,7 +80,6 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           !isExternal && 'organization' in job ? (job.organization?.id ?? null) : null,
       })
 
-      // Track in engagement analytics
       try {
         trackEventRef.current.mutate({
           eventType: 'job_view',
@@ -128,13 +103,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     return (
       <Stack gap={16}>
         <Skeleton width={200} height={22} shape="text" />
-        <Skeleton width={140} height={14} shape="text" />
-        <Row gap={8} wrap>
-          {[0, 1, 2].map((i) => (
-            <SkeletonBox key={i} width={80} height={28} borderRadius={99} />
-          ))}
-        </Row>
-        <SkeletonText lines={4} lastLineWidth="60%" />
+        <SkeletonText lines={2} lastLineWidth="60%" />
         <SkeletonBox width="100%" height={44} borderRadius={8} />
       </Stack>
     )
@@ -143,140 +112,124 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   if (!job) {
     return (
       <Stack style={{ flex: 1 }} align="center" justify="center" gap={8}>
-        <Text color="secondary">Job not found</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Job not found</Text>
       </Stack>
     )
   }
 
-  // Internal job - show appropriate flow based on job requirements
-  if (!isExternal && 'organization' in job && flowType) {
-    // Quick apply flow
-    if (flowType === 'quick') {
-      return (
-        <Stack nativeID={APPLY_PANEL_ANCHOR} style={{ flex: 1 }} gap={16}>
-          <Stack gap={12}>
-            <H3>Apply to {job.title}</H3>
-            <Text color="secondary" style={{ lineHeight: 20 }}>
-              This is a quick application. You'll answer a few screening questions and submit your
-              application.
-            </Text>
-          </Stack>
+  const panel = (children: React.ReactNode) => (
+    <Stack
+      gap={12}
+      padding="md"
+      borderRadius={12}
+      borderWidth={1}
+      borderColor={colors.border[t].default}
+      style={{ backgroundColor: colors.bg[t].subtle }}
+      align="flex-start"
+    >
+      {children}
+    </Stack>
+  )
 
-          <Button
-            size="lg"
-            color="primary"
-            onPress={() => {
-              setShowQuickApply(true)
-              // Track application started for quick apply flow
-              try {
-                trackEventMutation.mutate({
-                  eventType: 'application_start',
-                  targetType: 'job',
-                  targetId: job.id,
-                  metadata: {
-                    job_title: job.title,
-                    flow_type: 'quick',
-                    organization_name: job.organization?.name || 'Unknown Organization',
-                  },
-                })
-              } catch (error) {
-                // Silent error handling - don't impact user flow
-                console.warn('Failed to track application started (quick):', error)
-              }
-            }}
-          >
-            Apply Now
-          </Button>
-
-          {showQuickApply && (
-            <QuickApplyModal
-              jobId={job.id}
-              jobTitle={job.title ?? 'Job'}
-              organizationName={job.organization?.name ?? 'Unknown Organization'}
-              open={showQuickApply}
-              onOpenChange={setShowQuickApply}
-              onSuccess={(applicationId) => {
-                // Track application submitted for quick apply flow
-                try {
-                  trackEventMutation.mutate({
-                    eventType: 'application_complete',
-                    targetType: 'job',
-                    targetId: job.id,
-                    metadata: {
-                      job_title: job.title,
-                      flow_type: 'quick',
-                      application_id: applicationId,
-                      organization_name: job.organization?.name || 'Unknown Organization',
-                    },
+  // Internal posting — the application form is a screen under this one.
+  if (!isExternal && 'organization' in job) {
+    if (myApplication) {
+      // "Your application", not "You've applied": a saved draft and a
+      // submitted application are the same row with the same status —
+      // `is_complete` is a request flag the insert drops, so nothing in the
+      // database tells them apart (#881). Claiming either would be a guess,
+      // and the earlier wording ("You've Applied") guessed wrong for anyone
+      // who had only started the form — and then offered no way back into
+      // it. Both readings are served by the same two actions.
+      return panel(
+        <>
+          <H3>Your application</H3>
+          <Text style={{ color: colors.text[t].secondary }}>
+            Your application for this role is saved. You can keep editing it, or check where it
+            stands.
+          </Text>
+          <Row gap={12} wrap>
+            <Button
+              size="md"
+              variant="filled"
+              color="primary"
+              onPress={() => router.push(buildPath(ROUTES.JOBS.DETAIL.APPLY, { id: job.id }))}
+            >
+              Continue application
+            </Button>
+            <Button
+              size="md"
+              variant="outline"
+              onPress={() =>
+                router.push(
+                  buildPath(ROUTES.JOBS.APPLICATIONS.DETAIL, {
+                    applicationId: myApplication.id,
                   })
-                } catch (error) {
-                  // Silent error handling - don't impact user flow
-                  console.warn('Failed to track application submitted (quick):', error)
-                }
-
-                setShowQuickApply(false)
-                // Could navigate to applications page or show success
-              }}
-            />
-          )}
-        </Stack>
+                )
+              }
+            >
+              View status
+            </Button>
+          </Row>
+        </>
       )
     }
 
-    // Full wizard flow
-    return (
-      <Stack nativeID={APPLY_PANEL_ANCHOR} style={{ flex: 1, height: '100%' }}>
-        <ApplicationWizard
-          jobId={job.id}
-          jobTitle={job.title ?? 'Job'}
-          organizationName={job.organization?.name ?? 'Unknown Organization'}
-          onSuccess={(applicationId) => {
-            // Track application submitted for full wizard flow
+    return panel(
+      <>
+        <H3>Apply to {job.title}</H3>
+        <Text style={{ color: colors.text[t].secondary }}>
+          A few screening questions, anything the employer asks for, and your documents. Your
+          answers save as you go, so you can finish later.
+        </Text>
+        <Button
+          size="md"
+          variant="filled"
+          color="primary"
+          onPress={() => {
+            // The apply route is protected; sending a signed-out visitor
+            // there would bounce them through a redirect to land on the
+            // same sign-in screen. Go straight there instead.
+            if (!signedIn) {
+              router.push(ROUTES.AUTH.LOGIN.path)
+              return
+            }
             try {
               trackEventMutation.mutate({
-                eventType: 'application_complete',
+                eventType: 'application_start',
                 targetType: 'job',
                 targetId: job.id,
                 metadata: {
                   job_title: job.title,
-                  flow_type: 'full',
-                  application_id: applicationId,
                   organization_name: job.organization?.name || 'Unknown Organization',
                 },
               })
             } catch (error) {
               // Silent error handling - don't impact user flow
-              console.warn('Failed to track application submitted (full):', error)
+              console.warn('Failed to track application started:', error)
             }
-            // Could navigate to applications page or show success
+            router.push(buildPath(ROUTES.JOBS.DETAIL.APPLY, { id: job.id }))
           }}
-          onCancel={() => {
-            // Navigate back to jobs list
-            router.push(ROUTES.JOBS.path)
-          }}
-          onReturnToJobs={() => {
-            router.push(ROUTES.JOBS.path)
-          }}
-        />
-      </Stack>
+        >
+          Apply
+        </Button>
+      </>
     )
   }
 
-  // External job - show external link button
+  // External posting with a link out
   if (isExternal && 'company_name' in job && job.url) {
-    return (
-      <Stack nativeID={APPLY_PANEL_ANCHOR} style={{ flex: 1 }} gap={16}>
-        <Stack gap={12}>
-          <H3>Apply to this position</H3>
-          <Text color="secondary" style={{ lineHeight: 20 }}>
-            This job is hosted on an external site. Click the button below to visit their
-            application page and apply directly through their system.
-          </Text>
-        </Stack>
-
+    return panel(
+      <>
+        <H3>Apply to this position</H3>
+        <Text style={{ color: colors.text[t].secondary }}>
+          This job is hosted on an external site. Applying opens their own application page.
+        </Text>
         <Button
-          size="lg"
+          size="md"
+          variant="filled"
           color="primary"
+          iconStart={ExternalLink}
           onPress={() => {
             captureEvent('job_external_link_clicked', {
               job_id: job.id,
@@ -285,36 +238,27 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
             if (job.url) openExternalLink(job.url)
           }}
         >
-          <Row gap={8} align="center">
-            <ExternalLink size={20} />
-            <Text>Apply on External Site</Text>
-          </Row>
+          Apply on external site
         </Button>
-      </Stack>
+      </>
     )
   }
 
-  // External job without URL
+  // External posting with no link at all — a dead end, so it keeps the one
+  // way out. The duplicate back buttons alongside the apply CTAs were
+  // removed (#392) because the breadcrumb and the OS back gesture cover
+  // those; here there is nothing else.
   if (isExternal) {
-    return (
-      <Stack style={{ flex: 1 }} align="center" justify="center" gap={12}>
-        <Text color="secondary" style={{ textAlign: 'center' }}>
-          Application link not available
+    return panel(
+      <>
+        <H3>No application link</H3>
+        <Text style={{ color: colors.text[t].secondary }}>
+          This listing did not include a way to apply.
         </Text>
-        {/* Kept deliberately: this is a dead-end state with no other way out.
-            The duplicate back buttons alongside the apply CTAs were removed
-            (#392) because the breadcrumb and the OS back gesture already
-            cover those; here there is nothing else. */}
-        <Button
-          size="md"
-          color="primary"
-          onPress={() => {
-            router.push(ROUTES.JOBS.path)
-          }}
-        >
-          Back to Jobs
+        <Button size="md" variant="outline" onPress={() => router.push(ROUTES.JOBS.path)}>
+          Browse jobs
         </Button>
-      </Stack>
+      </>
     )
   }
 

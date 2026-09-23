@@ -2,7 +2,6 @@ import {
   useCalculateSoftSkillsMatch,
   useExternalJobs,
   useJobDetails,
-  useMyApplicationForJob,
 } from '@scf/core/utils/jobs-sdk-hooks'
 import { SoftSkillsMatchIndicator } from '@scf/core/features/profile/components/SoftSkillsMatchIndicator'
 import { ROUTES } from '@scf/core/constants/routes'
@@ -176,9 +175,12 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
     enabled: !!jobId,
   })
 
-  // User's application for this job (to show hasApplied)
-  const { data: myApplication } = useMyApplicationForJob(jobId, { enabled: !!jobId })
-  const hasApplied = !!myApplication
+  // The viewer's own record, for answering "can I get this one" against the
+  // posting's requirements. Signed out, these do not run and every
+  // requirement reads as unanswerable — which is the honest state, and what
+  // the public job page shows.
+  const { user } = useUser()
+  const signedIn = !!user
 
   // If not found as internal, try external (SDK)
   const { data: externalJobsList, isLoading: externalLoading } = useExternalJobs({
@@ -199,12 +201,6 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
     return Array.isArray(requirements) && requirements.length > 0
   }, [internalJob, isExternal])
 
-  // The viewer's own record, for answering "can I get this one" against the
-  // posting's requirements. Signed out, these do not run and every
-  // requirement reads as unanswerable — which is the honest state, and what
-  // the public job page shows.
-  const { user } = useUser()
-  const signedIn = !!user
   const { data: education } = useEducationWidget(undefined, { enabled: signedIn })
   const { data: experience } = useExperienceWidget(undefined, { enabled: signedIn })
   const { data: preferences } = usePreferencesWidget({ enabled: signedIn })
@@ -308,28 +304,6 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
     return (
       <Stack gap={20}>
-        {/* Already applied — the header offers "View application"; this is
-            the one line that says what that means. It replaced a bright
-            green banner, one of the 29 hardcoded hexes this screen used to
-            colour its own blocks. */}
-        {hasApplied && (
-          <Row
-            gap={8}
-            align="center"
-            wrap
-            padding="sm"
-            borderRadius={8}
-            borderWidth={1}
-            borderColor={colors.border[t].default}
-            style={{ backgroundColor: colors.bg[t].subtle }}
-          >
-            <Check size={18} color={colors.fg[t].success} />
-            <Text style={{ color: colors.text[t].secondary, flex: 1, minWidth: 0 }}>
-              You've applied. You can edit your application any time.
-            </Text>
-          </Row>
-        )}
-
         {/* Pay and schedule as one figure row, the same block the dashboard
             and the ATS use. These were four separate idioms before: a green
             dollar line, an icon row, a chip, and a yellow deadline card. */}

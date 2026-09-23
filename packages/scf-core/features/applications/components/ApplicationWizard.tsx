@@ -5,8 +5,7 @@ import { useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
 import { SaveStatusIndicator, useThemeContext, useToast } from '@scaffald/ui'
 import { AlertCircle } from 'lucide-react-native'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Text, Row, Stack } from '@scaffald/ui'
-import { ScrollView } from 'react-native'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useApplicationForm } from '../hooks/useApplicationForm'
 import type { Attachments } from './AttachmentsStep'
@@ -40,11 +39,6 @@ export interface ApplicationWizardProps {
   onSuccess?: (applicationId: string) => void
 
   /**
-   * Callback when user cancels the wizard
-   */
-  onCancel?: () => void
-
-  /**
    * Callback when user wants to view their application
    */
   onViewApplication?: (applicationId: string) => void
@@ -70,11 +64,9 @@ export function ApplicationWizard({
   jobTitle,
   organizationName,
   onSuccess,
-  onCancel,
   onViewApplication,
   onReturnToJobs,
 }: ApplicationWizardProps) {
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [submittedApplicationId, setSubmittedApplicationId] = useState<string | null>(null)
   const { theme } = useThemeContext()
   const toast = useToast()
@@ -107,7 +99,7 @@ export function ApplicationWizard({
   const { data: jobDetails } = useJobDetails(jobId)
   const customQuestions = useMemo<CustomQuestion[]>(
     () => jobDetails?.custom_application_questions ?? [],
-    [jobDetails?.custom_application_questions],
+    [jobDetails?.custom_application_questions]
   )
 
   // SC-105: surface auto-save failures the user might otherwise miss. The
@@ -193,11 +185,6 @@ export function ApplicationWizard({
     }
   }
 
-  const confirmCancel = () => {
-    setShowCancelConfirm(false)
-    onCancel?.()
-  }
-
   // Show success step after submission
   if (submittedApplicationId) {
     return (
@@ -212,25 +199,12 @@ export function ApplicationWizard({
   }
 
   return (
-    <Stack flex={1} style={{ backgroundColor: colors.bg[theme].default }}>
-      {/* Header */}
-      <Stack
-        padding="md"
-        style={{
-          backgroundColor: colors.bg[theme].default,
-          borderBottomColor: colors.border[theme].default,
-          borderBottomWidth: 1,
-        }}
-        gap={12}
-      >
-        <Row justify="space-between" align="flex-start" width="100%">
-          <Stack gap={4} flex={1}>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              {isEditMode ? 'Update Application' : 'Apply'} to {jobTitle}
-            </Text>
-            <Text style={{ color: colors.text[theme].secondary }}>{organizationName}</Text>
-          </Stack>
-          {/* Save Status Indicator */}
+    <Stack gap={20}>
+      {/* Where you are in the form, and whether the draft is safe. The role
+          and the employer are no longer repeated here: applying is its own
+          screen now (#829), and the screen header states both above this. */}
+      <Stack gap={12}>
+        <Row justify="flex-end" width="100%">
           <SaveStatusIndicator
             status={isSaving ? 'saving' : saveError ? 'error' : lastSavedAt ? 'saved' : 'idle'}
             lastSavedAt={lastSavedAt || undefined}
@@ -238,7 +212,6 @@ export function ApplicationWizard({
           />
         </Row>
 
-        {/* Progress Indicator */}
         <ProgressIndicator
           currentStep={currentStep}
           completedSteps={completedSteps}
@@ -248,148 +221,99 @@ export function ApplicationWizard({
 
       {/* Error Display */}
       {submitError && (
-        <Stack
-          padding="md"
-          style={{
-            backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
-            borderBottomColor: theme === "light" ? colors.error[300] : colors.error[700],
-            borderBottomWidth: 1,
-          }}
-        >
-          <Row gap={8} align="center">
-            <AlertCircle size={24} color={theme === "light" ? colors.error[700] : colors.error[300]} />
-            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300], flex: 1 }}>
-              {submitError.message || 'An error occurred'}
-            </Text>
-          </Row>
-        </Stack>
-      )}
-
-      {/* Main Content */}
-      <ScrollView style={{ flex: 1 }}>
-        <Stack padding="md" align="center">
-          {currentStep === 'screening' && (
-            <ScreeningStep
-              answers={screeningAnswers}
-              onAnswersChange={updateScreeningAnswers}
-              onContinue={() => {
-                // Skip custom questions if there are none
-                if (customQuestions.length === 0) {
-                  nextStep('attachments')
-                } else {
-                  nextStep('custom_questions')
-                }
-              }}
-              isSubmitting={isSubmitting}
-              requiredSkills={[]}
-              optionalSkills={[]}
-            />
-          )}
-
-          {currentStep === 'custom_questions' && (
-            <CustomQuestionsStep
-              questions={customQuestions}
-              answers={customQuestionAnswers}
-              onAnswersChange={(answers) => {
-                // TODO: Implement updateCustomQuestionAnswers in useApplicationForm
-                console.log('Custom question answers:', answers)
-              }}
-              onPrevious={() => previousStep('screening')}
-              onContinue={() => nextStep('attachments')}
-              isSubmitting={isSubmitting}
-            />
-          )}
-
-          {currentStep === 'attachments' && (
-            <AttachmentsStep
-              attachments={attachments as Attachments}
-              onAttachmentsChange={(newAttachments) => {
-                // Convert Attachments type to Record<string, AttachmentMetadata>
-                const attachmentsRecord: Record<string, AttachmentMetadata> = {}
-                if (newAttachments.resume) attachmentsRecord.resume = newAttachments.resume
-                if (newAttachments.cover_letter)
-                  attachmentsRecord.cover_letter = newAttachments.cover_letter
-                if (newAttachments.portfolio) attachmentsRecord.portfolio = newAttachments.portfolio
-                updateAllAttachments(attachmentsRecord)
-              }}
-              onPrevious={() => {
-                // Go back to custom questions if they exist, otherwise to screening
-                if (customQuestions.length > 0) {
-                  previousStep('custom_questions')
-                } else {
-                  previousStep('screening')
-                }
-              }}
-              onContinue={() => nextStep('review')}
-              isSubmitting={isSubmitting}
-              applicationId={applicationId}
-            />
-          )}
-
-          {currentStep === 'review' && (
-            <ReviewStep
-              screeningAnswers={screeningAnswers}
-              customQuestionAnswers={customQuestionAnswers}
-              attachments={attachments}
-              onEdit={(section) => {
-                if (section === 'screening') previousStep('screening')
-                else if (section === 'questions') previousStep('custom_questions')
-                else if (section === 'attachments') previousStep('attachments')
-              }}
-              onSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              isEditMode={isEditMode}
-            />
-          )}
-        </Stack>
-      </ScrollView>
-
-      {/* Cancel Confirmation Dialog */}
-      {showCancelConfirm && (
-        <Stack
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-          }}
+        <Row
+          gap={8}
           align="center"
-          justify="center"
-          padding="md"
+          padding="sm"
+          borderRadius={8}
+          borderWidth={1}
+          borderColor={colors.border[theme].error}
+          style={{ backgroundColor: colors.bg[theme].subtle }}
         >
-          <Stack
-            style={{
-              backgroundColor: colors.bg[theme].default,
-              borderColor: colors.border[theme].default,
-              borderRadius: 7,
-              maxWidth: 400,
-              width: '100%',
-              borderWidth: 1,
-            }}
-            padding="xl"
-            gap={16}
-          >
-            <Stack gap={8}>
-              <Text style={{ color: colors.text[theme].secondary }}>Cancel Application?</Text>
-              <Text style={{ color: colors.text[theme].secondary }}>
-                Your progress has been auto-saved. You can return to complete your application
-                later.
-              </Text>
-            </Stack>
-
-            <Row gap={12} justify="flex-end">
-              <Button size="md" variant="outline" onPress={() => setShowCancelConfirm(false)}>
-                Keep Editing
-              </Button>
-              <Button size="md" color="error" onPress={confirmCancel}>
-                Exit Application
-              </Button>
-            </Row>
-          </Stack>
-        </Stack>
+          <AlertCircle size={20} color={colors.fg[theme].error} />
+          <Text style={{ color: colors.text[theme].secondary, flex: 1, minWidth: 0 }}>
+            {submitError.message || 'An error occurred'}
+          </Text>
+        </Row>
       )}
+
+      {/* The page already scrolls (DashboardLayout); a second scroll view here
+          made the form a box inside a box and clipped the submit button. */}
+      <Stack>
+        {currentStep === 'screening' && (
+          <ScreeningStep
+            answers={screeningAnswers}
+            onAnswersChange={updateScreeningAnswers}
+            onContinue={() => {
+              // Skip custom questions if there are none
+              if (customQuestions.length === 0) {
+                nextStep('attachments')
+              } else {
+                nextStep('custom_questions')
+              }
+            }}
+            isSubmitting={isSubmitting}
+            requiredSkills={[]}
+            optionalSkills={[]}
+          />
+        )}
+
+        {currentStep === 'custom_questions' && (
+          <CustomQuestionsStep
+            questions={customQuestions}
+            answers={customQuestionAnswers}
+            onAnswersChange={(answers) => {
+              // TODO: Implement updateCustomQuestionAnswers in useApplicationForm
+              console.log('Custom question answers:', answers)
+            }}
+            onPrevious={() => previousStep('screening')}
+            onContinue={() => nextStep('attachments')}
+            isSubmitting={isSubmitting}
+          />
+        )}
+
+        {currentStep === 'attachments' && (
+          <AttachmentsStep
+            attachments={attachments as Attachments}
+            onAttachmentsChange={(newAttachments) => {
+              // Convert Attachments type to Record<string, AttachmentMetadata>
+              const attachmentsRecord: Record<string, AttachmentMetadata> = {}
+              if (newAttachments.resume) attachmentsRecord.resume = newAttachments.resume
+              if (newAttachments.cover_letter)
+                attachmentsRecord.cover_letter = newAttachments.cover_letter
+              if (newAttachments.portfolio) attachmentsRecord.portfolio = newAttachments.portfolio
+              updateAllAttachments(attachmentsRecord)
+            }}
+            onPrevious={() => {
+              // Go back to custom questions if they exist, otherwise to screening
+              if (customQuestions.length > 0) {
+                previousStep('custom_questions')
+              } else {
+                previousStep('screening')
+              }
+            }}
+            onContinue={() => nextStep('review')}
+            isSubmitting={isSubmitting}
+            applicationId={applicationId}
+          />
+        )}
+
+        {currentStep === 'review' && (
+          <ReviewStep
+            screeningAnswers={screeningAnswers}
+            customQuestionAnswers={customQuestionAnswers}
+            attachments={attachments}
+            onEdit={(section) => {
+              if (section === 'screening') previousStep('screening')
+              else if (section === 'questions') previousStep('custom_questions')
+              else if (section === 'attachments') previousStep('attachments')
+            }}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            isEditMode={isEditMode}
+          />
+        )}
+      </Stack>
     </Stack>
   )
 }

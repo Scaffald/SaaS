@@ -15,8 +15,6 @@ export type {
 export { CustomQuestionsStep } from './CustomQuestionsStep'
 export type { ProgressIndicatorProps } from './ProgressIndicator'
 export { ProgressIndicator } from './ProgressIndicator'
-export type { QuickApplyModalProps } from './QuickApplyModal'
-export { QuickApplyModal } from './QuickApplyModal'
 export type { ReviewStepProps } from './ReviewStep'
 export { ReviewStep } from './ReviewStep'
 export type { ScreeningStepProps } from './ScreeningStep'

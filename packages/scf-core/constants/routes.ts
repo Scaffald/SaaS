@@ -470,12 +470,30 @@ const ROUTES_CONFIG = {
       titleKey: 'routes.dashboard.discover.jobs.detail',
       protected: true,
       exact: true,
+      // Applying is a screen, not a modal (#829). A phone has no room for a
+      // four-step form inside a sheet, and a URL means an interrupted
+      // application can be returned to — the form auto-saves already.
+      APPLY: {
+        path: '/jobs/view/:id/apply',
+        titleKey: 'routes.dashboard.discover.jobs.apply',
+        protected: true,
+        exact: true,
+      },
     },
     APPLICATIONS: {
       path: '/jobs/applications',
       titleKey: 'routes.dashboard.applications.title',
       protected: true,
       exact: false,
+      // The worker's own application detail. The file has existed since the
+      // inquiry flow landed, but no constant pointed at it, so nothing could
+      // link there without a string literal.
+      DETAIL: {
+        path: '/jobs/applications/:applicationId',
+        titleKey: 'routes.dashboard.applications.detail',
+        protected: true,
+        exact: true,
+      },
       INQUIRY: {
         path: '/jobs/applications/:applicationId/inquiry',
         titleKey: 'routes.dashboard.applications.inquiry',

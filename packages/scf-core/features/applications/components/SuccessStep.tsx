@@ -1,7 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { Check, ExternalLink, Home } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, H2, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 export interface SuccessStepProps {
@@ -80,26 +80,24 @@ export function SuccessStep({
     >
       {/* Success Icon */}
       <Stack
-        width={80}
-        height={80}
-        borderRadius={16}
-        style={{
-          backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
-          borderColor: theme === "light" ? colors.green[300] : colors.green[700],
-          borderWidth: 2,
-        }}
+        width={72}
+        height={72}
+        borderRadius={999}
+        borderWidth={1}
+        borderColor={colors.border[theme].default}
+        style={{ backgroundColor: colors.bg[theme].subtle }}
         align="center"
         justify="center"
         aria-hidden={true}
       >
-        <Check size={48} color={theme === "light" ? colors.green[700] : colors.green[300]} />
+        <Check size={36} color={colors.fg[theme].success} />
       </Stack>
 
       {/* Success Message */}
       <Stack gap={8} align="center">
-        <Text style={{ color: colors.text[theme].secondary }} align="center">
+        <H2 style={{ color: colors.text[theme].primary, textAlign: 'center' }}>
           Application Submitted Successfully!
-        </Text>
+        </H2>
         <Text style={{ color: colors.text[theme].secondary }} align="center">
           Thank you for applying to {jobTitle} at {organizationName}
         </Text>
@@ -110,7 +108,7 @@ export function SuccessStep({
 
       {/* Application ID */}
       <Stack gap={8} align="center" marginTop={16}>
-        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Application ID: {formattedId}</Text>
+        <Text style={{ color: colors.text[theme].emphasis }}>Application ID: {formattedId}</Text>
         <Text style={{ color: colors.text[theme].secondary }} align="center">
           You will receive an email confirmation shortly
         </Text>
@@ -122,7 +120,7 @@ export function SuccessStep({
         padding="md"
         borderRadius={16}
         style={{
-          backgroundColor: colors.bg[theme].default,
+          backgroundColor: colors.bg[theme].subtle,
           borderColor: colors.border[theme].default,
           borderWidth: 1,
           width: '100%',
@@ -144,6 +142,7 @@ export function SuccessStep({
           <Button
             size="lg"
             color="primary"
+            variant="filled"
             iconStart={ExternalLink}
             onPress={() => onViewApplication(applicationId)}
             style={{ flex: 1, minWidth: 200 }}
