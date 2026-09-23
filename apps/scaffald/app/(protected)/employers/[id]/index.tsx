@@ -28,19 +28,21 @@ export default function EmployerDetailPage() {
     return null
   }
 
+  const title = isLoading || !employer ? null : (employer.name ?? null)
+
+  // Trade · location, above the name — the posting's context, the way every
+  // other screen states its own (#828).
+  const kicker = [employer?.industry, employer?.location].filter(Boolean).join(' · ') || undefined
+
   const { left, right } = DiscoverEmployerDetailScreen({ employerId: id })
 
   return (
     <DashboardPage
       breadcrumbs={breadcrumbs}
-      pageTitle={() => {
-        if (isLoading || !employer) {
-          return 'Employer Profile'
-        }
-
-        return employer.name || 'Employer Profile'
-      }}
+      pageTitle={() => title ?? 'Employer Profile'}
       pageTitleDeps={[employer?.name, isLoading]}
+      screenTitle={title}
+      screenKicker={kicker}
       leftContent={left}
       rightContent={right}
     />
