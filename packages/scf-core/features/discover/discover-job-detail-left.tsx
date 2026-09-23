@@ -7,8 +7,9 @@ import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks
 import { ExternalLink } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
-import { Button, Skeleton, SkeletonBox, SkeletonText, Text, Stack, Row } from '@scaffald/ui'
+import { Button, H3, Skeleton, SkeletonBox, SkeletonText, Text, Stack, Row } from '@scaffald/ui'
 import { openExternalLink } from '@scf/core/utils/platform'
+import { APPLY_PANEL_ANCHOR } from './job-detail-header'
 
 interface DiscoverJobDetailLeftProps {
   jobId: string
@@ -125,7 +126,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
   if (isLoading) {
     return (
-      <Stack gap={16} padding="md">
+      <Stack gap={16}>
         <Skeleton width={200} height={22} shape="text" />
         <Skeleton width={140} height={14} shape="text" />
         <Row gap={8} wrap>
@@ -141,7 +142,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
   if (!job) {
     return (
-      <Stack style={{ flex: 1 }} align="center" justify="center" padding="md" gap={8}>
+      <Stack style={{ flex: 1 }} align="center" justify="center" gap={8}>
         <Text color="secondary">Job not found</Text>
       </Stack>
     )
@@ -152,9 +153,9 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     // Quick apply flow
     if (flowType === 'quick') {
       return (
-        <Stack style={{ flex: 1 }} padding="md" gap={16}>
+        <Stack nativeID={APPLY_PANEL_ANCHOR} style={{ flex: 1 }} gap={16}>
           <Stack gap={12}>
-            <Text color="secondary">Apply to {job.title}</Text>
+            <H3>Apply to {job.title}</H3>
             <Text color="secondary" style={{ lineHeight: 20 }}>
               This is a quick application. You'll answer a few screening questions and submit your
               application.
@@ -224,7 +225,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
     // Full wizard flow
     return (
-      <Stack style={{ flex: 1, height: '100%' }}>
+      <Stack nativeID={APPLY_PANEL_ANCHOR} style={{ flex: 1, height: '100%' }}>
         <ApplicationWizard
           jobId={job.id}
           jobTitle={job.title ?? 'Job'}
@@ -264,9 +265,9 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   // External job - show external link button
   if (isExternal && 'company_name' in job && job.url) {
     return (
-      <Stack style={{ flex: 1 }} padding="md" gap={16}>
+      <Stack nativeID={APPLY_PANEL_ANCHOR} style={{ flex: 1 }} gap={16}>
         <Stack gap={12}>
-          <Text color="secondary">Apply to this Position</Text>
+          <H3>Apply to this position</H3>
           <Text color="secondary" style={{ lineHeight: 20 }}>
             This job is hosted on an external site. Click the button below to visit their
             application page and apply directly through their system.
@@ -296,7 +297,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   // External job without URL
   if (isExternal) {
     return (
-      <Stack style={{ flex: 1 }} align="center" justify="center" padding="md" gap={12}>
+      <Stack style={{ flex: 1 }} align="center" justify="center" gap={12}>
         <Text color="secondary" style={{ textAlign: 'center' }}>
           Application link not available
         </Text>

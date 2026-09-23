@@ -1,5 +1,9 @@
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { DiscoverJobDetailScreen } from '@scf/core/features/discover/discover-job-detail-screen'
+import {
+  JobDetailApplyAction,
+  jobDetailKicker,
+} from '@scf/core/features/discover/job-detail-header'
 import { ROUTES } from '@scf/core/constants/routes'
 import { useExternalJobs, useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
 import { useLocalSearchParams } from 'expo-router'
@@ -23,8 +27,14 @@ export default function JobDetailPage() {
   }
 
   const externalJob = externalJobsList?.find((j: { id: string }) => j.id === id)
-  const jobTitle: string | null =
-    internalJob?.title ?? externalJob?.title ?? null
+  const jobTitle: string | null = internalJob?.title ?? externalJob?.title ?? null
+
+  // Employer · location, above the role — the posting's context, the way
+  // every other screen states its own (#827).
+  const kicker = jobDetailKicker(
+    internalJob?.organization?.name ?? externalJob?.company_name,
+    internalJob?.location ?? externalJob?.location
+  )
 
   const { left, right } = DiscoverJobDetailScreen({ jobId: id })
   return (
@@ -33,6 +43,9 @@ export default function JobDetailPage() {
       rightContent={right}
       pageTitle={() => jobTitle}
       pageTitleDeps={[jobTitle]}
+      screenTitle={jobTitle}
+      screenKicker={kicker}
+      screenActions={<JobDetailApplyAction jobId={id} />}
       breadcrumbItems={[
         { label: 'Home', href: ROUTES.DASHBOARD.path },
         { label: 'Jobs', href: ROUTES.JOBS.path },

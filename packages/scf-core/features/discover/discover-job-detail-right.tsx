@@ -8,26 +8,62 @@ import { SoftSkillsMatchIndicator } from '@scf/core/features/profile/components/
 import { ROUTES } from '@scf/core/constants/routes'
 import { Button, Chip, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import {
-  Award,
-  Briefcase,
-  Building2,
-  Calendar,
-  Clock,
-  DollarSign,
-  ExternalLink,
-  Heart,
-  Home,
-  MapPin,
-  Plane,
-  Shield,
-  TrendingUp,
-} from 'lucide-react-native'
+import { Check, Clock, ExternalLink, Home, MapPin, Minus, TrendingUp, X } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import type { JSONContent } from '@tiptap/core'
+import type { ReactElement, ReactNode } from 'react'
 import { useMemo } from 'react'
-import { ScrollView } from 'react-native'
-import { Separator, Skeleton, SkeletonBox, SkeletonText, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { useUser } from '@scf/core/utils/useUser'
+import {
+  useEducationWidget,
+  useExperienceWidget,
+  usePreferencesWidget,
+} from '@scf/core/utils/profile-widgets-sdk-hooks'
+import { buildJobRequirements, requirementsSummary } from './job-requirements'
+import { formatJobLocation } from './job-detail-header'
+import {
+  H3,
+  MetricBlock,
+  MetricRow,
+  Separator,
+  Skeleton,
+  SkeletonBox,
+  SkeletonText,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+} from '@scaffald/ui'
+
+/**
+ * One section opener for the whole screen: a real heading, optionally with a
+ * figure on the right. Every block here used to open with a `<Text>` styled
+ * like a heading, which left the screen with no headings in the
+ * accessibility tree at all (#860).
+ */
+function Section({
+  title,
+  right,
+  children,
+}: {
+  title: string
+  right?: ReactNode
+  children: ReactNode
+}) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  return (
+    <Stack gap={12}>
+      <Row justify="space-between" align="center" gap={12} wrap>
+        {/* React Native defaults flexShrink to 0, so a long heading beside a
+            figure pushes the row wider than the column (#858). */}
+        <H3 style={{ color: colors.text[t].primary, flex: 1, minWidth: 0 }}>{title}</H3>
+        {right}
+      </Row>
+      {children}
+    </Stack>
+  )
+}
 
 // Helper function to extract plain text from TipTap JSON content
 function extractPlainText(content: JSONContent): string {
@@ -127,24 +163,6 @@ function formatRemoteOption(option?: string): string {
 }
 
 /**
- * Format education level for display
- */
-function formatEducationLevel(level?: string): string {
-  if (!level) return ''
-
-  const levelMap: Record<string, string> = {
-    none: 'No formal education required',
-    high_school: 'High School Diploma',
-    associate: "Associate's Degree",
-    bachelor: "Bachelor's Degree",
-    master: "Master's Degree",
-    phd: 'Ph.D.',
-  }
-
-  return levelMap[level] || level
-}
-
-/**
  * Discover Job Detail Right Component
  * Displays job information in the right panel
  */
@@ -181,10 +199,38 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
     return Array.isArray(requirements) && requirements.length > 0
   }, [internalJob, isExternal])
 
+  // The viewer's own record, for answering "can I get this one" against the
+  // posting's requirements. Signed out, these do not run and every
+  // requirement reads as unanswerable — which is the honest state, and what
+  // the public job page shows.
+  const { user } = useUser()
+  const signedIn = !!user
+  const { data: education } = useEducationWidget(undefined, { enabled: signedIn })
+  const { data: experience } = useExperienceWidget(undefined, { enabled: signedIn })
+  const { data: preferences } = usePreferencesWidget({ enabled: signedIn })
+
   // Fetch soft skills match for internal jobs with requirements (SDK)
   const { data: matchData, isLoading: isLoadingMatch } = useCalculateSoftSkillsMatch(jobId, {
     enabled: !!jobId && hasSoftSkillsRequirements && !isExternal,
   })
+
+  const requirements = useMemo(
+    () =>
+      job
+        ? buildJobRequirements({
+            job: job as Parameters<typeof buildJobRequirements>[0]['job'],
+            profile: signedIn
+              ? {
+                  education,
+                  experience,
+                  driversLicenseClasses: preferences?.drivers_license_classes,
+                }
+              : undefined,
+          })
+        : [],
+    [job, signedIn, education, experience, preferences]
+  )
+  const summary = useMemo(() => requirementsSummary(requirements), [requirements])
 
   if (isLoading) {
     return (
@@ -205,7 +251,9 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
     return (
       <Stack style={{ flex: 1 }} align="center" justify="center" padding="md" gap={8}>
         <Text style={{ color: colors.text[t].secondary }}>Job not found</Text>
-        <Text style={{ color: colors.text[t].secondary }}>This job may have been removed or is no longer available</Text>
+        <Text style={{ color: colors.text[t].secondary }}>
+          This job may have been removed or is no longer available
+        </Text>
       </Stack>
     )
   }
@@ -220,513 +268,395 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
     )
     const employmentType = formatEmploymentType(job.employment_type ?? undefined)
     const remoteOption = formatRemoteOption(job.remote_option ?? undefined)
+    const locationLabel = formatJobLocation(job.location as Parameters<typeof formatJobLocation>[0])
+
+    // Pay and schedule as figures, not as four different decorated rows. A
+    // block is only built where the posting actually carries the field, so
+    // an incomplete posting shows a shorter row rather than "Not listed"
+    // four times over.
+    const metrics = [
+      payRange ? <MetricBlock key="pay" label="Pay" value={payRange} /> : null,
+      employmentType ? (
+        <MetricBlock
+          key="schedule"
+          label="Schedule"
+          value={employmentType}
+          delta={intJob.work_schedule_details ?? undefined}
+        />
+      ) : null,
+      remoteOption || locationLabel ? (
+        <MetricBlock
+          key="workplace"
+          label="Workplace"
+          value={remoteOption || locationLabel}
+          delta={remoteOption ? locationLabel || undefined : undefined}
+        />
+      ) : null,
+      intJob.application_deadline ? (
+        <MetricBlock
+          key="deadline"
+          label="Apply by"
+          value={new Date(intJob.application_deadline).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          })}
+          emphasis
+        />
+      ) : null,
+    ].filter((block): block is ReactElement => block !== null)
 
     return (
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        <Stack gap={16} padding="md">
-          {/* Applied Status Banner */}
-          {hasApplied && (
-            <Stack
-              gap={8}
-              padding="sm"
-              style={{
-                backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50],
-                borderRadius: 7,
-                borderWidth: 1,
-                borderColor: t === 'dark' ? colors.green[700] : colors.green[300],
-              }}
-            >
-              <Row gap={8} align="center">
-                <Shield size={20} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
-                <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>You've Applied</Text>
-              </Row>
-              <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>
-                Your application has been submitted. You can edit your application any time.
-              </Text>
-            </Stack>
-          )}
-
-          <Text style={{ color: colors.text[t].secondary }}>{job.title}</Text>
-
-          {/* Company info */}
-          {job.organization && (
-            <Row gap={8} align="center">
-              <Building2 size={24} color={colors.text[t].tertiary} />
-              <Text style={{ color: colors.text[t].secondary }}>{job.organization.name}</Text>
-            </Row>
-          )}
-
-          {/* Job metadata */}
-          <Row gap={12} style={{ flexWrap: 'wrap' }}>
-            {job.location && (
-              <Row gap={8} align="center">
-                <MapPin size={20} color={colors.text[t].tertiary} />
-                <Text style={{ color: colors.text[t].secondary }}>
-                  {typeof job.location === 'string'
-                    ? job.location
-                    : job.location &&
-                        typeof job.location === 'object' &&
-                        'city' in job.location
-                      ? [
-                          job.location.city,
-                          job.location.state,
-                          job.location.zip_code,
-                          job.location.country,
-                        ]
-                          .filter(Boolean)
-                          .join(', ')
-                      : ''}
-                </Text>
-              </Row>
-            )}
-            {employmentType && (
-              <Row gap={8} align="center">
-                <Briefcase size={20} color={colors.text[t].tertiary} />
-                <Text style={{ color: colors.text[t].secondary }}>{employmentType}</Text>
-              </Row>
-            )}
-            {remoteOption && (
-              <Chip
-                style={{
-                  backgroundColor: colors.primary[500],
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                }}
-              >
-                {remoteOption}
-              </Chip>
-            )}
-          </Row>
-
-          {/* Pay range */}
-          {payRange && (
-            <Row gap={8} align="center">
-              <DollarSign size={18} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
-              <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>{payRange}</Text>
-            </Row>
-          )}
-
-          {/* Benefits Summary */}
-          {job.benefits_summary && (
-            <Stack gap={8} padding="sm" style={{ backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50], borderRadius: 7 }}>
-              <Row gap={8} align="center">
-                <Heart size={20} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
-                <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>Benefits</Text>
-              </Row>
-              <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>{job.benefits_summary}</Text>
-            </Stack>
-          )}
-
-          <Separator />
-
-          {/* Description */}
-          <Stack gap={8}>
-            <Text style={{ color: colors.text[t].secondary }}>Job Description</Text>
-            <Text style={{ color: colors.text[t].secondary, lineHeight: 16 }}>
-              {typeof job.description === 'string'
-                ? job.description
-                : job.description
-                  ? extractPlainText(job.description as JSONContent)
-                  : ''}
+      <Stack gap={20}>
+        {/* Already applied — the header offers "View application"; this is
+            the one line that says what that means. It replaced a bright
+            green banner, one of the 29 hardcoded hexes this screen used to
+            colour its own blocks. */}
+        {hasApplied && (
+          <Row
+            gap={8}
+            align="center"
+            wrap
+            padding="sm"
+            borderRadius={8}
+            borderWidth={1}
+            borderColor={colors.border[t].default}
+            style={{ backgroundColor: colors.bg[t].subtle }}
+          >
+            <Check size={18} color={colors.fg[t].success} />
+            <Text style={{ color: colors.text[t].secondary, flex: 1, minWidth: 0 }}>
+              You've applied. You can edit your application any time.
             </Text>
-          </Stack>
+          </Row>
+        )}
 
-          {/* Requirements Section */}
-          {(job.minimum_education_level ||
-            job.minimum_years_experience ||
-            job.require_background_check ||
-            job.require_drug_test ||
-            job.require_drivers_license ||
-            job.security_clearance_required ||
-            job.travel_percentage) && (
-            <>
-              <Separator />
-              <Stack gap={12}>
-                <Text style={{ color: colors.text[t].secondary }}>Requirements</Text>
-                <Stack gap={8}>
-                  {job.minimum_education_level && (
-                    <Row gap={8} align="center">
-                      <Award size={20} color={t === 'dark' ? colors.rose[300] : colors.rose[600]} />
-                      <Text style={{ color: colors.text[t].secondary }}>
-                        {formatEducationLevel(job.minimum_education_level)}
+        {/* Pay and schedule as one figure row, the same block the dashboard
+            and the ATS use. These were four separate idioms before: a green
+            dollar line, an icon row, a chip, and a yellow deadline card. */}
+        {metrics.length > 0 && <MetricRow bordered>{metrics}</MetricRow>}
+
+        {job.benefits_summary && (
+          <Section title="Benefits">
+            <Text style={{ color: colors.text[t].secondary }}>{job.benefits_summary}</Text>
+          </Section>
+        )}
+
+        {/* No separator here: the metric row already closes with a hairline,
+            and two rules a gap apart read as an empty band. */}
+        <Section title="Job description">
+          <Text style={{ color: colors.text[t].secondary, lineHeight: 22 }}>
+            {typeof job.description === 'string'
+              ? job.description
+              : job.description
+                ? extractPlainText(job.description as JSONContent)
+                : ''}
+          </Text>
+        </Section>
+
+        {/* Requirements — answered against the viewer's own record where
+            that can be done honestly, and listed plainly where it cannot.
+            The prototype leads this screen with "5 of 7 met" because the
+            question a tradesperson has is "can I get this one", not "what
+            does this want". */}
+        {requirements.length > 0 && (
+          <>
+            <Separator />
+            <Section
+              title="Requirements"
+              right={
+                summary ? (
+                  <Text style={{ color: colors.text[t].secondary }}>
+                    {summary.met} of {summary.checkable} met
+                  </Text>
+                ) : null
+              }
+            >
+              <Stack gap={8}>
+                {requirements.map((requirement) => {
+                  const Icon =
+                    requirement.status === 'met'
+                      ? Check
+                      : requirement.status === 'unmet'
+                        ? X
+                        : Minus
+                  // `success` reads as "good news"; a met requirement is
+                  // simply true, so it takes the same emphasis as a link.
+                  // `attention` is the token for "act on this", which is
+                  // exactly what an unmet requirement is — not an error.
+                  const tone =
+                    requirement.status === 'met'
+                      ? colors.text[t].emphasis
+                      : requirement.status === 'unmet'
+                        ? colors.text[t].attention
+                        : colors.text[t].tertiary
+                  return (
+                    <Row key={requirement.id} gap={8} align="center">
+                      <Icon size={18} color={tone} />
+                      <Text style={{ color: colors.text[t].secondary, flex: 1, minWidth: 0 }}>
+                        {requirement.label}
                       </Text>
                     </Row>
-                  )}
-                  {job.minimum_years_experience && (
-                    <Row gap={8} align="center">
-                      <Clock size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-                      <Text style={{ color: colors.text[t].secondary }}>
-                        {job.minimum_years_experience}+ years of experience
-                      </Text>
-                    </Row>
-                  )}
-                  {job.require_background_check && (
-                    <Row gap={8} align="center">
-                      <Shield size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-                      <Text style={{ color: colors.text[t].secondary }}>
-                        Background check required
-                        {intJob.background_check_type && ` (${intJob.background_check_type})`}
-                      </Text>
-                    </Row>
-                  )}
-                  {job.require_drug_test && (
-                    <Row gap={8} align="center">
-                      <Shield size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-                      <Text style={{ color: colors.text[t].secondary }}>Drug test required</Text>
-                    </Row>
-                  )}
-                  {job.require_drivers_license && (
-                    <Row gap={8} align="center">
-                      <Briefcase size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-                      <Text style={{ color: colors.text[t].secondary }}>
-                        Driver's license required
-                        {intJob.drivers_license_type && ` (${intJob.drivers_license_type})`}
-                      </Text>
-                    </Row>
-                  )}
-                  {job.security_clearance_required && (
-                    <Row gap={8} align="center">
-                      <Shield size={20} color={t === 'dark' ? colors.rose[300] : colors.rose[600]} />
-                      <Text style={{ color: colors.text[t].secondary }}>
-                        Security clearance: {job.security_clearance_required}
-                      </Text>
-                    </Row>
-                  )}
-                  {job.travel_percentage && job.travel_percentage > 0 && (
-                    <Row gap={8} align="center">
-                      <Plane size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-                      <Text style={{ color: colors.text[t].secondary }}>Travel: {job.travel_percentage}%</Text>
-                    </Row>
-                  )}
-                </Stack>
+                  )
+                })}
               </Stack>
-            </>
-          )}
-
-          {/* Work Schedule & Location */}
-          {(intJob.work_schedule_details ||
-            intJob.relocation_assistance_offered ||
-            intJob.timezone) && (
-            <>
-              <Separator />
-              <Stack gap={12}>
-                <Text style={{ color: colors.text[t].secondary }}>Work Details</Text>
-                <Stack gap={8}>
-                  {intJob.work_schedule_details && (
-                    <Row gap={8} align="center">
-                      <Clock size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-                      <Text style={{ color: colors.text[t].secondary }}>{intJob.work_schedule_details}</Text>
-                    </Row>
-                  )}
-                  {intJob.timezone && (
-                    <Row gap={8} align="center">
-                      <MapPin size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-                      <Text style={{ color: colors.text[t].secondary }}>Timezone: {intJob.timezone}</Text>
-                    </Row>
-                  )}
-                  {intJob.relocation_assistance_offered && (
-                    <Row gap={8} align="center">
-                      <Home size={20} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
-                      <Text style={{ color: colors.text[t].secondary }}>
-                        Relocation assistance available
-                        {intJob.relocation_assistance_details &&
-                          `: ${intJob.relocation_assistance_details}`}
-                      </Text>
-                    </Row>
-                  )}
-                </Stack>
-              </Stack>
-            </>
-          )}
-
-          {/* Deadlines */}
-          {intJob.application_deadline && (
-            <>
-              <Separator />
-              <Stack gap={8} padding="sm" style={{ backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[50], borderRadius: 7 }}>
-                <Row gap={8} align="center">
-                  <Calendar size={20} color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]} />
-                  <Text style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[700] }}>Application Deadline</Text>
-                </Row>
-                <Text style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[700] }}>
-                  {new Date(intJob.application_deadline).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
+              {signedIn && summary === null && (
+                <Text style={{ color: colors.text[t].tertiary }}>
+                  None of these can be checked against your profile.
                 </Text>
-              </Stack>
-            </>
-          )}
+              )}
+              {!signedIn && (
+                <Text style={{ color: colors.text[t].tertiary }}>
+                  Sign in to see which of these you already meet.
+                </Text>
+              )}
+            </Section>
+          </>
+        )}
 
-          {/* Required Certifications */}
-          {intJob.certifications && intJob.certifications.length > 0 && (
-            <>
-              <Separator />
-              <Stack gap={12}>
-                <Text style={{ color: colors.text[t].secondary }}>Required Certifications</Text>
-                <Row gap={8} style={{ flexWrap: 'wrap' }}>
-                  {intJob.certifications.map((cert: { id: string; name: string }) => (
-                    <Chip
-                      key={cert.id}
-                      style={{
-                        backgroundColor: t === 'dark' ? colors.error[800] : colors.error[100],
-                        paddingHorizontal: 12,
-                        paddingVertical: 8,
-                      }}
-                    >
-                      {cert.name}
-                    </Chip>
-                  ))}
-                </Row>
-              </Stack>
-            </>
-          )}
-
-          {/* Required Skills */}
-          {intJob.skills && intJob.skills.length > 0 && (
-            <>
-              <Separator />
-              <Stack gap={12}>
-                <Text style={{ color: colors.text[t].secondary }}>Required Skills</Text>
-                <Row gap={8} style={{ flexWrap: 'wrap' }}>
-                  {(intJob.skills ?? []).map((skill) => {
-                    const label =
-                      skill.name ??
-                      (skill.taxonomy ? `${skill.taxonomy.toUpperCase()} ${skill.id}` : skill.id)
-                    if (!label) {
-                      return null
-                    }
-                    return (
-                      <Chip
-                        key={skill.id}
-                        style={{
-                          backgroundColor: colors.primary[500],
-                          paddingHorizontal: 12,
-                          paddingVertical: 8,
-                        }}
-                      >
-                        {label}
-                      </Chip>
-                    )
-                  })}
-                </Row>
-              </Stack>
-            </>
-          )}
-
-          {/* Soft Skills Match Section */}
-          {hasSoftSkillsRequirements && (
-            <>
-              <Separator />
-              <Stack gap={12}>
-                <Row justify="space-between" align="center">
-                  <Text style={{ color: colors.text[t].secondary }}>Your Soft Skills Match</Text>
-                  {matchData?.score !== null && matchData?.score !== undefined && (
-                    <Chip
-                      style={{
-                        backgroundColor:
-                          matchData.score >= 80
-                            ? (t === 'dark' ? colors.green[800] : colors.green[100])
-                            : matchData.score >= 60
-                              ? (t === 'dark' ? colors.yellow[800] : colors.yellow[100])
-                              : (t === 'dark' ? colors.error[800] : colors.error[100]),
-                        paddingHorizontal: 12,
-                        paddingVertical: 8,
-                      }}
-                    >
-                      {Math.round(matchData.score)}% Match
-                    </Chip>
-                  )}
-                </Row>
-
-                {isLoadingMatch ? (
-                  <Stack gap={8} align="center" style={{ paddingVertical: 16 }}>
-                    <Spinner variant="ios" size="sm" color="primary" />
-                    <Text style={{ color: colors.text[t].secondary }}>Calculating match...</Text>
-                  </Stack>
-                ) : matchData?.needsSelfAssessment ? (
-                  <Stack
-                    gap={12}
-                    padding="md"
-                    style={{
-                      backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50],
-                      borderRadius: 7,
-                      borderWidth: 1,
-                      borderColor: t === 'dark' ? colors.blue[700] : colors.blue[300],
-                    }}
-                  >
-                    <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>Complete Your Assessment</Text>
-                    <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>
-                      Complete your soft skills assessment to see how well you match this job's
-                      requirements.
+        {/* Work Schedule & Location */}
+        {(intJob.work_schedule_details ||
+          intJob.relocation_assistance_offered ||
+          intJob.timezone) && (
+          <>
+            <Separator />
+            <Section title="Work details">
+              <Stack gap={8}>
+                {intJob.work_schedule_details && (
+                  <Row gap={8} align="center">
+                    <Clock size={18} color={colors.icon[t].muted} />
+                    <Text style={{ color: colors.text[t].secondary, flex: 1, minWidth: 0 }}>
+                      {intJob.work_schedule_details}
                     </Text>
-                    <Button
-                      variant="filled" color="primary"
-                      size="sm"
-                      onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}
-                    >
-                      Start Assessment
-                    </Button>
-                  </Stack>
-                ) : matchData?.details && matchData.details.length > 0 ? (
-                  <Stack gap={16}>
-                    {/* Skill-by-skill breakdown */}
-                    <Stack gap={8}>
-                      {matchData.details.map((detail) => (
-                        <SoftSkillsMatchIndicator
-                          key={detail.skillId}
-                          skillName={detail.skillName ?? ''}
-                          userRating={detail.userRating}
-                          requiredImportance={detail.requiredImportance}
-                          meetsRequirement={detail.meetsRequirement ?? false}
-                        />
-                      ))}
-                    </Stack>
-
-                    {/* Skills to Develop */}
-                    {matchData.details.some((detail) => !(detail.meetsRequirement ?? false)) && (
-                      <Stack
-                        gap={8}
-                        padding="md"
-                        style={{
-                          backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[50],
-                          borderRadius: 7,
-                          borderWidth: 1,
-                          borderColor: t === 'dark' ? colors.yellow[700] : colors.yellow[300],
-                        }}
-                      >
-                        <Row gap={8} align="center">
-                          <TrendingUp size={20} color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]} />
-                          <Text style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[700] }}>Skills to Develop</Text>
-                        </Row>
-                        <Stack gap={4}>
-                          {matchData.details
-                            .filter((detail) => !(detail.meetsRequirement ?? false))
-                            .map((detail) => (
-                                <Text key={detail.skillId} style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[700] }}>
-                                  • {detail.skillName ?? ''} (currently {detail.userRating ?? 0}/5, need{' '}
-                                  {detail.requiredImportance}/5)
-                                </Text>
-                              ))}
-                        </Stack>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}
-                        >
-                          Update Assessment
-                        </Button>
-                      </Stack>
-                    )}
-                  </Stack>
-                ) : null}
+                  </Row>
+                )}
+                {intJob.timezone && (
+                  <Row gap={8} align="center">
+                    <MapPin size={18} color={colors.icon[t].muted} />
+                    <Text style={{ color: colors.text[t].secondary, flex: 1, minWidth: 0 }}>
+                      Timezone: {intJob.timezone}
+                    </Text>
+                  </Row>
+                )}
+                {intJob.relocation_assistance_offered && (
+                  <Row gap={8} align="center">
+                    <Home size={18} color={colors.icon[t].muted} />
+                    <Text style={{ color: colors.text[t].secondary, flex: 1, minWidth: 0 }}>
+                      Relocation assistance available
+                      {intJob.relocation_assistance_details &&
+                        `: ${intJob.relocation_assistance_details}`}
+                    </Text>
+                  </Row>
+                )}
               </Stack>
-            </>
-          )}
-        </Stack>
-      </ScrollView>
+            </Section>
+          </>
+        )}
+
+        {/* Required Certifications */}
+        {intJob.certifications && intJob.certifications.length > 0 && (
+          <>
+            <Separator />
+            <Section title="Required certifications">
+              <Row gap={8} wrap>
+                {intJob.certifications.map((cert: { id: string; name: string }) => (
+                  <Chip key={cert.id} size="sm">
+                    {cert.name}
+                  </Chip>
+                ))}
+              </Row>
+            </Section>
+          </>
+        )}
+
+        {/* Required Skills */}
+        {intJob.skills && intJob.skills.length > 0 && (
+          <>
+            <Separator />
+            <Section title="Required skills">
+              <Row gap={8} wrap>
+                {(intJob.skills ?? []).map((skill) => {
+                  const label =
+                    skill.name ??
+                    (skill.taxonomy ? `${skill.taxonomy.toUpperCase()} ${skill.id}` : skill.id)
+                  if (!label) {
+                    return null
+                  }
+                  return (
+                    <Chip key={skill.id} size="sm">
+                      {label}
+                    </Chip>
+                  )
+                })}
+              </Row>
+            </Section>
+          </>
+        )}
+
+        {/* Soft Skills Match Section */}
+        {hasSoftSkillsRequirements && (
+          <>
+            <Separator />
+            <Section
+              title="Your soft skills match"
+              right={
+                matchData?.score !== null && matchData?.score !== undefined ? (
+                  <Text style={{ color: colors.text[t].secondary }}>
+                    {Math.round(matchData.score)}% match
+                  </Text>
+                ) : null
+              }
+            >
+              {isLoadingMatch ? (
+                <Row gap={8} align="center">
+                  <Spinner variant="ios" size="sm" color="primary" />
+                  <Text style={{ color: colors.text[t].secondary }}>Calculating match…</Text>
+                </Row>
+              ) : matchData?.needsSelfAssessment ? (
+                <Stack
+                  gap={12}
+                  padding="md"
+                  borderRadius={8}
+                  borderWidth={1}
+                  borderColor={colors.border[t].default}
+                  style={{ backgroundColor: colors.bg[t].subtle }}
+                  align="flex-start"
+                >
+                  <Text style={{ color: colors.text[t].secondary }}>
+                    Complete your soft skills assessment to see how well you match this job's
+                    requirements.
+                  </Text>
+                  <Button
+                    variant="filled"
+                    color="primary"
+                    size="sm"
+                    onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}
+                  >
+                    Start assessment
+                  </Button>
+                </Stack>
+              ) : matchData?.details && matchData.details.length > 0 ? (
+                <Stack gap={16}>
+                  {/* Skill-by-skill breakdown */}
+                  <Stack gap={8}>
+                    {matchData.details.map((detail) => (
+                      <SoftSkillsMatchIndicator
+                        key={detail.skillId}
+                        skillName={detail.skillName ?? ''}
+                        userRating={detail.userRating}
+                        requiredImportance={detail.requiredImportance}
+                        meetsRequirement={detail.meetsRequirement ?? false}
+                      />
+                    ))}
+                  </Stack>
+
+                  {/* Skills to Develop */}
+                  {matchData.details.some((detail) => !(detail.meetsRequirement ?? false)) && (
+                    <Stack
+                      gap={8}
+                      padding="md"
+                      borderRadius={8}
+                      borderWidth={1}
+                      borderColor={colors.border[t].default}
+                      style={{ backgroundColor: colors.bg[t].subtle }}
+                      align="flex-start"
+                    >
+                      <Row gap={8} align="center">
+                        <TrendingUp size={18} color={colors.text[t].attention} />
+                        <Text style={{ color: colors.text[t].attention }}>Skills to develop</Text>
+                      </Row>
+                      <Stack gap={4}>
+                        {matchData.details
+                          .filter((detail) => !(detail.meetsRequirement ?? false))
+                          .map((detail) => (
+                            <Text key={detail.skillId} style={{ color: colors.text[t].secondary }}>
+                              {detail.skillName ?? ''} — {detail.userRating ?? 0}/5 now, needs{' '}
+                              {detail.requiredImportance}/5
+                            </Text>
+                          ))}
+                      </Stack>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}
+                      >
+                        Update assessment
+                      </Button>
+                    </Stack>
+                  )}
+                </Stack>
+              ) : null}
+            </Section>
+          </>
+        )}
+      </Stack>
     )
   }
 
   // External job display
   if (isExternal && 'company_name' in job) {
+    const externalMetrics = [
+      job.job_type ? (
+        <MetricBlock key="schedule" label="Schedule" value={formatEmploymentType(job.job_type)} />
+      ) : null,
+      job.location ? <MetricBlock key="workplace" label="Location" value={job.location} /> : null,
+    ].filter((block): block is ReactElement => block !== null)
+
     return (
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        <Stack gap={16} padding="md">
-          <Stack gap={8}>
-            <Row>
-              <Chip style={{ backgroundColor: t === 'dark' ? colors.error[800] : colors.error[100], paddingHorizontal: 8, paddingVertical: 4 }}>
-                External Job
-              </Chip>
-            </Row>
-            <Text style={{ color: colors.text[t].secondary }}>{job.title}</Text>
-          </Stack>
+      <Stack gap={20}>
+        {/* The posting's own title and employer are in the screen header,
+            the same as an internal one. What stays here is what makes this
+            listing different: it lives somewhere else. */}
+        <Row gap={8} wrap>
+          <Chip size="sm">External listing</Chip>
+          {job.job_category && <Chip size="sm">{job.job_category}</Chip>}
+        </Row>
 
-          {/* Company info */}
-          {job.company_name && (
-            <Row gap={8} align="center">
-              <Building2 size={24} color={colors.text[t].tertiary} />
-              <Text style={{ color: colors.text[t].secondary }}>{job.company_name}</Text>
-            </Row>
-          )}
+        {externalMetrics.length > 0 && <MetricRow bordered>{externalMetrics}</MetricRow>}
 
-          {/* Job metadata */}
-          <Row gap={12} style={{ flexWrap: 'wrap' }}>
-            {job.location && (
-              <Row gap={8} align="center">
-                <MapPin size={20} color={colors.text[t].tertiary} />
-                <Text style={{ color: colors.text[t].secondary }}>{job.location}</Text>
-              </Row>
-            )}
-            {job.job_type && (
-              <Row gap={8} align="center">
-                <Briefcase size={20} color={colors.text[t].tertiary} />
-                <Text style={{ color: colors.text[t].secondary }}>{formatEmploymentType(job.job_type)}</Text>
-              </Row>
-            )}
-          </Row>
-
-          {/* Job Category */}
-          {job.job_category && (
-            <Row>
-              <Chip style={{ backgroundColor: t === 'dark' ? colors.blue[800] : colors.blue[100], paddingHorizontal: 8, paddingVertical: 4 }}>
-                {job.job_category}
-              </Chip>
-            </Row>
-          )}
-
-          <Separator />
-
-          {/* Description */}
-          {job.description && (
-            <Stack gap={8}>
-              <Text style={{ color: colors.text[t].secondary }}>Job Description</Text>
-              <Text style={{ color: colors.text[t].secondary, lineHeight: 16 }}>
+        {job.description && (
+          <>
+            <Separator />
+            <Section title="Job description">
+              <Text style={{ color: colors.text[t].secondary, lineHeight: 22 }}>
                 {typeof job.description === 'string'
                   ? job.description
                   : extractPlainText(job.description as JSONContent)}
               </Text>
-            </Stack>
-          )}
+            </Section>
+          </>
+        )}
 
-          {/* Industries */}
-          {job.industries && job.industries.length > 0 && (
-            <>
-              <Separator />
-              <Stack gap={12}>
-                <Text style={{ color: colors.text[t].secondary }}>Industries</Text>
-                <Row gap={8} style={{ flexWrap: 'wrap' }}>
-                  {job.industries.map((industry: { industry_name: string }, idx: number) => (
-                    <Chip
-                      key={`${industry.industry_name}-${idx}`}
-                      style={{
-                        backgroundColor: t === 'dark' ? colors.blue[800] : colors.blue[100],
-                        paddingHorizontal: 12,
-                        paddingVertical: 8,
-                      }}
-                    >
-                      {industry.industry_name}
-                    </Chip>
-                  ))}
-                </Row>
-              </Stack>
-            </>
-          )}
+        {job.industries && job.industries.length > 0 && (
+          <>
+            <Separator />
+            <Section title="Industries">
+              <Row gap={8} wrap>
+                {job.industries.map((industry: { industry_name: string }, idx: number) => (
+                  <Chip key={`${industry.industry_name}-${idx}`} size="sm">
+                    {industry.industry_name}
+                  </Chip>
+                ))}
+              </Row>
+            </Section>
+          </>
+        )}
 
-          {/* External Link Notice */}
-          <Stack gap={8} padding="sm" style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], borderRadius: 7 }}>
-            <Row gap={8} align="center">
-              <ExternalLink size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-              <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>External Application</Text>
-            </Row>
-            <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>
-              This job is hosted on an external site. You'll be directed to apply through their
-              application process.
-            </Text>
-          </Stack>
-        </Stack>
-      </ScrollView>
+        <Row
+          gap={8}
+          align="center"
+          wrap
+          padding="sm"
+          borderRadius={8}
+          borderWidth={1}
+          borderColor={colors.border[t].default}
+          style={{ backgroundColor: colors.bg[t].subtle }}
+        >
+          <ExternalLink size={18} color={colors.icon[t].muted} />
+          <Text style={{ color: colors.text[t].secondary, flex: 1, minWidth: 0 }}>
+            This job is hosted on an external site. Applying will take you to their own form.
+          </Text>
+        </Row>
+      </Stack>
     )
   }
 
