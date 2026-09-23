@@ -1,14 +1,14 @@
-import { DashboardWidget, gap, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { gap, H3, Text, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 export const AssessmentsLandingRight = () => {
   const { theme } = useThemeContext()
 
   return (
-    <DashboardWidget gap={gap.md}>
+    <Stack gap={gap.md}>
       <Stack gap={gap.md}>
         <Stack gap={gap.xs}>
-          <Text style={{ color: colors.text[theme].secondary }}>Why assessments matter</Text>
+          <H3 style={{ color: colors.text[theme].primary }}>Why assessments matter</H3>
           <Text style={{ color: colors.text[theme].secondary }}>
             Your answers create a shared language for coaches, managers, and teammates to understand
             where you are today and how to help you grow.
@@ -46,6 +46,6 @@ export const AssessmentsLandingRight = () => {
           saved and compared with your historical trends.
         </Text>
       </Stack>
-    </DashboardWidget>
+    </Stack>
   )
 }

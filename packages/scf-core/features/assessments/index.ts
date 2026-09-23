@@ -1,4 +1,4 @@
-export { AssessmentsLandingLeft, AssessmentsLandingRight } from './components'
+export { AssessmentsHub, AssessmentsLandingRight } from './components'
 export type {
   AssessmentProgressProps,
   AssessmentStep,
@@ -9,3 +9,5 @@ export { AssessmentWizard } from './components/AssessmentWizard'
 export { useAssessmentStatus } from './hooks/useAssessmentStatus'
 export { useAssessmentSave } from './hooks/useAssessmentSave'
 export { toError } from './utils/toError'
+export { useAssessmentCatalogue, readCompleted } from './assessment-catalogue'
+export type { AssessmentEntry } from './assessment-catalogue'
