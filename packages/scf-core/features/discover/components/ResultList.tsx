@@ -3,14 +3,13 @@ import { Search } from 'lucide-react-native'
 import { forwardRef, memo, useImperativeHandle, useMemo, useRef } from 'react'
 import { Platform } from 'react-native'
 import { ScrollView, Stack } from '@scaffald/ui'
-import { DirectoryCard } from '@scf/core/components/DirectoryCard'
-import type { DirectoryCardBadge, DirectoryCardMetric } from '@scf/core/components/DirectoryCard'
 import type { JobMapPin } from '../hooks/useJobs'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 import type { TalentProfile } from '../types'
 import { JobCard } from './JobCard'
 import { OrganizationCard } from './OrganizationCard'
 import { ResultCard } from './ResultCard'
+import { WorkerRow } from './WorkerRow'
 
 type ResultItem =
   | ({ type: 'profile' } & TalentProfile)
@@ -37,51 +36,24 @@ type ResultListProps = {
   profileCardVariant?: 'compact' | 'directory'
 }
 
-/** Map TalentProfile → DirectoryCard props */
-function profileToDirectoryProps(profile: TalentProfile) {
-  // Always emit fixed-position columns so values align across cards in the list
-  // even when individual fields are missing. Empty values render as em-dash.
-  const metrics: DirectoryCardMetric[] = [
-    {
-      value: profile.score > 0 ? profile.score : '—',
-      label: 'Score',
-    },
-    {
-      value:
-        profile.experienceYears > 0
-          ? `${profile.experienceYears} ${profile.experienceYears === 1 ? 'year' : 'years'}`
-          : '—',
-      label: 'Experience',
-    },
-    {
-      value: profile.hourlyRate > 0 ? `$${profile.hourlyRate}` : '—',
-      label: 'Rate',
-    },
-  ]
-
-  const badges: DirectoryCardBadge[] = [
-    ...profile.certifications.map((cert) => ({
-      id: `cert-${cert}`,
-      label: cert,
-      color: 'primary' as const,
-    })),
-    ...profile.skills.map((skill) => ({
-      id: `skill-${skill}`,
-      label: skill,
-      color: 'accent' as const,
-    })),
-  ]
-
-  return { metrics, badges }
-}
-
 export interface ResultListRef {
   scrollToCard: (profileId: string) => void
 }
 
 const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
   (
-    { profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading, error, onRetry, onCardHover, profileCardVariant = 'compact' },
+    {
+      profiles,
+      organizations = [],
+      jobs = [],
+      selectedId,
+      onSelect,
+      isLoading,
+      error,
+      onRetry,
+      onCardHover,
+      profileCardVariant = 'compact',
+    },
     ref
   ) => {
     const scrollViewRef = useRef<ScrollView>(null)
@@ -208,7 +180,12 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
           renderToHardwareTextureAndroid
           style={{ flex: 1, width: '100%' }}
         >
-          <Stack gap={8} paddingVertical={8} paddingBottom={24} width="100%">
+          <Stack
+            gap={profileCardVariant === 'directory' ? 0 : 8}
+            paddingVertical={8}
+            paddingBottom={24}
+            width="100%"
+          >
             {allResults.length === 0 ? (
               <EmptyState
                 icon={Search}
@@ -220,27 +197,20 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
                 <Stack
                   key={result.id}
                   // @ts-expect-error web-only mouse events
-                  onMouseEnter={Platform.OS === 'web' && onCardHover ? () => onCardHover(result.id) : undefined}
-                  onMouseLeave={Platform.OS === 'web' && onCardHover ? () => onCardHover(null) : undefined}
+                  onMouseEnter={
+                    Platform.OS === 'web' && onCardHover ? () => onCardHover(result.id) : undefined
+                  }
+                  onMouseLeave={
+                    Platform.OS === 'web' && onCardHover ? () => onCardHover(null) : undefined
+                  }
                 >
                   {result.type === 'profile' ? (
                     profileCardVariant === 'directory' ? (
-                      (() => {
-                        const { metrics, badges } = profileToDirectoryProps(result)
-                        return (
-                          <DirectoryCard
-                            id={result.id}
-                            name={result.name}
-                            role={result.title}
-                            location={result.locationLabel}
-                            avatarUrl={result.avatarUrl}
-                            badges={badges}
-                            metrics={metrics}
-                            isSelected={result.id === selectedId}
-                            onPress={onSelect}
-                          />
-                        )
-                      })()
+                      <WorkerRow
+                        profile={result}
+                        isSelected={result.id === selectedId}
+                        onSelect={onSelect}
+                      />
                     ) : (
                       <ResultCard
                         ref={(ref) => registerCardRef(result.id, ref)}

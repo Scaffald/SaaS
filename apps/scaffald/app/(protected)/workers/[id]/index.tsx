@@ -4,7 +4,16 @@ import { useLocalSearchParams } from 'expo-router'
 
 export default function DiscoverWorkerProfilePage() {
   const { id } = useLocalSearchParams<{ id?: string }>()
-  const { left, right, breadcrumbItems } = DiscoverWorkerProfileScreen({ userId: id })
+  const { content, screenTitle, screenKicker, breadcrumbItems } = DiscoverWorkerProfileScreen({
+    userId: id,
+  })
 
-  return <DashboardPage leftContent={left} rightContent={right} breadcrumbItems={breadcrumbItems} />
+  return (
+    <DashboardPage
+      leftContent={content}
+      screenTitle={screenTitle}
+      screenKicker={screenKicker}
+      breadcrumbItems={breadcrumbItems}
+    />
+  )
 }

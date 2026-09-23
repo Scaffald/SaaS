@@ -1,5 +1,14 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { ListToolbar, RangeSlider, Row, Stack, Text, useResponsive, useThemeContext } from '@scaffald/ui'
+import {
+  ListToolbar,
+  RangeSlider,
+  Row,
+  SegmentedControl,
+  Stack,
+  Text,
+  useResponsive,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useDebounce } from '@scf/core/utils/useDebounce'
@@ -12,6 +21,15 @@ import type { WorkerSortBy } from './components/WorkersBottomToolbar'
 import { DiscoverWorkersLeft } from './discover-workers-left'
 import { DiscoverWorkersRight } from './discover-workers-right'
 import { useToolbarFilters } from '@scf/core/components/toolbarFilters'
+
+const VIEW_SEGMENTS = ['List', 'Map']
+
+/**
+ * The control's segments are `flex: 1` inside an `overflow: hidden` track, so
+ * in a toolbar that runs out of room it silently shrinks until the labels are
+ * cut off ("List | M…"). Hold its width instead.
+ */
+const VIEW_SWITCH_STYLE = { flexShrink: 0, minWidth: 132 } as const
 
 /**
  * Discover Workers Screen Component
@@ -58,10 +76,7 @@ export function DiscoverWorkersScreen() {
     setSortBy('score')
   }
 
-  const hasFilters =
-    searchQuery.length > 0 ||
-    selectedIndustries.length > 0 ||
-    minScore > 0
+  const hasFilters = searchQuery.length > 0 || selectedIndustries.length > 0 || minScore > 0
 
   // Min Score popover content (for header pill on desktop)
   const scorePopoverContent = useMemo(
@@ -75,13 +90,7 @@ export function DiscoverWorkersScreen() {
             {minScore}
           </Text>
         </Row>
-        <RangeSlider
-          value={minScore}
-          onValueChange={setMinScore}
-          min={0}
-          max={100}
-          step={5}
-        />
+        <RangeSlider value={minScore} onValueChange={setMinScore} min={0} max={100} step={5} />
       </Stack>
     ),
     [minScore, t]
@@ -94,11 +103,12 @@ export function DiscoverWorkersScreen() {
     pills.push({
       id: 'industry',
       label: 'Trade',
-      value: selectedIndustries.length > 0
-        ? selectedIndustries.length === 1
-          ? selectedIndustries[0]
-          : `${selectedIndustries.length} selected`
-        : undefined,
+      value:
+        selectedIndustries.length > 0
+          ? selectedIndustries.length === 1
+            ? selectedIndustries[0]
+            : `${selectedIndustries.length} selected`
+          : undefined,
       isActive: selectedIndustries.length > 0,
       onPress: () => {},
     })
@@ -135,9 +145,20 @@ export function DiscoverWorkersScreen() {
   const [resultCount, setResultCount] = useState<number | undefined>(undefined)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const openFilters = useCallback(() => setFiltersOpen(true), [])
-  const { filterContent, chips, activeFilterCount } = useToolbarFilters(
-    filterPills,
-    openFilters,
+  const { filterContent, chips, activeFilterCount } = useToolbarFilters(filterPills, openFilters)
+
+  // List and Map are two views of one search, so the switch belongs in the
+  // search row rather than reading as a sibling screen (#834). The drawer
+  // entry stays for anyone who navigates that way.
+  const viewSwitch = (
+    <SegmentedControl
+      segments={VIEW_SEGMENTS}
+      selectedIndex={0}
+      onSelectionChange={(index) => {
+        if (index === 1) router.push(ROUTES.WORKERS.MAP.path)
+      }}
+      style={VIEW_SWITCH_STYLE}
+    />
   )
 
   const header = isMobile ? null : (
@@ -153,6 +174,7 @@ export function DiscoverWorkersScreen() {
       onClearAll={hasFilters ? handleReset : undefined}
       resultCount={resultCount}
       resultNoun="worker"
+      actions={viewSwitch}
     />
   )
 
