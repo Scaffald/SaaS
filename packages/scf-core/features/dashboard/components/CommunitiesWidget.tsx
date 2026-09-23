@@ -8,7 +8,7 @@ import {
 } from '@scf/core/utils/communities-sdk-hooks'
 import {
   Button,
-  DashboardWidget,
+  H3,
   Row,
   Skeleton,
   SkeletonGroup,
@@ -125,13 +125,7 @@ function CommunityBadge({
   )
 }
 
-function PostPreview({
-  post,
-  onPress,
-}: {
-  post: CommunityPostLite
-  onPress: () => void
-}) {
+function PostPreview({ post, onPress }: { post: CommunityPostLite; onPress: () => void }) {
   const { theme } = useThemeContext()
   const thumb = post.media_thumbnails?.[0] ?? post.media_urls?.[0] ?? null
 
@@ -215,8 +209,7 @@ export function CommunitiesWidget() {
   }, [communitiesData])
 
   const memberIds = useMemo<Set<string>>(() => {
-    const items =
-      (myCommunitiesData as { data?: MyCommunityItem[] } | undefined)?.data ?? []
+    const items = (myCommunitiesData as { data?: MyCommunityItem[] } | undefined)?.data ?? []
     return new Set(items.map((i) => i.community_id))
   }, [myCommunitiesData])
 
@@ -232,10 +225,9 @@ export function CommunitiesWidget() {
     setSelectedId((firstMember ?? communities[0])?.id ?? null)
   }, [communities, memberIds, selectedId])
 
-  const { data: feedData, isLoading: feedLoading } = useCommunityFeed(
-    selectedId ?? undefined,
-    { limit: PREVIEW_LIMIT }
-  )
+  const { data: feedData, isLoading: feedLoading } = useCommunityFeed(selectedId ?? undefined, {
+    limit: PREVIEW_LIMIT,
+  })
 
   const posts = useMemo<CommunityPostLite[]>(() => {
     const pages =
@@ -258,14 +250,8 @@ export function CommunitiesWidget() {
 
   if (communitiesLoading) {
     return (
-      <DashboardWidget>
-        <Row justify="space-between" align="center" paddingBottom={8}>
-          <Text
-            style={{ fontSize: 18, fontWeight: '700', color: colors.text[theme].primary }}
-          >
-            Communities
-          </Text>
-        </Row>
+      <Stack gap={16}>
+        <H3 style={{ color: colors.text[theme].primary }}>Communities</H3>
         <SkeletonGroup gap={10} animation="wave">
           <Row gap={10}>
             {[1, 2, 3].map((i) => (
@@ -273,20 +259,16 @@ export function CommunitiesWidget() {
             ))}
           </Row>
         </SkeletonGroup>
-      </DashboardWidget>
+      </Stack>
     )
   }
 
   if (communities.length === 0) return null
 
   return (
-    <DashboardWidget>
-      <Row justify="space-between" align="center" paddingBottom={8}>
-        <Text
-          style={{ fontSize: 18, fontWeight: '700', color: colors.text[theme].primary }}
-        >
-          Communities
-        </Text>
+    <Stack gap={16}>
+      <Row justify="space-between" align="center" gap={12} wrap>
+        <H3 style={{ color: colors.text[theme].primary, flex: 1, minWidth: 0 }}>Communities</H3>
         <Pressable
           onPress={() => router.push(ROUTES.COMMUNITIES.path)}
           hitSlop={8}
@@ -343,17 +325,10 @@ export function CommunitiesWidget() {
                 marginTop: 8,
               }}
             >
-              <Text
-                size="sm"
-                weight="semibold"
-                style={{ color: colors.text[theme].primary }}
-              >
+              <Text size="sm" weight="semibold" style={{ color: colors.text[theme].primary }}>
                 No posts yet in {selected.name}
               </Text>
-              <Text
-                size="xs"
-                style={{ color: colors.text[theme].secondary, textAlign: 'center' }}
-              >
+              <Text size="xs" style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
                 Be the first to share something.
               </Text>
             </Stack>
@@ -371,9 +346,7 @@ export function CommunitiesWidget() {
 
           <View style={{ marginTop: 12 }}>
             <Row align="center" gap={8} style={{ marginBottom: 8 }}>
-              <Text
-                style={{ fontSize: 12, color: colors.text[theme].secondary, flex: 1 }}
-              >
+              <Text style={{ fontSize: 12, color: colors.text[theme].secondary, flex: 1 }}>
                 {formatMemberCount(selected.member_count)} members
               </Text>
             </Row>
@@ -402,6 +375,6 @@ export function CommunitiesWidget() {
           </View>
         </Stack>
       ) : null}
-    </DashboardWidget>
+    </Stack>
   )
 }

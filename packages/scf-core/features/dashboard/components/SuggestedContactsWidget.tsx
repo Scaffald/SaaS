@@ -1,11 +1,7 @@
-import {
-  useFollowers,
-  useSendConnectionMutation,
-} from '@scf/core/utils/engagement-sdk-hooks'
+import { useFollowers, useSendConnectionMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import {
   Avatar,
   Button,
-  DashboardWidget,
   Row,
   Skeleton,
   SkeletonAvatar,
@@ -15,6 +11,7 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { HomeSection } from './HomeSection'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 
@@ -32,7 +29,7 @@ export function SuggestedContactsWidget() {
 
   if (isLoading) {
     return (
-      <DashboardWidget>
+      <Stack gap={16}>
         <SkeletonGroup gap={16} animation="wave">
           <Skeleton width={140} height={18} borderRadius={4} />
           {[1, 2].map((i) => (
@@ -48,7 +45,7 @@ export function SuggestedContactsWidget() {
             </Row>
           ))}
         </SkeletonGroup>
-      </DashboardWidget>
+      </Stack>
     )
   }
 
@@ -58,24 +55,12 @@ export function SuggestedContactsWidget() {
   if (contacts.length === 0) return null
 
   return (
-    <DashboardWidget>
-      <Text
-        style={{
-          fontSize: 18,
-          fontWeight: '700',
-          color: colors.text[theme].primary,
-          marginBottom: 4,
-        }}
-      >
-        Suggested Contacts
-      </Text>
+    <HomeSection title="Suggested contacts">
       <Stack gap={16}>
         {contacts.map((follow) => {
           const follower = follow.follower
           const id = follower?.id ?? follow.follower_id
-          const name = follower
-            ? `${follower.first_name} ${follower.last_name}`.trim()
-            : 'User'
+          const name = follower ? `${follower.first_name} ${follower.last_name}`.trim() : 'User'
           const headline = ''
           const avatarUrl = follower?.avatar_url
           const initials = name
@@ -90,12 +75,7 @@ export function SuggestedContactsWidget() {
           return (
             <Row key={id} justify="space-between" align="center" gap={12}>
               <Row gap={12} align="center" flex={1}>
-                <Avatar
-                  size={40}
-                  src={avatarUrl || undefined}
-                  initials={initials}
-                  color="gray"
-                />
+                <Avatar size={40} src={avatarUrl || undefined} initials={initials} color="gray" />
                 <Stack gap={2} flex={1}>
                   <Text
                     style={{
@@ -137,6 +117,6 @@ export function SuggestedContactsWidget() {
           )
         })}
       </Stack>
-    </DashboardWidget>
+    </HomeSection>
   )
 }

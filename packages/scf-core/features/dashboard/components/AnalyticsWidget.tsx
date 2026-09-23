@@ -2,7 +2,6 @@ import { useViewAnalytics } from '@scf/core/utils/profile-views-sdk-hooks'
 import { useEngagementMetrics } from '@scf/core/utils/engagement-sdk-hooks'
 import type { EngagementMetrics } from '@scaffald/sdk'
 import {
-  DashboardWidget,
   MetricBlock,
   MetricRow,
   Row,
@@ -10,9 +9,8 @@ import {
   SkeletonGroup,
   Stack,
   Text,
-  useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { HomeSection } from './HomeSection'
 
 function formatNumber(n: number | undefined | null): string {
   if (n == null) return '0'
@@ -44,7 +42,6 @@ function deltaTone(trend: number | undefined | null): 'positive' | 'attention' |
 }
 
 export function AnalyticsWidget() {
-  const { theme } = useThemeContext()
   const { data: analytics, isLoading: loadingAnalytics } = useViewAnalytics()
   const { data: metrics, isLoading: loadingMetrics } = useEngagementMetrics({ days: 30 })
 
@@ -52,7 +49,7 @@ export function AnalyticsWidget() {
 
   if (isLoading) {
     return (
-      <DashboardWidget>
+      <Stack gap={16}>
         <SkeletonGroup gap={16} animation="wave">
           <Row justify="space-between" align="center">
             <Skeleton width={100} height={20} borderRadius={4} />
@@ -68,32 +65,12 @@ export function AnalyticsWidget() {
             ))}
           </Row>
         </SkeletonGroup>
-      </DashboardWidget>
+      </Stack>
     )
   }
 
   return (
-    <DashboardWidget>
-      <Row justify="space-between" align="center" paddingBottom={8}>
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.text[theme].primary,
-          }}
-        >
-          Analytics
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            fontWeight: '700',
-            color: colors.primary[600],
-          }}
-        >
-          View details
-        </Text>
-      </Row>
+    <HomeSection title="Analytics">
       {/* The shared metric block: label above, figure below, delta beneath.
           Two things were removed here rather than restyled.
 
@@ -124,6 +101,6 @@ export function AnalyticsWidget() {
           value={formatNumber((metrics as EngagementMetrics | undefined)?.profile_views)}
         />
       </MetricRow>
-    </DashboardWidget>
+    </HomeSection>
   )
 }

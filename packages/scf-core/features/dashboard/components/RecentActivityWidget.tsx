@@ -1,15 +1,9 @@
 import { useRecentActivity } from '@scf/core/utils/engagement-sdk-hooks'
 import { useProfileViews } from '@scf/core/utils/profile-views-sdk-hooks'
 import type { EngagementEvent } from '@scaffald/sdk'
-import {
-  DashboardWidget,
-  Skeleton,
-  SkeletonGroup,
-  Stack,
-  Text,
-  useThemeContext,
-} from '@scaffald/ui'
+import { Skeleton, SkeletonGroup, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { HomeSection } from './HomeSection'
 
 const formatTimeAgo = (date: Date | string) => {
   const dateObj = date instanceof Date ? date : new Date(date)
@@ -38,7 +32,7 @@ export function RecentActivityWidget() {
 
   if (isLoading) {
     return (
-      <DashboardWidget>
+      <Stack gap={16}>
         <SkeletonGroup gap={16} animation="wave">
           <Skeleton width={120} height={18} borderRadius={4} />
           {[1, 2, 3].map((i) => (
@@ -48,7 +42,7 @@ export function RecentActivityWidget() {
             </Stack>
           ))}
         </SkeletonGroup>
-      </DashboardWidget>
+      </Stack>
     )
   }
 
@@ -80,8 +74,8 @@ export function RecentActivityWidget() {
           You appeared in{' '}
           <Text style={{ fontWeight: '700', color: colors.text[theme].primary }}>
             {viewCount} searches
-          </Text>
-          {' '}this week
+          </Text>{' '}
+          this week
         </Text>
       ),
       timestamp: 'This week',
@@ -91,34 +85,14 @@ export function RecentActivityWidget() {
   // Fallback if no activity
   if (entries.length === 0) {
     return (
-      <DashboardWidget>
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.text[theme].primary,
-          }}
-        >
-          Recent Activity
-        </Text>
-        <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
-          No recent activity to show
-        </Text>
-      </DashboardWidget>
+      <HomeSection title="Recent activity">
+        <Text style={{ color: colors.text[theme].secondary }}>No recent activity to show</Text>
+      </HomeSection>
     )
   }
 
   return (
-    <DashboardWidget>
-      <Text
-        style={{
-          fontSize: 18,
-          fontWeight: '700',
-          color: colors.text[theme].primary,
-        }}
-      >
-        Recent Activity
-      </Text>
+    <HomeSection title="Recent activity">
       <Stack gap={14}>
         {entries.map((entry) => (
           <Stack key={entry.id} gap={4}>
@@ -135,6 +109,6 @@ export function RecentActivityWidget() {
           </Stack>
         ))}
       </Stack>
-    </DashboardWidget>
+    </HomeSection>
   )
 }

@@ -1,7 +1,8 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useUserApplications } from '@scf/core/utils/jobs-sdk-hooks'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, DashboardWidget, DashboardWidgetHeader, SkeletonCard, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, Row, SkeletonText, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { HomeSection } from '@scf/core/features/dashboard/components/HomeSection'
 import { colors } from '@scaffald/ui/tokens'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
@@ -20,7 +21,7 @@ export function InquiryOverviewWidget() {
   })
 
   if (isLoading) {
-    return <SkeletonCard hasAvatar textLines={2} />
+    return <SkeletonText lines={2} />
   }
 
   const data = response?.data ?? []
@@ -31,46 +32,50 @@ export function InquiryOverviewWidget() {
   const entries = data.slice(0, 3)
 
   return (
-    <DashboardWidget gap={12}>
-      <DashboardWidgetHeader title="Negotiations" />
+    <HomeSection title="Negotiations">
       <Text style={{ color: colors.text[theme].secondary }}>
         {data.length === 1
           ? 'You have 1 active inquiry.'
           : `You have ${data.length} active inquiries.`}
       </Text>
       {entries.map((application: ApplicationRecord) => (
-        <Stack
+        <Row
           key={application.id}
-          padding="sm"
-          gap={8}
-          style={{ backgroundColor: colors.bg[theme].default }}
-          borderRadius={12}
-          borderWidth={1}
-          borderColor={colors.border[theme].default}
+          gap={12}
+          align="center"
+          wrap
+          paddingVertical={12}
+          style={{
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border[theme].default,
+          }}
         >
-          <Text style={{ color: colors.text[theme].primary }}>
-            {application.job?.title ?? 'Role'}
-          </Text>
-          <Text style={{ color: colors.text[theme].secondary }}>
-            {application.job?.location ?? 'Location TBD'}
-          </Text>
+          <Stack gap={2} flex={1} minWidth={180}>
+            <Text style={{ color: colors.text[theme].primary }}>
+              {application.job?.title ?? 'Role'}
+            </Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              {application.job?.location ?? 'Location TBD'}
+            </Text>
+          </Stack>
           <Button
             size="sm"
+            variant="outline"
             onPress={() =>
               router.push(
                 buildPath(ROUTES.JOBS.APPLICATIONS.INQUIRY, { applicationId: application.id })
               )
             }
           >
-            View Inquiry
+            View inquiry
           </Button>
-        </Stack>
+        </Row>
       ))}
       {data.length > entries.length && (
         <Text style={{ color: colors.text[theme].secondary }}>
           {data.length - entries.length} more in progress
         </Text>
       )}
-    </DashboardWidget>
+    </HomeSection>
   )
 }
