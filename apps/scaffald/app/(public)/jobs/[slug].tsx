@@ -1,6 +1,10 @@
 import { DashboardLayout } from '@scf/core/components/layouts'
 import { ROUTES } from '@scf/core/constants/routes'
 import { DiscoverJobDetailScreen } from '@scf/core/features/discover/discover-job-detail-screen'
+import {
+  JobDetailApplyAction,
+  jobDetailKicker,
+} from '@scf/core/features/discover/job-detail-header'
 import { JobPostingJsonLd } from '@scf/core/features/discover/components/JobPostingJsonLd'
 import { JobSeoHead } from '@scf/core/features/discover/components/JobSeoHead'
 import { useJobBySlug } from '@scf/core/utils/useJobBySlug'
@@ -149,7 +153,17 @@ export default function PublicJobDetailPage() {
     <>
       <JobSeoHead job={seoJob} canonicalUrl={canonicalUrl} />
       <JobPostingJsonLd job={seoJob} canonicalUrl={canonicalUrl} />
-      <DashboardLayout breadcrumbItems={breadcrumbItems} leftContent={left} rightContent={right} />
+      <DashboardLayout
+        breadcrumbItems={breadcrumbItems}
+        leftContent={left}
+        rightContent={right}
+        // The heading comes from the loader's row, so the server renders it
+        // and hydration has nothing to reconcile (#786). Apply leads an
+        // anonymous visitor to sign-in.
+        screenTitle={jobData.title ?? null}
+        screenKicker={jobDetailKicker(jobData.organization?.name, jobData.location)}
+        screenActions={<JobDetailApplyAction jobId={jobData.id} />}
+      />
     </>
   )
 }
