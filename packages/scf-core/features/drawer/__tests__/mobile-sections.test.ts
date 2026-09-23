@@ -56,8 +56,18 @@ describe.each(sets)('%s tab set', (_name, sections) => {
 })
 
 describe('the two sets stay out of each other’s routes', () => {
-  it('does not light a worker tab on an employer route', () => {
+  /**
+   * One route is deliberately in both trees. `/jobs/my-listings` is the
+   * employer's Jobs screen (#835, Clay's call: "the employer nav should show
+   * one" Jobs entry), and it lives under `/jobs` because someone with an
+   * organisation reaches it in either mode — in worker mode the worker Jobs
+   * tab lighting up on it is correct, not the #385 bug this guards against.
+   */
+  const SHARED_ROUTES = new Set(['/jobs/my-listings'])
+
+  it('does not light a worker tab on an employer-only route', () => {
     for (const s of EMPLOYER_MOBILE_SECTIONS) {
+      if (SHARED_ROUTES.has(s.route)) continue
       expect(activeIndex(s.route, MOBILE_SECTIONS), s.route).toBe(-1)
     }
   })
@@ -85,7 +95,10 @@ describe('employer tabs point at surfaces that exist', () => {
     expect(EMPLOYER_MOBILE_SECTIONS.map((s) => s.key)).toEqual([
       'talent',
       'applications',
-      'office-jobs',
+      // Was `office-jobs`, pointing at the admin CMS. An employer tapping
+      // Jobs on a phone landed in a table of every organisation's postings
+      // rather than their own (#835).
+      'employer-jobs',
       'screening',
     ])
   })

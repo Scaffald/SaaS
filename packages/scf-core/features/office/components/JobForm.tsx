@@ -23,9 +23,12 @@ import type { AddressResult } from '@scaffald/ui'
 import {
   AddressForm,
   Button,
+  H3,
   Input,
   ResponsiveSelect,
+  ScreenHeader,
   ScrollView,
+  Separator,
   Spinner,
   Text,
   Row,
@@ -907,8 +910,48 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   }
 
   return (
-    <ScrollView>
-      <Stack gap={16} padding="md">
+    // The page scrolls; a scroll view here boxed the form inside the screen
+    // shell, and on a phone the inner box was the one that scrolled.
+    <Stack gap={20}>
+      <ScreenHeader
+        title={mode === 'edit' ? 'Edit posting' : 'Post a job'}
+        tip="Everything here is editable later. A draft is saved as soon as it has a title and an organisation."
+        actions={
+          <Row gap={8} wrap>
+            <Button
+              data-testid="job-save-draft-button"
+              size="sm"
+              variant="outline"
+              onPress={() => handleSubmit(true)}
+              // SC-123: mirror the server's createJobBodySchema floor so a
+              // tap can't bypass into a guaranteed-fail submission.
+              disabled={isLoading || !meetsDraftMinimums}
+            >
+              {isLoading && <Spinner variant="ios" />}
+              {!isLoading && 'Save draft'}
+            </Button>
+            <Button
+              data-testid="job-publish-button"
+              size="sm"
+              variant="filled"
+              color="primary"
+              onPress={() => handleSubmit(false)}
+              // SC-123: same floor as Save-as-draft plus a location and a
+              // valid (future) scheduled-publish-at if set.
+              disabled={Boolean(
+                isLoading ||
+                  !meetsDraftMinimums ||
+                  !formData.location ||
+                  (formData.scheduled_publish_at &&
+                    new Date(formData.scheduled_publish_at) <= new Date())
+              )}
+            >
+              {isLoading && <Spinner variant="ios" />}
+              {!isLoading && (formData.scheduled_publish_at ? 'Schedule' : 'Post')}
+            </Button>
+          </Row>
+        }
+      />
         {/* Organization Selector */}
         <Stack gap={8}>
           <Text>Organization *</Text>
@@ -925,16 +968,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           />
         </Stack>
 
-        {/* Details Section */}
-        <Stack
-          gap={16}
-          padding="md"
-          style={{ backgroundColor: colors.bg[theme].default }}
-          borderRadius={16}
-          borderWidth={1}
-          borderColor={colors.border[theme].default}
-        >
-          <Text>Details</Text>
+        {/* The role. Sections sit on hairlines rather than in bordered
+            boxes, and open with a real heading — the form had three nested
+            cards each titled by a plain <Text> (#835). */}
+        <Separator />
+        <Stack gap={16}>
+          <H3>The role</H3>
 
           {/* Title */}
           <Stack gap={8}>
@@ -1153,16 +1192,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           </Stack>
         </Stack>
 
-        {/* Application Section */}
-        <Stack
-          gap={16}
-          padding="md"
-          style={{ backgroundColor: colors.bg[theme].default }}
-          borderRadius={16}
-          borderWidth={1}
-          borderColor={colors.border[theme].default}
-        >
-          <Text>Application</Text>
+        {/* What the applicant is asked for. */}
+        <Separator />
+        <Stack gap={16}>
+          <H3>Applying</H3>
 
           {/* Application Screening Section */}
           <ApplicationScreeningSection
@@ -1312,15 +1345,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           onUpdate={handleSectionUpdate}
         />
 
-        {/* Schedule Publish Section */}
-        <Stack
-          gap={12}
-          padding="md"
-          style={{ backgroundColor: colors.bg[theme].subtle }}
-          borderRadius={16}
-          borderWidth={1}
-          borderColor={colors.border[theme].default}
-        >
+        {/* When it goes live. */}
+        <Separator />
+        <Stack gap={12}>
+          <H3>Publishing</H3>
           <Row gap={12} align="center" justify="space-between">
             <Toggle
               checked={!!formData.scheduled_publish_at}
@@ -1387,10 +1415,13 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         </Stack>
 
         {/* Actions */}
-        <Row gap={12} paddingTop={16}>
+        {/* Cancel and Preview stay at the foot of the form. Save and Post
+            are in the header (#835) — they are what the screen is for, and
+            on a long form they were a scroll away from everything. */}
+        <Separator />
+        <Row gap={12} paddingTop={4} wrap>
           <Button
             data-testid="job-cancel-button"
-            style={{ flex: 1 }}
             variant="outline"
             onPress={() => router.back()}
             disabled={isLoading}
@@ -1408,41 +1439,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               Preview
             </Button>
           )}
-          <Button
-            data-testid="job-save-draft-button"
-            style={{ flex: 1 }}
-            onPress={() => handleSubmit(true)}
-            // SC-123: mirror the server's createJobBodySchema floor so a
-            // tap can't bypass into a guaranteed-fail submission.
-            disabled={isLoading || !meetsDraftMinimums}
-          >
-            {isLoading && <Spinner variant="ios" />}
-            {!isLoading && 'Save as Draft'}
-          </Button>
-          <Button
-            data-testid="job-publish-button"
-            style={{ flex: 1 }}
-            variant="filled"
-            color="primary"
-            onPress={() => handleSubmit(false)}
-            // SC-123: same floor as Save-as-draft plus a location and a
-            // valid (future) scheduled-publish-at if set.
-            disabled={Boolean(
-              isLoading ||
-                !meetsDraftMinimums ||
-                !formData.location ||
-                (formData.scheduled_publish_at &&
-                  new Date(formData.scheduled_publish_at) <= new Date())
-            )}
-          >
-            {isLoading && <Spinner variant="ios" />}
-            {!isLoading && (formData.scheduled_publish_at ? 'Schedule' : 'Post')}
-          </Button>
         </Row>
         {jobId && (
           <JobPreviewModal jobId={jobId} open={previewOpen} onOpenChange={setPreviewOpen} />
         )}
-      </Stack>
-    </ScrollView>
+    </Stack>
   )
 }
