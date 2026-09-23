@@ -134,8 +134,8 @@ export function ApplicationsList() {
 
   // A failed request is not an empty list. This screen used to render the
   // "no applications yet" state whenever the query came back without data,
-  // so a request that 401'd inside the auth window told a worker with six
-  // live applications that they had never applied to anything.
+  // so a request that failed for any reason told a worker with six live
+  // applications that they had never applied to anything.
   if (isError) {
     return (
       <Stack gap={16} align="flex-start" paddingVertical={24}>
