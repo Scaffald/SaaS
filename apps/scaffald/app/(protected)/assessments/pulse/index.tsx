@@ -1,10 +1,12 @@
 import { LuscherTestWizard } from '@scf/core/features/luscher-test'
-import { AssessmentsLayout } from '@scf/core/components/layouts'
 
 /**
- * Luscher Test Assessment Page
- * Displays the unified Luscher Color Test wizard
+ * Weekly pulse.
+ *
+ * The wizard supplies its own `DashboardLayout` — breadcrumb, screen header
+ * and rail — like the other three assessments. Wrapping it in a second
+ * layout here nested one screen shell inside another (#832).
  */
 export default function LuscherTestPage() {
-  return <AssessmentsLayout leftContent={<LuscherTestWizard />} />
+  return <LuscherTestWizard />
 }

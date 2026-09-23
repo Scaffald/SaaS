@@ -33,11 +33,11 @@
       "ipip": {
         "results": "Assessment Results",
         "shared": "Shared Assessment",
-        "title": "Personality"
+        "title": "Personality profile"
       },
-      "luscher": "Weekly Pulse",
-      "occupation": "Occupation Preferences",
-      "riasec": "Career Interests",
+      "luscher": "Weekly pulse",
+      "occupation": "Occupation preferences",
+      "riasec": "Career interests",
       "title": "Assessments"
     },
     "careerExplorer": {

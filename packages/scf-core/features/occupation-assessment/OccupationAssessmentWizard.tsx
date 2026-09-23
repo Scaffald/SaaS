@@ -1,8 +1,12 @@
 import { AssessmentWizard, useAssessmentSave, toError } from '@scf/core/features/assessments'
 import { OccupationSearch } from '@scf/core/features/career-assessment/components/OccupationSearch'
-import { useOccupationStatus, useSaveCareerAssessmentMutation } from '@scf/core/utils/onet-sdk-hooks'
+import {
+  useOccupationStatus,
+  useSaveCareerAssessmentMutation,
+} from '@scf/core/utils/onet-sdk-hooks'
 import { ROUTES } from '@scf/core/constants/routes'
 import { DashboardLayout } from '@scf/core/components/layouts'
+import { useRouteScreenTitle } from '@scf/core/hooks/useRouteScreenTitle'
 import { Plus, X, Briefcase, Target, Search, Zap } from 'lucide-react-native'
 import { useEffect, useMemo, useState } from 'react'
 import {
@@ -18,34 +22,12 @@ import {
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 
-const INFO_CARDS = [
-  {
-    icon: Briefcase,
-    title: 'Current Role',
-    description: 'Tell us about your current or most recent occupation',
-  },
-  {
-    icon: Target,
-    title: 'Target Careers',
-    description: 'Add occupations you are interested in pursuing',
-  },
-  {
-    icon: Search,
-    title: '1,000+ Occupations',
-    description: 'Search from the O*NET occupation database',
-  },
-  {
-    icon: Zap,
-    title: 'Earn XP',
-    description: 'Gain Compass XP for completing your profile',
-  },
-]
-
 /**
  * OccupationAssessmentWizard - Two-column Pulse-style wizard for Occupation Preferences
  */
 export function OccupationAssessmentWizard() {
   const { theme } = useThemeContext()
+  const { title: routeTitle } = useRouteScreenTitle()
   const router = useRouter()
 
   const { data: status, isLoading, error } = useOccupationStatus()
@@ -95,11 +77,6 @@ export function OccupationAssessmentWizard() {
   const hasAnyOccupation = currentOccupation || targetOccupations.some((occ) => occ)
   const completionScore = status?.isCompleted ? 100 : hasAnyOccupation ? 50 : 0
 
-  const iconBgColor = useMemo(
-    () => (theme === 'dark' ? 'rgba(29, 114, 130, 0.15)' : 'rgba(29, 114, 130, 0.08)'),
-    [theme]
-  )
-
   const wizardContent = (
     <AssessmentWizard
       steps={[
@@ -117,53 +94,7 @@ export function OccupationAssessmentWizard() {
         <AssessmentProgressBar value={completionScore} height={4} />
       </Stack>
 
-      <Stack
-        gap={28}
-        maxWidth={800}
-        width="100%"
-        padding="md"
-        style={{ marginHorizontal: 'auto' }}
-      >
-        <AssessmentHeader
-          category="Career Assessment"
-          title="Occupation Preferences"
-          subtitle="Tell us about your current and target occupations to personalize your experience"
-        />
-
-        {/* Info cards */}
-        {!status?.isCompleted && (
-          <Row gap={12} wrap>
-            {INFO_CARDS.map((card) => (
-              <Stack key={card.title} style={{ flex: 1, minWidth: 200 }}>
-                <Card variant="outlined" padding="md" radius="xl">
-                  <Stack gap={12}>
-                    <Stack
-                      width={40}
-                      height={40}
-                      borderRadius={12}
-                      align="center"
-                      justify="center"
-                      style={{ backgroundColor: iconBgColor }}
-                    >
-                      <card.icon size={20} color={colors.primary[500]} />
-                    </Stack>
-                    <Stack gap={4}>
-                      <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>
-                        {card.title}
-                      </Text>
-                      <Text
-                        style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 18 }}
-                      >
-                        {card.description}
-                      </Text>
-                    </Stack>
-                  </Stack>
-                </Card>
-              </Stack>
-            ))}
-          </Row>
-        )}
-
+      <Stack gap={28} maxWidth={800} width="100%" padding="md" style={{ marginHorizontal: 'auto' }}>
         {/* Current Occupation */}
         <Stack gap={12}>
           <Stack gap={4}>
@@ -193,11 +124,7 @@ export function OccupationAssessmentWizard() {
             </Text>
           </Stack>
           {targetOccupations.map((occupation, index) => (
-            <Row
-              key={`target-occupation-${index}-${occupation || 'empty'}`}
-              gap={8}
-              align="center"
-            >
+            <Row key={`target-occupation-${index}-${occupation || 'empty'}`} gap={8} align="center">
               <Stack flex={1}>
                 <OccupationSearch
                   value={occupation}
@@ -293,6 +220,9 @@ export function OccupationAssessmentWizard() {
         { label: 'Assessments', href: '/assessments' },
         { label: 'Occupation Preferences' },
       ]}
+      screenKicker="Assessment"
+      screenTitle={routeTitle}
+      screenTip="Rank the trades you want. This is what job matching reads."
     />
   )
 }

@@ -3,7 +3,6 @@ import type { ReactNode } from 'react'
 import {
   AssessmentStepTransition,
   Button,
-  ScrollView,
   Skeleton,
   SkeletonBox,
   SkeletonText,
@@ -179,7 +178,7 @@ export function AssessmentWizard({
     <Stack flex={1}>
       {/* Header */}
       {shouldRenderHeader && (
-        <Stack padding="md" gap={12}>
+        <Stack gap={12}>
           {(title || description) && (
             <Stack gap={4}>
               {title && <Text style={{ color: colors.text[theme].secondary }}>{title}</Text>}
@@ -204,34 +203,43 @@ export function AssessmentWizard({
         </Stack>
       )}
 
-      {/* Main Content */}
-      <ScrollView style={{ flex: 1 }}>
-        <Stack padding="md" gap={16}>
-          {animateTransitions ? (
-            <AssessmentStepTransition stepKey={currentStep} direction={transitionDirection}>
-              {children}
-            </AssessmentStepTransition>
-          ) : (
-            children
-          )}
-        </Stack>
-      </ScrollView>
+      {/* The page scrolls; a scroll view here made every assessment a box
+          inside the screen shell, and on a phone the inner box was the one
+          that scrolled while the outer one sat still (#832). */}
+      <Stack gap={16}>
+        {animateTransitions ? (
+          <AssessmentStepTransition stepKey={currentStep} direction={transitionDirection}>
+            {children}
+          </AssessmentStepTransition>
+        ) : (
+          children
+        )}
+      </Stack>
 
-      {/* Navigation Footer */}
+      {/* Back and next. `lg` rather than `md` so the tap targets clear 44px
+          on a phone, and Next is filled because it is the one thing each
+          step leads with. */}
       {(showPrevious || showNext) && (
         <Stack
-          padding="md"
+          paddingTop={16}
           style={{ borderTopWidth: 1, borderTopColor: colors.border[theme].default }}
         >
-          <Row gap={12} justify="space-between">
+          <Row gap={12} justify="space-between" wrap>
             {showPrevious && (
-              <Button size="md" variant="outline" iconStart={ChevronLeft} onPress={onPrevious}>
+              <Button size="lg" variant="outline" iconStart={ChevronLeft} onPress={onPrevious}>
                 Previous
               </Button>
             )}
 
             {showNext && (
-              <Button size="md" iconEnd={ChevronRight} onPress={onNext} disabled={isNextDisabled}>
+              <Button
+                size="lg"
+                variant="filled"
+                color="primary"
+                iconEnd={ChevronRight}
+                onPress={onNext}
+                disabled={isNextDisabled}
+              >
                 Next
               </Button>
             )}

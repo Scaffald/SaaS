@@ -6,12 +6,8 @@ import {
 } from '@scf/core/features/career-assessment/config/career-assessment-schema'
 import { useRIASECStatus, useSaveCareerAssessmentMutation } from '@scf/core/utils/onet-sdk-hooks'
 import { DashboardLayout } from '@scf/core/components/layouts'
-import {
-  AssessmentHeader,
-  AssessmentProgressBar,
-  Card,
-  useThemeContext,
-} from '@scaffald/ui'
+import { useRouteScreenTitle } from '@scf/core/hooks/useRouteScreenTitle'
+import { AssessmentHeader, AssessmentProgressBar, Card, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Text, Row, Stack } from '@scaffald/ui'
@@ -26,34 +22,12 @@ const RIASEC_DIMENSIONS = [
   { key: 'C', name: 'Conventional', description: 'Organizing and processing data' },
 ]
 
-const INFO_CARDS = [
-  {
-    icon: Clock,
-    title: '5 Minutes',
-    description: 'Quick assessment of your career interests',
-  },
-  {
-    icon: Compass,
-    title: '6 Dimensions',
-    description: 'Rate interests across the Holland RIASEC model',
-  },
-  {
-    icon: Target,
-    title: 'Career Matching',
-    description: 'Get matched with careers that fit your interests',
-  },
-  {
-    icon: Zap,
-    title: 'Earn XP',
-    description: 'Gain Compass XP for completing your profile',
-  },
-]
-
 /**
  * RIASECAssessmentWizard - Two-column Pulse-style wizard for RIASEC Career Interests
  */
 export function RIASECAssessmentWizard() {
   const { theme } = useThemeContext()
+  const { title: routeTitle } = useRouteScreenTitle()
   const { data: status, isLoading, error } = useRIASECStatus()
   const [scores, setScores] = useState<RiasecScores>(careerAssessmentDefaults.riasec_scores)
 
@@ -83,11 +57,6 @@ export function RIASECAssessmentWizard() {
   ).length
   const completionScore = status?.isCompleted ? 100 : Math.round((ratedCount / 6) * 100)
 
-  const iconBgColor = useMemo(
-    () => (theme === 'dark' ? 'rgba(29, 114, 130, 0.15)' : 'rgba(29, 114, 130, 0.08)'),
-    [theme]
-  )
-
   const wizardContent = (
     <AssessmentWizard
       steps={[{ id: 'interests', label: 'Interest Rating', order: 1 }]}
@@ -102,53 +71,7 @@ export function RIASECAssessmentWizard() {
         <AssessmentProgressBar value={completionScore} height={4} />
       </Stack>
 
-      <Stack
-        gap={28}
-        maxWidth={800}
-        width="100%"
-        padding="md"
-        style={{ marginHorizontal: 'auto' }}
-      >
-        <AssessmentHeader
-          category="Career Assessment"
-          title="Career Interests"
-          subtitle="Rate your interest in each career dimension to discover your ideal career path"
-        />
-
-        {/* Info cards — show when not yet completed */}
-        {!status?.isCompleted && (
-          <Row gap={12} wrap>
-            {INFO_CARDS.map((card) => (
-              <Stack key={card.title} style={{ flex: 1, minWidth: 200 }}>
-                <Card variant="outlined" padding="md" radius="xl">
-                  <Stack gap={12}>
-                    <Stack
-                      width={40}
-                      height={40}
-                      borderRadius={12}
-                      align="center"
-                      justify="center"
-                      style={{ backgroundColor: iconBgColor }}
-                    >
-                      <card.icon size={20} color={colors.primary[500]} />
-                    </Stack>
-                    <Stack gap={4}>
-                      <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>
-                        {card.title}
-                      </Text>
-                      <Text
-                        style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 18 }}
-                      >
-                        {card.description}
-                      </Text>
-                    </Stack>
-                  </Stack>
-                </Card>
-              </Stack>
-            ))}
-          </Row>
-        )}
-
+      <Stack gap={28} maxWidth={800} width="100%" padding="md" style={{ marginHorizontal: 'auto' }}>
         <RiasecQuickAssessment
           value={scores}
           onChange={setScores}
@@ -221,6 +144,9 @@ export function RIASECAssessmentWizard() {
         { label: 'Assessments', href: '/assessments' },
         { label: 'Career Interests (RIASEC)' },
       ]}
+      screenKicker="Assessment"
+      screenTitle={routeTitle}
+      screenTip="Rate six dimensions to see the kind of work that suits you, matched to real occupations."
     />
   )
 }
