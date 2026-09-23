@@ -8,6 +8,7 @@ import {
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { DashboardLayout } from '@scf/core/components/layouts'
+import { useRouteScreenTitle } from '@scf/core/hooks/useRouteScreenTitle'
 import { AssessmentProgressBar, useToast, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useEffect, useRef, useState } from 'react'
@@ -23,6 +24,7 @@ type TestStep = 'intro' | 'luscher1' | 'cooldown' | 'luscher2' | 'results'
 export function LuscherTestWizard() {
   const toast = useToast()
   const { theme } = useThemeContext()
+  const { title: routeTitle } = useRouteScreenTitle()
 
   const [currentStep, setCurrentStep] = useState<TestStep>('intro')
   const [luscher1Choices, setLuscher1Choices] = useState<number[]>([])
@@ -323,6 +325,9 @@ export function LuscherTestWizard() {
         { label: 'Assessments', href: '/assessments' },
         { label: 'Weekly Pulse' },
       ]}
+      screenKicker="Assessment"
+      screenTitle={routeTitle}
+      screenTip="Pick colours in the order you prefer them. It takes about two minutes, and it repeats."
     />
   )
 }

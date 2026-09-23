@@ -9,6 +9,7 @@ import {
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { DashboardLayout } from '@scf/core/components/layouts'
+import { useRouteScreenTitle } from '@scf/core/hooks/useRouteScreenTitle'
 import {
   AssessmentHeader,
   AssessmentProgressBar,
@@ -28,34 +29,12 @@ import {
   QUESTIONS_PER_DOMAIN,
 } from './utils/domainGrouping'
 
-const INFO_CARDS = [
-  {
-    icon: Clock,
-    title: '30-40 Minutes',
-    description: 'Complete at your own pace across multiple sessions',
-  },
-  {
-    icon: Brain,
-    title: '120 Questions',
-    description: 'Comprehensive personality assessment across five domains',
-  },
-  {
-    icon: BarChart3,
-    title: '5 Personality Domains',
-    description: 'Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism',
-  },
-  {
-    icon: Zap,
-    title: 'Earn XP',
-    description: 'Gain XP for each completed domain and full assessment',
-  },
-]
-
 /**
  * IPIPAssessmentWizard - Two-column Pulse-style wizard for IPIP
  */
 export function IPIPAssessmentWizard() {
   const { theme } = useThemeContext()
+  const { title: routeTitle } = useRouteScreenTitle()
   const router = useRouter()
   const toast = useToast()
   const [completedDomain, setCompletedDomain] = useState<IPIPDomain | null>(null)
@@ -66,9 +45,15 @@ export function IPIPAssessmentWizard() {
 
   const status = (statusData as { data?: { progress?: number } } | undefined)?.data
   const assessment = (
-    assessmentData as {
-      data?: { ipip_answers?: unknown; ipip_language?: string; ipip_current_index?: number | null }
-    } | undefined
+    assessmentData as
+      | {
+          data?: {
+            ipip_answers?: unknown
+            ipip_language?: string
+            ipip_current_index?: number | null
+          }
+        }
+      | undefined
   )?.data
 
   const saveMutation = useSaveIPIPProgressMutation({
@@ -125,11 +110,6 @@ export function IPIPAssessmentWizard() {
   const completedDomains = getCompletedDomainsCount(answersCount)
   const completionScore = Math.round((progress / 120) * 100)
   const queryError = toError(error)
-
-  const iconBgColor = useMemo(
-    () => (theme === 'dark' ? 'rgba(29, 114, 130, 0.15)' : 'rgba(29, 114, 130, 0.08)'),
-    [theme]
-  )
 
   // Domain completion overlay
   if (completedDomain) {
@@ -193,6 +173,9 @@ export function IPIPAssessmentWizard() {
           { label: 'Assessments', href: '/assessments' },
           { label: 'Personality (IPIP)' },
         ]}
+        screenKicker="Assessment"
+        screenTitle={routeTitle}
+        screenTip="How you work, across the five traits employers ask about. 120 questions, and it saves as you go."
       />
     )
   }
@@ -211,53 +194,6 @@ export function IPIPAssessmentWizard() {
       <Stack padding="md" paddingBottom="xs">
         <AssessmentProgressBar value={completionScore} height={4} />
       </Stack>
-
-      {/* Show intro cards when no progress yet */}
-      {answersCount === 0 && !isLoading && (
-        <Stack
-          gap={28}
-          maxWidth={800}
-          width="100%"
-          padding="md"
-          style={{ marginHorizontal: 'auto' }}
-        >
-          <AssessmentHeader
-            category="Personality Assessment"
-            title="IPIP Personality Test"
-            subtitle="Discover your Big Five personality traits through 120 research-backed questions"
-          />
-          <Row gap={12} wrap>
-            {INFO_CARDS.map((card) => (
-              <Stack key={card.title} style={{ flex: 1, minWidth: 200 }}>
-                <Card variant="outlined" padding="md" radius="xl">
-                  <Stack gap={12}>
-                    <Stack
-                      width={40}
-                      height={40}
-                      borderRadius={12}
-                      align="center"
-                      justify="center"
-                      style={{ backgroundColor: iconBgColor }}
-                    >
-                      <card.icon size={20} color={colors.primary[500]} />
-                    </Stack>
-                    <Stack gap={4}>
-                      <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>
-                        {card.title}
-                      </Text>
-                      <Text
-                        style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 18 }}
-                      >
-                        {card.description}
-                      </Text>
-                    </Stack>
-                  </Stack>
-                </Card>
-              </Stack>
-            ))}
-          </Row>
-        </Stack>
-      )}
 
       <IPIPTestStep
         initialAnswers={(assessment?.ipip_answers as IPIPAnswer[]) || []}
@@ -285,6 +221,9 @@ export function IPIPAssessmentWizard() {
         { label: 'Assessments', href: '/assessments' },
         { label: 'Personality (IPIP)' },
       ]}
+      screenKicker="Assessment"
+      screenTitle={routeTitle}
+      screenTip="How you work, across the five traits employers ask about. 120 questions, and it saves as you go."
     />
   )
 }
