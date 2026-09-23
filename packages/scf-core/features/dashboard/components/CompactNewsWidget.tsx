@@ -1,14 +1,6 @@
 import { useAggregatedNews } from '@scf/core/features/news/hooks/useNewsFeed'
 import { useNewsIndustryResolution } from '@scf/core/features/news/hooks/useNewsIndustryResolution'
-import {
-  DashboardWidget,
-  Row,
-  Skeleton,
-  SkeletonGroup,
-  Stack,
-  Text,
-  useThemeContext,
-} from '@scaffald/ui'
+import { H3, Row, Skeleton, SkeletonGroup, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { Image, Pressable, View } from 'react-native'
@@ -94,14 +86,8 @@ export function CompactNewsWidget() {
 
   if (isLoading) {
     return (
-      <DashboardWidget>
-        <Row justify="space-between" align="center" paddingBottom={4}>
-          <Text
-            style={{ fontSize: 18, fontWeight: '700', color: colors.text[theme].primary }}
-          >
-            News
-          </Text>
-        </Row>
+      <Stack gap={16}>
+        <H3 style={{ color: colors.text[theme].primary }}>News</H3>
         <SkeletonGroup gap={0} animation="wave">
           {[1, 2, 3].map((i) => (
             <Row
@@ -121,7 +107,7 @@ export function CompactNewsWidget() {
             </Row>
           ))}
         </SkeletonGroup>
-      </DashboardWidget>
+      </Stack>
     )
   }
 
@@ -129,17 +115,9 @@ export function CompactNewsWidget() {
   if (items.length === 0) return null
 
   return (
-    <DashboardWidget>
-      <Row justify="space-between" align="center" paddingBottom={4}>
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.text[theme].primary,
-          }}
-        >
-          News
-        </Text>
+    <Stack gap={16}>
+      <Row justify="space-between" align="center" gap={12} wrap>
+        <H3 style={{ color: colors.text[theme].primary, flex: 1, minWidth: 0 }}>News</H3>
         <Pressable
           onPress={() => router.push('/dashboard/news')}
           hitSlop={8}
@@ -163,6 +141,6 @@ export function CompactNewsWidget() {
           isLast={i === items.length - 1}
         />
       ))}
-    </DashboardWidget>
+    </Stack>
   )
 }

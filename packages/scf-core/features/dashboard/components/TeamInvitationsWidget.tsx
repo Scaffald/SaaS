@@ -5,13 +5,23 @@ import { CheckCircle, Clock, XCircle } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, DashboardWidget, DashboardWidgetHeader, Separator, Skeleton, SkeletonBox, SkeletonText, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
+import {
+  Button,
+  Separator,
+  Skeleton,
+  SkeletonBox,
+  SkeletonText,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { HomeSection } from './HomeSection'
 
 function TeamInvitationsWidgetSkeleton() {
   return (
-    <Card variant="outlined" padding="md" style={{ gap: 16 }}>
-      {/* Header */}
+    <Stack gap={16}>
       <Row justify="space-between" align="center">
         <Row gap={8} align="center">
           <Skeleton width={24} height={24} shape="circle" />
@@ -20,19 +30,16 @@ function TeamInvitationsWidgetSkeleton() {
         <SkeletonBox width={72} height={32} borderRadius={8} />
       </Row>
 
-      {/* Invitation skeletons */}
       {[0, 1].map((i) => (
-        <Card key={i} variant="outlined" padding="md" style={{ gap: 12 }}>
-          <Row justify="space-between" align="center">
-            <SkeletonText lines={2} style={{ flex: 1 }} />
-            <Row gap={8} marginLeft={16}>
-              <SkeletonBox width={80} height={32} borderRadius={8} />
-              <SkeletonBox width={80} height={32} borderRadius={8} />
-            </Row>
+        <Row key={i} justify="space-between" align="center" gap={16}>
+          <SkeletonText lines={2} style={{ flex: 1 }} />
+          <Row gap={8}>
+            <SkeletonBox width={80} height={32} borderRadius={8} />
+            <SkeletonBox width={80} height={32} borderRadius={8} />
           </Row>
-        </Card>
+        </Row>
       ))}
-    </Card>
+    </Stack>
   )
 }
 
@@ -57,11 +64,7 @@ export function TeamInvitationList({
 
   if (!invitations.length) {
     return (
-      <Stack
-        gap={8}
-        style={{ borderWidth: 1, borderColor: glassVibrantColors[t].separator, borderRadius: 7, backgroundColor: glassVibrantColors[t].tertiaryFill }}
-        padding="md"
-      >
+      <Stack gap={8}>
         <Text>No pending invitations</Text>
         {showEmptyStateDescription ? (
           <Text style={{ color: colors.text[t].secondary }}>
@@ -73,7 +76,7 @@ export function TeamInvitationList({
   }
 
   return (
-    <Stack gap={12}>
+    <Stack>
       {invitations.map((invitation) => {
         const teamName = invitation.team?.name ?? 'Team'
         const organizationName = invitation.team?.organizationName ?? 'Organization'
@@ -85,13 +88,13 @@ export function TeamInvitationList({
         const isPending = pendingId === invitation.id
 
         return (
-          <Card
+          <Stack
             key={invitation.id}
-            variant="outlined"
-            padding="md"
-            style={{ gap: 12 }}
+            gap={12}
+            paddingVertical={12}
+            style={{ borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
           >
-            <Row justify="space-between" align="center">
+            <Row justify="space-between" align="center" gap={12} wrap>
               <Stack gap={4} flex={1}>
                 <Text>{teamName}</Text>
                 <Text style={{ color: colors.text[t].secondary }}>{organizationName}</Text>
@@ -141,7 +144,7 @@ export function TeamInvitationList({
                 </Button>
               </Row>
             </Row>
-          </Card>
+          </Stack>
         )
       })}
     </Stack>
@@ -208,20 +211,18 @@ export function TeamInvitationsWidget() {
   }
 
   return (
-    <DashboardWidget gap={16}>
-      <DashboardWidgetHeader
-        title="Team invitations"
-        action={
-          <Button
-            variant="outline"
-            size="sm"
-            onPress={() => router.push(ROUTES.EMPLOYERS.TEAMS.INVITATIONS.path)}
-          >
-            Manage
-          </Button>
-        }
-      />
-
+    <HomeSection
+      title="Team invitations"
+      action={
+        <Button
+          variant="outline"
+          size="sm"
+          onPress={() => router.push(ROUTES.EMPLOYERS.TEAMS.INVITATIONS.path)}
+        >
+          Manage
+        </Button>
+      }
+    >
       <TeamInvitationList
         invitations={topInvitations}
         onRespond={handleRespond}
@@ -232,11 +233,10 @@ export function TeamInvitationsWidget() {
         <>
           <Separator />
           <Text style={{ color: colors.text[t].secondary }}>
-            {remainingCount} more invitation{remainingCount === 1 ? '' : 's'} waiting in your
-            inbox.
+            {remainingCount} more invitation{remainingCount === 1 ? '' : 's'} waiting in your inbox.
           </Text>
         </>
       ) : null}
-    </DashboardWidget>
+    </HomeSection>
   )
 }
