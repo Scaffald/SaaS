@@ -39,10 +39,9 @@ export function ProfileStrengthSection() {
   // read `privateData.first_name` first, a field the endpoint has never
   // returned, so that branch was dead and the fallback did the work.
   //
-  // The session's own metadata is the last resort, and it matters: the
-  // widget request can fail inside the auth window and is never retried
-  // (#883), and a signed-in worker greeted as "Your profile" reads as a
-  // broken session rather than a slow one.
+  // The session's own metadata is the last resort. A signed-in worker
+  // greeted as "Your profile" reads as a broken session rather than a slow
+  // one, and the name is already in hand without waiting on a request.
   const sessionName =
     typeof user?.user_metadata?.name === 'string' ? user.user_metadata.name : undefined
   const fullName =
