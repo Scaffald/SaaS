@@ -1,11 +1,17 @@
 import type { AddressResult } from '@scaffald/ui'
 import { AddressAutocomplete, ListToolbar } from '@scaffald/ui'
+import { ROUTES } from '@scf/core/constants/routes'
 import { createMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
+import { useRouter } from 'expo-router'
 import { List } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, SegmentedControl, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { FilterDropdown } from './FilterDropdown'
+
+/** The same pair as the list screen's toolbar, so Map is not a dead end (#834). */
+const VIEW_SEGMENTS = ['List', 'Map']
+const VIEW_SWITCH_STYLE = { flexShrink: 0, minWidth: 132 } as const
 
 type MapFilterBarProps = {
   onLocationSelect: (location: { longitude: number; latitude: number; label: string }) => void
@@ -61,6 +67,7 @@ export const MapFilterBar = ({
   onReset,
 }: MapFilterBarProps) => {
   const { theme } = useThemeContext()
+  const router = useRouter()
   const t = theme === 'dark' ? 'dark' : 'light'
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -101,14 +108,19 @@ export const MapFilterBar = ({
 
     return (
       <Stack
-        style={{ backgroundColor: colors.bg[t].default, borderColor: t === 'dark' ? colors.error[400] : colors.error[500] }}
+        style={{
+          backgroundColor: colors.bg[t].default,
+          borderColor: t === 'dark' ? colors.error[400] : colors.error[500],
+        }}
         padding="sm"
         borderRadius={16}
         borderWidth={1}
         gap={8}
       >
         <Row align="center" gap={8}>
-          <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>Map Search Unavailable</Text>
+          <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>
+            Map Search Unavailable
+          </Text>
         </Row>
         <Text style={{ color: colors.text[t].secondary }}>{tokenValidation.error}</Text>
       </Stack>
@@ -132,15 +144,25 @@ export const MapFilterBar = ({
       resultCount={resultsCount}
       resultNoun="result"
       actions={
-        <Button
-          size="md"
-          variant="outline"
-          onPress={onResultsPress}
-          color="gray"
-          iconStart={resultsCount > 0 ? undefined : List}
-        >
-          <Text>Results</Text>
-        </Button>
+        <Row gap={8} align="center">
+          <SegmentedControl
+            segments={VIEW_SEGMENTS}
+            selectedIndex={1}
+            onSelectionChange={(index) => {
+              if (index === 0) router.push(ROUTES.WORKERS.path)
+            }}
+            style={VIEW_SWITCH_STYLE}
+          />
+          <Button
+            size="md"
+            variant="outline"
+            onPress={onResultsPress}
+            color="gray"
+            iconStart={resultsCount > 0 ? undefined : List}
+          >
+            <Text>Results</Text>
+          </Button>
+        </Row>
       }
       style={{ backgroundColor: colors.bg[t].default }}
     />

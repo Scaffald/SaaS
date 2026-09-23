@@ -20,6 +20,13 @@ import { colors } from '@scaffald/ui/tokens'
 
 const SHIMMER_WIDTH = 220
 
+/**
+ * One column is only easier to read than two if it stays a column. Left
+ * unbounded it becomes a 1500px band with an avatar centred in the middle of
+ * it, so cap it and keep its left edge under the heading.
+ */
+const READING_COLUMN = { width: '100%', maxWidth: 880, alignSelf: 'flex-start' } as const
+
 /** On web, native driver is not supported; use JS driver to avoid console warning. */
 const USE_NATIVE_DRIVER = Platform.OS !== 'web'
 
@@ -28,8 +35,11 @@ interface DiscoverWorkerProfileScreenOptions {
 }
 
 interface DiscoverWorkerProfileScreenResult {
-  left: ReactNode
-  right: ReactNode
+  /** One reading column — see the note on `readingColumn` below (#834). */
+  content: ReactNode
+  /** The person's name, so the heading says who this is rather than "Worker Profile". */
+  screenTitle: string | null
+  screenKicker?: string
   breadcrumbItems: BreadcrumbItemData[]
 }
 
@@ -43,7 +53,7 @@ function SkeletonBlock({
   radius?: number
 }) {
   const { theme: skeletonTheme } = useThemeContext()
-  const skeletonT = skeletonTheme === 'dark' ? 'dark' as const : 'light' as const
+  const skeletonT = skeletonTheme === 'dark' ? ('dark' as const) : ('light' as const)
   const shimmer = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
@@ -101,68 +111,40 @@ function SkeletonBlock({
   )
 }
 
-function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
+/** Mirrors the real column's order: identity, then proof, then history. */
+function WorkerProfileSkeleton() {
   const wrapWidget = (content: ReactNode) => <DashboardWidget>{content}</DashboardWidget>
-
-  if (variant === 'left') {
-    const headlineWidths = [110, 90, 120] as const
-    const overviewSections = ['overview-primary', 'overview-secondary'] as const
-    return (
-      <Stack gap={16}>
-        {wrapWidget(
-          <Stack gap={12} align="center">
-            <SkeletonBlock height={96} width={96} radius={48} />
-            <SkeletonBlock height={24} width="60%" />
-            <SkeletonBlock height={18} width="40%" />
-            <Row gap={8} wrap justify="center">
-              {headlineWidths.map((width) => (
-                <SkeletonBlock key={`headline-${width}`} height={16} width={width} radius={8} />
-              ))}
-            </Row>
-          </Stack>
-        )}
-
-        {wrapWidget(
-          <Stack gap={12}>
-            {overviewSections.map((sectionId) => (
-              <Stack key={sectionId} gap={8}>
-                <SkeletonBlock height={20} width="70%" />
-                <SkeletonBlock height={14} width="50%" />
-                <SkeletonBlock height={12} width="40%" />
-                <SkeletonBlock height={12} width="60%" />
-              </Stack>
-            ))}
-          </Stack>
-        )}
-
-        {wrapWidget(
-          <Stack gap={8}>
-            <SkeletonBlock height={20} width="55%" />
-            <SkeletonBlock height={14} width="65%" />
-            <SkeletonBlock height={12} width="40%" />
-          </Stack>
-        )}
-      </Stack>
-    )
-  }
+  const headlineWidths = [110, 90, 120] as const
 
   return (
-    <Stack gap={16}>
+    <Stack gap={16} style={READING_COLUMN}>
       {wrapWidget(
-        <Stack gap={12}>
-          <SkeletonBlock height={20} width="60%" />
-          {['review-1', 'review-2'].map((reviewId) => (
-            <Stack key={reviewId} gap={4}>
-              <SkeletonBlock height={16} width="80%" />
-              <SkeletonBlock height={12} width="55%" />
-            </Stack>
-          ))}
+        <Stack gap={12} align="center">
+          <SkeletonBlock height={96} width={96} radius={48} />
+          <SkeletonBlock height={24} width="60%" />
+          <SkeletonBlock height={18} width="40%" />
+          <Row gap={8} wrap justify="center">
+            {headlineWidths.map((width) => (
+              <SkeletonBlock key={`headline-${width}`} height={16} width={width} radius={8} />
+            ))}
+          </Row>
         </Stack>
       )}
 
       {wrapWidget(
         <Stack gap={12}>
           <SkeletonBlock height={20} width="45%" />
+          <Row gap={8} wrap>
+            {['proof-1', 'proof-2', 'proof-3', 'proof-4'].map((id) => (
+              <SkeletonBlock key={id} height={28} width={120} radius={14} />
+            ))}
+          </Row>
+        </Stack>
+      )}
+
+      {wrapWidget(
+        <Stack gap={12}>
+          <SkeletonBlock height={20} width="35%" />
           <Row gap={8} wrap>
             {['skill-1', 'skill-2', 'skill-3', 'skill-4', 'skill-5', 'skill-6'].map((skillId) => (
               <SkeletonBlock key={skillId} height={28} width={100} radius={14} />
@@ -174,8 +156,8 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
       {wrapWidget(
         <Stack gap={12}>
           <SkeletonBlock height={20} width="55%" />
-          {['stat-1', 'stat-2', 'stat-3'].map((statId) => (
-            <Stack key={statId} gap={4}>
+          {['role-1', 'role-2'].map((roleId) => (
+            <Stack key={roleId} gap={4}>
               <SkeletonBlock height={16} width="70%" />
               <SkeletonBlock height={12} width="40%" />
             </Stack>
@@ -184,20 +166,6 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
       )}
     </Stack>
   )
-}
-
-function createSkeletonLayout(): DiscoverWorkerProfileScreenResult {
-  const skeletonBreadcrumbs: BreadcrumbItemData[] = [
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Workers', href: ROUTES.WORKERS.path },
-    { label: 'Loading…' },
-  ]
-
-  return {
-    left: <WorkerColumnSkeleton variant="left" />,
-    right: <WorkerColumnSkeleton variant="right" />,
-    breadcrumbItems: skeletonBreadcrumbs,
-  }
 }
 
 export function DiscoverWorkerProfileScreen({
@@ -223,43 +191,43 @@ export function DiscoverWorkerProfileScreen({
   ]
 
   if (!safeUserId) {
-    const errorWidget = (
-      <DashboardWidget>
-        <Stack align="center" justify="center" gap={8} paddingVertical={32}>
-          <Text style={{ color: colors.text[t].secondary }}>Worker not found</Text>
-          <Text style={{ color: colors.text[t].secondary }}>Select a worker from the list to view their profile.</Text>
-        </Stack>
-      </DashboardWidget>
-    )
-
     return {
-      left: errorWidget,
-      right: errorWidget,
+      content: (
+        <DashboardWidget>
+          <Stack align="center" justify="center" gap={8} paddingVertical={32}>
+            <Text style={{ color: colors.text[t].secondary }}>
+              Select a worker from the list to view their profile.
+            </Text>
+          </Stack>
+        </DashboardWidget>
+      ),
+      screenTitle: 'Worker not found',
       breadcrumbItems: [...baseBreadcrumbs, { label: 'Worker not found' }],
     }
   }
 
   const showSkeleton = generalInfoQuery.isLoading && !generalInfoQuery.data
   if (showSkeleton) {
-    return createSkeletonLayout()
+    return {
+      content: <WorkerProfileSkeleton />,
+      screenTitle: null,
+      breadcrumbItems: [...baseBreadcrumbs, { label: 'Loading…' }],
+    }
   }
 
   const generalInfo = generalInfoQuery.data
   if (!generalInfo) {
-    const unavailableWidget = (
-      <DashboardWidget>
-        <Stack align="center" justify="center" gap={8} paddingVertical={32}>
-          <Text style={{ color: colors.text[t].secondary }}>Profile unavailable</Text>
-          <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
-            We couldn&apos;t load this worker profile. Please try another worker.
-          </Text>
-        </Stack>
-      </DashboardWidget>
-    )
-
     return {
-      left: unavailableWidget,
-      right: unavailableWidget,
+      content: (
+        <DashboardWidget>
+          <Stack align="center" justify="center" gap={8} paddingVertical={32}>
+            <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
+              We couldn&apos;t load this worker profile. Please try another worker.
+            </Text>
+          </Stack>
+        </DashboardWidget>
+      ),
+      screenTitle: 'Profile unavailable',
       breadcrumbItems: [...baseBreadcrumbs, { label: 'Profile unavailable' }],
     }
   }
@@ -281,30 +249,34 @@ export function DiscoverWorkerProfileScreen({
     },
   ]
 
-  const leftColumn = (
-    <Stack gap={16}>
+  /**
+   * One reading column (#834). This was two golden-ratio columns, which put
+   * reviews level with the person's name and split "what they can do" across
+   * the fold: skills sat on the right while the experience that backs them
+   * sat on the left. Read top to bottom instead — who they are, what they are
+   * certified to do, the skills they claim, then the history and reviews that
+   * support both.
+   */
+  const content = (
+    <Stack gap={16} style={READING_COLUMN}>
       <GeneralInfoWidget
         userId={safeUserId}
         showEdit={false}
         showButtons={!isOwnProfile}
         isOwnProfile={isOwnProfile}
       />
+      <CertificationsWidget userId={safeUserId} showEdit={false} />
+      <ProfileSkillsSection userId={safeUserId} showEdit={false} />
       <ExperienceWidget userId={safeUserId} showEdit={false} />
       <EducationWidget userId={safeUserId} showEdit={false} />
-    </Stack>
-  )
-
-  const rightColumn = (
-    <Stack gap={16}>
       <ReviewsWidget userId={safeUserId} showEdit />
-      <ProfileSkillsSection userId={safeUserId} showEdit={false} />
-      <CertificationsWidget userId={safeUserId} showEdit={false} />
     </Stack>
   )
 
   return {
-    left: leftColumn,
-    right: rightColumn,
+    content,
+    screenTitle: isOwnProfile ? 'My Profile' : displayName,
+    screenKicker: 'Worker',
     breadcrumbItems,
   }
 }

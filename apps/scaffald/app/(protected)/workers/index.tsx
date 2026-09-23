@@ -7,6 +7,7 @@ export default function DiscoverWorkersPage() {
     <>
       <DashboardPage
         showBreadcrumb={false}
+        screenTip="Search by trade, skill or location. Open anyone to see their proof before you reach out."
         headerContent={header}
         leftContent={left}
         rightContent={right}
