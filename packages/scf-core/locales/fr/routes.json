@@ -24,6 +24,7 @@
   },
   "dashboard": {
     "applications": {
+      "detail": "Application Details",
       "inquiry": "Inquiry",
       "title": "Applications"
     },
@@ -52,6 +53,7 @@
       },
       "jobs": {
         "detail": "Job Details",
+        "apply": "Apply",
         "title": "Jobs"
       },
       "map": "Map",

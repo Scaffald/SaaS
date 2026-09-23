@@ -31,6 +31,7 @@
       "visibility": "Visibility"
     },
     "applications": {
+      "detail": "Application Details",
       "inquiry": "Inquiry",
       "title": "Applications"
     },
@@ -73,6 +74,7 @@
       },
       "jobs": {
         "detail": "Job Details",
+        "apply": "Apply",
         "myListings": "My Listings",
         "title": "Jobs"
       },

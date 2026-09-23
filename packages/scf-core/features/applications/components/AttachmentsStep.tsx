@@ -737,6 +737,7 @@ export function AttachmentsStep({
         <Button
           size="md"
           color="primary"
+          variant="filled"
           onPress={validateAndContinue}
           disabled={isSubmitting || Object.values(uploading).some((v) => v)}
         >

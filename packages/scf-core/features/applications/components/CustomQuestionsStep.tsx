@@ -538,6 +538,7 @@ export function CustomQuestionsStep({
         <Button
           size="md"
           color="primary"
+          variant="filled"
           onPress={validateAndContinue}
           disabled={isSubmitting || Object.values(errors).some((error) => error !== undefined)}
         >

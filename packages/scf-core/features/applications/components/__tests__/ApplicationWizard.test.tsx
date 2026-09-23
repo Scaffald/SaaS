@@ -4,7 +4,6 @@ import { ApplicationWizard } from '../ApplicationWizard'
 import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const mockOnSuccess = vi.fn()
-const mockOnCancel = vi.fn()
 const mockOnViewApplication = vi.fn()
 const mockOnReturnToJobs = vi.fn()
 
@@ -135,7 +134,6 @@ describe('ApplicationWizard', () => {
     jobTitle: 'Software Engineer',
     organizationName: 'Tech Corp',
     onSuccess: mockOnSuccess,
-    onCancel: mockOnCancel,
     onViewApplication: mockOnViewApplication,
     onReturnToJobs: mockOnReturnToJobs,
   }
@@ -149,12 +147,15 @@ describe('ApplicationWizard', () => {
     mockUseApplicationForm.applicationId = undefined
   })
 
-  it('renders wizard with header and progress indicator', () => {
+  it('renders the progress indicator and save status, and not its own title', () => {
     render(<ApplicationWizard {...defaultProps} />, { wrapper: TestQueryWrapper })
 
-    expect(screen.getByText(/Apply to Software Engineer/)).toBeInTheDocument()
-    expect(screen.getByText('Tech Corp')).toBeInTheDocument()
     expect(screen.getByTestId('progress-indicator')).toBeInTheDocument()
+    expect(screen.getByTestId('save-status')).toBeInTheDocument()
+    // The role and employer belong to the screen header now (#829); repeating
+    // them here gave the form two titles a few pixels apart.
+    expect(screen.queryByText(/Apply to Software Engineer/)).not.toBeInTheDocument()
+    expect(screen.queryByText('Tech Corp')).not.toBeInTheDocument()
   })
 
   it('renders screening step initially', () => {

@@ -14,11 +14,10 @@
  * the only call to action below the whole posting.
  */
 
-import { Platform } from 'react-native'
 import { useRouter } from 'expo-router'
 import { Button } from '@scaffald/ui'
 import { ExternalLink } from 'lucide-react-native'
-import { ROUTES } from '@scf/core/constants/routes'
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useUser } from '@scf/core/utils/useUser'
 import {
   useExternalJobs,
@@ -26,12 +25,6 @@ import {
   useMyApplicationForJob,
 } from '@scf/core/utils/jobs-sdk-hooks'
 import { openExternalLink } from '@scf/core/utils/platform'
-
-/**
- * DOM id on the apply panel. The header's Apply button scrolls to it on web;
- * see `JobDetailApplyAction` for why native does not show the button.
- */
-export const APPLY_PANEL_ANCHOR = 'job-apply-panel'
 
 type JobLocation =
   | string
@@ -68,14 +61,6 @@ export function jobDetailKicker(
   return parts.length > 0 ? parts.join(' · ') : undefined
 }
 
-function scrollToApplyPanel() {
-  if (Platform.OS !== 'web' || typeof document === 'undefined') return
-  document.getElementById(APPLY_PANEL_ANCHOR)?.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start',
-  })
-}
-
 /**
  * The header's primary action.
  *
@@ -83,12 +68,7 @@ function scrollToApplyPanel() {
  * query needs a session — so the server and the first client render both say
  * "Apply" and hydration has nothing to reconcile. Where the button goes does
  * vary: signed out it leads to sign-in, an external posting opens the host's
- * own form, and an internal one jumps to the apply panel further down.
- *
- * On native there is nothing to jump to yet — the apply panel is the next
- * block on a single-column screen, and there is no cross-platform scroll
- * anchor here — so the internal case renders no button rather than a dead
- * one. #829 replaces the jump with a route on both platforms.
+ * own form, and an internal one opens the application screen (#829).
  */
 export function JobDetailApplyAction({ jobId }: { jobId: string }) {
   const router = useRouter()
@@ -111,7 +91,11 @@ export function JobDetailApplyAction({ jobId }: { jobId: string }) {
       <Button
         size="sm"
         variant="outline"
-        onPress={() => router.push(ROUTES.JOBS.APPLICATIONS.path)}
+        onPress={() =>
+          router.push(
+            buildPath(ROUTES.JOBS.APPLICATIONS.DETAIL, { applicationId: myApplication.id })
+          )
+        }
       >
         View application
       </Button>
@@ -145,10 +129,13 @@ export function JobDetailApplyAction({ jobId }: { jobId: string }) {
     )
   }
 
-  if (Platform.OS !== 'web') return null
-
   return (
-    <Button size="sm" variant="filled" color="primary" onPress={scrollToApplyPanel}>
+    <Button
+      size="sm"
+      variant="filled"
+      color="primary"
+      onPress={() => router.push(buildPath(ROUTES.JOBS.DETAIL.APPLY, { id: jobId }))}
+    >
       Apply
     </Button>
   )

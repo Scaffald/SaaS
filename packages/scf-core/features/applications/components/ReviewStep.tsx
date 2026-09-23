@@ -269,6 +269,7 @@ export function ReviewStep({
       <Button
         size="lg"
         color="primary"
+        variant="filled"
         onPress={onSubmit}
         disabled={isSubmitting || !hasConsent}
         loading={isSubmitting}
