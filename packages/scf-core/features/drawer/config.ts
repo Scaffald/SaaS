@@ -503,11 +503,15 @@ export const EMPLOYER_MOBILE_SECTIONS: MobileSection[] = [
     subItems: [],
   },
   {
-    key: 'office-jobs',
+    // The employer's Jobs screen is `/jobs/my-listings`; `/office/cms/jobs`
+    // is the admin CMS and stays admin-only (#835). This tab pointed at the
+    // CMS, so an employer tapping Jobs on a phone landed in a table of every
+    // organisation's postings rather than their own.
+    key: 'employer-jobs',
     label: 'Jobs',
     icon: Briefcase,
-    route: ROUTES.OFFICE.CMS.JOBS.path,
-    matchPrefixes: ['/office/cms/jobs'],
+    route: ROUTES.JOBS.MY_LISTINGS.path,
+    matchPrefixes: ['/jobs/my-listings', '/office/cms/jobs'],
     subItems: [],
   },
   {
