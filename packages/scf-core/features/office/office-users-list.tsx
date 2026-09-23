@@ -18,7 +18,6 @@ import {
   Stack,
   TableAddRecordModal,
   TableColumnVisibilityModal,
-  useThemeContext,
 } from "@scaffald/ui";
 import { OfficePageLayout } from "./components/OfficePageLayout";
 import { QuickActionsWidget } from "./components/QuickActionsWidget";
@@ -82,7 +81,6 @@ export interface OfficeUsersListProps {
 export function OfficeUsersList({
   showHeader = true,
 }: OfficeUsersListProps = {}) {
-  const { theme } = useThemeContext();
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -163,18 +161,6 @@ export function OfficeUsersList({
         (option): option is TableColumnVisibilityOption => option !== null
       );
   }, [columns]);
-
-  const handleColumnVisibilityChange = (columnId: string, visible: boolean) => {
-    setColumnVisibility((prev) => {
-      const next = { ...prev };
-      if (visible) {
-        delete next[columnId];
-      } else {
-        next[columnId] = false;
-      }
-      return next;
-    });
-  };
 
   return (
     <OfficePageLayout
