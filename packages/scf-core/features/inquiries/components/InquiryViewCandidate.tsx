@@ -5,7 +5,16 @@ import {
 } from '@scf/core/utils/inquiries-sdk-hooks'
 import { useInquirySubscription } from '@scf/core/utils/supabase/useInquirySubscription'
 import type { InquirySectionName } from '@scf/schemas'
-import { Button, Input, ScrollView, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import {
+  Button,
+  Input,
+  ScrollView,
+  Separator,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Check, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
@@ -13,6 +22,16 @@ import { useEffect, useMemo, useState } from 'react'
 import { Pressable } from 'react-native'
 import { CapabilityQuestionInput } from './CapabilityQuestionInput'
 import { InquiryCommentThread } from './InquiryCommentThread'
+import { InquiryFieldRow } from './InquiryFieldRow'
+import {
+  formatEmploymentType,
+  formatRateRange,
+  formatTermDate,
+  formatTermTimestamp,
+  formatWorkSchedule,
+  formatWorkdays,
+  formatWorkingHours,
+} from '../inquiry-format'
 import { InquiryHistoryTimeline } from './InquiryHistoryTimeline'
 
 interface InquirySectionStatus {
@@ -165,24 +184,6 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   }
 
   // Format rate for display
-  const formatRate = () => {
-    const minCents = Number((inquiry as Record<string, unknown>).rate_min_cents)
-    if (!minCents || Number.isNaN(minCents)) return 'Not specified'
-    const min = (minCents / 100).toFixed(2)
-    const maxCents = Number((inquiry as Record<string, unknown>).rate_max_cents)
-    const max = maxCents && !Number.isNaN(maxCents) ? (maxCents / 100).toFixed(2) : null
-    return max ? `$${min} - $${max}` : `$${min}`
-  }
-
-  // Format dates
-  const formatDate = (dateStr: string | null | undefined) => {
-    if (!dateStr) return 'Not specified'
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
-  }
 
   const formatEmploymentTypeLabel = (value?: string | null) => {
     if (!value) return null
@@ -199,20 +200,6 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   }
 
   // Format workdays
-  const formatWorkdays = () => {
-    const workdays = (inquiry as Record<string, unknown>).workdays
-    if (!Array.isArray(workdays) || workdays.length === 0) return 'Not specified'
-    const dayLabels: Record<string, string> = {
-      monday: 'Mon',
-      tuesday: 'Tue',
-      wednesday: 'Wed',
-      thursday: 'Thu',
-      friday: 'Fri',
-      saturday: 'Sat',
-      sunday: 'Sun',
-    }
-    return workdays.map((day: string) => dayLabels[day] || day).join(', ')
-  }
 
   type JobPayRangeSource = {
     payRangeMinCents?: number | null
@@ -314,7 +301,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
     jobTitle?: string
     applicationScore?: number | null
   }
-  const jobInfo = (data.job ?? (data.application as ApplicationInfoSource | undefined)?.job ?? null) as JobInfoSource | null
+  const jobInfo = (data.job ??
+    (data.application as ApplicationInfoSource | undefined)?.job ??
+    null) as JobInfoSource | null
   const applicationInfo = (data.application ?? null) as ApplicationInfoSource | null
   const capabilityQuestions =
     (data.capabilityQuestions as CapabilityQuestionDefinition[] | undefined) ?? []
@@ -332,7 +321,10 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   const jobLocation =
     jobInfo?.location ?? applicationInfo?.job?.location ?? inv.working_hours_timezone ?? null
   const jobEmploymentType = formatEmploymentTypeLabel(
-    (jobInfo?.employmentType ?? applicationInfo?.job?.employmentType ?? inv.employment_type) as string | null | undefined
+    (jobInfo?.employmentType ?? applicationInfo?.job?.employmentType ?? inv.employment_type) as
+      | string
+      | null
+      | undefined
   )
   const jobRemoteOption = formatRemoteOptionLabel(
     jobInfo?.remoteOption ?? applicationInfo?.job?.remoteOption ?? null
@@ -402,56 +394,57 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
           style={{ backgroundColor: colors.bg[theme].subtle }}
           borderRadius={12}
         >
-        <Row align="center" gap={8} style={{ flex: 1 }}>
-          {isExpanded ? (
-            <ChevronUp size={20} color={colors.text[theme].tertiary} />
-          ) : (
-            <ChevronDown size={20} color={colors.text[theme].tertiary} />
-          )}
-          <Text>{title}</Text>
-          {isAccepted && (
-            <Row
-              style={{ backgroundColor: colors.success[100] }}
-              paddingHorizontal={8}
-              paddingVertical={4}
-              borderRadius={8}
-              align="center"
-              gap={4}
-            >
-              <Check size={16} color={colors.success[700]} />
-              <Text style={{ color: colors.success[700] }}>Accepted</Text>
-            </Row>
-          )}
-          {commentCount > 0 && (
-            <Row align="center" gap={4}>
-              <MessageSquare size={20} color={colors.text[theme].tertiary} />
-              <Text style={{ color: colors.text[theme].tertiary }}>{commentCount}</Text>
-            </Row>
-          )}
+          <Row align="center" gap={8} style={{ flex: 1 }}>
+            {isExpanded ? (
+              <ChevronUp size={20} color={colors.text[theme].tertiary} />
+            ) : (
+              <ChevronDown size={20} color={colors.text[theme].tertiary} />
+            )}
+            <Text>{title}</Text>
+            {isAccepted && (
+              <Row
+                style={{ backgroundColor: colors.success[100] }}
+                paddingHorizontal={8}
+                paddingVertical={4}
+                borderRadius={8}
+                align="center"
+                gap={4}
+              >
+                <Check size={16} color={colors.success[700]} />
+                <Text style={{ color: colors.success[700] }}>Accepted</Text>
+              </Row>
+            )}
+            {commentCount > 0 && (
+              <Row align="center" gap={4}>
+                <MessageSquare size={20} color={colors.text[theme].tertiary} />
+                <Text style={{ color: colors.text[theme].tertiary }}>{commentCount}</Text>
+              </Row>
+            )}
           </Row>
         </Row>
       </Pressable>
     )
   }
 
-  const NonNegotiableBadge = () => (
-    <Row style={{ backgroundColor: colors.bg[theme].muted }} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
-      <Text style={{ color: colors.text[theme].tertiary }}>Non-negotiable</Text>
-    </Row>
-  )
-
   return (
     <ScrollView>
       <Stack gap={16} padding="md">
         {/* Progress Indicator */}
-          <Stack gap={8} padding="md" style={{ backgroundColor: colors.info[50] }} borderRadius={16}>
+        <Stack gap={8} padding="md" style={{ backgroundColor: colors.info[50] }} borderRadius={16}>
           <Row justify="space-between" align="center">
             <Text>Inquiry Progress</Text>
             <Text style={{ color: colors.info[600] }}>
               {acceptedSections}/{totalSections}
             </Text>
           </Row>
-          <Stack style={{ height: 8, overflow: 'hidden', borderRadius: 7, backgroundColor: colors.bg[theme].muted }}>
+          <Stack
+            style={{
+              height: 8,
+              overflow: 'hidden',
+              borderRadius: 7,
+              backgroundColor: colors.bg[theme].muted,
+            }}
+          >
             <Stack
               style={{ height: '100%', width: `${progress}%`, backgroundColor: colors.info[500] }}
             />
@@ -470,7 +463,10 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             <Stack
               gap={8}
               padding="sm"
-              style={{ backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default }}
+              style={{
+                backgroundColor: colors.bg[theme].default,
+                borderColor: colors.border[theme].default,
+              }}
               borderRadius={12}
               borderWidth={1}
             >
@@ -496,7 +492,10 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             <Stack
               gap={8}
               padding="sm"
-              style={{ backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default }}
+              style={{
+                backgroundColor: colors.bg[theme].default,
+                borderColor: colors.border[theme].default,
+              }}
               borderRadius={12}
               borderWidth={1}
             >
@@ -516,7 +515,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                   <DetailRow label="Stage changed" value={stageChangedDisplay} />
                 </Stack>
               ) : (
-                <Text style={{ color: colors.text[theme].tertiary }}>Application metadata is unavailable.</Text>
+                <Text style={{ color: colors.text[theme].tertiary }}>
+                  Application metadata is unavailable.
+                </Text>
               )}
             </Stack>
           )}
@@ -539,76 +540,73 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             <Stack
               gap={12}
               padding="sm"
-              style={{ backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default }}
+              style={{
+                backgroundColor: colors.bg[theme].default,
+                borderColor: colors.border[theme].default,
+              }}
               borderRadius={12}
               borderWidth={1}
             >
               {/* Employment Terms */}
               <Stack gap={8}>
                 {inv.employment_type && (
-                  <Row justify="space-between" align="center">
-                    <Text>Employment type</Text>
-                    <Row align="center" gap={8}>
-                      <Text>
-                        {inv.employment_type === 'permanent' ? 'Permanent' : 'Temporary'}
-                      </Text>
-                      {!inv.employment_type_negotiable && <NonNegotiableBadge />}
-                    </Row>
-                  </Row>
+                  <InquiryFieldRow
+                    label="Employment type"
+                    value={formatEmploymentType(
+                      typeof inv.employment_type === 'string' ? inv.employment_type : null
+                    )}
+                    negotiable={{ value: Boolean(inv.employment_type_negotiable) }}
+                  />
                 )}
                 {inv.work_schedule && (
-                  <Row justify="space-between" align="center">
-                    <Text>Work schedule</Text>
-                    <Row align="center" gap={8}>
-                      <Text>
-                        {inv.work_schedule === 'full_time'
-                          ? 'Full time'
-                          : inv.work_schedule === 'part_time'
-                            ? 'Part time'
-                            : 'Day-Week'}
-                      </Text>
-                      {!inv.work_schedule_negotiable && <NonNegotiableBadge />}
-                    </Row>
-                  </Row>
+                  <InquiryFieldRow
+                    label="Work schedule"
+                    value={formatWorkSchedule(
+                      typeof inv.work_schedule === 'string' ? inv.work_schedule : null
+                    )}
+                    negotiable={{ value: Boolean(inv.work_schedule_negotiable) }}
+                  />
                 )}
                 {inv.working_hours_start && inv.working_hours_end && (
-                  <Row justify="space-between" align="center">
-                    <Text>Working hours</Text>
-                    <Row align="center" gap={8}>
-                      <Text>
-                        {inv.working_hours_start} - {inv.working_hours_end}
-                        {inv.working_hours_timezone && ` (${inv.working_hours_timezone})`}
-                      </Text>
-                      {!inv.working_hours_negotiable && <NonNegotiableBadge />}
-                    </Row>
-                  </Row>
+                  <InquiryFieldRow
+                    label="Working hours"
+                    value={formatWorkingHours(
+                      String(inv.working_hours_start),
+                      String(inv.working_hours_end),
+                      typeof inv.working_hours_timezone === 'string'
+                        ? inv.working_hours_timezone
+                        : null
+                    )}
+                    negotiable={{ value: Boolean(inv.working_hours_negotiable) }}
+                  />
                 )}
                 {Array.isArray(inv.workdays) && inv.workdays.length > 0 && (
-                  <Row justify="space-between" align="center">
-                    <Text>Workdays</Text>
-                    <Row align="center" gap={8}>
-                      <Text>{formatWorkdays()}</Text>
-                      {!inv.workdays_negotiable && <NonNegotiableBadge />}
-                    </Row>
-                  </Row>
+                  <InquiryFieldRow
+                    label="Workdays"
+                    value={formatWorkdays(inv.workdays)}
+                    negotiable={{ value: Boolean(inv.workdays_negotiable) }}
+                  />
                 )}
                 {inv.employment_start_date && (
-                  <Row justify="space-between" align="center">
-                    <Text>Start date</Text>
-                    <Row align="center" gap={8}>
-                      <Text>{formatDate(typeof inv.employment_start_date === 'string' ? inv.employment_start_date : null)}</Text>
-                      {!inv.employment_dates_negotiable && <NonNegotiableBadge />}
-                    </Row>
-                  </Row>
+                  <InquiryFieldRow
+                    label="Start date"
+                    value={formatTermDate(
+                      typeof inv.employment_start_date === 'string'
+                        ? inv.employment_start_date
+                        : null
+                    )}
+                    negotiable={{ value: Boolean(inv.employment_dates_negotiable) }}
+                  />
                 )}
                 {inv.employment_end_date && (
-                  <Row justify="space-between" align="center">
-                    <Text>End date</Text>
-                    <Row align="center" gap={8}>
-                      <Text>{formatDate(typeof inv.employment_end_date === 'string' ? inv.employment_end_date : null)}</Text>
-                      {!inv.employment_dates_negotiable && <NonNegotiableBadge />}
-                    </Row>
-                  </Row>
+                  <InquiryFieldRow
+                    label="End date"
+                    value={formatTermDate(
+                      typeof inv.employment_end_date === 'string' ? inv.employment_end_date : null
+                    )}
+                    negotiable={{ value: Boolean(inv.employment_dates_negotiable) }}
+                    last
+                  />
                 )}
               </Stack>
 
@@ -636,13 +634,18 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {sections.find((s) => s.section_name === 'employment')?.accepted_by && (
                 <Stack
                   padding="sm"
-                  style={{ backgroundColor: colors.success[50], borderColor: colors.border[theme].success }}
+                  style={{
+                    backgroundColor: colors.success[50],
+                    borderColor: colors.border[theme].success,
+                  }}
                   borderRadius={12}
                   borderWidth={1}
                 >
                   <Text style={{ color: colors.success[700] }}>
                     ✓ You accepted the employment terms on{' '}
-                    {formatDate(sections.find((s) => s.section_name === 'employment')?.accepted_at)}
+                    {formatTermTimestamp(
+                      sections.find((s) => s.section_name === 'employment')?.accepted_at
+                    )}
                   </Text>
                 </Stack>
               )}
@@ -664,20 +667,24 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             <Stack
               gap={12}
               padding="sm"
-              style={{ backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default }}
+              style={{
+                backgroundColor: colors.bg[theme].default,
+                borderColor: colors.border[theme].default,
+              }}
               borderRadius={12}
               borderWidth={1}
             >
               {/* Rate Display */}
-              <Row justify="space-between" align="center">
-                <Text>Rate</Text>
-                <Row align="center" gap={8}>
-                  <Text>
-                    {formatRate()} {inv.rate_type === 'hourly' ? '/hr' : '/yr'}
-                  </Text>
-                  {!inv.rate_negotiable && <NonNegotiableBadge />}
-                </Row>
-              </Row>
+              <InquiryFieldRow
+                label="Rate"
+                value={formatRateRange(
+                  inv.rate_min_cents,
+                  inv.rate_max_cents,
+                  typeof inv.rate_type === 'string' ? inv.rate_type : null
+                )}
+                negotiable={{ value: Boolean(inv.rate_negotiable) }}
+                last
+              />
 
               <Separator />
 
@@ -703,13 +710,16 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {sections.find((s) => s.section_name === 'compensation')?.accepted_by && (
                 <Stack
                   padding="sm"
-                  style={{ backgroundColor: colors.success[50], borderColor: colors.border[theme].success }}
+                  style={{
+                    backgroundColor: colors.success[50],
+                    borderColor: colors.border[theme].success,
+                  }}
                   borderRadius={12}
                   borderWidth={1}
                 >
                   <Text style={{ color: colors.success[700] }}>
                     ✓ You accepted the compensation terms on{' '}
-                    {formatDate(
+                    {formatTermTimestamp(
                       sections.find((s) => s.section_name === 'compensation')?.accepted_at
                     )}
                   </Text>
@@ -733,7 +743,10 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             <Stack
               gap={12}
               padding="sm"
-              style={{ backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default }}
+              style={{
+                backgroundColor: colors.bg[theme].default,
+                borderColor: colors.border[theme].default,
+              }}
               borderRadius={12}
               borderWidth={1}
             >
@@ -828,13 +841,16 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {sections.find((s) => s.section_name === 'capabilities')?.accepted_by && (
                 <Stack
                   padding="sm"
-                  style={{ backgroundColor: colors.success[50], borderColor: colors.border[theme].success }}
+                  style={{
+                    backgroundColor: colors.success[50],
+                    borderColor: colors.border[theme].success,
+                  }}
                   borderRadius={12}
                   borderWidth={1}
                 >
                   <Text style={{ color: colors.success[700] }}>
                     ✓ You accepted the capabilities terms on{' '}
-                    {formatDate(
+                    {formatTermTimestamp(
                       sections.find((s) => s.section_name === 'capabilities')?.accepted_at
                     )}
                   </Text>
@@ -856,39 +872,37 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             <Stack
               gap={12}
               padding="sm"
-              style={{ backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default }}
+              style={{
+                backgroundColor: colors.bg[theme].default,
+                borderColor: colors.border[theme].default,
+              }}
               borderRadius={12}
               borderWidth={1}
             >
               {/* Other Terms */}
               <Stack gap={8}>
                 {inv.willing_to_travel !== null && (
-                  <Row justify="space-between" align="center">
-                    <Text>Willing to travel</Text>
-                    <Text>
-                      {inv.willing_to_travel ? 'Yes' : 'No'}
-                      {inv.travel_distance_miles &&
-                        ` (up to ${inv.travel_distance_miles} miles)`}
-                    </Text>
-                  </Row>
+                  <InquiryFieldRow
+                    label="Willing to travel"
+                    value={`${inv.willing_to_travel ? 'Yes' : 'No'}${
+                      inv.travel_distance_miles ? ` (up to ${inv.travel_distance_miles} miles)` : ''
+                    }`}
+                  />
                 )}
                 {inv.willing_to_work_overtime !== null && (
-                  <Row justify="space-between" align="center">
-                    <Text>Willing to work overtime</Text>
-                    <Text>{inv.willing_to_work_overtime ? 'Yes' : 'No'}</Text>
-                  </Row>
+                  <InquiryFieldRow
+                    label="Willing to work overtime"
+                    value={inv.willing_to_work_overtime ? 'Yes' : 'No'}
+                  />
                 )}
                 {inv.has_drivers_license !== null && (
-                  <Row justify="space-between" align="center">
-                    <Text>Has driver's license</Text>
-                    <Text>{inv.has_drivers_license ? 'Yes' : 'No'}</Text>
-                  </Row>
+                  <InquiryFieldRow
+                    label="Has driver's license"
+                    value={inv.has_drivers_license ? 'Yes' : 'No'}
+                  />
                 )}
                 {inv.additional_notes && (
-                  <Stack gap={8}>
-                    <Text>Additional notes</Text>
-                    <Text style={{ color: colors.text[theme].tertiary }}>{inv.additional_notes}</Text>
-                  </Stack>
+                  <InquiryFieldRow label="Additional notes" value={inv.additional_notes} last />
                 )}
               </Stack>
 
@@ -916,13 +930,18 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {sections.find((s) => s.section_name === 'other')?.accepted_by && (
                 <Stack
                   padding="sm"
-                  style={{ backgroundColor: colors.success[50], borderColor: colors.border[theme].success }}
+                  style={{
+                    backgroundColor: colors.success[50],
+                    borderColor: colors.border[theme].success,
+                  }}
                   borderRadius={12}
                   borderWidth={1}
                 >
                   <Text style={{ color: colors.success[700] }}>
                     ✓ You accepted the other terms on{' '}
-                    {formatDate(sections.find((s) => s.section_name === 'other')?.accepted_at)}
+                    {formatTermTimestamp(
+                      sections.find((s) => s.section_name === 'other')?.accepted_at
+                    )}
                   </Text>
                 </Stack>
               )}
