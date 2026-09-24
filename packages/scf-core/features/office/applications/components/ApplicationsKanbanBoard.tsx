@@ -463,7 +463,6 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
           fromStatus={pendingChange.fromStatus}
           toStatus={pendingChange.toStatus}
           isLoading={isChanging}
-          application={pendingApplication || undefined}
         />
       )}
 

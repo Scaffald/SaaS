@@ -118,7 +118,8 @@
     "applications": {
       "inquiry": "Inquiry Detail",
       "title": "Applications",
-      "detail": "Detalle del candidato"
+      "detail": "Detalle del candidato",
+      "hire": "Contratar"
     },
     "ats": {
       "checks": {
