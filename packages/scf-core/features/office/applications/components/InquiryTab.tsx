@@ -25,19 +25,19 @@ export function InquiryTab({
 
   return (
     <Stack gap={16}>
-      {onEditInquiry && (
-        <Stack align="flex-end">
-          <Button size="sm" variant="outline" onPress={onEditInquiry}>
-            {editLabel}
-          </Button>
-        </Stack>
-      )}
-
+      {/* Edit belongs beside the title, not floating above it (#837). */}
       <InquiryViewOrganization
         applicationId={applicationId}
         inquiryId={inquiry.id as string}
         candidateName={candidateName}
         jobTitle={jobTitle}
+        actions={
+          onEditInquiry ? (
+            <Button size="sm" variant="outline" onPress={onEditInquiry}>
+              {editLabel}
+            </Button>
+          ) : undefined
+        }
       />
 
       <InquiryHistoryTimeline inquiryId={inquiry.id as string} />

@@ -128,23 +128,28 @@ export function InquiryCommentThread({
                 borderRadius={12}
                 style={{
                   backgroundColor: isUnread
-                    ? (t === 'dark' ? colors.blue[900] : colors.blue[50])
+                    ? t === 'dark'
+                      ? colors.blue[900]
+                      : colors.blue[50]
                     : colors.bg[t].muted,
                   borderWidth: 1,
                   borderColor: isUnread
-                    ? (t === 'dark' ? colors.blue[300] : colors.blue[600])
+                    ? t === 'dark'
+                      ? colors.blue[300]
+                      : colors.blue[600]
                     : colors.border[t].default,
                 }}
               >
-                <Avatar
-                  size={32}
-                  initials={comment.sender_id.charAt(0).toUpperCase()}
-                />
+                <Avatar size={32} initials={comment.sender_id.charAt(0).toUpperCase()} />
                 <Stack flex={1} gap={4}>
                   <Row justify="space-between" align="center" gap={8}>
-                    <Text style={{ color: colors.text[t].secondary }}>{isFromCurrentUser ? 'You' : 'Organization'}</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>
+                      {isFromCurrentUser ? 'You' : 'Organization'}
+                    </Text>
                     <Row gap={8} align="center">
-                      <Text style={{ color: colors.text[t].secondary }}>{formatTimestamp(comment.created_at)}</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>
+                        {formatTimestamp(comment.created_at)}
+                      </Text>
                       {/* #690. Hidden on your own messages — reporting yourself
                           is not a thing, and the API rejects it anyway. */}
                       <ReportAction
@@ -199,13 +204,17 @@ export function InquiryCommentThread({
             onChangeText={setNewComment}
             multiline
             maxLength={2000}
-            style={{ flex: 1, minHeight: 60 }}
+            // `flex: 1` alone is not enough: a flex child's default minimum is
+            // its content width, so the field refused to shrink and pushed
+            // Send off the right edge of the card it sits in (#858).
+            style={{ flex: 1, minWidth: 0, minHeight: 60 }}
           />
           <Button
             iconStart={Send}
             onPress={handleAddComment}
             disabled={!newComment.trim() || addCommentMutation.isPending}
             color="primary"
+            style={{ flexShrink: 0 }}
           >
             {addCommentMutation.isPending ? 'Sending...' : 'Send'}
           </Button>

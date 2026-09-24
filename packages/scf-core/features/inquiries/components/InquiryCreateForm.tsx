@@ -8,9 +8,9 @@ import {
 import type { InquiryCreateInput } from '@scf/schemas'
 import {
   Button,
-  Checkbox,
   Input,
   ResponsiveSelect,
+  ScreenHeader,
   ScrollView,
   Separator,
   Sheet,
@@ -20,6 +20,7 @@ import {
   Text,
   Row,
   Stack,
+  useResponsive,
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -32,6 +33,26 @@ import { Switch, TextArea } from '@scaffald/ui'
 import { useInquiryEdit } from '../hooks/useInquiryEdit'
 import { useInquiryForm } from '../hooks/useInquiryForm'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
+import { InquiryFieldRow } from './InquiryFieldRow'
+
+/** The terms that carry a negotiable flag. The rest are plain answers. */
+type NegotiableField =
+  | 'employmentTypeNegotiable'
+  | 'workScheduleNegotiable'
+  | 'workingHoursNegotiable'
+  | 'workdaysNegotiable'
+  | 'employmentDatesNegotiable'
+  | 'rateNegotiable'
+
+/**
+ * `flex: 1` with no basis inside a wrapping row never wraps: every child
+ * claims a share of the line and then overflows it. At 390 that put the rate
+ * range's second input past the right edge of the screen, and squeezed the
+ * timezone select until its label wrapped across its own border. A basis lets
+ * the row break instead.
+ */
+const FIELD_WIDE = { flexGrow: 1, flexBasis: 160, minWidth: 140 } as const
+const FIELD_NARROW = { flexGrow: 1, flexBasis: 120, minWidth: 110 } as const
 
 const SMART_DEFAULT_FIELD_LABELS: Record<string, string> = {
   employmentType: 'Employment type',
@@ -151,6 +172,7 @@ export function InquiryCreateForm({
         }
 
   const { theme } = useThemeContext()
+  const { isMobile } = useResponsive()
   const t = theme === 'dark' ? 'dark' : 'light'
   const toast = useToast()
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
@@ -418,30 +440,66 @@ export function InquiryCreateForm({
     return Math.round(parsed * 100)
   }
 
-  const renderSmartLabel = useCallback(
-    (label: string, fieldKeys: string | string[]) => {
-      const keys = Array.isArray(fieldKeys) ? fieldKeys : [fieldKeys]
-      const isAutoFilled = keys.some((key) => autoFilledFields.has(key))
+  /**
+   * The negotiable flag as a two-state control (#837).
+   *
+   * It used to be a checkbox labelled "Non-negotiable" bound to `!value` —
+   * ticking a box to clear a field called `negotiable`, with the unticked
+   * state saying nothing at all. Same field, stated positively, and it now
+   * reads the same here as it does on both view screens.
+   */
+  const negotiableFor = useCallback(
+    (name: NegotiableField) => ({
+      value: watchedValues[name] !== false,
+      onChange: (next: boolean) =>
+        form.setValue(name, next, { shouldDirty: true, shouldValidate: true }),
+    }),
+    [watchedValues, form]
+  )
 
+  const autoFilledBadge = useCallback(
+    (fieldKeys: string | string[]) => {
+      const keys = Array.isArray(fieldKeys) ? fieldKeys : [fieldKeys]
+      if (!keys.some((key) => autoFilledFields.has(key))) return null
       return (
-        <Row align="center" gap={8}>
-          <Text>{label}</Text>
-          {isAutoFilled && (
-            <Row
-              style={{
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                backgroundColor: `${colors.success[500]}18`,
-                borderRadius: 7,
-              }}
-            >
-              <Text style={{ color: colors.success[600] }}>Auto-filled</Text>
-            </Row>
-          )}
+        <Row
+          style={{
+            paddingHorizontal: 8,
+            paddingVertical: 2,
+            backgroundColor: `${colors.success[500]}18`,
+            borderRadius: 7,
+          }}
+        >
+          <Text style={{ color: colors.success[600] }}>Auto-filled</Text>
         </Row>
       )
     },
     [autoFilledFields]
+  )
+
+  const formActions = (
+    <Row gap={8} wrap>
+      {onCancel && (
+        <Button size="sm" variant="outline" onPress={onCancel} disabled={isSubmitting}>
+          Cancel
+        </Button>
+      )}
+      {mode === 'create' && (
+        <>
+          <Button size="sm" variant="outline" onPress={onSaveDraft} disabled={isSubmitting}>
+            Save draft
+          </Button>
+          <Button size="sm" onPress={onSubmit} disabled={isSubmitting} color="primary">
+            {isSubmitting ? 'Sending…' : 'Send'}
+          </Button>
+        </>
+      )}
+      {mode === 'edit' && (
+        <Button size="sm" onPress={onSubmit} disabled={isSubmitting} color="primary">
+          {isSubmitting ? 'Saving…' : 'Save changes'}
+        </Button>
+      )}
+    </Row>
   )
 
   return (
@@ -452,6 +510,16 @@ export function InquiryCreateForm({
           <Stack style={{ flex: 1 }} gap={16}>
             <ScrollView>
               <Stack gap={24} padding="md">
+                {/*
+                  Send and Save draft sit in the header rather than under a
+                  form this long: the reader should not have to scroll past
+                  every term to find out what they can do with it (#837).
+                */}
+                <ScreenHeader
+                  title={mode === 'edit' ? 'Edit inquiry' : 'Inquiry'}
+                  tip="Set each term, and say whether it is open to negotiation. The candidate replies term by term."
+                  actions={formActions}
+                />
                 {/* Templates Section */}
                 <Stack
                   gap={12}
@@ -466,7 +534,9 @@ export function InquiryCreateForm({
                   <Row justify="space-between" align="center" gap={12}>
                     <Stack>
                       <Text>Templates</Text>
-                      <Text style={{ color: colors.text[t].secondary }}>Reuse saved inquiry terms for this organization.</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>
+                        Reuse saved inquiry terms for this organization.
+                      </Text>
                     </Stack>
                     <Row gap={8}>
                       <Button
@@ -512,7 +582,9 @@ export function InquiryCreateForm({
                     </Button>
                   </Row>
 
-                  {isTemplatesLoading && <Text style={{ color: colors.text[t].secondary }}>Loading templates…</Text>}
+                  {isTemplatesLoading && (
+                    <Text style={{ color: colors.text[t].secondary }}>Loading templates…</Text>
+                  )}
                   {!isTemplatesLoading && templates.length === 0 && (
                     <Text style={{ color: colors.text[t].secondary }}>
                       Save templates to quickly reuse standard employment terms.
@@ -536,7 +608,9 @@ export function InquiryCreateForm({
                       <Stack gap={4} style={{ flex: 1 }}>
                         <Text>Smart defaults</Text>
                         {isSmartDefaultsLoading ? (
-                          <Text style={{ color: colors.text[t].secondary }}>Loading job-based recommendations…</Text>
+                          <Text style={{ color: colors.text[t].secondary }}>
+                            Loading job-based recommendations…
+                          </Text>
                         ) : smartDefaultsFieldCount > 0 ? (
                           <Text style={{ color: colors.text[t].secondary }}>
                             {smartDefaultsApplied
@@ -544,7 +618,9 @@ export function InquiryCreateForm({
                               : `Prefill ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`}
                           </Text>
                         ) : (
-                          <Text style={{ color: colors.text[t].secondary }}>No defaults available for this job yet.</Text>
+                          <Text style={{ color: colors.text[t].secondary }}>
+                            No defaults available for this job yet.
+                          </Text>
                         )}
                       </Stack>
                       <Row gap={8}>
@@ -590,8 +666,11 @@ export function InquiryCreateForm({
                   </Row>
 
                   {/* Employment Type */}
-                  <Stack gap={8}>
-                    {renderSmartLabel('Employment type', 'employmentType')}
+                  <InquiryFieldRow
+                    label="Employment type"
+                    badge={autoFilledBadge('employmentType')}
+                    negotiable={negotiableFor('employmentTypeNegotiable')}
+                  >
                     <Controller
                       control={control}
                       name="employmentType"
@@ -615,25 +694,14 @@ export function InquiryCreateForm({
                         </Row>
                       )}
                     />
-                    <Row align="center" gap={8}>
-                      <Controller
-                        control={control}
-                        name="employmentTypeNegotiable"
-                        render={({ field }) => (
-                          <Checkbox
-                            checked={!field.value}
-                            onChange={(checked: boolean) => field.onChange(!checked)}
-                            size="md"
-                          />
-                        )}
-                      />
-                      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
-                    </Row>
-                  </Stack>
+                  </InquiryFieldRow>
 
                   {/* Work Schedule */}
-                  <Stack gap={8}>
-                    {renderSmartLabel('Work schedule', 'workSchedule')}
+                  <InquiryFieldRow
+                    label="Work schedule"
+                    badge={autoFilledBadge('workSchedule')}
+                    negotiable={negotiableFor('workScheduleNegotiable')}
+                  >
                     <Controller
                       control={control}
                       name="workSchedule"
@@ -657,45 +725,31 @@ export function InquiryCreateForm({
                         </Row>
                       )}
                     />
-                    <Row align="center" gap={8}>
-                      <Controller
-                        control={control}
-                        name="workScheduleNegotiable"
-                        render={({ field }) => (
-                          <Checkbox
-                            checked={!field.value}
-                            onChange={(checked: boolean) => field.onChange(!checked)}
-                            size="md"
-                          />
-                        )}
-                      />
-                      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
-                    </Row>
-                  </Stack>
+                  </InquiryFieldRow>
 
                   {/* Schedule Shifts */}
-                  <Stack gap={8}>
-                    <Row justify="space-between" align="center">
-                      <Text>Schedule shifts</Text>
-                      <Controller
-                        control={control}
-                        name="scheduleShifts"
-                        render={({ field }) => (
-                          <Switch checked={field.value} onChange={field.onChange} size="md" />
-                        )}
-                      />
-                    </Row>
-                  </Stack>
+                  <InquiryFieldRow label="Schedule shifts">
+                    <Controller
+                      control={control}
+                      name="scheduleShifts"
+                      render={({ field }) => (
+                        <Switch checked={field.value} onChange={field.onChange} size="md" />
+                      )}
+                    />
+                  </InquiryFieldRow>
 
                   {/* Working Hours */}
-                  <Stack gap={8}>
-                    {renderSmartLabel('Working hours', [
+                  <InquiryFieldRow
+                    label="Working hours"
+                    badge={autoFilledBadge([
                       'workingHoursStart',
                       'workingHoursEnd',
                       'workingHoursTimezone',
                     ])}
-                    <Row gap={8}>
-                      <Stack gap={8} style={{ flex: 1 }}>
+                    negotiable={negotiableFor('workingHoursNegotiable')}
+                  >
+                    <Row gap={8} wrap>
+                      <Stack gap={8} style={FIELD_WIDE}>
                         <Controller
                           control={control}
                           name="workingHoursTimezone"
@@ -712,7 +766,7 @@ export function InquiryCreateForm({
                           )}
                         />
                       </Stack>
-                      <Stack gap={8} style={{ flex: 1 }}>
+                      <Stack gap={8} style={FIELD_NARROW}>
                         <Controller
                           control={control}
                           name="workingHoursStart"
@@ -725,10 +779,12 @@ export function InquiryCreateForm({
                           )}
                         />
                         {errors.workingHoursStart && (
-                          <Text style={{ color: colors.error[500] }}>{errors.workingHoursStart.message}</Text>
+                          <Text style={{ color: colors.error[500] }}>
+                            {errors.workingHoursStart.message}
+                          </Text>
                         )}
                       </Stack>
-                      <Stack gap={8} style={{ flex: 1 }}>
+                      <Stack gap={8} style={FIELD_NARROW}>
                         <Controller
                           control={control}
                           name="workingHoursEnd"
@@ -741,29 +797,20 @@ export function InquiryCreateForm({
                           )}
                         />
                         {errors.workingHoursEnd && (
-                          <Text style={{ color: colors.error[500] }}>{errors.workingHoursEnd.message}</Text>
+                          <Text style={{ color: colors.error[500] }}>
+                            {errors.workingHoursEnd.message}
+                          </Text>
                         )}
                       </Stack>
                     </Row>
-                    <Row align="center" gap={8}>
-                      <Controller
-                        control={control}
-                        name="workingHoursNegotiable"
-                        render={({ field }) => (
-                          <Checkbox
-                            checked={!field.value}
-                            onChange={(checked: boolean) => field.onChange(!checked)}
-                            size="md"
-                          />
-                        )}
-                      />
-                      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
-                    </Row>
-                  </Stack>
+                  </InquiryFieldRow>
 
                   {/* Workdays */}
-                  <Stack gap={8}>
-                    {renderSmartLabel('Workdays', 'workdays')}
+                  <InquiryFieldRow
+                    label="Workdays"
+                    badge={autoFilledBadge('workdays')}
+                    negotiable={negotiableFor('workdaysNegotiable')}
+                  >
                     <Controller
                       control={control}
                       name="workdays"
@@ -794,27 +841,17 @@ export function InquiryCreateForm({
                         </Row>
                       )}
                     />
-                    <Row align="center" gap={8}>
-                      <Controller
-                        control={control}
-                        name="workdaysNegotiable"
-                        render={({ field }) => (
-                          <Checkbox
-                            checked={!field.value}
-                            onChange={(checked: boolean) => field.onChange(!checked)}
-                            size="md"
-                          />
-                        )}
-                      />
-                      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
-                    </Row>
-                  </Stack>
+                  </InquiryFieldRow>
 
                   {/* Date of Employment */}
-                  <Stack gap={8}>
-                    {renderSmartLabel('Date of employment', 'employmentStartDate')}
-                    <Row gap={8}>
-                      <Stack gap={8} style={{ flex: 1 }}>
+                  <InquiryFieldRow
+                    label="Date of employment"
+                    badge={autoFilledBadge('employmentStartDate')}
+                    negotiable={negotiableFor('employmentDatesNegotiable')}
+                    hint="End date is not mandatory"
+                  >
+                    <Row gap={8} wrap>
+                      <Stack gap={8} style={FIELD_WIDE}>
                         <Controller
                           control={control}
                           name="employmentStartDate"
@@ -828,13 +865,15 @@ export function InquiryCreateForm({
                                 {...getDateInputProps()}
                               />
                               {errors.employmentStartDate && (
-                                <Text style={{ color: colors.error[500] }}>{errors.employmentStartDate.message}</Text>
+                                <Text style={{ color: colors.error[500] }}>
+                                  {errors.employmentStartDate.message}
+                                </Text>
                               )}
                             </>
                           )}
                         />
                       </Stack>
-                      <Stack gap={8} style={{ flex: 1 }}>
+                      <Stack gap={8} style={FIELD_WIDE}>
                         <Controller
                           control={control}
                           name="employmentEndDate"
@@ -846,29 +885,16 @@ export function InquiryCreateForm({
                                 {...getDateInputProps()}
                               />
                               {errors.employmentEndDate && (
-                                <Text style={{ color: colors.error[500] }}>{errors.employmentEndDate.message}</Text>
+                                <Text style={{ color: colors.error[500] }}>
+                                  {errors.employmentEndDate.message}
+                                </Text>
                               )}
                             </>
                           )}
                         />
-                        <Text style={{ color: colors.text[t].secondary }}>End date is not mandatory</Text>
                       </Stack>
                     </Row>
-                    <Row align="center" gap={8}>
-                      <Controller
-                        control={control}
-                        name="employmentDatesNegotiable"
-                        render={({ field }) => (
-                          <Checkbox
-                            checked={!field.value}
-                            onChange={(checked: boolean) => field.onChange(!checked)}
-                            size="md"
-                          />
-                        )}
-                      />
-                      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
-                    </Row>
-                  </Stack>
+                  </InquiryFieldRow>
                 </Stack>
 
                 <Separator />
@@ -880,10 +906,15 @@ export function InquiryCreateForm({
                   </Row>
 
                   {/* Rate Type */}
-                  <Stack gap={8}>
-                    {renderSmartLabel('Rate', ['rateType', 'rateMinCents', 'rateMaxCents'])}
-                    <Row gap={8}>
-                      <Stack gap={8} flex={2}>
+                  <InquiryFieldRow
+                    label="Rate"
+                    badge={autoFilledBadge(['rateType', 'rateMinCents', 'rateMaxCents'])}
+                    negotiable={negotiableFor('rateNegotiable')}
+                    hint="Add a range or a single rate"
+                    last
+                  >
+                    <Row gap={8} wrap>
+                      <Stack gap={8} style={FIELD_WIDE}>
                         <Controller
                           control={control}
                           name="rateType"
@@ -900,7 +931,7 @@ export function InquiryCreateForm({
                           )}
                         />
                       </Stack>
-                      <Stack gap={8} style={{ flex: 1 }}>
+                      <Stack gap={8} style={FIELD_NARROW}>
                         <Row align="center" gap={4}>
                           <Text>$</Text>
                           <Controller
@@ -921,10 +952,12 @@ export function InquiryCreateForm({
                           />
                         </Row>
                         {errors.rateMinCents && (
-                          <Text style={{ color: colors.error[500] }}>{errors.rateMinCents.message}</Text>
+                          <Text style={{ color: colors.error[500] }}>
+                            {errors.rateMinCents.message}
+                          </Text>
                         )}
                       </Stack>
-                      <Stack gap={8} style={{ flex: 1 }}>
+                      <Stack gap={8} style={FIELD_NARROW}>
                         <Text style={{ color: colors.text[t].secondary }}>to</Text>
                         <Row align="center" gap={4}>
                           <Text>$</Text>
@@ -946,26 +979,13 @@ export function InquiryCreateForm({
                           />
                         </Row>
                         {errors.rateMaxCents && (
-                          <Text style={{ color: colors.error[500] }}>{errors.rateMaxCents.message}</Text>
+                          <Text style={{ color: colors.error[500] }}>
+                            {errors.rateMaxCents.message}
+                          </Text>
                         )}
                       </Stack>
                     </Row>
-                    <Text style={{ color: colors.text[t].secondary }}>Add a range or a single rate</Text>
-                    <Row align="center" gap={8}>
-                      <Controller
-                        control={control}
-                        name="rateNegotiable"
-                        render={({ field }) => (
-                          <Checkbox
-                            checked={!field.value}
-                            onChange={(checked: boolean) => field.onChange(!checked)}
-                            size="md"
-                          />
-                        )}
-                      />
-                      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
-                    </Row>
-                  </Stack>
+                  </InquiryFieldRow>
                 </Stack>
 
                 <Separator />
@@ -977,21 +997,26 @@ export function InquiryCreateForm({
                   </Row>
 
                   {/* Endurance */}
-                  <Stack gap={8}>
-                    <Row justify="space-between" align="center">
-                      <Row align="center" gap={8}>
-                        <Text>Endurance</Text>
-                        <Button size="sm" variant="text" iconStart={Info} aria-label="Endurance info" />
-                      </Row>
-                      <Controller
-                        control={control}
-                        name="enduranceRequired"
-                        render={({ field }) => (
-                          <Switch checked={field.value} onChange={field.onChange} size="md" />
-                        )}
+                  <InquiryFieldRow
+                    label="Endurance"
+                    badge={
+                      <Button
+                        size="sm"
+                        variant="text"
+                        iconStart={Info}
+                        aria-label="Endurance info"
                       />
-                    </Row>
-                  </Stack>
+                    }
+                    last
+                  >
+                    <Controller
+                      control={control}
+                      name="enduranceRequired"
+                      render={({ field }) => (
+                        <Switch checked={field.value} onChange={field.onChange} size="md" />
+                      )}
+                    />
+                  </InquiryFieldRow>
                 </Stack>
 
                 <Separator />
@@ -1003,9 +1028,8 @@ export function InquiryCreateForm({
                   </Row>
 
                   {/* Willing to Travel */}
-                  <Stack gap={8}>
-                    <Row justify="space-between" align="center">
-                      <Text>Willing to travel</Text>
+                  <InquiryFieldRow label="Willing to travel">
+                    <Stack gap={8}>
                       <Controller
                         control={control}
                         name="willingToTravel"
@@ -1017,9 +1041,7 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                    </Row>
-                    {watchedValues.willingToTravel && (
-                      <Stack gap={8}>
+                      {watchedValues.willingToTravel && (
                         <Row align="center" gap={4}>
                           <Text>up to</Text>
                           <Controller
@@ -1040,49 +1062,46 @@ export function InquiryCreateForm({
                           />
                           <Text>miles</Text>
                         </Row>
-                      </Stack>
-                    )}
-                  </Stack>
+                      )}
+                    </Stack>
+                  </InquiryFieldRow>
 
                   {/* Willing to Work Overtime */}
-                  <Stack gap={8}>
-                    <Row justify="space-between" align="center">
-                      <Text>Willing to work overtime</Text>
-                      <Controller
-                        control={control}
-                        name="willingToWorkOvertime"
-                        render={({ field }) => (
-                          <Switch
-                            checked={field.value ?? false}
-                            onChange={field.onChange}
-                            size="md"
-                          />
-                        )}
-                      />
-                    </Row>
-                  </Stack>
+                  <InquiryFieldRow label="Willing to work overtime">
+                    <Controller
+                      control={control}
+                      name="willingToWorkOvertime"
+                      render={({ field }) => (
+                        <Switch
+                          checked={field.value ?? false}
+                          onChange={field.onChange}
+                          size="md"
+                        />
+                      )}
+                    />
+                  </InquiryFieldRow>
 
                   {/* Has Driver's License */}
-                  <Stack gap={8}>
-                    <Row justify="space-between" align="center">
-                      <Text>Has driver's license</Text>
-                      <Controller
-                        control={control}
-                        name="hasDriversLicense"
-                        render={({ field }) => (
-                          <Switch
-                            checked={field.value ?? false}
-                            onChange={field.onChange}
-                            size="md"
-                          />
-                        )}
-                      />
-                    </Row>
-                  </Stack>
+                  <InquiryFieldRow label="Has driver's license">
+                    <Controller
+                      control={control}
+                      name="hasDriversLicense"
+                      render={({ field }) => (
+                        <Switch
+                          checked={field.value ?? false}
+                          onChange={field.onChange}
+                          size="md"
+                        />
+                      )}
+                    />
+                  </InquiryFieldRow>
 
                   {/* Additional Notes */}
-                  <Stack gap={8}>
-                    <Text>Additional note</Text>
+                  <InquiryFieldRow
+                    label="Additional note"
+                    error={errors.additionalNotes?.message}
+                    last
+                  >
                     <Controller
                       control={control}
                       name="additionalNotes"
@@ -1097,54 +1116,30 @@ export function InquiryCreateForm({
                         />
                       )}
                     />
-                    {errors.additionalNotes && (
-                      <Text style={{ color: colors.error[500] }}>{errors.additionalNotes.message}</Text>
-                    )}
-                  </Stack>
+                  </InquiryFieldRow>
                 </Stack>
               </Stack>
             </ScrollView>
+          </Stack>
 
-            {/* Form Actions */}
-            <Row
-              gap={12}
-              padding="md"
+          {/*
+            The help column was an unconditional 300px, so on a 390pt phone it
+            took most of the width and left the form itself about 70pt wide.
+            Wide screens only.
+          */}
+          {!isMobile && (
+            <Stack
               style={{
-                backgroundColor: colors.bg[t].default,
-                borderTopWidth: 1,
-                borderTopColor: colors.border[t].default,
-                justifyContent: 'flex-end',
+                width: 300,
+                padding: 16,
+                backgroundColor: colors.bg[t].subtle,
+                borderLeftWidth: 1,
+                borderLeftColor: colors.border[t].default,
               }}
             >
-              {onCancel && (
-                <Button variant="outline" onPress={onCancel} disabled={isSubmitting}>
-                  Cancel
-                </Button>
-              )}
-              {mode === 'create' && (
-                <>
-                  <Button variant="outline" onPress={onSaveDraft} disabled={isSubmitting}>
-                    Save Draft
-                  </Button>
-                  <Button onPress={onSubmit} disabled={isSubmitting} color="primary">
-                    {isSubmitting ? 'Sending...' : 'Continue'}
-                  </Button>
-                </>
-              )}
-              {mode === 'edit' && (
-                <Button onPress={onSubmit} disabled={isSubmitting} color="primary">
-                  {isSubmitting ? 'Saving...' : 'Save Changes'}
-                </Button>
-              )}
-            </Row>
-          </Stack>
-
-          {/* Help Sidebar */}
-          <Stack
-            style={{ width: 300, padding: 16, backgroundColor: colors.bg[t].subtle, borderLeftWidth: 1, borderLeftColor: colors.border[t].default }}
-          >
-            <InquiryHelpSidebar />
-          </Stack>
+              <InquiryHelpSidebar />
+            </Stack>
+          )}
         </Row>
       </FormProvider>
 
@@ -1153,13 +1148,12 @@ export function InquiryCreateForm({
         onClose={() => setSaveTemplateOpen(false)}
         height="three-quarters"
       >
-        <SheetHeader
-          title="Save template"
-          onClose={() => setSaveTemplateOpen(false)}
-        />
+        <SheetHeader title="Save template" onClose={() => setSaveTemplateOpen(false)} />
         <SheetContent scrollable={false}>
           <Stack gap={16} padding="md">
-            <Text style={{ color: colors.text[t].secondary }}>Capture the current inquiry terms as a reusable template.</Text>
+            <Text style={{ color: colors.text[t].secondary }}>
+              Capture the current inquiry terms as a reusable template.
+            </Text>
             <Stack gap={8}>
               <Text>Template name</Text>
               <Input
@@ -1202,13 +1196,12 @@ export function InquiryCreateForm({
         height="full"
         maxHeight={0.9}
       >
-        <SheetHeader
-          title="Manage templates"
-          onClose={() => setManageTemplatesOpen(false)}
-        />
+        <SheetHeader title="Manage templates" onClose={() => setManageTemplatesOpen(false)} />
         <SheetContent scrollable>
           {templates.length === 0 ? (
-            <Text style={{ color: colors.text[t].secondary }}>No templates saved yet. Create one from the inquiry form.</Text>
+            <Text style={{ color: colors.text[t].secondary }}>
+              No templates saved yet. Create one from the inquiry form.
+            </Text>
           ) : (
             <Stack gap={12} paddingVertical={8}>
               {templateList.map((template) => {
@@ -1231,7 +1224,9 @@ export function InquiryCreateForm({
                       <Stack style={{ flex: 1 }} gap={4}>
                         <Text>{template.name}</Text>
                         {template.description && (
-                          <Text style={{ color: colors.text[t].secondary }}>{template.description}</Text>
+                          <Text style={{ color: colors.text[t].secondary }}>
+                            {template.description}
+                          </Text>
                         )}
                         <Text style={{ color: colors.text[t].secondary }}>
                           {usageCount} use{usageCount === 1 ? '' : 's'} ·{' '}
