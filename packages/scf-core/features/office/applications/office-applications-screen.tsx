@@ -126,7 +126,12 @@ export const OfficeApplicationsScreen = ({
       : 'Failed to load applications. Please try again.'
 
   return (
-    <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} style={{ backgroundColor: colors.bg[theme].default }}>
+    <Stack
+      flex={1}
+      paddingHorizontal={gutter}
+      paddingVertical={verticalPadding}
+      style={{ backgroundColor: colors.bg[theme].default }}
+    >
       {/* Header — the shared ScreenHeader, so this screen reads the same as
           every other one. The count moved out of the subtitle and into the
           toolbar's result slot, which owns the "{n} {noun}" template. */}
@@ -159,11 +164,27 @@ export const OfficeApplicationsScreen = ({
             employer glancing at "—" would read it as "we have no rate",
             which is a different claim from "not loaded yet". */}
         {!isLoading && !isError && filteredApplications.length > 0 ? (
-          <Stack style={{ marginBottom: 12 }}>
+          <Stack
+            gap={4}
+            style={{
+              marginBottom: 12,
+              padding: 12,
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: colors.border[theme].default,
+              backgroundColor: colors.bg[theme].subtle,
+            }}
+          >
             {/* The framing is the feature. Without it these are three numbers
                 on an internal dashboard; with it they are the employer's
                 public record, which is what makes seeing your own ghost rate
-                change behaviour rather than just inform you. */}
+                change behaviour rather than just inform you.
+
+                Tinted, and on its own ground (#838): the band read as one
+                more row of the page's own statistics, which is precisely the
+                reading it must not have — the private numbers now sit on a
+                plain hairline band in the Metrics view, and these are visibly
+                a different kind of thing. */}
             <Text
               style={{
                 fontSize: 11,
@@ -185,7 +206,7 @@ export const OfficeApplicationsScreen = ({
             >
               These numbers appear on every posting you publish.
             </Text>
-            <MetricRow bordered>
+            <MetricRow bordered minColumnWidth={150}>
               <MetricBlock
                 label="Response rate"
                 value={formatPct(transparency.responseRatePct)}

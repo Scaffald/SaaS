@@ -8,13 +8,14 @@
  * @see Issue #92 (Time-to-Hire Reporting)
  */
 
-import { BarChart3, Clock, Filter, TrendingUp, Users } from 'lucide-react-native'
-import { type ReactNode, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
 import {
-  Card,
-  H2,
+  H3,
+  MetricBlock,
+  MetricRow,
   ResponsiveSelect,
+  Separator,
   Spinner,
   Text,
   Row,
@@ -39,7 +40,7 @@ import type { ApplicationStatus, ATSApplication } from '../types'
  * hues, so a reader can tell direction from colour alone.
  */
 const pipelineStages = (
-  theme: 'light' | 'dark',
+  theme: 'light' | 'dark'
 ): Array<{ key: ApplicationStatus; label: string; color: string }> => {
   // Dark themes need the lighter end of each ramp to hold contrast against a
   // near-black ground; light themes need the darker end.
@@ -293,13 +294,15 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
 
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-      <Stack gap={20} padding="md">
-        {/* Header */}
-        <Row justify="space-between" align="center" wrap>
-          <Row gap={8} align="center">
-            <BarChart3 size={20} color={colors.icon[theme].default} />
-            <H2>Hiring Metrics</H2>
-          </Row>
+      <Stack gap={24} paddingVertical={16}>
+        {/*
+          The screen's own `ScreenHeader` sits above this view already, so the
+          "Hiring Metrics" H2 with an icon beside it was a second title on the
+          same page (#838). The date range is the only control that belonged
+          to it, so that is all that is left.
+        */}
+        <Row justify="space-between" align="center" gap={12} wrap>
+          <H3>Your numbers</H3>
           <ResponsiveSelect
             value={String(dateRange)}
             onValueChange={(v) => setDateRange(Number(v))}
@@ -314,41 +317,38 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
           />
         </Row>
 
-        {/* Summary Tiles */}
-        <Row gap={12} wrap>
-          <MetricTile
-            icon={<Users size={16} color="#6366f1" />}
-            label="Total Applications"
+        {/*
+          Four figures the organisation reads about itself, on one hairline
+          band — the same pattern as the "Candidates can see in" band above,
+          which is the point: these are the private counterpart of those. They
+          were four tinted tiles with a coloured icon each, and the icons were
+          hardcoded hex (#6366f1, #3b82f6, #10b981, #f59e0b) that belonged to
+          no theme and no token file.
+        */}
+        <MetricRow bordered minColumnWidth={150}>
+          <MetricBlock
+            label="Applications"
             value={totalApps}
-            theme={theme}
+            delta={`in the last ${dateRange} days`}
           />
-          <MetricTile
-            icon={<Filter size={16} color="#3b82f6" />}
-            label="Active in Pipeline"
-            value={activeApps}
-            theme={theme}
+          <MetricBlock label="Active in pipeline" value={activeApps} />
+          <MetricBlock label="Hired" value={hiredCount} delta={`${hireRate}% of applications`} />
+          <MetricBlock
+            label="Average time to hire"
+            value={timeToHireStats.count > 0 ? `${timeToHireStats.average}d` : '—'}
+            delta={
+              timeToHireStats.count > 0
+                ? `over ${timeToHireStats.count} hire${timeToHireStats.count === 1 ? '' : 's'}`
+                : 'no hires yet'
+            }
           />
-          <MetricTile
-            icon={<TrendingUp size={16} color="#10b981" />}
-            label="Hired"
-            value={hiredCount}
-            subtitle={`${hireRate}% hire rate`}
-            theme={theme}
-          />
-          <MetricTile
-            icon={<Clock size={16} color="#f59e0b" />}
-            label="Avg. Time to Hire"
-            value={`${timeToHireStats.average}d`}
-            subtitle={timeToHireStats.count > 0 ? `${timeToHireStats.count} hires` : 'No hires yet'}
-            theme={theme}
-          />
-        </Row>
+        </MetricRow>
+
+        <Separator />
 
         {/* Pipeline Funnel */}
-        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-          <Text style={{ marginBottom: 12, color: colors.text[theme].primary }}>
-            Pipeline Funnel
-          </Text>
+        <Stack gap={12}>
+          <H3>Pipeline funnel</H3>
           <Stack gap={8}>
             {PIPELINE_STAGES.filter((s) => s.key !== 'rejected').map((stage) => {
               const count = stageDistribution[stage.key] || 0
@@ -377,7 +377,9 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                         minWidth: 30,
                       }}
                     >
-                      <Text style={{ color: colors.text[theme].quaternary, fontSize: 11 }}>{count}</Text>
+                      <Text style={{ color: colors.text[theme].quaternary, fontSize: 11 }}>
+                        {count}
+                      </Text>
                     </Stack>
                   </Stack>
                 </Row>
@@ -402,59 +404,61 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
               </Row>
             </Stack>
           </Stack>
-        </Card>
+        </Stack>
 
         {/* Conversion Rates */}
         {conversionRates.length > 0 && (
-          <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-            <Text style={{ marginBottom: 12, color: colors.text[theme].primary }}>
-              Stage Conversion Rates
-            </Text>
-            <Stack gap={6}>
-              {conversionRates.map((item, idx) => (
-                <Row key={item.stage} gap={8} align="center">
-                  <Text style={{ width: 80, color: colors.text[theme].secondary, fontSize: 12 }}>
-                    {item.stage}
-                  </Text>
-                  <Stack style={{ flex: 1 }}>
-                    <Stack
-                      style={{
-                        height: 6,
-                        backgroundColor: colors.bg[theme].muted,
-                        borderRadius: 3,
-                      }}
-                    >
+          <>
+            <Separator />
+            <Stack gap={12}>
+              <H3>Stage conversion rates</H3>
+              <Stack gap={6}>
+                {conversionRates.map((item, idx) => (
+                  <Row key={item.stage} gap={8} align="center">
+                    <Text style={{ width: 80, color: colors.text[theme].secondary, fontSize: 12 }}>
+                      {item.stage}
+                    </Text>
+                    <Stack style={{ flex: 1 }}>
                       <Stack
                         style={{
                           height: 6,
-                          width: `${item.rate}%`,
-                          backgroundColor: PIPELINE_STAGES[idx]?.color ?? colors.text[theme].tertiary,
+                          backgroundColor: colors.bg[theme].muted,
                           borderRadius: 3,
                         }}
-                      />
+                      >
+                        <Stack
+                          style={{
+                            height: 6,
+                            width: `${item.rate}%`,
+                            backgroundColor:
+                              PIPELINE_STAGES[idx]?.color ?? colors.text[theme].tertiary,
+                            borderRadius: 3,
+                          }}
+                        />
+                      </Stack>
                     </Stack>
-                  </Stack>
-                  <Text
-                    style={{
-                      width: 50,
-                      textAlign: 'right',
-                      color: colors.text[theme].secondary,
-                      fontSize: 12,
-                    }}
-                  >
-                    {item.rate}%
-                  </Text>
-                </Row>
-              ))}
+                    <Text
+                      style={{
+                        width: 50,
+                        textAlign: 'right',
+                        color: colors.text[theme].secondary,
+                        fontSize: 12,
+                      }}
+                    >
+                      {item.rate}%
+                    </Text>
+                  </Row>
+                ))}
+              </Stack>
             </Stack>
-          </Card>
+          </>
         )}
 
+        <Separator />
+
         {/* Source of Hire (Issue #91) */}
-        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-          <Text style={{ marginBottom: 12, color: colors.text[theme].primary }}>
-            Source of Hire
-          </Text>
+        <Stack gap={12}>
+          <H3>Source of hire</H3>
           {sourceDistribution.length === 0 ? (
             <Text style={{ color: colors.text[theme].tertiary }}>
               No source data available yet.
@@ -491,23 +495,25 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
               ))}
             </Stack>
           )}
-        </Card>
+        </Stack>
+
+        <Separator />
 
         {/* Time-to-Hire (Issue #92) */}
-        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
-          <Text style={{ marginBottom: 12, color: colors.text[theme].primary }}>Time to Hire</Text>
+        <Stack gap={12}>
+          <H3>Time to hire</H3>
           {timeToHireStats.count === 0 ? (
             <Text style={{ color: colors.text[theme].tertiary }}>
               No completed hires to analyze yet.
             </Text>
           ) : (
             <Stack gap={12}>
-              <Row gap={12} wrap>
-                <MiniStat label="Average" value={`${timeToHireStats.average} days`} theme={theme} />
-                <MiniStat label="Median" value={`${timeToHireStats.median} days`} theme={theme} />
-                <MiniStat label="Fastest" value={`${timeToHireStats.min} days`} theme={theme} />
-                <MiniStat label="Slowest" value={`${timeToHireStats.max} days`} theme={theme} />
-              </Row>
+              <MetricRow bordered minColumnWidth={120}>
+                <MetricBlock label="Average" value={`${timeToHireStats.average}d`} />
+                <MetricBlock label="Median" value={`${timeToHireStats.median}d`} />
+                <MetricBlock label="Fastest" value={`${timeToHireStats.min}d`} />
+                <MetricBlock label="Slowest" value={`${timeToHireStats.max}d`} />
+              </MetricRow>
 
               {/* Distribution bars */}
               <Stack gap={6}>
@@ -534,7 +540,9 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                             minWidth: 24,
                           }}
                         >
-                          <Text style={{ color: colors.text[theme].quaternary, fontSize: 10 }}>{bucket.count}</Text>
+                          <Text style={{ color: colors.text[theme].quaternary, fontSize: 10 }}>
+                            {bucket.count}
+                          </Text>
                         </Stack>
                       </Stack>
                     </Row>
@@ -543,81 +551,8 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
               </Stack>
             </Stack>
           )}
-        </Card>
+        </Stack>
       </Stack>
     </ScrollView>
-  )
-}
-
-/** Metric tile component */
-function MetricTile({
-  icon,
-  label,
-  value,
-  subtitle,
-  theme,
-}: {
-  icon: ReactNode
-  label: string
-  value: string | number
-  subtitle?: string
-  theme: 'light' | 'dark'
-}) {
-  return (
-    <Card
-      padding="md"
-      style={{
-        backgroundColor: colors.bg[theme].subtle,
-        minWidth: 140,
-        flex: 1,
-      }}
-    >
-      <Stack gap={4}>
-        <Row gap={6} align="center">
-          {icon}
-          <Text
-            style={{ color: colors.text[theme].tertiary, fontSize: 11, textTransform: 'uppercase' }}
-          >
-            {label}
-          </Text>
-        </Row>
-        <Text style={{ color: colors.text[theme].primary, fontSize: 22 }}>{value}</Text>
-        {subtitle && (
-          <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>{subtitle}</Text>
-        )}
-      </Stack>
-    </Card>
-  )
-}
-
-/** Small stat display */
-function MiniStat({
-  label,
-  value,
-  theme,
-}: {
-  label: string
-  value: string
-  theme: 'light' | 'dark'
-}) {
-  return (
-    <Stack
-      gap={2}
-      style={{
-        borderWidth: 1,
-        borderColor: colors.border[theme].default,
-        borderRadius: 7,
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        minWidth: 80,
-      }}
-    >
-      <Text
-        style={{ color: colors.text[theme].tertiary, fontSize: 10, textTransform: 'uppercase' }}
-      >
-        {label}
-      </Text>
-      <Text style={{ color: colors.text[theme].primary, fontSize: 14 }}>{value}</Text>
-    </Stack>
   )
 }
