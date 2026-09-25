@@ -149,6 +149,7 @@ export const applicationsRouter = router({
         attachment_metadata: input.attachments || {},
         completed_steps: input.completed_steps || [],
         status: 'new',
+        submitted_at: new Date().toISOString(),
       })
       .select()
       .single()

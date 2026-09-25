@@ -212,13 +212,14 @@ app.openapi(listRoute, async (c) => {
     .schema("core")
     .from("applications")
     .select("id, job_id, status")
-    .in("job_id", jobRows.map((job) => job.id));
+    .in("job_id", jobRows.map((job) => job.id))
+    .not("submitted_at", "is", null);
 
   if (period_start) {
-    applicationsQuery = applicationsQuery.gte("created_at", period_start);
+    applicationsQuery = applicationsQuery.gte("submitted_at", period_start);
   }
   if (period_end) {
-    applicationsQuery = applicationsQuery.lte("created_at", period_end);
+    applicationsQuery = applicationsQuery.lte("submitted_at", period_end);
   }
 
   const { data: applications, error: applicationsError } =

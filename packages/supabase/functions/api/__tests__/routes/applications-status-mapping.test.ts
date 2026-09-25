@@ -26,6 +26,7 @@ import {
   API_STATUSES,
   buildApplicationUpdatePayload,
   DB_STATUSES,
+  jobClosedReason,
   mapDbStatus,
   STATUS_API_TO_DB,
   STATUS_DB_TO_API,
@@ -326,6 +327,35 @@ Deno.test("is_complete never reaches the update payload", () => {
   assertEquals(payload.updated_at, NOW);
 });
 
+Deno.test("is_complete on a draft records the submission", () => {
+  const payload = buildApplicationUpdatePayload({ is_complete: true }, NOW);
+
+  assertEquals(payload.submitted_at, NOW);
+});
+
+Deno.test("an auto-save does not submit", () => {
+  for (
+    const input of [
+      { completed_steps: ["screening"] },
+      { is_complete: false, years_experience: 3 },
+    ]
+  ) {
+    const payload = buildApplicationUpdatePayload(input, NOW);
+    assert(!("submitted_at" in payload), JSON.stringify(input));
+  }
+});
+
+Deno.test("a repeat submit keeps the original submission time", () => {
+  const payload = buildApplicationUpdatePayload(
+    { is_complete: true },
+    NOW,
+    null,
+    "2026-01-01T00:00:00.000Z",
+  );
+
+  assert(!("submitted_at" in payload));
+});
+
 Deno.test("notes and metadata are dropped rather than written", () => {
   const payload = buildApplicationUpdatePayload(
     { notes: { a: 1 }, metadata: { b: 2 } },
@@ -369,4 +399,31 @@ Deno.test("nothing outside the known columns ever reaches the payload", () => {
   );
 
   assertEquals(Object.keys(payload).sort(), ["completed_steps", "updated_at"]);
+});
+
+Deno.test("jobClosedReason blocks a closed job and a passed deadline", () => {
+  const now = new Date("2026-09-25T12:00:00Z");
+
+  assertEquals(
+    jobClosedReason({ status: "open", application_deadline: null }, now),
+    null,
+  );
+  assertEquals(
+    jobClosedReason(
+      { status: "open", application_deadline: "2026-10-01T00:00:00Z" },
+      now,
+    ),
+    null,
+  );
+  assertEquals(
+    jobClosedReason({ status: "closed", application_deadline: null }, now),
+    "This job is not accepting applications",
+  );
+  assertEquals(
+    jobClosedReason(
+      { status: "open", application_deadline: "2026-09-24T00:00:00Z" },
+      now,
+    ),
+    "Application deadline has passed",
+  );
 });

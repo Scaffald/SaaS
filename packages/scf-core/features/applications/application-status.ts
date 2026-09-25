@@ -147,3 +147,11 @@ export function daysInStage(
   const days = Math.floor((now.getTime() - changed.getTime()) / 86_400_000)
   return days >= 0 ? days : null
 }
+
+/** Auto-saved and never submitted. A withdrawn draft is closed, not a draft. */
+export function isDraft(application: {
+  submitted_at?: string | null
+  status?: string | null
+}): boolean {
+  return !application.submitted_at && application.status === 'pending'
+}

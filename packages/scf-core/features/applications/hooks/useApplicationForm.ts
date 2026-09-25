@@ -10,6 +10,7 @@ import type {
   CustomQuestionAnswer,
   ScreeningAnswers,
 } from '@scf/schemas'
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface ApplicationFormState {
@@ -22,6 +23,7 @@ export interface ApplicationFormState {
   isDirty: boolean
   isSaving: boolean
   applicationId?: string
+  submittedAt?: string | null
   lastSavedAt?: Date | null
   saveError?: string | null
 }
@@ -48,6 +50,8 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
     applicationId: existingApplicationId,
   })
 
+  const queryClient = useQueryClient()
+
   // API mutations (now fully SDK-based)
   const submitMutation = useCreateJobApplicationMutation()
   const createDraftMutation = useCreateJobApplicationMutation()
@@ -67,6 +71,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
       setState((prev) => ({
         ...prev,
         applicationId: existingApp.id,
+        submittedAt: existingApp.submitted_at ?? null,
         screeningAnswers: {
           current_location: (sa.current_location as string) || '',
           willing_to_relocate: (sa.willing_to_relocate as boolean) ?? false,
@@ -343,6 +348,11 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
     }
   }, [state.isDirty, state.isSaving, saveProgress])
 
+  const invalidateSubmitted = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['application', 'my', jobId] })
+    queryClient.invalidateQueries({ queryKey: ['applications'] })
+  }, [queryClient, jobId])
+
   /**
    * Submit complete application (create or update)
    */
@@ -360,6 +370,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
           earliest_start_date: state.screeningAnswers.earliest_start_date,
           custom_question_answers: state.customQuestionAnswers,
           attachments: state.attachments,
+          is_complete: true,
         }
 
         const result = await updateMutation.mutateAsync({
@@ -371,7 +382,10 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
           ...prev,
           isSaving: false,
           isDirty: false,
+          submittedAt: prev.submittedAt ?? new Date().toISOString(),
         }))
+
+        invalidateSubmitted()
 
         return {
           success: true,
@@ -402,14 +416,17 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
         isSaving: false,
         isDirty: false,
         applicationId: result.id,
+        submittedAt: new Date().toISOString(),
       }))
+
+      invalidateSubmitted()
 
       return { success: true, applicationId: result.id, ...result }
     } catch (error) {
       setState((prev) => ({ ...prev, isSaving: false }))
       throw error
     }
-  }, [jobId, state, submitMutation, updateMutation])
+  }, [jobId, state, submitMutation, updateMutation, invalidateSubmitted])
 
   /**
    * Reset form
@@ -441,7 +458,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
     submitError: submitMutation.error || updateMutation.error,
 
     // Edit mode flag
-    isEditMode: !!state.applicationId,
+    isEditMode: !!state.submittedAt,
 
     // Auto-save state
     lastSavedAt: state.lastSavedAt,

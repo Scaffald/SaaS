@@ -86,6 +86,19 @@ export function JobDetailApplyAction({ jobId }: { jobId: string }) {
   const externalJob = externalJobsList?.find((job: { id: string }) => job.id === jobId)
   const externalUrl = externalJob?.url ?? null
 
+  if (myApplication && !myApplication.submitted_at) {
+    return (
+      <Button
+        size="sm"
+        variant="filled"
+        color="primary"
+        onPress={() => router.push(buildPath(ROUTES.JOBS.DETAIL.APPLY, { id: jobId }))}
+      >
+        Continue application
+      </Button>
+    )
+  }
+
   if (myApplication) {
     return (
       <Button
