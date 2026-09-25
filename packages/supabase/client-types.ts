@@ -32,6 +32,7 @@ export {
   PROFILE_WIZARD_REQUIRED_STEPS,
   PROFILE_WIZARD_STEP_WEIGHTS,
   PROFILE_WIZARD_STEPS,
+  profileEmploymentBaseSchema,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
   profileWizardDefaultProgress,
