@@ -1,0 +1,16 @@
+diff --git a/build/utils/react.js b/build/utils/react.js
+--- a/build/utils/react.js
++++ b/build/utils/react.js
+@@ -23,7 +23,11 @@ function createInjectedInlineCssAsNodes(inlineCss = []) {
+ }
+ function createInjectedScriptAsNodes(srcs) {
+     return {
+-        headNodes: srcs.map((src) => ((0, jsx_runtime_1.jsx)("link", { rel: "preload", href: src, as: "script" }, `script-preload-${src}`))),
++        // fetchPriority="low" matches what React's bootstrapScripts preload
++        // emitted (Scaffald/SaaS#797): at default priority the 1.5 MB shared
++        // chunk contends with fonts and first paint slips from 2 s to 10 s on
++        // a throttled connection. The scripts are deferred anyway.
++        headNodes: srcs.map((src) => ((0, jsx_runtime_1.jsx)("link", { rel: "preload", href: src, as: "script", fetchPriority: "low" }, `script-preload-${src}`))),
+         bodyNodes: srcs.map((src) => (0, jsx_runtime_1.jsx)("script", { defer: true, src: src }, `script-src-${src}`)),
+     };
+ }
