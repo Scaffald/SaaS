@@ -5,11 +5,28 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
+import { type ApiEnv, authMiddleware, requireRole } from "../middleware/auth.ts";
 
 const app = new OpenAPIHono<ApiEnv>();
 
 app.use("*", authMiddleware);
+/**
+ * The office gate, shared with every other office route.
+ *
+ * This file used to carry its own `requireOfficeRole`, which did
+ * `from("users").select("role")` against `core.users` — a table with no `role`
+ * column. The select errored, only `data` was destructured so the error was
+ * discarded, `user?.role` was `undefined`, and the helper returned false for
+ * everyone. The whole verification feature answered 403 to every caller,
+ * including holders of `super_admin` (#900).
+ *
+ * Roles live in `core.role_assignments` joined to `core.roles`, which is what
+ * `requireRole` reads. It also surfaces a lookup failure as a 500 rather than
+ * silently denying, and attaches `supabaseAdmin` — which these handlers need,
+ * since an office administrator reads pending verifications across every
+ * community and `community.memberships` is RLS-scoped to the member.
+ */
+app.use("*", requireRole("office", "platform"));
 
 // ============================================================================
 // Schemas
@@ -37,15 +54,68 @@ const pendingVerificationSchema = z
 // Helpers
 // ============================================================================
 
-async function requireOfficeRole(supabase: SupabaseClient, userId: string) {
-  const { data: user } = await supabase
+/**
+ * Display name and email for a set of users.
+ *
+ * `core.users` holds the display name; it has no `email` column, and the
+ * previous code selected one anyway — so the enrichment query errored, its
+ * error was discarded, and every row in the queue came back as "Unknown User"
+ * with no email (#900). Email lives in `auth.users`, which PostgREST does not
+ * expose even to the service role, so it comes from the admin API. The queue
+ * caps `limit` at 100, which bounds this fan-out.
+ */
+async function loadUserSummaries(
+  supabaseAdmin: SupabaseClient,
+  userIds: string[],
+): Promise<Map<string, { display_name: string | null; email: string | null }>> {
+  const summaries = new Map<
+    string,
+    { display_name: string | null; email: string | null }
+  >();
+  if (userIds.length === 0) return summaries;
+
+  const { data: profiles, error } = await supabaseAdmin
     .schema("core")
     .from("users")
-    .select("role")
-    .eq("id", userId)
-    .maybeSingle();
+    .select("id, display_name")
+    .in("id", userIds);
 
-  return user?.role === "office" || user?.role === "admin";
+  if (error) {
+    // Worth saying out loud: the queue is still answerable without names, but
+    // a reader deciding about a person should know the names are missing.
+    console.error("[office-communities] Failed to load user names", error);
+  }
+
+  for (const profile of profiles ?? []) {
+    const row = profile as Record<string, unknown>;
+    summaries.set(row.id as string, {
+      display_name: (row.display_name as string) ?? null,
+      email: null,
+    });
+  }
+
+  const emails = await Promise.all(
+    userIds.map(async (id) => {
+      const { data, error: authError } = await supabaseAdmin.auth.admin
+        .getUserById(id);
+      if (authError) {
+        console.error("[office-communities] Failed to load email", {
+          userId: id,
+          error: authError.message,
+        });
+        return [id, null] as const;
+      }
+      return [id, data?.user?.email ?? null] as const;
+    }),
+  );
+
+  for (const [id, email] of emails) {
+    const existing = summaries.get(id);
+    if (existing) existing.email = email;
+    else summaries.set(id, { display_name: null, email });
+  }
+
+  return summaries;
 }
 
 // ============================================================================
@@ -87,18 +157,8 @@ const verificationQueueRoute = createRoute({
 });
 
 app.openapi(verificationQueueRoute, async (c) => {
-  const supabase = c.get("supabase") as SupabaseClient;
-  const user = c.get("user") as Record<string, unknown> | null;
+  const supabase = c.get("supabaseAdmin") as SupabaseClient;
   const { community_id, limit, offset } = c.req.valid("query");
-
-  if (!user) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
-  const isOffice = await requireOfficeRole(supabase, user.id);
-  if (!isOffice) {
-    return c.json({ error: "Office role required" }, 403);
-  }
 
   // Get memberships with pending verification
   let query = supabase
@@ -135,37 +195,38 @@ app.openapi(verificationQueueRoute, async (c) => {
     ...new Set(memberships.map((m: Record<string, unknown>) => m.user_id)),
   ];
 
-  const [{ data: communities }, { data: users }] = await Promise.all([
-    supabase
-      .schema("community")
-      .from("communities")
-      .select("id, name")
-      .in("id", communityIds),
-    supabase
-      .schema("core")
-      .from("users")
-      .select("id, display_name, email")
-      .in("id", userIds),
-  ]);
+  const [{ data: communities, error: communitiesError }, userSummaries] =
+    await Promise.all([
+      supabase
+        .schema("community")
+        .from("communities")
+        .select("id, name")
+        .in("id", communityIds),
+      loadUserSummaries(supabase, userIds as string[]),
+    ]);
+
+  if (communitiesError) {
+    console.error(
+      "[office-communities] Failed to load community names",
+      communitiesError,
+    );
+  }
 
   const communityMap = new Map(
     (communities || []).map((
       comm: Record<string, unknown>,
     ) => [comm.id, comm.name]),
   );
-  const userMap = new Map(
-    (users || []).map((u: Record<string, unknown>) => [u.id, u]),
-  );
 
   const enriched = memberships.map((m: Record<string, unknown>) => {
-    const u = (userMap.get(m.user_id) || {}) as Record<string, unknown>;
+    const summary = userSummaries.get(m.user_id as string);
     return {
       membership_id: m.id,
       community_id: m.community_id,
       community_name: communityMap.get(m.community_id) || "Unknown",
       user_id: m.user_id,
-      display_name: u.display_name || null,
-      email: u.email || null,
+      display_name: summary?.display_name ?? null,
+      email: summary?.email ?? null,
       verification_data: m.verification_data,
       joined_at: m.joined_at,
     };
@@ -224,18 +285,9 @@ const approveVerificationRoute = createRoute({
 });
 
 app.openapi(approveVerificationRoute, async (c) => {
-  const supabase = c.get("supabase") as SupabaseClient;
-  const user = c.get("user") as Record<string, unknown> | null;
+  const supabase = c.get("supabaseAdmin") as SupabaseClient;
+  const user = c.get("user") as Record<string, unknown>;
   const { membershipId } = c.req.valid("param");
-
-  if (!user) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
-  const isOffice = await requireOfficeRole(supabase, user.id);
-  if (!isOffice) {
-    return c.json({ error: "Office role required" }, 403);
-  }
 
   // Get membership
   const { data: membership } = await supabase
@@ -325,19 +377,10 @@ const rejectVerificationRoute = createRoute({
 });
 
 app.openapi(rejectVerificationRoute, async (c) => {
-  const supabase = c.get("supabase") as SupabaseClient;
-  const user = c.get("user") as Record<string, unknown> | null;
+  const supabase = c.get("supabaseAdmin") as SupabaseClient;
+  const user = c.get("user") as Record<string, unknown>;
   const { membershipId } = c.req.valid("param");
   const { reason } = c.req.valid("json");
-
-  if (!user) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
-  const isOffice = await requireOfficeRole(supabase, user.id);
-  if (!isOffice) {
-    return c.json({ error: "Office role required" }, 403);
-  }
 
   const { data: membership } = await supabase
     .schema("community")
