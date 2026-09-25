@@ -1,7 +1,8 @@
 import type { UpdateEmploymentParams } from '@scaffald/sdk'
 import { Input, Row, Stack, Text } from '@scaffald/ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { profileEmploymentInputSchema } from '@scf/supabase/client-types'
+import { profileEmploymentBaseSchema } from '@scf/supabase/client-types'
+import { logger } from '@scf/core/utils/logger'
 
 const DEBOUNCE_MS = 600
 
@@ -33,10 +34,17 @@ export function EmploymentHourlyRateCard({
     (raw: string) => {
       const numValue = raw ? Number.parseFloat(raw) : 0
       const parsed = Number.isNaN(numValue) ? 0 : numValue
-      const result = profileEmploymentInputSchema.pick({
+      const result = profileEmploymentBaseSchema.pick({
         hourly_rate: true,
       }).safeParse({ hourly_rate: parsed })
-      if (!result.success) return
+      if (!result.success) {
+        // Never silent: this branch throws away something the user just
+        // chose, and #910 showed how invisible that is when it does.
+        logger.warn('Discarded hourly rate — payload failed validation', {
+          issues: result.error.issues,
+        })
+        return
+      }
       if (lastSavedRef.current === result.data.hourly_rate) return
       const rate = result.data.hourly_rate ?? 0
       lastSavedRef.current = rate

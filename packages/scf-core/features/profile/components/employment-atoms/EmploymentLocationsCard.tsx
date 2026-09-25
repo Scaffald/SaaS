@@ -1,7 +1,8 @@
 import type { UpdateEmploymentParams } from '@scaffald/sdk'
 import { LocationListInput, Stack, Text } from '@scaffald/ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { profileEmploymentInputSchema } from '@scf/supabase/client-types'
+import { profileEmploymentBaseSchema } from '@scf/supabase/client-types'
+import { logger } from '@scf/core/utils/logger'
 
 const DEBOUNCE_MS = 600
 
@@ -31,10 +32,17 @@ export function EmploymentLocationsCard({
 
   const commit = useCallback(
     (next: string[]) => {
-      const result = profileEmploymentInputSchema
+      const result = profileEmploymentBaseSchema
         .pick({ preferred_work_locations: true })
         .safeParse({ preferred_work_locations: next })
-      if (!result.success) return
+      if (!result.success) {
+        // Never silent: this branch throws away something the user just
+        // chose, and #910 showed how invisible that is when it does.
+        logger.warn('Discarded preferred work locations — payload failed validation', {
+          issues: result.error.issues,
+        })
+        return
+      }
       const serialized = JSON.stringify(next)
       if (lastSavedRef.current === serialized) return
       lastSavedRef.current = serialized

@@ -19,6 +19,7 @@ export {
   AVAILABILITY_OPTIONS,
   DRIVERS_LICENSE_OPTIONS,
   MILITARY_STATUS_OPTIONS,
+  profileEmploymentBaseSchema,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
 } from './schemas/consolidated.ts'

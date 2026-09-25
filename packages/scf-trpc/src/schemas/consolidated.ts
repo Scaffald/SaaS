@@ -282,7 +282,18 @@ export const AVAILABILITY_OPTIONS = [
   'Short Notice',
 ] as const
 
-export const profileEmploymentInputSchema = z
+/**
+ * The employment fields, unrefined.
+ *
+ * Exported separately because the per-field cards need `.pick()`, and zod 4.6
+ * refuses `.pick()` on an object that carries a refinement — it throws
+ * `.pick() cannot be used on object schemas containing refinements`. zod 4.1
+ * allowed it and silently dropped the refinement, so the five employment
+ * cards were picking from the refined schema and getting away with it until
+ * the bump (#910). Pick from this; validate whole payloads against
+ * `profileEmploymentInputSchema` below, which adds the cross-field rule.
+ */
+export const profileEmploymentBaseSchema = z
   .object({
     // Preferred work locations (up to 3)
     preferred_work_locations: z
@@ -314,6 +325,8 @@ export const profileEmploymentInputSchema = z
     hourly_rate: z.number().min(0).max(200).default(0),
   })
   .partial()
+
+export const profileEmploymentInputSchema = profileEmploymentBaseSchema
   .superRefine((data, ctx) => {
     // Travel distance is only required if user is open to travel
     if (

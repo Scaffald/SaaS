@@ -3,8 +3,8 @@ import { Card, Checkbox, IconCircle, Row, Stack, Text, Toggle } from '@scaffald/
 import { Car } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Pressable } from 'react-native'
-import { DRIVERS_LICENSE_OPTIONS } from '@scf/supabase/client-types'
-import { profileEmploymentInputSchema } from '@scf/supabase/client-types'
+import { DRIVERS_LICENSE_OPTIONS, profileEmploymentBaseSchema } from '@scf/supabase/client-types'
+import { logger } from '@scf/core/utils/logger'
 
 export interface EmploymentDriversLicenseCardProps {
   value: string[]
@@ -37,10 +37,17 @@ export function EmploymentDriversLicenseCard({
 
   const save = useCallback(
     (next: string[]) => {
-      const result = profileEmploymentInputSchema
+      const result = profileEmploymentBaseSchema
         .pick({ drivers_license_classes: true })
         .safeParse({ drivers_license_classes: next })
-      if (!result.success) return
+      if (!result.success) {
+        // Never silent: this branch throws away something the user just
+        // chose, and #910 showed how invisible that is when it does.
+        logger.warn('Discarded driver licence classes — payload failed validation', {
+          issues: result.error.issues,
+        })
+        return
+      }
       const serialized = JSON.stringify(next)
       if (lastSavedRef.current === serialized) return
       lastSavedRef.current = serialized
