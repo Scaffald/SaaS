@@ -158,11 +158,11 @@ export function UserSearch({
           disabled={disabled}
         />
         {isLoading && <Spinner size="sm" />}
-        {searchTerm && !isLoading && (
+        {searchTerm && !isLoading ? (
           <Text color="secondary" onPress={handleClear} style={{ paddingHorizontal: 8 }}>
             ✕
           </Text>
-        )}
+        ) : null}
       </Row>
 
       {showDropdown && (
@@ -231,7 +231,7 @@ export function UserSearch({
         </Stack>
       )}
 
-      {error && <Text style={{ color: colors.fg[t].error }}>{error}</Text>}
+      {error ? <Text style={{ color: colors.fg[t].error }}>{error}</Text> : null}
     </Stack>
   )
 }
