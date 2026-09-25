@@ -159,6 +159,7 @@ export async function createTestApplication(overrides: {
     | "rejected"
     | "withdrawn";
   type?: "quick" | "full";
+  submitted_at?: string | null;
 } = {}) {
   const admin = createAdminClient();
 
@@ -187,6 +188,9 @@ export async function createTestApplication(overrides: {
       type: overrides.type || "quick",
       screening_answers: {},
       custom_answers: {},
+      submitted_at: overrides.submitted_at === undefined
+        ? new Date().toISOString()
+        : overrides.submitted_at,
     })
     .select()
     .single();

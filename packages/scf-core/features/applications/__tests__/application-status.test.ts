@@ -4,6 +4,7 @@ import {
   applicationStage,
   daysInStage,
   FILTER_GROUPS,
+  isDraft,
   statusesForFilter,
 } from '../application-status'
 
@@ -81,5 +82,20 @@ describe('daysInStage', () => {
 
   it('is null for a future timestamp rather than a negative count', () => {
     expect(daysInStage('2026-09-30T12:00:00Z', now)).toBeNull()
+  })
+})
+
+describe('isDraft', () => {
+  it('is a pending application that was never submitted', () => {
+    expect(isDraft({ status: 'pending', submitted_at: null })).toBe(true)
+    expect(isDraft({ status: 'pending' })).toBe(true)
+  })
+
+  it('is not a submitted application', () => {
+    expect(isDraft({ status: 'pending', submitted_at: '2026-09-25T00:00:00Z' })).toBe(false)
+  })
+
+  it('is not a withdrawn draft, which can no longer be continued', () => {
+    expect(isDraft({ status: 'withdrawn', submitted_at: null })).toBe(false)
   })
 })

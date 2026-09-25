@@ -21,6 +21,7 @@ import {
   daysInStage,
   FILTER_GROUPS,
   type FilterGroup,
+  isDraft,
   statusesForFilter,
 } from '../application-status'
 
@@ -83,6 +84,11 @@ export function ApplicationsList() {
     [response?.data]
   )
 
+  const submitted = useMemo(
+    () => allApplications.filter((app) => !isDraft(app)),
+    [allApplications]
+  )
+
   const counts = useMemo(() => {
     const out: Record<FilterGroup, number> = {
       all: allApplications.length,
@@ -94,23 +100,35 @@ export function ApplicationsList() {
     for (const { key } of FILTER_GROUPS) {
       const allowed = statusesForFilter(key)
       if (!allowed) continue
-      out[key] = allApplications.filter((app) =>
+      out[key] = submitted.filter((app) =>
         allowed.includes(app.status as (typeof allowed)[number])
       ).length
     }
     return out
-  }, [allApplications])
+  }, [allApplications, submitted])
+
+  const matchesSearch = useMemo(() => {
+    const term = search.trim().toLowerCase()
+    return (app: Application) =>
+      !term ||
+      `${app.job?.title ?? ''} ${app.job?.organization?.name ?? ''}`.toLowerCase().includes(term)
+  }, [search])
 
   const visible = useMemo(() => {
     const allowed = statusesForFilter(filter)
-    const term = search.trim().toLowerCase()
-    return allApplications.filter((app) => {
-      if (allowed && !allowed.includes(app.status as (typeof allowed)[number])) return false
-      if (!term) return true
-      const haystack = `${app.job?.title ?? ''} ${app.job?.organization?.name ?? ''}`.toLowerCase()
-      return haystack.includes(term)
-    })
-  }, [allApplications, filter, search])
+    return submitted.filter(
+      (app) =>
+        (!allowed || allowed.includes(app.status as (typeof allowed)[number])) && matchesSearch(app)
+    )
+  }, [submitted, filter, matchesSearch])
+
+  const drafts = useMemo(
+    () =>
+      filter === 'all'
+        ? allApplications.filter((app) => isDraft(app) && matchesSearch(app))
+        : [],
+    [allApplications, filter, matchesSearch]
+  )
 
   // Only stages that actually hold something. Eight headings with seven of
   // them empty is a worse answer than a short list.
@@ -199,11 +217,43 @@ export function ApplicationsList() {
         searchValue={search}
         onSearchChange={setSearch}
         searchPlaceholder="Search by role or employer…"
-        resultCount={visible.length}
+        resultCount={visible.length + drafts.length}
         resultNoun="application"
       />
 
-      {groups.length === 0 ? (
+      {drafts.length > 0 ? (
+        <LaneGroup
+          title="Not sent"
+          count={drafts.length}
+          hint="Started but not submitted. The employer can't see these yet."
+          tone="attention"
+        >
+          {drafts.map((application) => {
+            const started = appliedLabel(application.created_at)
+            return (
+              <Lane
+                key={application.id}
+                title={application.job?.title ?? 'Job'}
+                subtitle={application.job?.organization?.name ?? undefined}
+                columns={
+                  started
+                    ? [
+                        <Text key="started" style={{ color: colors.text[t].secondary }}>
+                          Started {started}
+                        </Text>,
+                      ]
+                    : []
+                }
+                onPress={() =>
+                  router.push(buildPath(ROUTES.JOBS.DETAIL.APPLY, { id: application.job_id }))
+                }
+              />
+            )
+          })}
+        </LaneGroup>
+      ) : null}
+
+      {groups.length === 0 && drafts.length === 0 ? (
         <Text style={{ color: colors.text[t].secondary }}>No applications match this filter.</Text>
       ) : (
         groups.map(({ stage, rows }) => (
@@ -222,7 +272,7 @@ export function ApplicationsList() {
                 job?.pay_range_max_cents,
                 job?.pay_range_type
               )
-              const applied = appliedLabel(application.created_at)
+              const applied = appliedLabel(application.submitted_at ?? application.created_at)
               const columns = [
                 job?.location ? (
                   <Text key="where" style={{ color: colors.text[t].secondary }}>

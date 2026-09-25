@@ -162,8 +162,8 @@ const FLAT_SCREENING_FIELDS = [
 /**
  * Request fields with nowhere to go.
  *
- * `is_complete` is a submission signal — it drives scoring, and is not stored.
- * `notes` and `metadata` are accepted by the schema and persisted by nothing,
+ * `is_complete` is a submission signal, not a column — it sets `submitted_at`
+ * and drives scoring. `notes` and `metadata` are accepted by the schema and persisted by nothing,
  * on create or update. Dropped explicitly so the intent is visible rather than
  * looking like an oversight.
  */
@@ -173,6 +173,7 @@ export function buildApplicationUpdatePayload(
   input: Record<string, unknown> & { status?: ApiStatus },
   now: string,
   existingScreeningAnswers: Record<string, unknown> | null = null,
+  existingSubmittedAt: string | null = null,
 ): Record<string, unknown> {
   const { status: apiStatus, screening_answers: incomingAnswers, ...rest } =
     input;
@@ -214,7 +215,22 @@ export function buildApplicationUpdatePayload(
     payload.status = STATUS_API_TO_DB[apiStatus];
   }
 
+  if (rest.is_complete === true && !existingSubmittedAt) {
+    payload.submitted_at = now;
+  }
+
   return payload;
+}
+
+export function jobClosedReason(
+  job: { status: string | null; application_deadline: string | null },
+  now: Date = new Date(),
+): string | null {
+  if (job.status !== "open") return "This job is not accepting applications";
+  if (job.application_deadline && new Date(job.application_deadline) < now) {
+    return "Application deadline has passed";
+  }
+  return null;
 }
 
 /** Fields the update schema accepts but cannot store. Exported for tests. */
@@ -252,6 +268,7 @@ const applicationSchema = z
     attachment_metadata: z.record(z.string(), z.unknown()).nullable(),
     completed_steps: z.array(z.string()).nullable(),
     created_at: z.string(),
+    submitted_at: z.string().nullable(),
     stage_changed_at: z.string().nullable(),
     score: z.number().int().nullable(),
     job: jobSummarySchema.nullable().optional(),
@@ -522,27 +539,9 @@ app.openapi(createApplicationRoute, async (c) => {
     );
   }
 
-  if (job.status !== "open") {
-    return c.json(
-      {
-        error: "Bad Request",
-        message: "This job is not accepting applications",
-      },
-      400,
-    );
-  }
-
-  if (job.application_deadline) {
-    const deadline = new Date(job.application_deadline);
-    if (deadline < new Date()) {
-      return c.json(
-        {
-          error: "Bad Request",
-          message: "Application deadline has passed",
-        },
-        400,
-      );
-    }
+  const closedReason = jobClosedReason(job);
+  if (closedReason) {
+    return c.json({ error: "Bad Request", message: closedReason }, 400);
   }
 
   // Create application
@@ -567,6 +566,7 @@ app.openapi(createApplicationRoute, async (c) => {
       attachment_metadata: input.attachments || {},
       completed_steps: input.completed_steps || [],
       status: "new",
+      submitted_at: input.is_complete ? new Date().toISOString() : null,
     })
     .select()
     .single();
@@ -834,10 +834,27 @@ app.openapi(updateApplicationRoute, async (c) => {
   // Update application. buildApplicationUpdatePayload translates the status
   // from the API vocabulary to the DB one — see its docstring for why the
   // previous `{ ...input }` spread was a 500 for two of the eight statuses.
+  if (input.is_complete && !existing.submitted_at) {
+    const { data: job } = await supabase
+      .schema("core")
+      .from("jobs")
+      .select("status, application_deadline")
+      .eq("id", existing.job_id)
+      .maybeSingle();
+
+    const closedReason = job
+      ? jobClosedReason(job)
+      : "This job is not accepting applications";
+    if (closedReason) {
+      return c.json({ error: "Bad Request", message: closedReason }, 400);
+    }
+  }
+
   const updatePayload = buildApplicationUpdatePayload(
     input,
     new Date().toISOString(),
     (existing.screening_answers ?? null) as Record<string, unknown> | null,
+    (existing.submitted_at ?? null) as string | null,
   );
 
   const { data: application, error } = await supabase
@@ -853,13 +870,9 @@ app.openapi(updateApplicationRoute, async (c) => {
     return c.json({ error: error.message }, 500);
   }
 
-  // The other way an application gets submitted.
-  //
-  // Gated on the request alone, not on a transition: `is_complete` is not a
-  // column on core.applications — the schema accepts it and the insert drops
-  // it — so there is no stored previous value to compare against. Same class
-  // of phantom field as the flat screening answers in #546. Re-scoring on a
-  // repeat submit is cheap and idempotent, so that is the safe reading.
+  // The other way an application gets submitted. Gated on the request, not on
+  // the `submitted_at` transition: re-scoring a repeat submit is cheap and
+  // idempotent, and it retries a submission whose first scoring failed.
   if (input.is_complete) {
     await scoreAndScreen(id);
   }

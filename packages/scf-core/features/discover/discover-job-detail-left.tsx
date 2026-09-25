@@ -12,7 +12,6 @@ import { useEffect, useRef } from 'react'
 import {
   Button,
   H3,
-  Row,
   Skeleton,
   SkeletonBox,
   SkeletonText,
@@ -133,44 +132,47 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
   // Internal posting — the application form is a screen under this one.
   if (!isExternal && 'organization' in job) {
-    if (myApplication) {
-      // "Your application", not "You've applied": a saved draft and a
-      // submitted application are the same row with the same status —
-      // `is_complete` is a request flag the insert drops, so nothing in the
-      // database tells them apart (#881). Claiming either would be a guess,
-      // and the earlier wording ("You've Applied") guessed wrong for anyone
-      // who had only started the form — and then offered no way back into
-      // it. Both readings are served by the same two actions.
+    if (myApplication?.submitted_at) {
       return panel(
         <>
-          <H3>Your application</H3>
+          <H3>You've applied</H3>
           <Text style={{ color: colors.text[t].secondary }}>
-            Your application for this role is saved. You can keep editing it, or check where it
-            stands.
+            Your application for this role has been sent to the employer.
           </Text>
-          <Row gap={12} wrap>
-            <Button
-              size="md"
-              variant="filled"
-              color="primary"
-              onPress={() => router.push(buildPath(ROUTES.JOBS.DETAIL.APPLY, { id: job.id }))}
-            >
-              Continue application
-            </Button>
-            <Button
-              size="md"
-              variant="outline"
-              onPress={() =>
-                router.push(
-                  buildPath(ROUTES.JOBS.APPLICATIONS.DETAIL, {
-                    applicationId: myApplication.id,
-                  })
-                )
-              }
-            >
-              View status
-            </Button>
-          </Row>
+          <Button
+            size="md"
+            variant="filled"
+            color="primary"
+            onPress={() =>
+              router.push(
+                buildPath(ROUTES.JOBS.APPLICATIONS.DETAIL, {
+                  applicationId: myApplication.id,
+                })
+              )
+            }
+          >
+            View status
+          </Button>
+        </>
+      )
+    }
+
+    if (myApplication) {
+      return panel(
+        <>
+          <H3>Finish your application</H3>
+          <Text style={{ color: colors.text[t].secondary }}>
+            Your answers are saved, but the employer won't see your application until you submit
+            it.
+          </Text>
+          <Button
+            size="md"
+            variant="filled"
+            color="primary"
+            onPress={() => router.push(buildPath(ROUTES.JOBS.DETAIL.APPLY, { id: job.id }))}
+          >
+            Continue application
+          </Button>
         </>
       )
     }

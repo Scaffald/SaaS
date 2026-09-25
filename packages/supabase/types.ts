@@ -2230,6 +2230,7 @@ export type Database = {
           source: string | null
           stage_changed_at: string | null
           status: string
+          submitted_at: string | null
           union_status: Json | null
           updated_at: string
           user_id: string
@@ -2262,6 +2263,7 @@ export type Database = {
           source?: string | null
           stage_changed_at?: string | null
           status?: string
+          submitted_at?: string | null
           union_status?: Json | null
           updated_at?: string
           user_id: string
@@ -2294,6 +2296,7 @@ export type Database = {
           source?: string | null
           stage_changed_at?: string | null
           status?: string
+          submitted_at?: string | null
           union_status?: Json | null
           updated_at?: string
           user_id?: string

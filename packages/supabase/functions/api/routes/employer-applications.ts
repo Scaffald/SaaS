@@ -133,7 +133,7 @@ const errorResponseSchema = z
  * card, job for the column grouping and pay display.
  */
 const LIST_SELECT = `
-  id, job_id, user_id, status, created_at, updated_at, stage_changed_at,
+  id, job_id, user_id, status, created_at, submitted_at, updated_at, stage_changed_at,
   score_total, source, union_status, assigned_to, is_shortlisted,
   screening_answers, attachment_metadata,
   candidate:users!user_id(id, display_name, username, headline, avatar_url, avatar_path),
@@ -289,7 +289,8 @@ app.openapi(listEmployerApplicationsRoute, async (c) => {
     .from("applications")
     .select(LIST_SELECT, { count: "exact" })
     .in("job_id", jobIds)
-    .order("created_at", { ascending: false })
+    .not("submitted_at", "is", null)
+    .order("submitted_at", { ascending: false })
     .range(query.offset, query.offset + query.limit - 1);
 
   if (query.status) {
@@ -306,10 +307,10 @@ app.openapi(listEmployerApplicationsRoute, async (c) => {
     applicationQuery = applicationQuery.gte("score_total", query.min_score);
   }
   if (query.date_from) {
-    applicationQuery = applicationQuery.gte("created_at", query.date_from);
+    applicationQuery = applicationQuery.gte("submitted_at", query.date_from);
   }
   if (query.date_to) {
-    applicationQuery = applicationQuery.lte("created_at", query.date_to);
+    applicationQuery = applicationQuery.lte("submitted_at", query.date_to);
   }
 
   const { data, error, count } = await applicationQuery;
@@ -436,17 +437,20 @@ app.openapi(getEmployerApplicationRoute, async (c) => {
     .from("applications")
     .select(LIST_SELECT)
     .eq("id", id)
-    .single();
+    .not("submitted_at", "is", null)
+    .maybeSingle();
 
-  if (error || !data) {
+  if (error) {
     console.error(
       JSON.stringify({
         severity: "error",
         component: "employer_application_get",
         message: "Failed to read application after authorising it",
-        db_error: error?.message ?? "no row",
+        db_error: error.message,
       }),
     );
+  }
+  if (error || !data) {
     return c.json(
       { error: "Not Found", message: "Application not found" },
       404,
@@ -587,6 +591,7 @@ app.openapi(updateEmployerApplicationRoute, async (c) => {
     // selected, so `existing.user_id` was undefined on every hire.
     .select("id, status, assigned_to, user_id")
     .eq("id", id)
+    .not("submitted_at", "is", null)
     .single();
 
   if (readError || !existing) {
