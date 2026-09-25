@@ -59,35 +59,35 @@ catalog:
   # Track the sdk-56 dist-tag. Was ~56.0.4 while packages/scf-core floated to
   # 56.0.18 (it declares expo-* modules but not expo), giving the tree two
   # copies of expo and two babel graphs. See #483 before moving to 57.
-  expo: ~56.0.21
+  expo: ~56.0.22
   expo-apple-authentication: ~56.0.4
   expo-blur: ~56.0.4
   expo-build-properties: ~56.0.27
   expo-clipboard: ~56.0.4
-  expo-constants: ~56.0.25
+  expo-constants: ~56.0.26
   expo-crypto: ~56.0.5
-  expo-dev-client: ~56.0.26
+  expo-dev-client: ~56.0.27
   expo-device: ~56.0.4
   expo-document-picker: ~56.0.4
   expo-font: ~56.0.5
   expo-glass-effect: ~56.0.4
-  expo-image: ~56.0.12
+  expo-image: ~56.0.13
   expo-image-manipulator: ~56.0.26
   expo-image-picker: ~56.0.25
   expo-linear-gradient: ~56.0.4
-  expo-linking: ~56.0.17
+  expo-linking: ~56.0.18
   expo-localization: ~56.0.6
-  expo-location: ~56.0.25
+  expo-location: ~56.0.26
   # Mirrors the pnpm override of the same name; the override outranks this, so
   # they must move together or this line silently means nothing (#501).
   expo-modules-core: 56.0.22
   expo-notifications: ~56.0.25
-  expo-router: ~56.2.20
+  expo-router: ~56.2.21
   expo-secure-store: ~56.0.4
   expo-splash-screen: ~56.0.15
   expo-status-bar: ~56.0.4
   expo-system-ui: ~56.0.5
-  expo-updates: ~56.0.26
+  expo-updates: ~56.0.27
   expo-web-browser: ~56.0.6
   fast-xml-parser: ~5.11.0
   i18n-js: ^4.4.3
