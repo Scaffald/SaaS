@@ -46,9 +46,9 @@ app.get(
       .select(
         `
         *,
-        reported_by:users!circumvention_reports_reported_by_user_id_fkey(id, display_name, email),
+        reported_by:users!circumvention_reports_reported_by_user_id_fkey(id, display_name, username),
         organization:organizations(id, name),
-        worker:users!circumvention_reports_worker_user_id_fkey(id, display_name, email),
+        worker:users!circumvention_reports_worker_user_id_fkey(id, display_name, username),
         hire_agreement:hire_agreements(id, status)
       `,
         { count: "exact" },
@@ -83,11 +83,11 @@ app.get(
       reported_by: {
         id: string;
         display_name: string | null;
-        email: string | null;
+        username: string | null;
       } | null;
       organization: { id: string; name: string } | null;
       worker:
-        | { id: string; display_name: string | null; email: string | null }
+        | { id: string; display_name: string | null; username: string | null }
         | null;
       resolution_action: string | null;
       resolved_at: string | null;
@@ -102,10 +102,13 @@ app.get(
         status: row.status,
         violationType: row.violation_type,
         description: row.description,
+        // `email` used to be the fallback here, but `core.users` has no such
+        // column — selecting it failed the whole query (#901). `username` is
+        // on the table, and is the name people are known by anyway.
         reportedByName: row.reported_by?.display_name ??
-          row.reported_by?.email ?? null,
+          row.reported_by?.username ?? null,
         organizationName: row.organization?.name ?? null,
-        workerName: row.worker?.display_name ?? row.worker?.email ?? null,
+        workerName: row.worker?.display_name ?? row.worker?.username ?? null,
         resolutionAction: row.resolution_action,
         resolvedAt: row.resolved_at,
         createdAt: row.created_at,
