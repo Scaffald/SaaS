@@ -10,7 +10,18 @@
 import { useState, useMemo } from 'react'
 import { ScrollView, Pressable } from 'react-native'
 import { useEEOReport } from '@scf/core/utils/compliance-sdk-hooks'
-import { Button, Card, H2, Row, Stack, Tabs, Text, useThemeContext } from '@scaffald/ui'
+import {
+  Button,
+  Card,
+  H2,
+  MetricBlock,
+  MetricRow,
+  Row,
+  Stack,
+  Tabs,
+  Text,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import {
   BarChart3,
@@ -105,40 +116,6 @@ function formatRate(rate: number | null): string {
 
 type ReportPeriod = 'q1' | 'q2' | 'q3' | 'q4' | 'ytd'
 // ============================================================================
-
-function MetricCard({
-  label,
-  value,
-  sublabel,
-  icon: Icon,
-}: {
-  label: string
-  value: string | number
-  sublabel?: string
-  icon: typeof Users
-}) {
-  const { theme } = useThemeContext()
-  return (
-    <Card
-      variant="glass"
-      padding="md"
-      style={{ flex: 1, minWidth: 140, backgroundColor: colors.bg[theme].subtle }}
-    >
-      <Stack gap={4}>
-        <Row gap={8} align="center">
-          <Icon size={16} color={colors.icon[theme].default} />
-          <Text style={{ fontSize: 12, color: colors.text[theme].secondary }}>{label}</Text>
-        </Row>
-        <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text[theme].primary }}>
-          {value}
-        </Text>
-        {sublabel && (
-          <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>{sublabel}</Text>
-        )}
-      </Stack>
-    </Card>
-  )
-}
 
 /**
  * `ratio === null` means the four-fifths ratio could not be computed — no
@@ -356,33 +333,27 @@ export function EEOReportScreen() {
           ))}
         </Row>
 
-        {/* Summary Metrics */}
-        <Row gap={12} style={{ flexWrap: 'wrap' }}>
-          <MetricCard
-            label="Total Applications"
+        {/* Summary Metrics — a band, not four tinted cards (#839). */}
+        <MetricRow bordered minColumnWidth={150}>
+          <MetricBlock
+            label="Applications"
             value={totals.applications}
-            sublabel={`${period.toUpperCase()} period`}
-            icon={FileText}
+            delta={`${period.toUpperCase()} period`}
           />
-          <MetricCard
-            label="Total Hired"
+          <MetricBlock
+            label="Hired"
             value={totals.hired}
-            sublabel={hireRate === null ? 'no applicants' : `${(hireRate * 100).toFixed(1)}% rate`}
-            icon={Users}
+            delta={hireRate === null ? 'no applicants' : `${(hireRate * 100).toFixed(1)}% rate`}
           />
-          <MetricCard
-            label="Job Groups"
-            value={totals.jobGroups}
-            sublabel="Active categories"
-            icon={BarChart3}
-          />
-          <MetricCard
-            label="Adverse Impact"
+          <MetricBlock label="Job groups" value={totals.jobGroups} delta="active categories" />
+          <MetricBlock
+            label="Adverse impact"
             value={adverseImpactFlagCount}
-            sublabel="Flags detected"
-            icon={ShieldCheck}
+            delta={adverseImpactFlagCount === 1 ? 'flag detected' : 'flags detected'}
+            tone="attention"
+            emphasis={adverseImpactFlagCount > 0}
           />
-        </Row>
+        </MetricRow>
 
         {/* Tabs */}
         <Tabs defaultValue="eeo1">
