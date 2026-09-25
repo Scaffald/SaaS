@@ -85,54 +85,52 @@ export default function SharedIPIPResultsRoute() {
       >
         <Tabs.Item value="narrative">
           <Tabs.Trigger>Narrative View</Tabs.Trigger>
+          <Tabs.Content>
+            <Stack padding={16}>
+              {processedResults ? (
+                <NarrativeView
+                  scores={processedResults.scores}
+                  normalizedScores={processedResults.normalizedScores}
+                  narratives={processedResults.narratives}
+                  isComplete={true}
+                  completedDomains={5}
+                />
+              ) : (
+                <Stack align="center" padding={16}>
+                  <Text color="gray">Processing results...</Text>
+                </Stack>
+              )}
+            </Stack>
+          </Tabs.Content>
         </Tabs.Item>
         <Tabs.Item value="chart">
           <Tabs.Trigger>Chart View</Tabs.Trigger>
+          <Tabs.Content>
+            <Stack padding={16}>
+              {processedResults ? (
+                <ChartView
+                  scores={processedResults.scores}
+                  normalizedScores={processedResults.normalizedScores}
+                  archetype={
+                    processedResults.archetype
+                      ? {
+                          archetype: processedResults.archetype.name || '',
+                          confidence: processedResults.archetype.confidence || 0,
+                          name: processedResults.archetype.name || '',
+                        }
+                      : null
+                  }
+                  isComplete={true}
+                  completedDomains={5}
+                />
+              ) : (
+                <Stack align="center" padding={16}>
+                  <Text color="gray">Processing results...</Text>
+                </Stack>
+              )}
+            </Stack>
+          </Tabs.Content>
         </Tabs.Item>
-
-        <Tabs.Content value="narrative">
-          <Stack padding={16}>
-            {processedResults ? (
-              <NarrativeView
-                scores={processedResults.scores}
-                normalizedScores={processedResults.normalizedScores}
-                narratives={processedResults.narratives}
-                isComplete={true}
-                completedDomains={5}
-              />
-            ) : (
-              <Stack align="center" padding={16}>
-                <Text color="gray">Processing results...</Text>
-              </Stack>
-            )}
-          </Stack>
-        </Tabs.Content>
-
-        <Tabs.Content value="chart">
-          <Stack padding={16}>
-            {processedResults ? (
-              <ChartView
-                scores={processedResults.scores}
-                normalizedScores={processedResults.normalizedScores}
-                archetype={
-                  processedResults.archetype
-                    ? {
-                        archetype: processedResults.archetype.name || '',
-                        confidence: processedResults.archetype.confidence || 0,
-                        name: processedResults.archetype.name || '',
-                      }
-                    : null
-                }
-                isComplete={true}
-                completedDomains={5}
-              />
-            ) : (
-              <Stack align="center" padding={16}>
-                <Text color="gray">Processing results...</Text>
-              </Stack>
-            )}
-          </Stack>
-        </Tabs.Content>
       </Tabs>
     </Stack>
   )
