@@ -66,7 +66,9 @@ export function IPIPResultsPage() {
     return (
       <Stack gap={16} padding={32} align="center" accessibilityLiveRegion="assertive">
         <AlertCircle size={20} color={t === 'dark' ? colors.error[300] : colors.error[600]} />
-        <Text color={t === 'dark' ? colors.error[300] : colors.error[600]}>Error Loading Results</Text>
+        <Text color={t === 'dark' ? colors.error[300] : colors.error[600]}>
+          Error Loading Results
+        </Text>
         <Text color={colors.text[t].secondary} align="center">
           {results.error.message || 'Unable to load your assessment results. Please try again.'}
         </Text>
@@ -90,9 +92,7 @@ export function IPIPResultsPage() {
         <Text color={colors.text[t].secondary} align="center">
           Complete the IPIP assessment to see your personality results.
         </Text>
-        <Button onPress={() => router.push(ROUTES.ASSESSMENTS.IPIP.path)}>
-          Start Assessment
-        </Button>
+        <Button onPress={() => router.push(ROUTES.ASSESSMENTS.IPIP.path)}>Start Assessment</Button>
       </Stack>
     )
   }
@@ -117,54 +117,52 @@ export function IPIPResultsPage() {
       >
         <Tabs.Item value="narrative">
           <Tabs.Trigger containerStyle={{ flex: 1 }}>Narrative View</Tabs.Trigger>
+          <Tabs.Content>
+            <Stack
+              padding="md"
+              backgroundColor={colors.bg[t].default}
+              borderWidth={1}
+              borderColor={colors.border[t].default}
+              style={{ borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}
+            >
+              <NarrativeView
+                scores={results.scores}
+                normalizedScores={results.normalizedScores}
+                narratives={results.narratives}
+                isComplete={results.isComplete}
+                completedDomains={results.completedDomains}
+              />
+            </Stack>
+          </Tabs.Content>
         </Tabs.Item>
         <Tabs.Item value="chart">
           <Tabs.Trigger containerStyle={{ flex: 1 }}>Chart View</Tabs.Trigger>
+          <Tabs.Content>
+            <Stack
+              padding="md"
+              backgroundColor={colors.bg[t].default}
+              borderWidth={1}
+              borderColor={colors.border[t].default}
+              style={{ borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}
+            >
+              <ChartView
+                scores={results.scores}
+                normalizedScores={results.normalizedScores}
+                archetype={
+                  results.archetype
+                    ? {
+                        archetype: results.archetype.name,
+                        name: results.archetype.name,
+                        confidence: results.archetype.confidence,
+                      }
+                    : null
+                }
+                isComplete={results.isComplete}
+                completedDomains={results.completedDomains}
+              />
+            </Stack>
+          </Tabs.Content>
         </Tabs.Item>
-
-        <Tabs.Content value="narrative">
-          <Stack
-            padding="md"
-            backgroundColor={colors.bg[t].default}
-            borderWidth={1}
-            borderColor={colors.border[t].default}
-            style={{ borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}
-          >
-            <NarrativeView
-              scores={results.scores}
-              normalizedScores={results.normalizedScores}
-              narratives={results.narratives}
-              isComplete={results.isComplete}
-              completedDomains={results.completedDomains}
-            />
-          </Stack>
-        </Tabs.Content>
-
-        <Tabs.Content value="chart">
-          <Stack
-            padding="md"
-            backgroundColor={colors.bg[t].default}
-            borderWidth={1}
-            borderColor={colors.border[t].default}
-            style={{ borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}
-          >
-            <ChartView
-              scores={results.scores}
-              normalizedScores={results.normalizedScores}
-              archetype={
-                results.archetype
-                  ? {
-                      archetype: results.archetype.name,
-                      name: results.archetype.name,
-                      confidence: results.archetype.confidence,
-                    }
-                  : null
-              }
-              isComplete={results.isComplete}
-              completedDomains={results.completedDomains}
-            />
-          </Stack>
-        </Tabs.Content>
       </Tabs>
 
       {/* Data Quality Warnings */}
@@ -179,7 +177,9 @@ export function IPIPResultsPage() {
         >
           <Row align="center" gap={8}>
             <AlertCircle size={16} color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]} />
-            <Text color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]}>Partial Data Available</Text>
+            <Text color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]}>
+              Partial Data Available
+            </Text>
           </Row>
           <Text color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]}>
             Some results may be incomplete. {results.scoringError && 'Scoring calculation failed. '}
