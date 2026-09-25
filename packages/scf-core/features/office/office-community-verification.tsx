@@ -1,6 +1,16 @@
-import { useState, useCallback } from 'react'
-import { ScrollView } from 'react-native'
-import { Text, Stack, Row, Card, Button, Input, H4, Spinner, useThemeContext } from '@scaffald/ui'
+import { useCallback, useMemo, useState } from 'react'
+import {
+  Button,
+  Input,
+  Lane,
+  ListToolbar,
+  ScreenHeader,
+  Spinner,
+  Stack,
+  Row,
+  Text,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 import {
@@ -10,6 +20,19 @@ import {
 } from '@scf/core/utils/office-communities-sdk-hooks'
 import type { PendingVerification } from '@scaffald/sdk/resources/office-communities'
 
+/**
+ * The community verification queue (#839).
+ *
+ * This was a column of bordered cards, each repeating a "License Information"
+ * sub-panel on its own tinted ground — a box inside a box inside a scroll
+ * view, with the two decisions at the bottom right of each. Ten pending
+ * requests were ten uneven blocks you could not scan.
+ *
+ * Rows on hairlines instead, the same `Lane` the pipeline and the employer's
+ * job list use: how long they have waited leads, because that is the number
+ * that says act; the licence details sit in columns; Approve and Reject are
+ * the row's actions rather than the end of a card.
+ */
 export function OfficeCommunityVerificationScreen() {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
@@ -18,6 +41,7 @@ export function OfficeCommunityVerificationScreen() {
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set())
   const [rejectingId, setRejectingId] = useState<string | null>(null)
   const [rejectReason, setRejectReason] = useState('')
+  const [search, setSearch] = useState('')
 
   const approveMutation = useApproveVerificationMutation({
     onSuccess: () => {
@@ -65,52 +89,68 @@ export function OfficeCommunityVerificationScreen() {
     [rejectMutation, rejectReason]
   )
 
-  const queue = data?.data ?? []
-  const total = data?.total ?? 0
+  const queue = useMemo(() => data?.data ?? [], [data])
+
+  const visible = useMemo(() => {
+    const term = search.trim().toLowerCase()
+    if (!term) return queue
+    return queue.filter((item: PendingVerification) =>
+      [item.display_name, item.email, item.community_name, item.verification_data?.license_number]
+        .filter(Boolean)
+        .some((field) => String(field).toLowerCase().includes(term))
+    )
+  }, [queue, search])
 
   if (isLoading) {
     return (
-      <Stack align="center" justify="center" style={{ minHeight: 300 }}>
+      <Stack align="center" justify="center" gap={12} style={{ minHeight: 300 }}>
         <Spinner variant="ios" size="lg" />
-        <Text style={{ color: colors.text[t].secondary }}>Loading verification queue...</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Loading the verification queue…</Text>
       </Stack>
     )
   }
 
   if (error) {
     return (
-      <Stack align="center" justify="center" style={{ minHeight: 300 }}>
-        <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>Failed to load verification queue</Text>
+      <Stack align="center" justify="center" gap={8} style={{ minHeight: 300 }}>
+        <Text style={{ color: colors.fg[t].error }}>We couldn't load the verification queue.</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Please try again.</Text>
       </Stack>
     )
   }
 
   return (
-    <ScrollView>
-      <Stack gap={16} style={{ padding: 16 }}>
-        <Row align="center" justify="space-between">
-          <H4>Community Verification Queue</H4>
-          <Stack
-            style={{
-              paddingHorizontal: 8,
-              paddingVertical: 2,
-              borderRadius: 4,
-              backgroundColor: colors.bg[t].muted,
-            }}
-          >
-            <Text style={{ fontSize: 12, fontWeight: '500' }}>{total} pending</Text>
-          </Stack>
-        </Row>
+    <Stack gap={16}>
+      <ScreenHeader
+        kicker="Screening"
+        title="Community verification"
+        tip="Each person here is waiting to be let into a trade community. Approving confirms their licence; rejecting asks them for more."
+      />
 
-        {queue.length === 0 ? (
-          <Card variant="outlined">
-            <Stack align="center" style={{ padding: 32 }}>
-              <Text style={{ color: colors.text[t].secondary }}>No pending verification requests</Text>
-            </Stack>
-          </Card>
-        ) : (
-          queue.map((item: PendingVerification) => (
-            <VerificationCard
+      <ListToolbar
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search by name, email, community or licence number…"
+        onClearAll={search ? () => setSearch('') : undefined}
+        resultCount={visible.length}
+        resultNoun="request"
+      />
+
+      {visible.length === 0 ? (
+        <Stack align="center" gap={8} paddingVertical={48}>
+          <Text style={{ color: colors.text[t].secondary }}>
+            {queue.length === 0 ? 'Nothing is waiting to be verified.' : 'No request matches that.'}
+          </Text>
+          {queue.length > 0 ? (
+            <Button size="sm" variant="outline" onPress={() => setSearch('')}>
+              Clear the search
+            </Button>
+          ) : null}
+        </Stack>
+      ) : (
+        <Stack gap={0}>
+          {visible.map((item: PendingVerification) => (
+            <VerificationRow
               key={item.membership_id}
               item={item}
               isProcessing={processingIds.has(item.membership_id)}
@@ -125,14 +165,22 @@ export function OfficeCommunityVerificationScreen() {
               onConfirmReject={() => handleReject(item.membership_id)}
               onRejectReasonChange={setRejectReason}
             />
-          ))
-        )}
-      </Stack>
-    </ScrollView>
+          ))}
+        </Stack>
+      )}
+    </Stack>
   )
 }
 
-function VerificationCard({
+/** Whole days since they joined — how long this decision has been outstanding. */
+function daysWaiting(joinedAt: string, now = new Date()): number | null {
+  const joined = new Date(joinedAt)
+  if (Number.isNaN(joined.getTime())) return null
+  const days = Math.floor((now.getTime() - joined.getTime()) / 86_400_000)
+  return days >= 0 ? days : null
+}
+
+function VerificationRow({
   item,
   isProcessing,
   isRejecting,
@@ -156,122 +204,89 @@ function VerificationCard({
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
   const vd = item.verification_data
+  const waited = daysWaiting(item.joined_at)
+
+  const licence = [vd?.license_type, vd?.license_number].filter(Boolean).join(' · ')
 
   return (
-    <Card variant="outlined">
-      <Stack gap={12} style={{ padding: 16 }}>
-        {/* Header */}
-        <Row align="center" justify="space-between">
-          <Stack gap={2}>
-            <Text style={{ fontWeight: '600', fontSize: 15 }}>
-              {item.display_name || 'Unknown User'}
-            </Text>
-            {item.email && (
-              <Text style={{ color: colors.text[t].secondary, fontSize: 12 }}>
-                {item.email}
-              </Text>
-            )}
-          </Stack>
-          <Stack
-            style={{
-              paddingHorizontal: 8,
-              paddingVertical: 2,
-              borderRadius: 4,
-              backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100],
-            }}
-          >
-            <Text style={{ fontSize: 12, fontWeight: '500' }}>{item.community_name}</Text>
-          </Stack>
-        </Row>
-
-        {/* Verification Data */}
-        <Stack
-          gap={8}
-          style={{
-            padding: 12,
-            backgroundColor: colors.bg[t].muted,
-            borderRadius: 7,
-          }}
-        >
-          <Text style={{ fontWeight: '500', fontSize: 13 }}>License Information</Text>
-          <Row gap={24}>
-            <Stack gap={2}>
-              <Text style={{ color: colors.text[t].secondary, fontSize: 11 }}>
-                State
-              </Text>
-              <Text style={{ fontSize: 14, fontWeight: '500' }}>{vd?.state || 'N/A'}</Text>
-            </Stack>
-            <Stack gap={2}>
-              <Text style={{ color: colors.text[t].secondary, fontSize: 11 }}>
-                License #
-              </Text>
-              <Text style={{ fontSize: 14, fontWeight: '500' }}>{vd?.license_number || 'N/A'}</Text>
-            </Stack>
-            <Stack gap={2}>
-              <Text style={{ color: colors.text[t].secondary, fontSize: 11 }}>
-                Type
-              </Text>
-              <Text style={{ fontSize: 14, fontWeight: '500' }}>{vd?.license_type || 'N/A'}</Text>
-            </Stack>
-          </Row>
-          <Text style={{ color: colors.text[t].secondary, fontSize: 11 }}>
-            Submitted: {vd?.submitted_at ? new Date(vd.submitted_at).toLocaleDateString() : 'N/A'}
-          </Text>
-        </Stack>
-
-        <Text style={{ color: colors.text[t].secondary, fontSize: 11 }}>
-          Joined: {new Date(item.joined_at).toLocaleDateString()}
-        </Text>
-
-        {/* Reject form */}
-        {isRejecting && (
-          <Stack gap={8}>
-            <Input
-              placeholder="Reason for rejection (optional)..."
-              value={rejectReason}
-              onChangeText={onRejectReasonChange}
-            />
+    <Stack>
+      <Lane
+        age={waited != null ? `${waited}d` : undefined}
+        ageLabel="waiting"
+        // A week without an answer is long enough to be worth flagging.
+        overdue={(waited ?? 0) >= 7}
+        title={item.display_name || 'Unknown user'}
+        subtitle={[item.email, item.community_name].filter(Boolean).join(' · ') || undefined}
+        columns={[
+          <Stack key="licence" gap={2} style={LICENCE_CELL}>
+            <Text style={{ color: colors.text[t].secondary }}>{licence || 'No licence given'}</Text>
+            {vd?.state ? <Text style={{ color: colors.text[t].tertiary }}>{vd.state}</Text> : null}
+          </Stack>,
+        ]}
+        actions={
+          isRejecting ? undefined : (
             <Row gap={8}>
               <Button
-                variant="filled"
+                variant="outline"
                 color="error"
                 size="sm"
-                onPress={onConfirmReject}
+                onPress={onStartReject}
                 disabled={isProcessing}
               >
-                {isProcessing ? 'Rejecting...' : 'Confirm Reject'}
+                Reject
               </Button>
-              <Button variant="outline" size="sm" onPress={onCancelReject}>
-                Cancel
+              <Button
+                variant="outline"
+                color="primary"
+                size="sm"
+                onPress={onApprove}
+                disabled={isProcessing}
+              >
+                {isProcessing ? 'Approving…' : 'Approve'}
               </Button>
             </Row>
-          </Stack>
-        )}
+          )
+        }
+      />
 
-        {/* Action buttons */}
-        {!isRejecting && (
-          <Row gap={8} justify="flex-end">
+      {/*
+        Rejecting opens under the row it belongs to rather than replacing the
+        row's actions in place, so the person being rejected stays on screen
+        while the reason is written.
+      */}
+      {isRejecting ? (
+        <Stack
+          gap={8}
+          paddingVertical={12}
+          style={{ borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
+        >
+          <Text style={{ color: colors.text[t].secondary }}>
+            Why is {item.display_name || 'this person'} being rejected? They will see this.
+          </Text>
+          <Input
+            placeholder="Reason (optional)"
+            value={rejectReason}
+            onChangeText={onRejectReasonChange}
+          />
+          <Row gap={8}>
             <Button
               variant="outline"
               color="error"
               size="sm"
-              onPress={onStartReject}
+              onPress={onConfirmReject}
               disabled={isProcessing}
             >
-              Reject
+              {isProcessing ? 'Rejecting…' : 'Confirm rejection'}
             </Button>
-            <Button
-              variant="filled"
-              color="primary"
-              size="sm"
-              onPress={onApprove}
-              disabled={isProcessing}
-            >
-              {isProcessing ? 'Approving...' : 'Approve'}
+            <Button variant="outline" size="sm" onPress={onCancelReject} disabled={isProcessing}>
+              Cancel
             </Button>
           </Row>
-        )}
-      </Stack>
-    </Card>
+        </Stack>
+      ) : null}
+    </Stack>
   )
 }
+
+/** Fixed so the licence column lines up down the list rather than per-row. */
+const LICENCE_CELL = { width: 200 } as const

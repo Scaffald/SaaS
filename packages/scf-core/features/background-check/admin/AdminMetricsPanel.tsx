@@ -1,6 +1,17 @@
 import type { AdminMetrics } from '@scaffald/sdk'
 import { RefreshCcw } from 'lucide-react-native'
-import { Button, Card, Separator, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import {
+  Button,
+  Card,
+  MetricBlock,
+  MetricRow,
+  Separator,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 interface AdminMetricsPanelProps {
@@ -26,7 +37,11 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
     return (
       <Card
         padding="md"
-        style={{ gap: 12, backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default }}
+        style={{
+          gap: 12,
+          backgroundColor: colors.bg[t].subtle,
+          borderColor: colors.border[t].default,
+        }}
         borderWidth={1}
         radius="xl"
       >
@@ -43,53 +58,76 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
 
   return (
     <Stack gap={16}>
-      <Row gap={12} wrap>
-        <MetricCard
-          t={t}
-          title="Checks in system"
+      {/* A band, not four tinted cards (#839). The cards rendered title,
+          figure and description in the same secondary grey, so the number —
+          the only part anyone reads — had no more weight than its caption. */}
+      <MetricRow bordered minColumnWidth={150}>
+        <MetricBlock
+          label="Checks in system"
           value={metrics.totals.checks}
-          description="Total background checks tracked"
+          delta="tracked in total"
         />
-        <MetricCard
-          t={t}
-          title="Under review"
+        <MetricBlock
+          label="Under review"
           value={metrics.totals.under_review}
-          description="Checks awaiting admin review"
+          delta="awaiting an admin"
+          emphasis={metrics.totals.under_review > 0}
         />
-        <MetricCard
-          t={t}
-          title="Active disputes"
+        <MetricBlock
+          label="Active disputes"
           value={metrics.totals.disputed}
-          description="Checks escalated for dispute resolution"
+          delta="escalated"
+          tone="attention"
+          emphasis={metrics.totals.disputed > 0}
         />
-        <MetricCard
-          t={t}
-          title="Completed screenings"
-          value={metrics.totals.completed}
-          description="Checks completed and ready to share"
-        />
-      </Row>
+        <MetricBlock label="Completed" value={metrics.totals.completed} delta="ready to share" />
+      </MetricRow>
 
       <Separator />
 
       <Row wrap gap={12}>
         <Card
-          style={{ flexGrow: 1, gap: 12, backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default }}
+          style={{
+            flexGrow: 1,
+            gap: 12,
+            backgroundColor: colors.bg[t].subtle,
+            borderColor: colors.border[t].default,
+          }}
           padding="md"
           borderWidth={1}
           radius="xl"
         >
           <Text style={{ color: colors.text[t].secondary }}>Dispute status</Text>
           <Stack gap={8}>
-            <DisputeMetric t={t} label="Pending review" value={metrics.disputes.pending} tone="warning" />
-            <DisputeMetric t={t} label="Under review" value={metrics.disputes.under_review} tone="info" />
-            <DisputeMetric t={t} label="Resolved" value={metrics.disputes.resolved} tone="success" />
+            <DisputeMetric
+              t={t}
+              label="Pending review"
+              value={metrics.disputes.pending}
+              tone="warning"
+            />
+            <DisputeMetric
+              t={t}
+              label="Under review"
+              value={metrics.disputes.under_review}
+              tone="info"
+            />
+            <DisputeMetric
+              t={t}
+              label="Resolved"
+              value={metrics.disputes.resolved}
+              tone="success"
+            />
             <DisputeMetric t={t} label="Upheld" value={metrics.disputes.upheld} tone="neutral" />
           </Stack>
         </Card>
 
         <Card
-          style={{ flexGrow: 1, gap: 12, backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default }}
+          style={{
+            flexGrow: 1,
+            gap: 12,
+            backgroundColor: colors.bg[t].subtle,
+            borderColor: colors.border[t].default,
+          }}
           padding="md"
           borderWidth={1}
           radius="xl"
@@ -98,13 +136,19 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
           <Text style={{ color: colors.text[t].secondary }}>
             {metrics.averageCompletionDays != null ? `${metrics.averageCompletionDays} days` : '—'}
           </Text>
-          <Text style={{ color: colors.text[t].secondary }}>Based on fully completed checks in the system.</Text>
+          <Text style={{ color: colors.text[t].secondary }}>
+            Based on fully completed checks in the system.
+          </Text>
         </Card>
       </Row>
 
       <Card
         padding="md"
-        style={{ gap: 12, backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default }}
+        style={{
+          gap: 12,
+          backgroundColor: colors.bg[t].subtle,
+          borderColor: colors.border[t].default,
+        }}
         borderWidth={1}
         radius="xl"
       >
@@ -116,7 +160,9 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
         </Row>
         <Stack gap={8}>
           {metrics.packageDistribution.length === 0 ? (
-            <Text style={{ color: colors.text[t].secondary }}>No package usage data available yet.</Text>
+            <Text style={{ color: colors.text[t].secondary }}>
+              No package usage data available yet.
+            </Text>
           ) : (
             metrics.packageDistribution.map((item: { label: string; count: number }) => (
               <Row
@@ -125,7 +171,10 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
                 align="center"
                 paddingHorizontal={12}
                 paddingVertical={8}
-                style={{ backgroundColor: colors.bg[t].default, borderColor: colors.border[t].default }}
+                style={{
+                  backgroundColor: colors.bg[t].default,
+                  borderColor: colors.border[t].default,
+                }}
                 borderWidth={1}
                 borderRadius={12}
               >
@@ -137,28 +186,6 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
         </Stack>
       </Card>
     </Stack>
-  )
-}
-
-interface MetricCardProps {
-  t: 'light' | 'dark'
-  title: string
-  value: number
-  description: string
-}
-
-function MetricCard({ t, title, value, description }: MetricCardProps) {
-  return (
-    <Card
-      style={{ flexGrow: 1, gap: 8, backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default }}
-      padding="md"
-      borderWidth={1}
-      radius="xl"
-    >
-      <Text style={{ color: colors.text[t].secondary }}>{title}</Text>
-      <Text style={{ color: colors.text[t].secondary }}>{value}</Text>
-      <Text style={{ color: colors.text[t].secondary }}>{description}</Text>
-    </Card>
   )
 }
 
