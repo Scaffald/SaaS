@@ -49,8 +49,8 @@
     "web:server": "node server/index.js"
   },
   "dependencies": {
-    "compression": "^1.7.4",
-    "express": "^4.22.2",
+    "compression": "^1.8.2",
+    "express": "^4.22.3",
     "@babel/runtime": "catalog:",
     "@expo-google-fonts/roboto": "^0.4.2",
     "@expo-google-fonts/roboto-serif": "^0.4.3",
