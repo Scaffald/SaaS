@@ -14,7 +14,7 @@ import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { useApplicationMessages } from '@scf/core/utils/jobs-sdk-hooks'
-import { Avatar, Button, H4, Spinner, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Avatar, Button, H4, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { ATSApplication } from '../types'
 import {
   canReject as canRejectStatus,
@@ -25,6 +25,7 @@ import {
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { ApplicationDetailsTab } from './ApplicationDetailsTab'
+import { CandidateDetailTabs, type CandidateTab } from './CandidateDetailTabs'
 import { CandidateProfileTab } from './CandidateProfileTab'
 import { InquiryTab } from './InquiryTab'
 import { MessagesTab } from './MessagesTab'
@@ -76,9 +77,7 @@ const mapInquiryToFormValues = (inquiry: Record<string, any>): InquiryCreateInpu
  */
 export const CandidateDetailContent = ({ application }: { application: ATSApplication }) => {
   const { theme } = useThemeContext()
-  const [activeTab, setActiveTab] = useState<
-    'profile' | 'application' | 'notes' | 'messages' | 'inquiry' | 'activity'
-  >('profile')
+  const [activeTab, setActiveTab] = useState<CandidateTab>('profile')
   const organizationId = application.organizationId ?? application.job.organizationId ?? ''
   const workerUserId = application.workerUserId ?? application.candidate.id ?? ''
   const applicationId = application.id
@@ -372,138 +371,117 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
         </Stack>
       </Row>
 
-      {/* Tabs */}
-      <Stack
-        gap={8}
-        style={{ backgroundColor: colors.bg[theme].subtle }}
-        padding={4}
-        borderRadius={12}
-      >
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)}>
-          <Tabs.Item value="profile">
-            <Tabs.Trigger containerStyle={{ flex: 1 }}>Profile</Tabs.Trigger>
-          </Tabs.Item>
-          <Tabs.Item value="application">
-            <Tabs.Trigger containerStyle={{ flex: 1 }}>Application</Tabs.Trigger>
-          </Tabs.Item>
-          <Tabs.Item value="notes">
-            <Tabs.Trigger containerStyle={{ flex: 1 }}>
-              {`Notes${countSuffix(notesCount)}`}
-            </Tabs.Trigger>
-          </Tabs.Item>
-          <Tabs.Item value="messages">
-            <Tabs.Trigger containerStyle={{ flex: 1 }}>
-              {`Messages${countSuffix(messagesCount)}`}
-            </Tabs.Trigger>
-          </Tabs.Item>
-          <Tabs.Item value="activity">
-            <Tabs.Trigger containerStyle={{ flex: 1 }}>Activity</Tabs.Trigger>
-          </Tabs.Item>
-          <Tabs.Item value="inquiry">
-            <Tabs.Trigger containerStyle={{ flex: 1 }}>Inquiry</Tabs.Trigger>
-          </Tabs.Item>
-        </Tabs>
-      </Stack>
-
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)}>
-        <Tabs.Content value="profile">
-          <Stack paddingTop={16}>
-            <CandidateProfileTab
-              candidate={application.candidate}
-              contactInfo={contactInfoQuery.data ?? undefined}
-              isContactLocked={!contactUnlocked}
-              lockReason={contactLockReason}
-            />
-          </Stack>
-        </Tabs.Content>
-
-        <Tabs.Content value="application">
-          <Stack paddingTop={16}>
-            <ApplicationDetailsTab application={application} />
-          </Stack>
-        </Tabs.Content>
-
-        <Tabs.Content value="notes">
-          <Stack paddingTop={16}>
-            <NotesTab
-              applicationId={application.id}
-              teamId={teamId}
-              mentionOptions={mentionOptions}
-            />
-          </Stack>
-        </Tabs.Content>
-
-        <Tabs.Content value="messages">
-          <Stack paddingTop={16}>
-            <MessagesTab applicationId={application.id} />
-          </Stack>
-        </Tabs.Content>
-
-        <Tabs.Content value="activity">
-          <Stack paddingTop={16}>
-            <ActivityFeedTab application={application} />
-          </Stack>
-        </Tabs.Content>
-
-        <Tabs.Content value="inquiry">
-          <Stack paddingTop={16}>
-            {inquiryMode === 'view' && isInquiryLoading && (
-              <Stack padding="md" align="center" gap={16}>
-                <Spinner variant="ios" size="lg" />
-                <Text>Loading inquiry...</Text>
-              </Stack>
-            )}
-
-            {inquiryMode === 'view' && hasInquiry && inquiryData && (
-              <InquiryTab
-                applicationId={application.id}
-                candidateName={application.candidate.name}
-                jobTitle={application.job.title}
-                data={inquiryData}
-                onEditInquiry={() => setInquiryMode('edit')}
-                editLabel={inquiryData.inquiry.status === 'draft' ? 'Finish Draft' : 'Edit Inquiry'}
+      <CandidateDetailTabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        tabs={[
+          {
+            value: 'profile',
+            label: 'Profile',
+            panel: (
+              <CandidateProfileTab
+                candidate={application.candidate}
+                contactInfo={contactInfoQuery.data ?? undefined}
+                isContactLocked={!contactUnlocked}
+                lockReason={contactLockReason}
               />
-            )}
-
-            {inquiryMode === 'create' && (
-              <InquiryCreateForm
+            ),
+          },
+          {
+            value: 'application',
+            label: 'Application',
+            panel: <ApplicationDetailsTab application={application} />,
+          },
+          {
+            value: 'notes',
+            label: `Notes${countSuffix(notesCount)}`,
+            panel: (
+              <NotesTab
                 applicationId={application.id}
-                onSuccess={handleInquirySuccess}
-                onCancel={() => setInquiryMode(hasInquiry ? 'view' : 'create')}
+                teamId={teamId}
+                mentionOptions={mentionOptions}
               />
-            )}
+            ),
+          },
+          {
+            value: 'messages',
+            label: `Messages${countSuffix(messagesCount)}`,
+            panel: <MessagesTab applicationId={application.id} />,
+          },
+          {
+            value: 'activity',
+            label: 'Activity',
+            panel: <ActivityFeedTab application={application} />,
+          },
+          {
+            value: 'inquiry',
+            label: 'Inquiry',
+            panel: (
+              <>
+                {inquiryMode === 'view' && isInquiryLoading && (
+                  <Stack padding="md" align="center" gap={16}>
+                    <Spinner variant="ios" size="lg" />
+                    <Text>Loading inquiry...</Text>
+                  </Stack>
+                )}
 
-            {inquiryMode === 'edit' && hasInquiry && inquiryData?.inquiry && inquiryFormValues ? (
-              <InquiryCreateForm
-                applicationId={application.id}
-                inquiryId={inquiryData.inquiry.id as string}
-                mode="edit"
-                initialData={inquiryFormValues}
-                onSuccess={handleInquirySuccess}
-                onCancel={() => setInquiryMode('view')}
-              />
-            ) : null}
+                {inquiryMode === 'view' && hasInquiry && inquiryData && (
+                  <InquiryTab
+                    applicationId={application.id}
+                    candidateName={application.candidate.name}
+                    jobTitle={application.job.title}
+                    data={inquiryData}
+                    onEditInquiry={() => setInquiryMode('edit')}
+                    editLabel={
+                      inquiryData.inquiry.status === 'draft' ? 'Finish Draft' : 'Edit Inquiry'
+                    }
+                  />
+                )}
 
-            {inquiryMode === 'view' && !hasInquiry && !isInquiryLoading && (
-              <Stack padding="md" gap={12}>
-                <Text style={{ color: colors.text[theme].secondary }}>
-                  No inquiry has been created for this candidate yet.
-                </Text>
-                <Button color="primary" onPress={() => setInquiryMode('create')}>
-                  Start Inquiry
-                </Button>
-              </Stack>
-            )}
+                {inquiryMode === 'create' && (
+                  <InquiryCreateForm
+                    applicationId={application.id}
+                    onSuccess={handleInquirySuccess}
+                    onCancel={() => setInquiryMode(hasInquiry ? 'view' : 'create')}
+                  />
+                )}
 
-            {inquiryMode === 'edit' && (!inquiryData?.inquiry || !inquiryFormValues) && (
-              <Stack padding="md" align="center" gap={16}>
-                <Spinner variant="ios" size="lg" />
-                <Text>Preparing inquiry for editing...</Text>
-              </Stack>
-            )}
-          </Stack>
-        </Tabs.Content>
-      </Tabs>
+                {inquiryMode === 'edit' &&
+                hasInquiry &&
+                inquiryData?.inquiry &&
+                inquiryFormValues ? (
+                  <InquiryCreateForm
+                    applicationId={application.id}
+                    inquiryId={inquiryData.inquiry.id as string}
+                    mode="edit"
+                    initialData={inquiryFormValues}
+                    onSuccess={handleInquirySuccess}
+                    onCancel={() => setInquiryMode('view')}
+                  />
+                ) : null}
+
+                {inquiryMode === 'view' && !hasInquiry && !isInquiryLoading && (
+                  <Stack padding="md" gap={12}>
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      No inquiry has been created for this candidate yet.
+                    </Text>
+                    <Button color="primary" onPress={() => setInquiryMode('create')}>
+                      Start Inquiry
+                    </Button>
+                  </Stack>
+                )}
+
+                {inquiryMode === 'edit' && (!inquiryData?.inquiry || !inquiryFormValues) && (
+                  <Stack padding="md" align="center" gap={16}>
+                    <Spinner variant="ios" size="lg" />
+                    <Text>Preparing inquiry for editing...</Text>
+                  </Stack>
+                )}
+              </>
+            ),
+          },
+        ]}
+      />
 
       {/* Confirmation for critical changes. Rejection and hiring never fire
           straight at the API — hiring opens the success-fee checkout, and

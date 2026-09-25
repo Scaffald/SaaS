@@ -361,31 +361,28 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                     </Stack>
                   </Stack>
                 </Tabs.Trigger>
+                <Tabs.Content>
+                  <Stack padding="sm">
+                    <StatusColumn
+                      status={status}
+                      label={STATUS_LABELS[status]}
+                      color={STATUS_COLORS[status]}
+                      applications={groupedApplications[status]}
+                      selectedApplicationIds={selectedApplicationIds}
+                      onSelectApplication={setSelectedApplication}
+                      onToggleSelection={toggleApplicationSelection}
+                      draggingFromStatus={activeApplication?.status ?? null}
+                      // §12 #12, the mobile half: one stage renders at a time
+                      // behind a Tabs control, so there is no second column on
+                      // screen to drag a card to. Dragging cannot be the only
+                      // way to move a candidate here.
+                      onMoveApplication={handleMoveApplication}
+                      moveTargets={allowedTargetsFor(status)}
+                      moveTargetLabels={STATUS_LABELS}
+                    />
+                  </Stack>
+                </Tabs.Content>
               </Tabs.Item>
-            ))}
-
-            {STATUSES.map((status) => (
-              <Tabs.Content key={status} value={status}>
-                <Stack padding="sm">
-                  <StatusColumn
-                    status={status}
-                    label={STATUS_LABELS[status]}
-                    color={STATUS_COLORS[status]}
-                    applications={groupedApplications[status]}
-                    selectedApplicationIds={selectedApplicationIds}
-                    onSelectApplication={setSelectedApplication}
-                    onToggleSelection={toggleApplicationSelection}
-                    draggingFromStatus={activeApplication?.status ?? null}
-                    // §12 #12, the mobile half: one stage renders at a time
-                    // behind a Tabs control, so there is no second column on
-                    // screen to drag a card to. Dragging cannot be the only
-                    // way to move a candidate here.
-                    onMoveApplication={handleMoveApplication}
-                    moveTargets={allowedTargetsFor(status)}
-                    moveTargetLabels={STATUS_LABELS}
-                  />
-                </Stack>
-              </Tabs.Content>
             ))}
           </Tabs>
         ) : (
