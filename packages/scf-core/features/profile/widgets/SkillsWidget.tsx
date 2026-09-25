@@ -29,6 +29,7 @@ import { colors } from "@scaffald/ui/tokens";
 import { workerPalette } from "@scf/core/components/ui/styles";
 import { getProficiencyLabel } from "../constants/proficiency-levels";
 import type { ProfileWidgetProps } from "./types";
+import { useIsProfileOwner } from "./useIsProfileOwner";
 
 // EnrichedUserSkill type from skill-enrichment.ts
 interface EnrichedUserSkill {
@@ -60,6 +61,7 @@ export function SkillsWidget({
   const { theme } = useThemeContext();
   const t = theme === "dark" ? "dark" : "light" as const;
   const pal = workerPalette[t];
+  const isOwner = useIsProfileOwner(userId);
   const [activeTab, setActiveTab] = useState<"technical" | "soft-skills">(
     "technical"
   );
@@ -266,6 +268,10 @@ export function SkillsWidget({
                 Retry
               </Button>
             </Stack>
+          ) : skills.length === 0 && !isOwner ? (
+            <Text style={{ color: colors.text[theme].secondary }}>
+              No technical skills listed.
+            </Text>
           ) : skills.length === 0 ? (
             <EmptyState
               title="No skills added yet"
@@ -387,6 +393,10 @@ export function SkillsWidget({
                 Complete Assessment
               </Button>
             </Stack>
+          ) : softSkills.length === 0 && !isOwner ? (
+            <Text style={{ color: colors.text[theme].secondary }}>
+              No soft skills assessment on file.
+            </Text>
           ) : softSkills.length === 0 ? (
             <EmptyState
               title="No soft skills assessment"

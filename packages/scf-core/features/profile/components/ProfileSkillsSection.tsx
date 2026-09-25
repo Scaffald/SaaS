@@ -1,7 +1,6 @@
 import { SoftSkillsComparisonWidget } from '../widgets/SoftSkillsComparisonWidget'
 import { TechnicalSkillsWidget } from '../widgets/TechnicalSkillsWidget'
 import type { ProfileWidgetProps } from '../widgets/types'
-import { Stack } from '@scaffald/ui'
 
 /**
  * ProfileSkillsSection
@@ -21,10 +20,10 @@ export function ProfileSkillsSection({
   variant = 'full',
 }: ProfileWidgetProps) {
   return (
-    <Stack gap={16}>
+    <>
       <SoftSkillsComparisonWidget userId={userId} showEdit={showEdit} variant={variant} />
       {/* <SoftSkillsRadarWidget userId={userId} showEdit={showEdit} variant={variant} /> */}
       <TechnicalSkillsWidget userId={userId} showEdit={showEdit} variant={variant} />
-    </Stack>
+    </>
   )
 }

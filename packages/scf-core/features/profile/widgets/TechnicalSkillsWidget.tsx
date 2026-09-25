@@ -19,6 +19,7 @@ import { colors } from "@scaffald/ui/tokens";
 import { workerPalette } from "@scf/core/components/ui/styles";
 import { getProficiencyLabel } from "../constants/proficiency-levels";
 import type { ProfileWidgetProps } from "./types";
+import { useIsProfileOwner } from "./useIsProfileOwner";
 import type { SkillWidgetEntry } from "@scaffald/sdk";
 
 type EnrichedUserSkill = SkillWidgetEntry;
@@ -40,6 +41,7 @@ export function TechnicalSkillsWidget({
   const { theme } = useThemeContext();
   const t = theme === "dark" ? "dark" : "light" as const;
   const pal = workerPalette[t];
+  const isOwner = useIsProfileOwner(userId);
 
   // Fetch technical skills
   const { data, isLoading, error, refetch, isFetching } = useSkillsWidget(
@@ -87,6 +89,7 @@ export function TechnicalSkillsWidget({
   }
 
   const skills = (data || []) as EnrichedUserSkill[];
+  if (skills.length === 0 && !isOwner) return null;
   const showCompact = variant === "compact";
 
   // Group skills by taxonomy

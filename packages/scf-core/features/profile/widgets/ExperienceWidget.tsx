@@ -22,6 +22,7 @@ import { workerPalette } from "@scf/core/components/ui/styles";
 import { Pill } from "@scf/core/components/ui/CardPrimitives";
 import { formatDate } from "../utils/date-formatting";
 import type { ProfileWidgetProps } from "./types";
+import { useIsProfileOwner } from "./useIsProfileOwner";
 import type { ExperienceWidgetEntry } from "@scaffald/sdk";
 
 type UserExperience = ExperienceWidgetEntry;
@@ -43,6 +44,7 @@ export function ExperienceWidget({
   const { theme } = useThemeContext();
   const t = theme === "dark" ? "dark" : "light" as const;
   const pal = workerPalette[t];
+  const isOwner = useIsProfileOwner(userId);
   const { data, isLoading, error, refetch, isFetching } = useExperienceWidget(
     { userId },
     {
@@ -89,6 +91,7 @@ export function ExperienceWidget({
   }
 
   const experiences = data || [];
+  if (experiences.length === 0 && !isOwner) return null;
   const showCompact = variant === "compact";
 
   return (

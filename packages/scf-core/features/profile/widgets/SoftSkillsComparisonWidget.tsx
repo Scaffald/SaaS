@@ -22,6 +22,7 @@ import { useMemo, useState, type FC } from 'react'
 import { colors } from '@scaffald/ui/tokens'
 import { workerPalette } from '@scf/core/components/ui/styles'
 import type { ProfileWidgetProps } from './types'
+import { useIsProfileOwner } from './useIsProfileOwner'
 
 interface SkillsChartDataset {
   label: string
@@ -59,6 +60,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light' as const
   const pal = workerPalette[t]
+  const isOwner = useIsProfileOwner(userId)
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
 
   // Fetch soft skills data
@@ -191,6 +193,8 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
       </DashboardWidget>
     )
   }
+
+  if (!isOwner && !isCompleted) return null
 
   const labelStyle = {
     fontSize: 10,
