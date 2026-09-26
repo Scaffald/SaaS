@@ -59,11 +59,16 @@ const expected = JSON.parse(readFileSync(MANIFEST, 'utf8'))
 
 // A pnpm override is an explicit human decision that outranks the catalog
 // (#501), so skew it causes is acknowledged rather than accidental — reported,
-// not vetoed. `expo-modules-core` is pinned to 56.0.22 while expo@56.0.22
-// bundles ~56.0.26; the pin traces to the custom Animated drawer work and its
-// Reanimated/Worklets matrix, so it is not this check's business to overrule.
-// See #916. Unpinned skew is the accidental kind — Dependabot moving one
+// not vetoed. Unpinned skew is the accidental kind — Dependabot moving one
 // package — and that still fails.
+//
+// Nothing is in this bucket today. The one case that was, `expo-modules-core`
+// held at 56.0.22 while expo bundled ~56.0.26, turned out not to be a deliberate
+// constraint at all: #689 had used that version as the reference point the other
+// modules were aligned UP to, the satellites later moved on with the catalog, and
+// the skew simply inverted. Moved to 56.0.26 in #916. The bucket stays because
+// a real, reasoned pin is a legitimate thing to have — but the lesson from #916
+// is to check WHY a pin exists before assuming it is load-bearing.
 const overrides = (() => {
   try {
     return JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).pnpm?.overrides ?? {}
