@@ -16,6 +16,7 @@ import { QueryClient, QueryClientProvider, useMutation } from '@tanstack/react-q
 import { act, render } from '@testing-library/react'
 import React, { useEffect, useRef, useState } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { LOOP_CAP, unboundedLoopProbe } from './unbounded-loop-probe'
 
 function client() {
   return new QueryClient({
@@ -30,8 +31,23 @@ function useRerenderHandle() {
   forceRerender = () => setTick((t) => t + 1)
 }
 
-/** The old shape: mutation object in the deps, no guard. */
-function Looping({ onAward, isComplete }: { onAward: () => void; isComplete: boolean }) {
+/**
+ * The old shape: mutation object in the deps, no guard.
+ *
+ * `shouldStop` is the test's bound, not part of the shape under test — the
+ * effect still has no terminating condition of its own, and the probe only
+ * trips it once the loop has already re-entered `LOOP_CAP` times. See
+ * `unbounded-loop-probe.ts` for why a bound is needed at all.
+ */
+function Looping({
+  onAward,
+  isComplete,
+  shouldStop,
+}: {
+  onAward: () => void
+  isComplete: boolean
+  shouldStop: () => boolean
+}) {
   useRerenderHandle()
   const awardXP = useMutation({
     mutationFn: async () => {
@@ -41,8 +57,9 @@ function Looping({ onAward, isComplete }: { onAward: () => void; isComplete: boo
   })
 
   useEffect(() => {
+    if (shouldStop()) return
     if (isComplete) awardXP.mutate()
-  }, [isComplete, awardXP])
+  }, [isComplete, awardXP, shouldStop])
 
   return null
 }
@@ -120,15 +137,22 @@ describe('results view XP', () => {
   })
 
   it('the old shape really did loop — the guard above is not vacuous', async () => {
-    const onAward = vi.fn()
-    render(
+    // If this stalls, react-query changed its identity semantics and the
+    // reasoning behind the fix needs revisiting rather than silently passing.
+    const probe = unboundedLoopProbe()
+    const { unmount } = render(
       <QueryClientProvider client={client()}>
-        <Looping onAward={onAward} isComplete />
+        <Looping onAward={probe.onCall} isComplete shouldStop={probe.shouldStop} />
       </QueryClientProvider>,
     )
 
-    await settle(120)
+    let outcome: 'looped' | 'stalled' = 'stalled'
+    await act(async () => {
+      outcome = await probe.settled()
+    })
+    unmount()
 
-    expect(onAward.mock.calls.length).toBeGreaterThan(20)
+    expect(outcome).toBe('looped')
+    expect(probe.calls).toBeGreaterThanOrEqual(LOOP_CAP)
   })
 })

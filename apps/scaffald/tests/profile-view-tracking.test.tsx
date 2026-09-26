@@ -18,6 +18,7 @@ import { QueryClient, QueryClientProvider, useMutation } from '@tanstack/react-q
 import { act, render } from '@testing-library/react'
 import React, { useEffect, useRef, useState } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { LOOP_CAP, unboundedLoopProbe } from './unbounded-loop-probe'
 
 function client() {
   return new QueryClient({
@@ -33,8 +34,23 @@ function useRerenderHandle() {
   forceRerender = () => setTick((t) => t + 1)
 }
 
-/** The shape the two profile routes had: the mutation object is a dependency. */
-function Looping({ onCall, userId }: { onCall: () => void; userId: string }) {
+/**
+ * The shape the two profile routes had: the mutation object is a dependency.
+ *
+ * `shouldStop` is the test's bound, not part of the shape under test — the
+ * effect still has no terminating condition of its own, and the probe only
+ * trips it once the loop has already re-entered `LOOP_CAP` times. See
+ * `unbounded-loop-probe.ts` for why a bound is needed at all.
+ */
+function Looping({
+  onCall,
+  userId,
+  shouldStop,
+}: {
+  onCall: () => void
+  userId: string
+  shouldStop: () => boolean
+}) {
   useRerenderHandle()
   const recordViewMutation = useMutation({
     mutationFn: async () => {
@@ -45,8 +61,9 @@ function Looping({ onCall, userId }: { onCall: () => void; userId: string }) {
 
   useEffect(() => {
     if (!userId) return
+    if (shouldStop()) return
     recordViewMutation.mutate()
-  }, [userId, recordViewMutation])
+  }, [userId, recordViewMutation, shouldStop])
 
   return null
 }
@@ -124,18 +141,22 @@ describe('profile view tracking', () => {
   })
 
   it('the old shape really did loop — the guard above is not vacuous', async () => {
-    // If this ever stops looping, react-query changed its identity semantics and
-    // the reasoning behind the fix needs revisiting rather than silently
-    // passing.
-    const onCall = vi.fn()
-    render(
+    // If this stalls, react-query changed its identity semantics and the
+    // reasoning behind the fix needs revisiting rather than silently passing.
+    const probe = unboundedLoopProbe()
+    const { unmount } = render(
       <QueryClientProvider client={client()}>
-        <Looping onCall={onCall} userId="user-1" />
+        <Looping onCall={probe.onCall} userId="user-1" shouldStop={probe.shouldStop} />
       </QueryClientProvider>,
     )
 
-    await settle(120)
+    let outcome: 'looped' | 'stalled' = 'stalled'
+    await act(async () => {
+      outcome = await probe.settled()
+    })
+    unmount()
 
-    expect(onCall.mock.calls.length).toBeGreaterThan(20)
+    expect(outcome).toBe('looped')
+    expect(probe.calls).toBeGreaterThanOrEqual(LOOP_CAP)
   })
 })
