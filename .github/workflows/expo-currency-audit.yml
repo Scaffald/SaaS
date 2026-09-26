@@ -1,0 +1,121 @@
+# Is the Expo SDK patch set current? Asked on a schedule, never as a blocker.
+#
+# `expo install --check` resolves expected versions from Expo's live registry, so
+# it answers a question that changes without anything in this repo changing. It
+# used to run inside the Monorepo integrity job, which is gated on
+# `deps == 'true'` — only dependency PRs run it. So when Expo published an SDK
+# patch set, every open Dependabot PR went red at once for a reason none of them
+# introduced: a PR bumping only `adm-zip` failed identically to a twelve-package
+# group, and the whole queue stalled until someone realigned the catalog by hand
+# (#907, #908).
+#
+# The currency question is still worth asking — the catalog did lag eight
+# packages behind, and nothing said so. It just needs to be asked on its own
+# schedule, with its own issue, rather than ambushing an unrelated PR. Skew
+# between Expo packages is the part that ships bugs (#683) and that stays a hard
+# gate in ci.yml via scripts/check-expo-alignment.mjs.
+#
+# Runs Sunday, ahead of Dependabot's Monday wave, so a lag is visible before the
+# next batch of dependency PRs lands.
+name: Expo currency audit
+
+on:
+  schedule:
+    - cron: '0 6 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: expo-currency-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Is the Expo patch set current?
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - uses: ./.github/actions/install
+
+      - name: Ask the registry
+        id: check
+        working-directory: apps/scaffald
+        run: |
+          set +e
+          out="$(pnpm exec expo install --check 2>&1)"
+          status=$?
+          set -e
+          echo "$out"
+          {
+            echo 'report<<EXPO_EOF'
+            echo "$out"
+            echo 'EXPO_EOF'
+          } >> "$GITHUB_OUTPUT"
+          if [ $status -eq 0 ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # One issue, reopened and updated rather than a new one every Sunday.
+      - name: Open or update the drift issue
+        if: steps.check.outputs.current == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPORT: ${{ steps.check.outputs.report }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          TITLE='deps: the Expo SDK patch set has moved ahead of the catalog'
+          BODY=$(cat <<EOF
+          \`expo install --check\` reports the catalog is behind the current SDK patch set.
+
+          \`\`\`
+          $REPORT
+          \`\`\`
+
+          This is **lag, not skew** — it does not break anything on its own, and it is
+          deliberately not a blocking check (#907). What it does mean is that a
+          coordinated patch bump is available.
+
+          To apply: move the \`expo*\` pins in \`pnpm-workspace.yaml\` to the versions
+          above, \`pnpm install\`, then check \`patchedDependencies\` — bumping \`expo\`
+          moves \`@expo/cli\` and can orphan the \`@expo/router-server\` patch, which
+          makes pnpm refuse the install outright (\`ERR_PNPM_UNUSED_PATCH\`). #908 is
+          the worked example, including how to tell which half of that patch is
+          still needed.
+
+          Skew between Expo packages is a separate, hard gate:
+          \`scripts/check-expo-alignment.mjs\`.
+
+          Audited by [expo-currency-audit.yml]($RUN_URL). This issue is reused, so
+          the body above is the latest reading.
+          EOF
+          )
+          existing=$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --body "$BODY"
+            echo "Updated #$existing"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --label dependencies
+            echo "Opened a new drift issue"
+          fi
+
+      - name: Close the drift issue once the catalog catches up
+        if: steps.check.outputs.current == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE='deps: the Expo SDK patch set has moved ahead of the catalog'
+          existing=$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue close "$existing" --reason completed \
+              --comment 'The catalog is current again — `expo install --check` reports no drift.'
+          fi
+          echo "Expo patch set is current."

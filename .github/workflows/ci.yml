@@ -199,10 +199,17 @@ jobs:
       # realigned all 22). Dependabot moves one package at a time, which is
       # exactly how that skew accumulates — so fail here instead.
       #
-      # To fix: run the same command locally to list the drift, then realign it
-      # in one coordinated commit (#483) — versions live in the catalog, in
-      # `pnpm.overrides`, and in direct dependencies, and only the installed
-      # tree sees all three.
+      # This used to be `expo install --check`, which resolves expected versions
+      # from Expo's LIVE REGISTRY. That answers "are you on the newest patch
+      # set?" rather than "do your Expo packages agree with each other?", so the
+      # moment Expo published an SDK patch set it went red on every branch at
+      # once — and because this job only runs on dependency PRs, all five open
+      # Dependabot PRs failed for a reason none of them introduced (#907). It
+      # also never inspected `expo-modules-core`, the package #683 was actually
+      # about, because that command only looks at the app's direct dependencies.
+      #
+      # check-expo-alignment.mjs reads the bundled-modules manifest inside the
+      # installed expo package: offline, version-locked, and about skew only.
+      # Currency is tracked non-blockingly by expo-currency-audit.yml.
       - name: Check Expo SDK version alignment
-        working-directory: apps/scaffald
-        run: pnpm exec expo install --check
+        run: pnpm check-expo-alignment
