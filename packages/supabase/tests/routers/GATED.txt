@@ -1,14 +1,9 @@
 # Files in this directory that CI runs as a gate — a failure here fails the build.
 #
 # `tests/routers/` holds HTTP tests against the running `api` edge function.
-# Most of it does not pass today (measured 2026-09-26 against origin/main @
-# e675422de on a fresh local stack: 122 passed, 177 failed across the tree), so
-# the directory cannot be turned on wholesale without leaving the build
-# permanently red — the state #412 already taught us gives no signal at all.
-#
-# This file is the ratchet instead. Every path listed here passed on its own
-# AND alongside the rest of the list when it was added (58 passed, 0 failed),
-# and must keep passing.
+# This list is a ratchet: every path below passed on its own AND alongside the
+# rest of the list when it was added (152 passed, 0 failed, measured
+# 2026-09-26), and must keep passing.
 #
 # THE RULE: this list may only grow. If a listed file starts failing, fix the
 # file or the code it covers — do not delete the line. Add a file the moment it
@@ -19,24 +14,27 @@
 #
 # Blank lines and lines starting with # are ignored.
 #
-# Not listed, and why — so the gaps are deliberate rather than forgotten:
-#
-#   office-jobs-rest.test.ts      `Auth setup is incomplete` — both need the
-#   office-settings-rest.test.ts  cached token fixture `auth.test.ts` produces,
-#                                 and that suite itself fails on magic-link auth
-#                                 (`Missing token or type in magic link`) and on
-#                                 `Regular user auth should succeed`. That
-#                                 fixture is the blocker under a good slice of
-#                                 this tree — see #478.
-#
-#   the other 28 files            Assertion and fixture drift predating this
-#                                 file. Worst offenders by count: work-logs,
-#                                 teams, applications, background-checks.
+# The tree was 122 passed / 177 failed when this file was created. Repairing
+# the shared fixtures took it to 221/78 and this list from 8 files to 19 — see
+# the commit that added these. What is still excluded is per-suite assertion
+# drift, worst first: work-logs, profileCompletion, applications, payments,
+# education.
 
+auth-session-regression.test.ts
+auth.test.ts
+ccpa.test.ts
+employers.test.ts
+feedback.test.ts
 legal-agreements-rest.test.ts
 map.test.ts
 office-communities-rest.test.ts
+office-jobs-rest.test.ts
+office-settings-rest.test.ts
+office.test.ts
+onet.test.ts
 organizations.test.ts
+prerequisites.test.ts
+resume.test.ts
 reviews.test.ts
 schema-regression.test.ts
 work-logs-rest.test.ts
