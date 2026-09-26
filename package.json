@@ -24,6 +24,7 @@
     "check:affected:fast": "nx affected -t lint --exclude=@scaffald/integration-test && nx affected -t typecheck --exclude=@scaffald/integration-test",
     "check-circular-deps": "./scripts/check-circular-deps.sh apps/scaffald packages/scf-core packages/supabase/functions",
     "check-deps": "cross-env NODE_OPTIONS=--max-old-space-size=8192 check-dependency-version-consistency .",
+    "check-expo-alignment": "node scripts/check-expo-alignment.mjs",
     "deploy": "pnpm prod",
     "deploy:web:dev": "./scripts/deploy-web-eas.sh dev",
     "deploy:web:preview": "./scripts/deploy-web-eas.sh preview",

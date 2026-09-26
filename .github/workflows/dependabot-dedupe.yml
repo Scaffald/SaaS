@@ -78,8 +78,30 @@ jobs:
             echo "Lockfile already deduped — nothing to do."
             exit 0
           fi
-          git config user.name  'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # Authored AS dependabot[bot], deliberately (#907).
+          #
+          # Committing as github-actions[bot] made this job self-defeating.
+          # Dependabot refuses to rebase a branch it sees a foreign commit on:
+          #
+          #   Looks like this PR has been edited by someone other than
+          #   Dependabot. That means Dependabot can't rebase it - sorry!
+          #
+          # So deduping — which a Dependabot PR REQUIRES to pass Monorepo
+          # integrity — permanently forfeited that PR's ability to rebase. Any
+          # PR that did not merge before main moved under it was then stuck, and
+          # the only way out was `@dependabot recreate`, which throws away this
+          # commit and restarts the cycle. Clearing five PRs on 2026-09-25 took
+          # six recreate rounds for exactly that reason.
+          #
+          # The commit is part of Dependabot's own update and the message says
+          # what made it, so the attribution is honest about provenance while
+          # keeping the branch Dependabot-owned. If a future Dependabot still
+          # declines to rebase, `@dependabot recreate` remains the escape hatch
+          # and the alternative is to stop pushing a commit at all — run
+          # `pnpm dedupe` inside the integrity job instead of requiring the
+          # branch to carry it.
+          git config user.name  'dependabot[bot]'
+          git config user.email '49699333+dependabot[bot]@users.noreply.github.com'
           git add pnpm-lock.yaml
           git commit -m 'chore(deps): pnpm dedupe
 
