@@ -63,6 +63,49 @@ RLS is enabled on all tables. Every new table must include:
 2. At minimum: a `service_role` full-access policy and user-scoped select/insert policies
 3. Use `auth.uid()` for user-scoped policies
 
+### Never destructure only `data` from a Supabase query
+
+Two bugs shipped because the `error` half was dropped on the floor, and both
+looked like "the feature is empty" rather than "the query failed".
+
+```ts
+// #900 — every caller got 403, including super_admin
+const { data: user } = await supabase
+  .schema("core").from("users").select("role").eq("id", userId).maybeSingle();
+return user?.role === "office" || user?.role === "admin";
+```
+
+`core.users` has no `role` column. The select errored, `data` was null,
+`user?.role` was `undefined`, and the gate returned false for everyone — a
+schema mistake became a total, silent authorization denial with no log line.
+The same pattern in the same file made the verification queue enrich every row
+to "Unknown User", by selecting an `email` column that is also not on that
+table.
+
+Always take `error` and do something with it. For a permission gate, a lookup
+failure is a 500 — it is not the same answer as "this user lacks the role",
+and answering 403 hides it forever.
+
+### PostgREST embeds only resolve inside exposed schemas
+
+```ts
+// #901 — 500 on every request
+.from("circumvention_reports")
+.select(`reported_by:users!circumvention_reports_reported_by_user_id_fkey(...)`)
+```
+
+The constraint existed; it pointed at `auth.users`. PostgREST resolves named
+embeds only within the schemas it exposes, and `auth` is not one of them, so
+the embed had no target and the whole select failed — taking a sibling embed
+down with it. A user column that the API needs to embed must reference
+`core.users`, not `auth.users`. (`core.users.id` references `auth.users(id)`
+on cascade, so the two share an id space.)
+
+Note also that `information_schema.constraint_column_usage` is
+privilege-filtered on the *referenced* table, so foreign keys into `auth` are
+invisible there. Read `pg_constraint` when auditing foreign keys, or you will
+conclude a constraint is missing when it is merely pointed somewhere else.
+
 ## CLI Commands
 
 Always use the `pnpm supa` wrapper instead of `supabase` CLI directly:
