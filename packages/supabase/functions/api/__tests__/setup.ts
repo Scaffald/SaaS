@@ -19,6 +19,35 @@ export const TEST_SUPABASE_SERVICE_KEY =
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
 
+/**
+ * Put the resolved values back into the process env.
+ *
+ * These suites import production route modules directly and call their
+ * handlers in-process. Those modules read `SUPABASE_URL` and
+ * `SUPABASE_SERVICE_ROLE_KEY` from the environment at request time — under the
+ * edge runtime they are always set, but `deno test` inherits whatever the
+ * shell has, which locally is nothing. `createClient("", "")` then throws
+ * `supabaseUrl is required` from inside production code, and the test reads as
+ * a broken endpoint rather than a missing variable.
+ *
+ * Only fills blanks: a real value already in the environment always wins, so
+ * this cannot redirect a suite that was pointed somewhere deliberately.
+ */
+function ensureEnv(name: string, value: string) {
+  const current = Deno.env.get(name);
+  if (current === undefined || current.trim() === "") {
+    Deno.env.set(name, value);
+  }
+}
+
+ensureEnv("SUPABASE_URL", TEST_SUPABASE_URL);
+ensureEnv("SUPABASE_ANON_KEY", TEST_SUPABASE_ANON_KEY);
+ensureEnv("SUPABASE_SERVICE_ROLE_KEY", TEST_SUPABASE_SERVICE_KEY);
+// The magic-link handler needs somewhere to send people. Under the edge
+// runtime this comes from the function's own env; `deno test` has none, and
+// the endpoint answers 500 "Magic link redirect target is not configured".
+ensureEnv("SITE_URL", "http://127.0.0.1:8081");
+
 export const TEST_MAILPIT_URL = "http://127.0.0.1:54324";
 
 export const TEST_API_BASE_URL = `${TEST_SUPABASE_URL}/functions/v1/api`;
@@ -260,11 +289,21 @@ export async function completeMagicLinkAuth(
 ): Promise<{ token: string; userId: string } | null> {
   try {
     const url = new URL(magicLink);
-    const token = url.searchParams.get("token");
+    // GoTrue's confirmation link carries `token_hash`, not `token`. This read
+    // `token`, found nothing, and returned null — so every helper built on
+    // magic-link registration handed back null, and the suites asserted
+    // `user !== null` and failed. It looked like broken auth; it was a query
+    // parameter name. `token` is still accepted for older links.
+    const token = url.searchParams.get("token_hash") ??
+      url.searchParams.get("token");
     const type = url.searchParams.get("type");
 
     if (!token || !type) {
-      console.error("Missing token or type in magic link");
+      console.error(
+        `Missing token or type in magic link (params: ${
+          [...url.searchParams.keys()].join(", ") || "none"
+        })`,
+      );
       return null;
     }
 

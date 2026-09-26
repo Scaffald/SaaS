@@ -62,7 +62,7 @@ export interface TestUserDefinition {
 // `admin` has no seed at all -- no admin@example.com exists in auth.users -- so
 // anything reaching for the admin token still fails. Seeding it needs a
 // decision about which role it should carry; tracked on #478.
-export const TEST_USERS: Record<'regular' | 'admin', TestUserDefinition> = {
+export const TEST_USERS: Record<'regular' | 'admin' | 'office', TestUserDefinition> = {
   regular: {
     email: 'test@example.com',
     password: 'test123456',
@@ -71,21 +71,31 @@ export const TEST_USERS: Record<'regular' | 'admin', TestUserDefinition> = {
     email: 'admin@example.com',
     password: 'adminpassword123',
   },
+  // Seeded by `seeds/002_seed-users.sql`, which grants the core team addresses
+  // the platform `office` role. `admin` above carries `worker/platform` only
+  // (#478), so office-gated suites that reached for it got a 403 and read it
+  // as a broken endpoint. Anything hitting /v1/office/** wants this one.
+  office: {
+    email: 'zach@unicorn.love',
+    password: 'password123',
+  },
+}
+
+export interface CachedTokenEntry {
+  token: string
+  email: string
+  userId: string
+  expiresAt: number
 }
 
 export interface CachedTokens {
-  regular: {
-    token: string
-    email: string
-    userId: string
-    expiresAt: number
-  }
-  admin: {
-    token: string
-    email: string
-    userId: string
-    expiresAt: number
-  }
+  regular: CachedTokenEntry
+  admin: CachedTokenEntry
+  /**
+   * A token that actually holds the platform `office` role. Optional so an
+   * older fixture on disk still loads; suites that need it should assert.
+   */
+  office?: CachedTokenEntry
   cachedAt: number
 }
 
@@ -396,7 +406,11 @@ export async function completeMagicLinkAuth(
 
   try {
     const url = new URL(magicLink)
-    const token = url.searchParams.get('token')
+    // GoTrue's confirmation link carries `token_hash`, not `token` — reading
+    // `token` found nothing and this returned null, which is why the cached
+    // auth fixture could never be produced and every suite calling
+    // `requireAuthSetup()` failed with "Auth setup is incomplete".
+    const token = url.searchParams.get('token_hash') ?? url.searchParams.get('token')
     const type = url.searchParams.get('type')
 
     if (!token || !type) {

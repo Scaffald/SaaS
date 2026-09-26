@@ -185,9 +185,14 @@ export async function createTestApplication(overrides: {
       user_id: userId,
       status: APPLICATION_API_TO_DB_STATUS[overrides.status ?? "pending"] ??
         overrides.status ?? "new",
-      type: overrides.type || "quick",
+      // Neither `custom_answers` nor `type` is a column on core.applications,
+      // and no migration has ever created either. PostgREST rejects the whole
+      // insert when a key does not exist, so every test that needed a seeded
+      // application died in its fixture rather than in its assertions. The
+      // real columns for this are `screening_answers` (defaulted) and
+      // `answers`; `type` has no equivalent and the `type` override is kept in
+      // the signature only so existing call sites still compile.
       screening_answers: {},
-      custom_answers: {},
       submitted_at: overrides.submitted_at === undefined
         ? new Date().toISOString()
         : overrides.submitted_at,

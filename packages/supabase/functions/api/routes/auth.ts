@@ -14,11 +14,26 @@ import { type ApiEnv, requireAuth } from "../middleware/auth.ts";
 const app = new Hono<ApiEnv>();
 
 // Environment configuration
-const MAGIC_LINK_REDIRECT_FALLBACK = Deno.env.get("MAGIC_LINK_REDIRECT_URL") ??
-  Deno.env.get("EXPO_PUBLIC_URL") ??
-  Deno.env.get("SUPABASE_SITE_URL") ??
-  Deno.env.get("SITE_URL") ??
-  null;
+/**
+ * Read at call time, not at import time.
+ *
+ * This was a module-level `const`, so it captured the environment as it stood
+ * the instant this module was first imported. Under the edge runtime that is
+ * fine — env is set before anything loads. Under `deno test`, which imports
+ * the route module directly, it froze to `null` before any test bootstrap
+ * could set a value, and every magic-link test got
+ * `500 Configuration Error: Magic link redirect target is not configured`.
+ *
+ * Reading it per request costs nothing and makes the module configurable by
+ * whoever imports it.
+ */
+function magicLinkRedirectFallback(): string | null {
+  return Deno.env.get("MAGIC_LINK_REDIRECT_URL") ??
+    Deno.env.get("EXPO_PUBLIC_URL") ??
+    Deno.env.get("SUPABASE_SITE_URL") ??
+    Deno.env.get("SITE_URL") ??
+    null;
+}
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ||
   Deno.env.get("EXPO_PUBLIC_SUPABASE_URL") || "";
@@ -55,7 +70,7 @@ app.post(
       const email = input.email;
 
       // Determine redirect target
-      const redirectTarget = input.redirectTo ?? MAGIC_LINK_REDIRECT_FALLBACK;
+      const redirectTarget = input.redirectTo ?? magicLinkRedirectFallback();
       if (!redirectTarget) {
         return c.json(
           {

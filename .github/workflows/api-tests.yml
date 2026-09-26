@@ -365,7 +365,16 @@ jobs:
   lint:
     name: Lint REST API Code
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # 15, not 5. #924 added "Type Check (ratchet)", which runs `deno check`
+    # over all 25 edge functions — about four minutes on its own, and more
+    # than the five this job allowed once lint and format have had their
+    # share. The job hit the ceiling at exactly 5:00 and was cancelled, which
+    # surfaces as `##[error]The operation was canceled` with no failing check
+    # named, then fails "All Tests Passed".
+    #
+    # Reproduced on main at 28e155051 — the commit that added the step — so
+    # every PR touching packages/supabase has been red for this reason since.
+    timeout-minutes: 15
 
     steps:
       - name: Checkout code

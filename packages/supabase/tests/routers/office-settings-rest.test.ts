@@ -52,7 +52,7 @@ Deno.test({
     await requireAuthSetup()
     const tokens = await loadCachedTokens()
     assertExists(tokens, 'Cached tokens should exist')
-    const token = tokens.admin.token ?? tokens.regular.token
+    const token = tokens.office?.token ?? ''
     assertExists(token, 'An office-role token is required')
 
     const { status, body } = await callGeographic({ authToken: token })
@@ -88,7 +88,7 @@ Deno.test({
     await requireAuthSetup()
     const tokens = await loadCachedTokens()
     assertExists(tokens, 'Cached tokens should exist')
-    const token = tokens.admin.token ?? tokens.regular.token
+    const token = tokens.office?.token ?? ''
     assertExists(token, 'An office-role token is required')
 
     const { status } = await callGeographic({
@@ -108,7 +108,7 @@ Deno.test({
     await requireAuthSetup()
     const tokens = await loadCachedTokens()
     assertExists(tokens, 'Cached tokens should exist')
-    const token = tokens.admin.token ?? tokens.regular.token
+    const token = tokens.office?.token ?? ''
     assertExists(token, 'An office-role token is required')
 
     const original = await callGeographic({ authToken: token })

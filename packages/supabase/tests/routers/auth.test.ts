@@ -15,11 +15,14 @@ import {
 import {
   TEST_MAILPIT_URL,
   TEST_SUPABASE_URL,
+  TEST_USERS,
   callTRPCEndpoint,
   completeMagicLinkAuth,
   createTestClient,
   extractMagicLinkFromEmail,
+  getAuthToken,
   getLatestEmail,
+  getUserIdFromToken,
   loadCachedTokens,
   registerUserWithMagicLink,
   saveCachedTokens,
@@ -146,6 +149,18 @@ Deno.test({
       console.warn("Admin authentication skipped:", error);
     }
 
+    // The office-role token. Password sign-in rather than a magic link: this
+    // account is seeded (002_seed-users.sql) with a known password, so there
+    // is no mailbox round-trip to wait on, and every /v1/office/** suite needs
+    // a token that actually carries the role.
+    const officeToken = await getAuthToken(
+      TEST_USERS.office.email,
+      TEST_USERS.office.password,
+    );
+    const officeUserId = officeToken
+      ? await getUserIdFromToken(officeToken)
+      : null;
+
     const tokens = {
       regular: {
         token: regularAuth?.token ?? "",
@@ -159,6 +174,12 @@ Deno.test({
         userId: adminAuth?.userId ?? regularAuth?.userId ?? "",
         expiresAt: Date.now() + 3_600_000,
       },
+      office: {
+        token: officeToken ?? "",
+        email: TEST_USERS.office.email,
+        userId: officeUserId ?? "",
+        expiresAt: Date.now() + 3_600_000,
+      },
       cachedAt: Date.now(),
     };
 
@@ -169,5 +190,9 @@ Deno.test({
     assertEquals(loaded?.regular.email, TEST_USER_EMAIL);
     assertExists(loaded?.regular.token);
     assertExists(loaded?.admin.token);
+    assertExists(
+      loaded?.office?.token,
+      `An office-role token is required — is ${TEST_USERS.office.email} seeded?`,
+    );
   },
 });

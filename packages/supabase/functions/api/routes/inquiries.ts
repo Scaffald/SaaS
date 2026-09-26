@@ -146,6 +146,23 @@ export async function checkApplicationAccess(
   supabase: AuthedSupabase,
   userId: string,
   applicationId: string,
+  /**
+   * The service client used for the existence lookup below. Defaults to the
+   * real one; a caller may inject its own.
+   *
+   * This exists so the function can be tested. `getServiceClient()` reads
+   * `SUPABASE_URL` from the environment, which is always set under the edge
+   * runtime and never set under a bare `deno test` — so the unit tests, which
+   * pass a stub as `supabase`, died inside production code on `supabaseUrl is
+   * required` rather than exercising the access logic they were written for.
+   *
+   * It defaults to `supabase` rather than to `getServiceClient()` because a
+   * default parameter is evaluated on every call that omits it — defaulting to
+   * the service client would construct one even when the caller passed a stub,
+   * which is the bug this is fixing. The production call site passes it
+   * explicitly, so the service-role read (#608, #649) is unchanged.
+   */
+  serviceClient: AuthedSupabase = supabase,
 ): Promise<
   { ok: true } | { ok: false; status: 403 | 404 | 500; error: string }
 > {
@@ -168,7 +185,7 @@ export async function checkApplicationAccess(
   // So GET /by-application/{id} 404'd on every application an employer could
   // see, which is the whole inquiry thread screen — including the per-message
   // report control #703 put on it.
-  const { data: application, error } = await getServiceClient()
+  const { data: application, error } = await serviceClient
     .schema("core")
     .from("applications")
     .select(
@@ -275,6 +292,8 @@ app.openapi(
       supabase,
       user.id,
       applicationId,
+      // Explicit: the existence lookup must bypass RLS (#608, #649).
+      getServiceClient() as typeof supabase,
     );
     if (!access.ok) {
       return c.json({ error: access.error }, access.status);
