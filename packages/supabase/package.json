@@ -4,7 +4,6 @@
   "private": true,
   "exports": {
     "./client-types": "./client-types.ts",
-    "./functions/_shared/client-types": "./functions/_shared/client-types.ts",
     "./functions/_shared/schemas": "./functions/_shared/schemas/index.ts",
     "./functions/_shared/types": "./functions/_shared/types.ts",
     "./types": "./types.ts"

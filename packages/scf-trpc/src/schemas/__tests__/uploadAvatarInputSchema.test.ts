@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
+// Moved here from packages/supabase/functions/_shared/schemas/__tests__ when
+// that directory's consolidated.ts — a dead duplicate of this one — was deleted.
+// The root vitest config excludes `packages/supabase/functions/**`, so these
+// cases had never once run. They do now, against the copy the app actually
+// imports.
 import { uploadAvatarInputSchema } from '../consolidated.ts';
 
 const base64Jpeg =
