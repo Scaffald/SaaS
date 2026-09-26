@@ -378,6 +378,16 @@ jobs:
         with:
           deno-version: v2.x
 
+      # For the ratchet step below only. Deliberately NOT
+      # ./.github/actions/install: the ratchet script imports nothing outside
+      # node: builtins, so it needs the node binary and not a node_modules —
+      # and this job is lean on purpose (5 minute timeout). Pinned rather than
+      # leaning on whatever the runner image ships.
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
       - name: Lint Code
         working-directory: packages/supabase/functions/api
         run: deno lint
@@ -386,10 +396,29 @@ jobs:
         working-directory: packages/supabase/functions/api
         run: deno fmt --check
 
-      - name: Type Check
-        working-directory: packages/supabase/functions/api
-        continue-on-error: true
-        run: deno check index.ts
+      # `deno check` on this function reported 404 errors and this step carried
+      # `continue-on-error: true` from the day it was written, so it had never
+      # once been able to fail (#921). 70 of those errors were one
+      # misconfiguration: the import map resolved `zod` from deno.land/x while
+      # `@hono/zod-openapi` resolved its own peer from npm, so every
+      # `z.object()` passed to `createRoute` was built by a different zod than
+      # the library's types expected. Fixed in deno.json; that family is now
+      # zero.
+      #
+      # The remaining 334 are real and each needs a decision about what that
+      # route's contract should be — per-route work, not a CI fix. So this is
+      # a ratchet against a per-file baseline instead of a plain gate: a new
+      # route with a type error fails, an existing file cannot grow new ones,
+      # and the baseline may only come down. It CAN fail now, which is the
+      # point.
+      #
+      # It also covers every OTHER function, which nothing did before — the old
+      # step only looked at `api`. Checked from each function's own directory so
+      # its import map applies: 12 of them are already clean and are now held at
+      # zero, including the deployed notify-* pipeline, webhooks-email and
+      # job-import.
+      - name: Type Check (ratchet)
+        run: node scripts/check-edge-fn-types.mjs
 
   security:
     name: Security Scan
