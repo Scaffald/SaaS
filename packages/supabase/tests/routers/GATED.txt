@@ -1,0 +1,43 @@
+# Files in this directory that CI runs as a gate — a failure here fails the build.
+#
+# `tests/routers/` holds HTTP tests against the running `api` edge function.
+# Most of it does not pass today (measured 2026-09-26 against origin/main @
+# e675422de on a fresh local stack: 122 passed, 177 failed across the tree), so
+# the directory cannot be turned on wholesale without leaving the build
+# permanently red — the state #412 already taught us gives no signal at all.
+#
+# This file is the ratchet instead. Every path listed here passed on its own
+# AND alongside the rest of the list when it was added (58 passed, 0 failed),
+# and must keep passing.
+#
+# THE RULE: this list may only grow. If a listed file starts failing, fix the
+# file or the code it covers — do not delete the line. Add a file the moment it
+# passes, both alone and with the others:
+#
+#   cd packages/supabase
+#   deno test --allow-all --no-check --config tests/deno.json tests/routers/<file>
+#
+# Blank lines and lines starting with # are ignored.
+#
+# Not listed, and why — so the gaps are deliberate rather than forgotten:
+#
+#   office-jobs-rest.test.ts      `Auth setup is incomplete` — both need the
+#   office-settings-rest.test.ts  cached token fixture `auth.test.ts` produces,
+#                                 and that suite itself fails on magic-link auth
+#                                 (`Missing token or type in magic link`) and on
+#                                 `Regular user auth should succeed`. That
+#                                 fixture is the blocker under a good slice of
+#                                 this tree — see #478.
+#
+#   the other 28 files            Assertion and fixture drift predating this
+#                                 file. Worst offenders by count: work-logs,
+#                                 teams, applications, background-checks.
+
+legal-agreements-rest.test.ts
+map.test.ts
+office-communities-rest.test.ts
+organizations.test.ts
+reviews.test.ts
+schema-regression.test.ts
+work-logs-rest.test.ts
+workers.test.ts

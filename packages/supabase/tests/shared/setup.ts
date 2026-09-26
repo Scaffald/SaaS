@@ -11,19 +11,37 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 const CURRENT_DIR = dirname(fileURLToPath(import.meta.url))
 const TOKENS_FIXTURE_PATH = join(CURRENT_DIR, '../fixtures/tokens.json')
 
-export const TEST_SUPABASE_URL =
-  Deno.env.get('EXPO_PUBLIC_SUPABASE_URL') ??
-  Deno.env.get('SUPABASE_URL') ??
-  'http://127.0.0.1:54321'
+/**
+ * First env var that is actually set to something.
+ *
+ * `??` was the wrong operator here: it falls back on `undefined`, not on `''`.
+ * A CI job that exports `SUPABASE_ANON_KEY: ${{ secrets.MISSING }}` hands these
+ * suites an EMPTY STRING, which beat the default — and every test then died on
+ * `supabaseKey is required`, which reads like a broken test rather than an
+ * unset secret. Cost an entire CI run to diagnose (#914).
+ */
+function envOr(names: string[], fallback: string): string {
+  for (const name of names) {
+    const value = Deno.env.get(name)
+    if (value !== undefined && value.trim() !== '') return value
+  }
+  return fallback
+}
 
-export const TEST_SUPABASE_ANON_KEY =
-  Deno.env.get('EXPO_PUBLIC_SUPABASE_ANON_KEY') ??
-  Deno.env.get('SUPABASE_ANON_KEY') ??
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+export const TEST_SUPABASE_URL = envOr(
+  ['EXPO_PUBLIC_SUPABASE_URL', 'SUPABASE_URL'],
+  'http://127.0.0.1:54321',
+)
 
-export const TEST_SUPABASE_SERVICE_KEY =
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ??
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+export const TEST_SUPABASE_ANON_KEY = envOr(
+  ['EXPO_PUBLIC_SUPABASE_ANON_KEY', 'SUPABASE_ANON_KEY'],
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+)
+
+export const TEST_SUPABASE_SERVICE_KEY = envOr(
+  ['SUPABASE_SERVICE_ROLE_KEY'],
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
+)
 
 export const TEST_MAILPIT_URL = 'http://127.0.0.1:54324'
 

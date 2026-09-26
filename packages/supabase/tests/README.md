@@ -1,10 +1,28 @@
 # Supabase tRPC Test Suite
 
+> **Where does a new api test go?**
+>
+> | Kind | Directory | Runs in CI? |
+> |---|---|---|
+> | Pure unit — imports a function from `functions/api/lib/` and asserts on it, no network | `functions/api/__tests__/lib/` | yes, report-only |
+> | Route handler, exercised in-process | `functions/api/__tests__/routes/` | yes, report-only |
+> | **HTTP against the running edge function** | **`tests/routers/*-rest.test.ts`** | **only if listed in `tests/routers/GATED.txt`** |
+>
+> An HTTP test is the only kind that catches "this endpoint answers 403 to
+> everyone" or "this endpoint 500s" — the two failures behind #900 and #901.
+> Write one, then **add its filename to `tests/routers/GATED.txt`** so CI and
+> `pnpm prepush` both run it. A test that is not in that list runs nowhere
+> (#914).
+>
+> Most of `tests/routers/` predates that gate and does not pass; the list is a
+> ratchet that may only grow. `GATED.txt` itself records what is excluded and
+> why.
+
 This directory contains the standalone Deno-based test workspace for all Supabase edge function tRPC routers. Suites run against a live local Supabase instance and reuse the utilities that were historically embedded in `packages/supabase/functions/trpc/__tests__`.
 
 ## Directory Overview
 
-- `routers/` – baseline coverage for each tRPC router. File naming mirrors the router name (e.g. `jobs.test.ts`).
+- `routers/` – baseline coverage for each tRPC router (`jobs.test.ts`), plus the HTTP tests against the REST api (`*-rest.test.ts`). `GATED.txt` lists the files CI gates on.
 - `integration/` – reserved for future multi-router workflows. Currently empty.
 - `shared/` – cross-suite helpers and documentation (`setup.ts`, `test-context.ts`, `seeding.ts`, reference notes).
 - `fixtures/` – cached artifacts like authentication tokens (created on demand by the auth suite).

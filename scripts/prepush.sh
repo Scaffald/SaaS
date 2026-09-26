@@ -71,6 +71,38 @@ if [ "$DENO_STATUS" -ne 0 ]; then
   printf '%s\n' "$DENO_OUT" | grep -vE "^(Download|Check) " | tail -12
 fi
 
+# The gated HTTP api tests, when there is a stack to run them against.
+#
+# These need a running local Supabase, so unlike everything else here they are
+# conditional: no stack, no check, and the push is not blocked for it. When the
+# stack IS up they are worth the two seconds — this is the same list CI gates
+# on (packages/supabase/tests/routers/GATED.txt), so a failure caught here is a
+# red build avoided.
+GATED_STATUS=0
+if curl -sf --max-time 2 http://127.0.0.1:54321/auth/v1/health >/dev/null 2>&1; then
+  echo "🔍 Running the gated HTTP api tests..."
+  GATED_PATHS=""
+  while IFS= read -r gated_file; do
+    case "$gated_file" in ''|\#*) continue ;; esac
+    GATED_PATHS="$GATED_PATHS tests/routers/$gated_file"
+  done < packages/supabase/tests/routers/GATED.txt
+
+  if [ -n "$GATED_PATHS" ]; then
+    # shellcheck disable=SC2086
+    GATED_OUT=$(cd packages/supabase && npx deno test --allow-all --no-check \
+      --no-lock --config tests/deno.json $GATED_PATHS 2>&1)
+    GATED_STATUS=$?
+    if [ "$GATED_STATUS" -ne 0 ]; then
+      echo "   A gated api test failed — CI will fail on this:"
+      printf '%s\n' "$GATED_OUT" | grep -vE "^(Download|Check) " | tail -15
+    else
+      printf '%s\n' "$GATED_OUT" | grep -E "[0-9]+ passed" | tail -1 | sed 's/^/   /'
+    fi
+  fi
+else
+  echo "🔍 Gated HTTP api tests skipped — no local Supabase on :54321."
+fi
+
 # Cheap proxy for "would the web export even start?"
 #
 # The `scaffald` build is excluded above because the Metro web export takes
@@ -133,6 +165,7 @@ FAILED=""
 [ "$BUILD_STATUS" -ne 0 ] && FAILED="$FAILED build"
 [ "$TEST_STATUS" -ne 0 ]  && FAILED="$FAILED test"
 [ "$DENO_STATUS" -ne 0 ]  && FAILED="$FAILED deno-parse"
+[ "$GATED_STATUS" -ne 0 ] && FAILED="$FAILED gated-api-tests"
 [ "$AUTOLINK_STATUS" -ne 0 ] && FAILED="$FAILED expo-autolinking"
 [ "$ALIGN_STATUS" -ne 0 ] && FAILED="$FAILED override-catalog"
 [ "$MIGRATIONS_STATUS" -ne 0 ] && FAILED="$FAILED migrations"
