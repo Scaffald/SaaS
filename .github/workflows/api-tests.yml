@@ -143,8 +143,15 @@ jobs:
             functions/api/__tests__/routes/*.test.ts
         env:
           SUPABASE_URL: http://127.0.0.1:54321
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_LOCAL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY_LOCAL }}
+          # Fall back to the well-known local demo keys, exactly as the
+          # "Wait for API" and benchmark steps already do. Without this the
+          # suites get an EMPTY string when the repo has no such secret set —
+          # and `Deno.env.get(...) ?? default` in tests/shared/setup.ts only
+          # falls back on undefined, not on "". Every test then dies on
+          # `supabaseKey is required` and the failure looks like a broken test
+          # rather than a missing key.
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_LOCAL || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY_LOCAL || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU' }}
 
       # Report-only for the same reason as the step above.
       - name: Run Integration Tests (report-only)
@@ -159,8 +166,15 @@ jobs:
             functions/api/__tests__/integration/*.test.ts
         env:
           SUPABASE_URL: http://127.0.0.1:54321
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_LOCAL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY_LOCAL }}
+          # Fall back to the well-known local demo keys, exactly as the
+          # "Wait for API" and benchmark steps already do. Without this the
+          # suites get an EMPTY string when the repo has no such secret set —
+          # and `Deno.env.get(...) ?? default` in tests/shared/setup.ts only
+          # falls back on undefined, not on "". Every test then dies on
+          # `supabaseKey is required` and the failure looks like a broken test
+          # rather than a missing key.
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_LOCAL || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY_LOCAL || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU' }}
 
       # The one api-test step that can fail the build.
       #
@@ -203,8 +217,15 @@ jobs:
             "${PATHS[@]}"
         env:
           SUPABASE_URL: http://127.0.0.1:54321
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_LOCAL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY_LOCAL }}
+          # Fall back to the well-known local demo keys, exactly as the
+          # "Wait for API" and benchmark steps already do. Without this the
+          # suites get an EMPTY string when the repo has no such secret set —
+          # and `Deno.env.get(...) ?? default` in tests/shared/setup.ts only
+          # falls back on undefined, not on "". Every test then dies on
+          # `supabaseKey is required` and the failure looks like a broken test
+          # rather than a missing key.
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_LOCAL || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY_LOCAL || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU' }}
 
       - name: Generate Coverage Report
         working-directory: packages/supabase
