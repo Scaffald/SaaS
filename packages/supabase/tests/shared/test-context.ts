@@ -3,7 +3,15 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { createTestClient, isTokenExpired, loadCachedTokens } from './setup.ts'
+import {
+  TEST_USERS,
+  createTestClient,
+  getAuthToken,
+  getUserIdFromToken,
+  isTokenExpired,
+  loadCachedTokens,
+  saveCachedTokens,
+} from './setup.ts'
 
 export interface TestContext {
   anon: SupabaseClient
@@ -70,14 +78,59 @@ export async function isAuthSetupComplete(): Promise<boolean> {
   return tokens !== null && !isTokenExpired(tokens.regular.expiresAt)
 }
 
+/**
+ * Ensure the cached token fixture exists, minting it if it does not.
+ *
+ * This used to throw "Auth setup is incomplete. Run auth.test.ts first" — an
+ * ordering dependency between test FILES. `deno test` runs a directory
+ * alphabetically, so `applications.test.ts` and everything else before the
+ * letter A-U-T-H ran before the suite that writes the fixture, and failed for
+ * no reason of their own. Running a single suite on its own failed the same
+ * way, which made the tree hostile to work on one file at a time.
+ *
+ * Minting is cheap: password sign-in for the seeded accounts, no mailbox
+ * round-trip. Suites that want the magic-link path still exercise it directly.
+ */
 export async function requireAuthSetup(): Promise<void> {
-  const complete = await isAuthSetupComplete()
+  if (await isAuthSetupComplete()) return
 
-  if (!complete) {
+  const [regular, office] = await Promise.all([
+    getAuthToken(TEST_USERS.regular.email, TEST_USERS.regular.password),
+    getAuthToken(TEST_USERS.office.email, TEST_USERS.office.password),
+  ])
+
+  if (!regular) {
     throw new Error(
-      'Auth setup is incomplete. Run `deno test --allow-all packages/supabase/tests/routers/auth.test.ts` first.'
+      `Could not mint a token for ${TEST_USERS.regular.email}. Is the local stack seeded?`
     )
   }
+
+  const expiresAt = Date.now() + 3_600_000
+  await saveCachedTokens({
+    regular: {
+      token: regular,
+      email: TEST_USERS.regular.email,
+      userId: (await getUserIdFromToken(regular)) ?? '',
+      expiresAt,
+    },
+    // No seeded admin exists (#478); the regular token stands in, as it did
+    // before. Suites needing real privilege should use `office`.
+    admin: {
+      token: regular,
+      email: TEST_USERS.regular.email,
+      userId: (await getUserIdFromToken(regular)) ?? '',
+      expiresAt,
+    },
+    office: office
+      ? {
+          token: office,
+          email: TEST_USERS.office.email,
+          userId: (await getUserIdFromToken(office)) ?? '',
+          expiresAt,
+        }
+      : undefined,
+    cachedAt: Date.now(),
+  })
 }
 
 /**
