@@ -5,6 +5,7 @@ on:
     paths:
       - 'packages/supabase/functions/api/**'
       - 'packages/supabase/migrations/**'
+      - 'packages/supabase/tests/**'
       - 'packages/supabase/types.ts'
       - 'scripts/test-api-local.ts'
       - 'scripts/deno.json'
@@ -15,6 +16,7 @@ on:
     paths:
       - 'packages/supabase/functions/api/**'
       - 'packages/supabase/migrations/**'
+      - 'packages/supabase/tests/**'
       - 'packages/supabase/types.ts'
       - 'scripts/test-api-local.ts'
       - 'scripts/deno.json'
@@ -116,7 +118,18 @@ jobs:
       # is not a valid `supabase db` subcommand in the pinned CLI — which left
       # this job with no signal for months (#400).
 
-      - name: Run Unit Tests
+      # Report-only, deliberately. 72 of these fail today (measured 2026-09-26
+      # on origin/main @ e675422de: 344 passed, 72 failed) on assertion and
+      # fixture drift. The job was 100% red for months and gave no signal at
+      # all, which is why it was muted (#412). #411 — the auth-user cleanup
+      # that caused the original mass failure — is closed; what remains is
+      # separate drift, so this comment no longer claims the suite is mid-repair
+      # under that issue.
+      #
+      # The gating signal for this directory is the step below, which runs an
+      # allowlist that may only grow. Move files out of here and into that list
+      # as they go green, rather than flipping this whole step at once.
+      - name: Run Unit Tests (report-only)
         continue-on-error: true
         working-directory: packages/supabase
         run: |
@@ -133,7 +146,8 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_LOCAL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY_LOCAL }}
 
-      - name: Run Integration Tests
+      # Report-only for the same reason as the step above.
+      - name: Run Integration Tests (report-only)
         continue-on-error: true
         working-directory: packages/supabase
         run: |
@@ -143,6 +157,50 @@ jobs:
             --config=functions/api/deno.json \
             --coverage=coverage \
             functions/api/__tests__/integration/*.test.ts
+        env:
+          SUPABASE_URL: http://127.0.0.1:54321
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_LOCAL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY_LOCAL }}
+
+      # The one api-test step that can fail the build.
+      #
+      # `tests/routers/` holds the HTTP tests against the running edge function
+      # — the tests that would have caught #900 (an endpoint 403ing every
+      # caller, including super_admin) and #901 (an endpoint 500ing on every
+      # request). Until now nothing ran them: no npm script referenced the
+      # directory, and `prepush` only load-probes it with a filter that matches
+      # no test, so it checked the files parse and ran zero assertions (#914).
+      #
+      # Most of that directory does not pass yet, so this runs an explicit
+      # allowlist — `tests/routers/GATED.txt` — which may only grow. A file
+      # earns its way in by passing on its own. That keeps the gate honest:
+      # green here means something, and the list records exactly how much.
+      #
+      # No `continue-on-error`. That is the point.
+      - name: Run gated HTTP API tests
+        working-directory: packages/supabase
+        run: |
+          # `while read`, not `mapfile`: mapfile needs bash 4, and the bash on
+          # a contributor's macOS is 3.2 — this has to be runnable by hand.
+          PATHS=()
+          while IFS= read -r f; do
+            case "$f" in ''|\#*) continue ;; esac
+            if [ ! -f "tests/routers/$f" ]; then
+              echo "::error file=packages/supabase/tests/routers/GATED.txt::Listed file not found: $f"
+              exit 1
+            fi
+            PATHS+=("tests/routers/$f")
+          done < tests/routers/GATED.txt
+          if [ ${#PATHS[@]} -eq 0 ]; then
+            echo "::error::tests/routers/GATED.txt lists no files. The gate must run something."
+            exit 1
+          fi
+          echo "Gating on ${#PATHS[@]} file(s): ${PATHS[*]}"
+          deno test \
+            --allow-all \
+            --no-check \
+            --config=tests/deno.json \
+            "${PATHS[@]}"
         env:
           SUPABASE_URL: http://127.0.0.1:54321
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_LOCAL }}
