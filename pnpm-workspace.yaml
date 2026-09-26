@@ -80,7 +80,21 @@ catalog:
   expo-location: ~56.0.26
   # Mirrors the pnpm override of the same name; the override outranks this, so
   # they must move together or this line silently means nothing (#501).
-  expo-modules-core: 56.0.22
+  #
+  # Pinned exactly, and it must track what the installed `expo` bundles. Every
+  # other Expo native module is compiled against ONE ExpoModulesCore API
+  # surface; let this drift below them and the mismatch is invisible until
+  # Apple's Mac-compatibility check rejects the symbols at delivery — that is
+  # ITMS-90863 (#683), where expo-image 56.0.9 carried `(undefined) external`
+  # references to _exposedDefinition symbols ExpoModulesCore did not export.
+  #
+  # #689 fixed that by moving the satellites UP to this pin. The satellites then
+  # moved on with the catalog and this stayed at 56.0.22, so by #916 the skew had
+  # simply inverted: expo-image-manipulator sat at 56.0.26, compiled against a
+  # core still on 56.0.22. `expo install --check` cannot see it — that command
+  # only inspects apps/scaffald's DIRECT dependencies, and this is transitive.
+  # scripts/check-expo-alignment.mjs walks the installed tree and does see it.
+  expo-modules-core: 56.0.26
   expo-notifications: ~56.0.25
   expo-router: ~56.2.21
   expo-secure-store: ~56.0.4
