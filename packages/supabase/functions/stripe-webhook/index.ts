@@ -1,14 +1,36 @@
 import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
-import Stripe from 'stripe'
 
 import { corsHeaders } from '../_shared/cors.ts'
 import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
 
+// Type-only, with the class pulled in lazily below — the same shape
+// api/routes/payments.ts uses, and for the same reason: a top-level runtime
+// import is evaluated at module load, which is where this file used to call
+// createFetchHttpClient() and createSubtleCryptoProvider().
+//
+// `stripe` resolves through packages/supabase/package.json ("stripe": "20.4.1"),
+// which is how the deployed api function gets it. This file used to override
+// that in its own deno.json with `"stripe": "npm:stripe@14.26.0"` — a version
+// npm never published, so deno could not load the function at all (#923). That
+// deno.json is gone rather than repointed: there is one Stripe version here now,
+// and the function inherits functions/deno.json like its notify-* siblings.
+import type Stripe from 'stripe'
+
 type PaymentIntent = Stripe.PaymentIntent
 
-const STRIPE_API_VERSION = '2024-06-20'
-const stripeHttpClient = Stripe.createFetchHttpClient()
-const cryptoProvider = Stripe.createSubtleCryptoProvider()
+// Matches api/routes/payments.ts and _shared/id-verification-api.ts. The old
+// '2024-06-20' came with the stripe 14 pin.
+const STRIPE_API_VERSION = '2025-11-17.clover' as Stripe.LatestApiVersion
+
+let StripeClass: typeof import('stripe').default | null = null
+
+async function getStripeClass(): Promise<typeof import('stripe').default> {
+  if (!StripeClass) {
+    const stripeModule = await import('stripe')
+    StripeClass = stripeModule.default
+  }
+  return StripeClass
+}
 
 interface StripeSecrets {
   apiKey: string
@@ -192,10 +214,12 @@ serve(async (req) => {
     )
   }
 
+  const Stripe = await getStripeClass()
   const stripe = new Stripe(secrets.apiKey, {
     apiVersion: STRIPE_API_VERSION,
-    httpClient: stripeHttpClient,
+    httpClient: Stripe.createFetchHttpClient(),
   })
+  const cryptoProvider = Stripe.createSubtleCryptoProvider()
 
   const signature = req.headers.get('Stripe-Signature')
   const rawBody = await req.text()
