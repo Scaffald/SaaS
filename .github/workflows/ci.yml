@@ -53,6 +53,7 @@ jobs:
     outputs:
       code: ${{ steps.filter.outputs.code }}
       deps: ${{ steps.filter.outputs.deps }}
+      edge_fn: ${{ steps.filter.outputs.edge_fn }}
     steps:
       - uses: actions/checkout@v7
 
@@ -76,6 +77,17 @@ jobs:
               - '**/package.json'
               - 'pnpm-lock.yaml'
               - 'pnpm-workspace.yaml'
+              - '.github/workflows/ci.yml'
+            # The edge-function type ratchet used to live in api-tests.yml,
+            # which is path-filtered to `functions/api/**`. It checks all 26
+            # functions, so behind that filter a new type error in
+            # notify-publish or trpc never ran it — #924 claimed 12 functions
+            # were "held at zero" and that only held for PRs that also touched
+            # api. Filtered here on every function instead.
+            edge_fn:
+              - 'packages/supabase/functions/**'
+              - 'packages/supabase/package.json'
+              - 'scripts/check-edge-fn-types.mjs'
               - '.github/workflows/ci.yml'
 
   quality:
@@ -159,6 +171,35 @@ jobs:
           name: coverage-reports
           path: tests/reports/coverage/
           retention-days: 30
+
+  edge-fn-types:
+    name: Edge function types
+    needs: gate
+    if: needs.gate.outputs.edge_fn == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      # No pnpm install: the ratchet script imports nothing outside node:
+      # builtins, so it needs the node binary and not a node_modules.
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # Type-checks every function from its own directory so its import map
+      # applies, against a per-file baseline that may only come down (#921).
+      # 13 functions are at a clean zero and a new error in any of them fails.
+      - name: Type Check (ratchet)
+        run: node scripts/check-edge-fn-types.mjs
 
   integrity:
     name: Monorepo integrity
