@@ -103,7 +103,7 @@ Deno.test("POST /v1/auth/magic-link - normalizes email (lowercase, trimmed)", as
   await cleanupCurrentTestData();
 });
 
-Deno.test("POST /v1/auth/magic-link - uses fallback redirect if not provided", async () => {
+Deno.test("POST /v1/auth/magic-link - sends without a redirect target configured", async () => {
   markTestStart();
 
   const client = createTestClient();
@@ -114,9 +114,29 @@ Deno.test("POST /v1/auth/magic-link - uses fallback redirect if not provided", a
     // No redirectTo provided
   });
 
+  /**
+   * The contract is that the link sends either way.
+   *
+   * This used to assert `assertExists(response.body.data.redirectTo)` — that
+   * an environment fallback always supplies one. None of the four variables
+   * the handler reads is set on the edge runtime, which receives only
+   * Supabase's own built-ins, so the endpoint answered
+   * `500 Configuration Error` on any default stack (#926).
+   *
+   * `emailRedirectTo` is a hint. Absent it, GoTrue uses its own SITE_URL, so
+   * a null here means "GoTrue's configured site", not "nowhere" — and
+   * refusing to send mail over a missing hint was the bug.
+   */
   assertSuccessResponse(response);
   assertEquals(response.status, 200);
-  assertExists(response.body.data.redirectTo); // Should have a redirect from env fallback
+  assertEquals(response.body.data.email, email);
+
+  const redirectTo = response.body.data.redirectTo;
+  assertEquals(
+    redirectTo === null || typeof redirectTo === "string",
+    true,
+    "redirectTo is the target used, or null when GoTrue's SITE_URL applies",
+  );
 
   await cleanupCurrentTestData();
 });
