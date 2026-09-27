@@ -1,15 +1,39 @@
 import {
   useAccountCredits,
   useCreditLedger,
-  useDepositCreditsMutation,
 } from "@scf/core/utils/payments-sdk-hooks";
 import type { CreditLedgerEntry } from "@scaffald/sdk";
-import { CreditCard, DollarSign, Plus } from "lucide-react-native";
-import { useToast, useThemeContext } from "@scaffald/ui";
-import { useState } from "react";
-import { Button, Card, Input, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { DollarSign } from "lucide-react-native";
+import { useThemeContext } from "@scaffald/ui";
+import { Card, Spinner, Text, Row, Stack } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 
+/**
+ * Account credits, read-only.
+ *
+ * This panel used to offer "Add Credits" — an amount field and a
+ * "Continue to Payment" button calling `depositCredits`. That endpoint creates
+ * a real Stripe PaymentIntent and, with a saved card, charges it immediately
+ * (`confirm: Boolean(paymentMethodId)`, api/routes/payments.ts). What it never
+ * did was issue any credit: both credit-table usages in the deployed api are
+ * `.select()`, `stripe-webhook` only flips `payment_transactions.status`, and
+ * the sole code that writes `account_credits` / `credit_ledger` lives in the
+ * legacy, undeployed trpc router. The panel then showed "Your account credits
+ * have been updated successfully" against a balance that had not moved.
+ *
+ * The client half was never finished either — `_handleDepositSubmit` was
+ * declared, left as a comment saying the webhook would handle it, and never
+ * referenced by anything.
+ *
+ * So the affordance is gone rather than left to take money for nothing (#928).
+ * Reading the balance and the ledger works, and is kept.
+ *
+ * To restore deposits, the crediting has to exist first: port it from
+ * trpc/routers/payments.router.ts into the deployed api and fire it on a
+ * CONFIRMED payment, not at intent creation. `depositCredits` is deliberately
+ * left in the SDK and the API — nothing about the server contract changes
+ * here, only that this screen stops inviting it.
+ */
 type OrganizationCreditsPanelProps = {
   organizationId: string;
 };
@@ -25,53 +49,10 @@ export function OrganizationCreditsPanel({
   organizationId,
 }: OrganizationCreditsPanelProps) {
   const { theme } = useThemeContext();
-  const toast = useToast();
-  const [showDepositForm, setShowDepositForm] = useState(false);
-  const [depositAmount, setDepositAmount] = useState("");
 
   const creditsQuery = useAccountCredits(organizationId);
 
   const ledgerQuery = useCreditLedger({ organizationId, limit: 10 });
-
-  const depositMutation = useDepositCreditsMutation({
-    onSuccess: () => {
-      toast.show({
-        title: "Credits deposited",
-        message: "Your account credits have been updated successfully.",
-      });
-      creditsQuery.refetch();
-      ledgerQuery.refetch();
-      setShowDepositForm(false);
-      setDepositAmount("");
-    },
-    onError: (error: unknown) => {
-      const _message =
-        error instanceof Error ? error.message : "An error occurred";
-      toast.show({
-        title: "Failed to deposit credits",
-        message: _message,
-        variant: "error",
-      });
-    },
-  });
-
-  const _handleDepositSubmit = async (_paymentIntentId: string) => {
-    const amountCents = Math.round(Number.parseFloat(depositAmount) * 100);
-    if (Number.isNaN(amountCents) || amountCents <= 0) {
-      toast.show({
-        title: "Invalid amount",
-        message: "Please enter a valid amount greater than zero.",
-        variant: "error",
-      });
-      return;
-    }
-
-    // The PaymentIntentForm will handle the payment, but we need to trigger
-    // the deposit after payment succeeds. For now, we'll use the webhook
-    // to handle this automatically when the payment succeeds.
-    // The depositCredits endpoint creates the PaymentIntent and records it.
-    // The webhook should handle the credit deposit when payment succeeds.
-  };
 
   const credits = creditsQuery.data;
   const isLoading = creditsQuery.isLoading;
@@ -99,16 +80,6 @@ export function OrganizationCreditsPanel({
               Pre-funded balance for automatic payments
             </Text>
           </Stack>
-          {!showDepositForm && (
-            <Button
-              size="sm"
-              color="primary"
-              iconStart={Plus}
-              onPress={() => setShowDepositForm(true)}
-            >
-              Add Credits
-            </Button>
-          )}
         </Row>
 
         {/* Balance Display */}
@@ -139,111 +110,53 @@ export function OrganizationCreditsPanel({
           </Row>
         </Card>
 
-        {showDepositForm ? (
-          <Stack gap={12}>
+          {/* Recent Transactions */}
+          {ledgerQuery.data && ledgerQuery.data.items.length > 0 && (
             <Stack gap={8}>
-              <Text>Deposit Amount</Text>
-              <Input
-                placeholder="0.00"
-                value={depositAmount}
-                onChangeText={setDepositAmount}
-                keyboardType="decimal-pad"
-              />
-              <Text style={{ color: colors.text[theme].secondary }}>
-                Enter the amount you want to add to your account credits.
-              </Text>
-            </Stack>
-            <Row gap={8}>
-              <Button
-                size="md"
-                variant="outline"
-                onPress={() => {
-                  setShowDepositForm(false);
-                  setDepositAmount("");
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="md"
-                color="primary"
-                iconStart={CreditCard}
-                onPress={() => {
-                  const amountCents = Math.round(
-                    Number.parseFloat(depositAmount) * 100
-                  );
-                  if (Number.isNaN(amountCents) || amountCents <= 0) {
-                    toast.show({
-                      title: "Invalid amount",
-                      message: "Please enter a valid amount greater than zero.",
-                      variant: "error",
-                    });
-                    return;
-                  }
-                  depositMutation.mutate({
-                    organizationId,
-                    amountCents,
-                  });
-                }}
-                disabled={depositMutation.isPending}
-              >
-                {depositMutation.isPending
-                  ? "Processing…"
-                  : "Continue to Payment"}
-              </Button>
-            </Row>
-          </Stack>
-        ) : (
-          <>
-            {/* Recent Transactions */}
-            {ledgerQuery.data && ledgerQuery.data.items.length > 0 && (
-              <Stack gap={8}>
-                <Text>Recent Transactions</Text>
-                <Stack gap={4}>
-                  {ledgerQuery.data.items
-                    .slice(0, 5)
-                    .map((entry: CreditLedgerEntry) => (
-                      <Row
-                        key={entry.id}
-                        justify="space-between"
-                        align="center"
-                        padding="xs"
-                        style={{ backgroundColor: colors.bg[theme].subtle }}
-                        borderRadius={8}
-                      >
-                        <Stack flex={1}>
-                          <Text>
-                            {entry.description ?? entry.transactionType}
-                          </Text>
-                          <Text style={{ color: colors.text[theme].secondary }}>
-                            {new Date(entry.createdAt).toLocaleDateString()}
-                          </Text>
-                        </Stack>
-                        <Text
-                          style={{
-                            color:
-                              entry.direction === "credit"
-                                ? theme === "light"
-                                  ? colors.green[700]
-                                  : colors.green[300]
-                                : theme === "light"
-                                ? colors.error[700]
-                                : colors.error[300],
-                          }}
-                        >
-                          {entry.direction === "credit" ? "+" : "-"}
-                          {formatCurrency(
-                            entry.amountCents ?? 0,
-                            entry.currency ?? "USD"
-                          )}
+              <Text>Recent Transactions</Text>
+              <Stack gap={4}>
+                {ledgerQuery.data.items
+                  .slice(0, 5)
+                  .map((entry: CreditLedgerEntry) => (
+                    <Row
+                      key={entry.id}
+                      justify="space-between"
+                      align="center"
+                      padding="xs"
+                      style={{ backgroundColor: colors.bg[theme].subtle }}
+                      borderRadius={8}
+                    >
+                      <Stack flex={1}>
+                        <Text>
+                          {entry.description ?? entry.transactionType}
                         </Text>
-                      </Row>
-                    ))}
-                </Stack>
+                        <Text style={{ color: colors.text[theme].secondary }}>
+                          {new Date(entry.createdAt).toLocaleDateString()}
+                        </Text>
+                      </Stack>
+                      <Text
+                        style={{
+                          color:
+                            entry.direction === "credit"
+                              ? theme === "light"
+                                ? colors.green[700]
+                                : colors.green[300]
+                              : theme === "light"
+                              ? colors.error[700]
+                              : colors.error[300],
+                        }}
+                      >
+                        {entry.direction === "credit" ? "+" : "-"}
+                        {formatCurrency(
+                          entry.amountCents ?? 0,
+                          entry.currency ?? "USD"
+                        )}
+                      </Text>
+                    </Row>
+                  ))}
               </Stack>
-            )}
-          </>
-        )}
+            </Stack>
+          )}
       </Stack>
     </Card>
   );
