@@ -20,12 +20,15 @@ const app = new Hono<ApiEnv>();
  * This was a module-level `const`, so it captured the environment as it stood
  * the instant this module was first imported. Under the edge runtime that is
  * fine — env is set before anything loads. Under `deno test`, which imports
- * the route module directly, it froze to `null` before any test bootstrap
- * could set a value, and every magic-link test got
- * `500 Configuration Error: Magic link redirect target is not configured`.
+ * the route module directly, it froze before any test bootstrap could set a
+ * value.
  *
  * Reading it per request costs nothing and makes the module configurable by
  * whoever imports it.
+ *
+ * Returning null is an ordinary outcome, not a failure: none of these four is
+ * set on the edge runtime, which receives only Supabase's own built-ins. The
+ * caller omits `emailRedirectTo` in that case and GoTrue uses its SITE_URL.
  */
 function magicLinkRedirectFallback(): string | null {
   return Deno.env.get("MAGIC_LINK_REDIRECT_URL") ??
@@ -69,17 +72,23 @@ app.post(
       const supabase = c.get("supabase");
       const email = input.email;
 
-      // Determine redirect target
+      // Where the emailed link should land.
+      //
+      // Optional, and deliberately so. This used to 500 with "Magic link
+      // redirect target is not configured" whenever the caller sent no
+      // `redirectTo` and none of the four environment variables was set — and
+      // none of them IS set on the edge runtime, which receives only
+      // Supabase's own built-ins, so every magic link on a default stack
+      // failed (#926).
+      //
+      // Refusing was never right. `emailRedirectTo` is a hint to GoTrue; when
+      // it is omitted GoTrue uses its own configured `SITE_URL`, which is set
+      // from `site_url` in config.toml and is the authoritative answer to
+      // "where does this app live". The api function was declining to send
+      // mail because it could not name a destination the auth service already
+      // knew, and the allow-list (`GOTRUE_URI_ALLOW_LIST`) governs where a
+      // link may point either way.
       const redirectTarget = input.redirectTo ?? magicLinkRedirectFallback();
-      if (!redirectTarget) {
-        return c.json(
-          {
-            error: "Configuration Error",
-            message: "Magic link redirect target is not configured",
-          },
-          500,
-        );
-      }
 
       // Create admin client to check if user exists
       const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
@@ -119,7 +128,10 @@ app.post(
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: redirectTarget,
+          // Omitted rather than passed as null when we have none: supabase-js
+          // forwards the key either way, and GoTrue only falls back to its
+          // SITE_URL when the parameter is absent.
+          ...(redirectTarget ? { emailRedirectTo: redirectTarget } : {}),
           shouldCreateUser: !isExistingUser,
         },
       });
@@ -144,6 +156,7 @@ app.post(
           data: {
             mode: isExistingUser ? "login" : "signup",
             email,
+            // null means "GoTrue's own SITE_URL", not "nowhere".
             redirectTo: redirectTarget,
           },
           message: `Magic link sent to ${email}`,
