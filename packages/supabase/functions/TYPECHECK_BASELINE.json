@@ -1,9 +1,7 @@
 {
   "//": "Known type errors per file across the Supabase edge functions. See #921 and scripts/check-edge-fn-types.mjs. May only come down: a new file here, a higher number, or a newly-uncheckable function fails CI.",
-  "//recorded": "2026-09-26, after fixing the zod import-map split in functions/api/deno.json that accounted for 70 errors on its own. 12 functions sit at a clean zero and are held there by their absence from `files`.",
-  "uncheckable": {
-    "stripe-webhook": "Could not find npm package 'stripe' matching '14.26.0'. \u2014 see #923"
-  },
+  "//recorded": "2026-09-26, after fixing the zod import-map split in functions/api/deno.json that accounted for 70 errors on its own. 13 functions sit at a clean zero and are held there by their absence from `files`.",
+  "uncheckable": {},
   "files": {
     "packages/scf-schemas/src/feedback/feedback.schema.ts": 1,
     "packages/scf-schemas/src/profile/soft-skills.schema.ts": 3,
