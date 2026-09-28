@@ -934,6 +934,12 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: true,
     },
+    NOTIFICATIONS_SETTINGS: {
+      path: '/dashboard/notifications/settings',
+      titleKey: 'routes.dashboard.settings.notifications',
+      protected: true,
+      exact: true,
+    },
     ANALYTICS: {
       path: '/dashboard/analytics',
       titleKey: 'routes.dashboard.analytics.title' as const,

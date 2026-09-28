@@ -1,7 +1,7 @@
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import {
   NotificationsCenterScreen,
-  NotificationsSettingsAction,
+  NotificationsHeaderActions,
 } from '@scf/core/features/notifications/NotificationsCenterScreen'
 
 export default function NotificationsPage() {
@@ -9,7 +9,8 @@ export default function NotificationsPage() {
     <DashboardPage
       showBreadcrumb={false}
       pageTitle="Notifications"
-      screenActions={<NotificationsSettingsAction />}
+      screenKicker="Everything that needs you"
+      screenActions={<NotificationsHeaderActions />}
       leftContent={<NotificationsCenterScreen />}
     />
   )
