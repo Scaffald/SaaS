@@ -14,7 +14,8 @@
 -- Deliberately varied against the three seeded worker profiles from
 -- 014_seed-worker-profiles.sql:
 --
---   marcus.rivera      bachelor's + a long history -> meets most postings
+--   marcus.rivera      associate + a long history  -> meets the trades, not
+--                                                     the bachelor-gated ones
 --   carlos.gutierrez   trade school + two roles    -> meets the trades, not
 --                                                     the degree-gated ones
 --   jake.hendricks     one current role            -> misses the year counts
