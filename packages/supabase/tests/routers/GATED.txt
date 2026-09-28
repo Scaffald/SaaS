@@ -5,31 +5,21 @@
 # what CI gives it. It may only grow — if a listed file starts failing, fix the
 # file or the code it covers rather than deleting the line.
 #
-# MEASURE ON A CLEAN DATABASE BEFORE ADDING ANYTHING.
-#
-# A local stack accumulates state: users created by earlier runs, rows left by
-# hand, a warm mailbox. Five files were added to this list on the strength of a
-# local green run and failed immediately in CI — 40 of 152 tests, all of them
-# `Failed to get or create auth token`, because they mint users through the
-# magic-link flow and that flow does not complete on a fresh CI stack. Local
-# green is not evidence. Either run `pnpm supa db reset` first, or add the file
-# and let CI judge it.
+# CI starts the stack with plain `supabase start`, so it sees only the env the
+# workflow sets, not .env. Delete tests/fixtures/tokens.json before measuring
+# a new file.
 #
 #   cd packages/supabase
 #   deno test --allow-all --no-check --config tests/deno.json tests/routers/<file>
 #
 # Blank lines and lines starting with # are ignored.
 #
-# Held back for that reason, pending a magic-link path that works on a clean
-# stack (the endpoint also answers `500 Configuration Error: Magic link
-# redirect target is not configured` where no site URL is set):
-#
-#   auth.test.ts, auth-session-regression.test.ts, ccpa.test.ts,
-#   onet.test.ts, resume.test.ts
-#
-# Everything else excluded is per-suite assertion drift, worst first:
+# Everything excluded is per-suite assertion drift, worst first:
 # work-logs, profileCompletion, payments, education.
 
+auth-session-regression.test.ts
+auth.test.ts
+ccpa.test.ts
 employers.test.ts
 feedback.test.ts
 legal-agreements-rest.test.ts
@@ -38,8 +28,10 @@ office-communities-rest.test.ts
 office-jobs-rest.test.ts
 office-settings-rest.test.ts
 office.test.ts
+onet.test.ts
 organizations.test.ts
 prerequisites.test.ts
+resume.test.ts
 reviews.test.ts
 schema-regression.test.ts
 work-logs-rest.test.ts
