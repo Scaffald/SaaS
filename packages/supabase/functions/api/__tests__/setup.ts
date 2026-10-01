@@ -288,15 +288,16 @@ export async function completeMagicLinkAuth(
   magicLink: string,
 ): Promise<{ token: string; userId: string } | null> {
   try {
-    const url = new URL(magicLink);
+    // Not `new URL()`: the link is built on GoTrue's site_url, which CI leaves
+    // as the literal `env(EXPO_PUBLIC_URL)`.
+    const params = new URLSearchParams(magicLink.split("?")[1] ?? "");
     // GoTrue's confirmation link carries `token_hash`, not `token`. This read
     // `token`, found nothing, and returned null — so every helper built on
     // magic-link registration handed back null, and the suites asserted
     // `user !== null` and failed. It looked like broken auth; it was a query
     // parameter name. `token` is still accepted for older links.
-    const token = url.searchParams.get("token_hash") ??
-      url.searchParams.get("token");
-    const type = url.searchParams.get("type");
+    const token = params.get("token_hash") ?? params.get("token");
+    const type = params.get("type");
 
     if (!token || !type) {
       console.error(

@@ -5,8 +5,37 @@
 
 import { assertEquals, assertExists } from '../shared/assert.ts';
 
-import { callTRPCEndpoint, loadCachedTokens } from '../shared/setup.ts';
+import { callTRPCEndpoint, createAdminClient, loadCachedTokens } from '../shared/setup.ts';
 import { requireAuthSetup } from '../shared/test-context.ts';
+
+// O*NET is a downloaded dataset (`pnpm supa:seed:onet`), not part of
+// seeds/*.sql, so a fresh stack has an empty onet.occupation_data. When it is
+// empty the search tests bring their own rows and remove them afterwards.
+const FIXTURE_OCCUPATIONS = [
+  { onetsoc_code: "17-2141.00", title: "Mechanical Engineers", description: "Perform engineering duties in planning and designing tools, engines, machines, and other mechanically functioning equipment." },
+  { onetsoc_code: "15-1252.00", title: "Software Developers", description: "Research, design, and develop computer and network software or specialized utility programs." },
+  { onetsoc_code: "15-1254.00", title: "Web Developers", description: "Develop and implement websites, web applications, application databases, and interactive web interfaces." },
+];
+
+let seededFixtures = false;
+
+Deno.test({
+  name: "O*NET setup - occupation data is present",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const onet = createAdminClient().schema("onet");
+    const { count, error } = await onet
+      .from("occupation_data")
+      .select("onetsoc_code", { count: "exact", head: true });
+    assertEquals(error, null);
+    if (count) return;
+
+    const { error: insertError } = await onet.from("occupation_data").insert(FIXTURE_OCCUPATIONS);
+    assertEquals(insertError, null);
+    seededFixtures = true;
+  },
+});
 
 Deno.test({
   name: "O*NET router - searchOccupations returns array",
@@ -318,5 +347,21 @@ Deno.test({
     const error = response[0]?.error;
     assertExists(error, "Expected UNAUTHORIZED error");
     assertEquals(error?.data?.code, "UNAUTHORIZED");
+  },
+});
+
+Deno.test({
+  name: "O*NET teardown - remove fixture occupations",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    if (!seededFixtures) return;
+
+    const { error } = await createAdminClient()
+      .schema("onet")
+      .from("occupation_data")
+      .delete()
+      .in("onetsoc_code", FIXTURE_OCCUPATIONS.map((o) => o.onetsoc_code));
+    assertEquals(error, null);
   },
 });

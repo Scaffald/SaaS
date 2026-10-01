@@ -17,6 +17,7 @@ import {
   extractMagicLinkFromEmail,
   getLatestEmail,
   loadCachedTokens,
+  magicLinkParams,
   TEST_MAILPIT_URL,
   TEST_SUPABASE_ANON_KEY,
   TEST_SUPABASE_URL,
@@ -75,9 +76,9 @@ Deno.test({
     assertExists(magicLink, 'Magic link URL should be extractable from email')
 
     // Verify the link contains required params
-    const url = new URL(magicLink)
-    const hasToken = url.searchParams.has('token') || url.searchParams.has('token_hash')
-    const hasType = url.searchParams.has('type')
+    const params = magicLinkParams(magicLink)
+    const hasToken = params.has('token') || params.has('token_hash')
+    const hasType = params.has('type')
 
     assert(hasToken, 'Magic link should contain a token parameter')
     assert(hasType, 'Magic link should contain a type parameter')

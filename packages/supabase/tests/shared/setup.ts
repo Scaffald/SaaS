@@ -376,42 +376,22 @@ export function extractMagicLinkFromEmail(emailHtml: string): string | null {
   return null
 }
 
+/**
+ * Query params of an emailed magic link. Not `new URL()`: the link is built on
+ * GoTrue's site_url, which CI leaves as the literal `env(EXPO_PUBLIC_URL)`.
+ */
+export function magicLinkParams(magicLink: string): URLSearchParams {
+  const query = magicLink.indexOf('?')
+  return new URLSearchParams(query === -1 ? '' : magicLink.slice(query + 1))
+}
+
 export async function completeMagicLinkAuth(
   magicLink: string
 ): Promise<{ token: string; userId: string } | null> {
-  // A literal `env(...)` here means the Supabase CLI never substituted the
-  // variable, so GoTrue was handed the placeholder as its site_url:
-  //
-  //   config.toml:52   site_url = "env(EXPO_PUBLIC_URL)"
-  //   container        GOTRUE_SITE_URL=env(EXPO_PUBLIC_URL)
-  //
-  // Every magic link is then built on an unparseable base, `new URL()` throws
-  // TypeError: Invalid URL: 'env%28EXPO_PUBLIC_URL%29/auth/confirm?...', and
-  // auth.test.ts cannot write tests/fixtures/tokens.json. Every suite that
-  // calls requireAuthSetup() then fails with "Auth setup is incomplete" —
-  // 132 failures in one run, none of them about the code under test (#478).
-  //
-  // Say so, rather than letting it surface 132 times as something else.
-  if (magicLink.includes('env(') || magicLink.includes('env%28')) {
-    console.error(
-      `Magic link was built on an unsubstituted config placeholder: ${magicLink}\n` +
-        '  GoTrue received site_url literally as "env(EXPO_PUBLIC_URL)".\n' +
-        '  EXPO_PUBLIC_URL must be set in the .env that `pnpm supa` reads\n' +
-        '  (package.json env-local -> dotenv -e .env) BEFORE the stack starts,\n' +
-        '  and must point at the local app for a local run, not app.scaffald.com.\n' +
-        '  Restart the stack after setting it; a running container keeps the old value.'
-    )
-    return null
-  }
-
   try {
-    const url = new URL(magicLink)
-    // GoTrue's confirmation link carries `token_hash`, not `token` — reading
-    // `token` found nothing and this returned null, which is why the cached
-    // auth fixture could never be produced and every suite calling
-    // `requireAuthSetup()` failed with "Auth setup is incomplete".
-    const token = url.searchParams.get('token_hash') ?? url.searchParams.get('token')
-    const type = url.searchParams.get('type')
+    const params = magicLinkParams(magicLink)
+    const token = params.get('token_hash') ?? params.get('token')
+    const type = params.get('type')
 
     if (!token || !type) {
       console.error('Missing token or type in magic link')
