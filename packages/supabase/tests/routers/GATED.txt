@@ -14,8 +14,13 @@
 #
 # Blank lines and lines starting with # are ignored.
 #
-# Everything excluded is per-suite assertion drift, worst first:
-# work-logs, profileCompletion, payments, education.
+# The four suites that used to sit here as "assertion drift" — work-logs,
+# profileCompletion, payments and education — were deleted rather than
+# repaired. They drove the legacy `trpc` edge function, whose routers the app
+# no longer calls: those four features reach the `api` function through
+# work-logs-sdk-hooks, profile-completion-sdk-hooks, payments-sdk-hooks and
+# profile-education-sdk-hooks. Their REST successors need HTTP coverage of
+# their own, tracked separately; work-logs-rest.test.ts is the pattern.
 
 auth-session-regression.test.ts
 auth.test.ts
