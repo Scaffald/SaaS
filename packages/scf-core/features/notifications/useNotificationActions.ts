@@ -6,6 +6,15 @@
  * before the request lands, so the row's dot and the masthead badge change on
  * the tap rather than one round trip later. Settling refetches both, which
  * also restores the truth if the request failed.
+ *
+ * The optimistic path deliberately covers `LIST_KEY` only — both surfaces use
+ * `useNotifications`, and nothing uses `useNotificationsListInfinite`.
+ * `LIST_INFINITE_KEY` is invalidated on settle so an infinite list elsewhere
+ * still ends up correct, but it is NOT written optimistically or cancelled. A
+ * surface that switches to the infinite hook therefore loses the instant
+ * update and silently falls back to round-trip behaviour, with nothing
+ * failing. Extend `markCachedRowsRead` and both `cancelQueries` calls if that
+ * happens (#940).
  */
 import { useCallback } from 'react'
 import type { Href } from 'expo-router'
