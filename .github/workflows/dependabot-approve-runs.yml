@@ -1,0 +1,95 @@
+# Approve the workflow runs our own dedupe commit leaves waiting.
+#
+# ## What actually happens, which is not what it looks like
+#
+# Dependabot's own push runs CI fine — no approval needed. Measured on #935:
+#
+#     f89aab3de  dependabot's push          -> CI success
+#     d0c2f52fd  chore(deps): pnpm dedupe   -> CI action_required
+#
+# So this is not a Dependabot policy. It is a side effect of
+# dependabot-dedupe.yml pushing a second commit: that push raises a
+# `synchronize` run attributed to a bot actor, and GitHub holds it for
+# approval. The run then sits there, `gh pr checks` reports "no checks reported
+# on the branch", and the PR looks untouched rather than blocked. #935 and #936
+# sat three days that way.
+#
+# The held run is wanted — the merge takes the dedupe commit's SHA, so CI has
+# to pass on THAT commit, not just on the one before it. We only want to stop
+# approving it by hand.
+#
+# ## Why `workflow_run` and not a schedule
+#
+# Actions minutes are capped at 2,000/month org-wide for private repos (#375).
+# A sweeper on a 20-minute schedule is ~2,160 billed minutes a month on its
+# own — it would cost more than the CI it unblocks. Hanging off the dedupe
+# workflow means this runs only when Dependabot actually opens PRs: a handful
+# of times a week, seconds each.
+#
+# ## Scope
+#
+# Only runs whose head branch starts with `dependabot/`. This cannot approve a
+# held run on a human branch, which is the property that makes removing the
+# manual gate safe to automate: the thing being approved is a lockfile dedupe
+# of a bot's own branch, and CI has already passed on the commit underneath it.
+name: Approve Dependabot dedupe runs
+
+on:
+  workflow_run:
+    workflows: ['Dependabot dedupe']
+    types: [completed]
+
+permissions:
+  actions: write
+
+concurrency:
+  group: dependabot-approve-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+
+jobs:
+  approve:
+    name: Approve held runs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: startsWith(github.event.workflow_run.head_branch, 'dependabot/')
+    steps:
+      - name: Approve any run waiting on this branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+
+          # The dedupe job pushes near the end of its own run, so the held run
+          # may not exist yet when this fires. Poll briefly rather than racing.
+          # If dedupe found nothing to do it never pushed, there is no held run,
+          # and this exits quietly after the first pass.
+          approved=0
+          for attempt in $(seq 1 8); do
+            ids=$(gh api "repos/$REPO/actions/runs?branch=$BRANCH&status=action_required&per_page=50" \
+                    --jq '.workflow_runs[].id' 2>/dev/null || true)
+
+            for id in $ids; do
+              echo "Approving run $id on $BRANCH"
+              if ! gh api -X POST "repos/$REPO/actions/runs/$id/approve"; then
+                echo "::error::Could not approve run $id."
+                echo "::error::GITHUB_TOKEN may lack authority to approve workflow runs here."
+                echo "::error::If this is a 403, the fix is a PAT with 'actions: write' in a secret"
+                echo "::error::— not removing this check. A silent no-op approver is worse than none."
+                exit 1
+              fi
+              approved=$((approved + 1))
+            done
+
+            # Stop as soon as we have approved something; otherwise give the
+            # push a moment to register, up to ~2 minutes.
+            if [ "$approved" -gt 0 ]; then break; fi
+            sleep 15
+          done
+
+          if [ "$approved" -eq 0 ]; then
+            echo "No runs were waiting on $BRANCH — dedupe had nothing to push."
+          else
+            echo "Approved $approved run(s) on $BRANCH."
+          fi
