@@ -1,9 +1,10 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router/react-navigation'
+import { useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { Appearance, Platform, useColorScheme } from 'react-native'
 
-import { resolveThemePreference } from './dark-mode-flag'
+import { isLightOnlySurface, resolveThemePreference } from './dark-mode-flag'
 import { useIsomorphicLayoutEffect } from '@scf/core/hooks/useIsomorphicLayoutEffect'
 import { kvStorage } from '@scf/core/utils/platform'
 import { colors } from '@scaffald/ui/tokens'
@@ -166,7 +167,17 @@ export const useThemeSetting = () => {
   // Without the flag this returns 'light' for every preference, so production
   // behaves exactly as it did while the old hardcoded cast was here. See
   // ./dark-mode-flag.ts for why it is an env flag and not `__DEV__`.
-  const resolvedTheme = resolveThemePreference(context.current, context.systemTheme)
+  //
+  // Forced light on the anonymous surface (#953). Both readers of this hook —
+  // ThemeBridge, which drives @scaffald/ui's provider, and InnerProvider, which
+  // stamps <html data-theme> and the page background — go through here, so
+  // pinning it once is what keeps the ground and the content agreeing. Pinning
+  // only the background would have left themed components rendering dark on a
+  // light page.
+  const segments = useSegments()
+  const resolvedTheme = isLightOnlySurface(segments)
+    ? 'light'
+    : resolveThemePreference(context.current, context.systemTheme)
 
   const outputContext = {
     ...context,

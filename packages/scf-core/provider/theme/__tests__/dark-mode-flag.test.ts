@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { isDarkModeEnabled, resolveThemePreference } from '../dark-mode-flag'
+import { isDarkModeEnabled, isLightOnlySurface, resolveThemePreference } from '../dark-mode-flag'
 
 /**
  * The gate, tested without React.
@@ -88,5 +88,34 @@ describe('resolveThemePreference', () => {
       if (original === undefined) delete process.env.EXPO_PUBLIC_DARK_MODE
       else process.env.EXPO_PUBLIC_DARK_MODE = original
     }
+  })
+})
+
+describe('isLightOnlySurface', () => {
+  it('treats the root index route as light-only — that is the landing page', () => {
+    // expo-router reports `[]` for `/`.
+    expect(isLightOnlySurface([])).toBe(true)
+  })
+
+  it('covers the whole (public) group, not just the marketing screens', () => {
+    // (public) also holds public profiles, jobs, reviews and teams, and its
+    // _layout mounts MarketingNav above every one of them (#953).
+    expect(isLightOnlySurface(['(public)'])).toBe(true)
+    expect(isLightOnlySurface(['(public)', 'terms'])).toBe(true)
+    expect(isLightOnlySurface(['(public)', 'jobs', '[slug]'])).toBe(true)
+    expect(isLightOnlySurface(['(public)', 'users', '[id]'])).toBe(true)
+  })
+
+  it('leaves the app proper alone', () => {
+    for (const group of ['(protected)', '(admin)', '(auth)']) {
+      expect(isLightOnlySurface([group]), group).toBe(false)
+      expect(isLightOnlySurface([group, 'dashboard']), group).toBe(false)
+    }
+  })
+
+  it('matches on the group, not on a path substring', () => {
+    // A route merely named "public" somewhere deeper is not the group.
+    expect(isLightOnlySurface(['(protected)', 'public'])).toBe(false)
+    expect(isLightOnlySurface(['public'])).toBe(false)
   })
 })
