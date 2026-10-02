@@ -6,7 +6,7 @@ import {
 import { AlertCircle, RefreshCw } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, H3, H4, ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 interface NotificationDelivery {
   id: string
@@ -139,7 +139,7 @@ export function OfficeNotificationsConsole() {
           <Stack
             borderWidth={1}
             borderColor={colors.border[theme].default}
-            borderRadius={16}
+            borderRadius={borderRadius.l}
             style={{ overflow: 'hidden' }}
           >
             <Row style={{ backgroundColor: colors.bg[theme].subtle }} padding="sm" gap={12}>
@@ -230,7 +230,7 @@ export function OfficeNotificationsConsole() {
           <Stack
             borderWidth={1}
             borderColor={colors.border[theme].default}
-            borderRadius={16}
+            borderRadius={borderRadius.l}
             style={{ overflow: 'hidden' }}
           >
             <Row style={{ backgroundColor: colors.bg[theme].subtle }} padding="sm" gap={12}>
