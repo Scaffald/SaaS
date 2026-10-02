@@ -3,7 +3,7 @@ import { Briefcase, Mail, Shield, Users } from "lucide-react-native";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { ReactNode } from "react";
 import { Card, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
+import { borderRadius, colors } from '@scaffald/ui/tokens';
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>["teams"]["byId"];
 type TeamRecord = TeamDetailOutput["team"];
@@ -154,7 +154,7 @@ function StatItem({
       align="center"
       borderWidth={1}
       borderColor={colors.border[theme].default}
-      borderRadius={16}
+      borderRadius={borderRadius.l}
       paddingHorizontal={12}
       paddingVertical={8}
       style={{ backgroundColor: colors.bg[theme].muted }}
@@ -209,7 +209,7 @@ function Chip({
       borderWidth={1}
       borderColor={border}
       backgroundColor={background}
-      borderRadius={16}
+      borderRadius={borderRadius.l}
     >
       <Text color={textColor}>{children}</Text>
     </Row>

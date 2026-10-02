@@ -4,7 +4,7 @@ import { RefreshCw } from "lucide-react-native";
 import { type ReactNode, useMemo, useState } from "react";
 import { ResponsiveSelect, useThemeContext } from "@scaffald/ui";
 import { Button, Spinner, Text, Row, Stack } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
+import { borderRadius, colors } from '@scaffald/ui/tokens';
 
 interface TeamAnalyticsSummaryProps {
   teamId: string;
@@ -190,7 +190,7 @@ function StatTile({ label, children }: { label: string; children: ReactNode }) {
       gap={4}
       borderWidth={1}
       borderColor={colors.border[theme].default}
-      borderRadius={16}
+      borderRadius={borderRadius.l}
       paddingHorizontal={12}
       paddingVertical={8}
       style={{ backgroundColor: colors.bg[theme].subtle, minWidth: 140 }}

@@ -29,7 +29,7 @@ import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOpt
 import { AddTeamMemberModal } from './AddTeamMemberModal'
 import { RemoveMemberModal } from './RemoveMemberModal'
 import { TeamMemberRoleSelect } from './TeamMemberRoleSelect'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 interface TeamMembersListProps {
   teamId: string
@@ -337,7 +337,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
           gap={8}
           borderWidth={1}
           borderColor={colors.border[theme].default}
-          borderRadius={16}
+          borderRadius={borderRadius.l}
           padding="md"
           style={{ backgroundColor: colors.bg[theme].subtle }}
         >

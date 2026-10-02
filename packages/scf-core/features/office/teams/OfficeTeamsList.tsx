@@ -9,7 +9,7 @@ import { OfficePageLayout } from "../components/OfficePageLayout";
 import { QuickActionsWidget } from "../components/QuickActionsWidget";
 import { useTeams, useArchiveTeam } from "@scaffald/sdk/react";
 import type { Team } from "@scaffald/sdk";
-import { colors } from "@scaffald/ui/tokens";
+import { borderRadius, colors } from '@scaffald/ui/tokens';
 
 type TeamVisibility = (typeof TEAM_VISIBILITIES)[number];
 type TeamRoleKey = ReturnType<(typeof teamRoleKeySchema)["parse"]>;
@@ -185,7 +185,7 @@ export function OfficeTeamsList() {
               backgroundColor: colors.bg[theme].subtle,
               alignSelf: "flex-end",
               padding: 8,
-              borderRadius: 7,
+              borderRadius: borderRadius.l,
               shadowColor: colors.text[theme].tertiary,
               marginRight: 16,
               marginBottom: 16,

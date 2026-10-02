@@ -12,7 +12,7 @@ import {
   Stack,
   useThemeContext,
 } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
+import { borderRadius, colors } from '@scaffald/ui/tokens';
 
 type TeamAssignment = NonNullable<OfficeJob["teamAssignments"]>[number];
 
@@ -260,7 +260,7 @@ function StatusChip({ status }: { status: string }) {
       borderWidth={1}
       borderColor={border}
       backgroundColor={background}
-      borderRadius={16}
+      borderRadius={borderRadius.l}
       accessible
       accessibilityRole="text"
       accessibilityLabel={`Job status ${normalized}`}
@@ -295,7 +295,7 @@ function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
       borderWidth={1}
       borderColor={border}
       backgroundColor={background}
-      borderRadius={16}
+      borderRadius={borderRadius.l}
       accessible
       accessibilityRole="text"
       accessibilityLabel={`${name}${isPrimary ? " primary team" : ""}`}

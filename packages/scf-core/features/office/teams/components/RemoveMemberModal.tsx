@@ -9,7 +9,7 @@ import {
   Stack,
   useThemeContext,
 } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
+import { borderRadius, colors } from '@scaffald/ui/tokens';
 
 interface RemoveMemberModalProps {
   open: boolean;
@@ -107,7 +107,7 @@ export function RemoveMemberModal({
           gap={8}
           style={{ backgroundColor: colors.bg[theme].subtle }}
           padding="sm"
-          borderRadius={16}
+          borderRadius={borderRadius.l}
         >
           <Text>What happens next?</Text>
           <Text style={{ color: colors.text[theme].secondary }}>
