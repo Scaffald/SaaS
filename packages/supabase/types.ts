@@ -8452,6 +8452,7 @@ export type Database = {
           succeeded_at: string | null
           success_fee_id: string | null
           transaction_type: string
+          updated_at: string
           user_id: string | null
         }
         Insert: {
@@ -8472,6 +8473,7 @@ export type Database = {
           succeeded_at?: string | null
           success_fee_id?: string | null
           transaction_type: string
+          updated_at?: string
           user_id?: string | null
         }
         Update: {
@@ -8492,6 +8494,7 @@ export type Database = {
           succeeded_at?: string | null
           success_fee_id?: string | null
           transaction_type?: string
+          updated_at?: string
           user_id?: string | null
         }
         Relationships: [
