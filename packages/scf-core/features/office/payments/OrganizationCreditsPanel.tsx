@@ -30,9 +30,9 @@ import { borderRadius, colors } from '@scaffald/ui/tokens';
  *
  * To restore deposits, the crediting has to exist first: port it from
  * trpc/routers/payments.router.ts into the deployed api and fire it on a
- * CONFIRMED payment, not at intent creation. `depositCredits` is deliberately
- * left in the SDK and the API — nothing about the server contract changes
- * here, only that this screen stops inviting it.
+ * CONFIRMED payment, not at intent creation. `depositCredits` has since been
+ * removed from the SDK and the API as well (#948), so there is no longer any
+ * way to start one of these charges from anywhere.
  */
 type OrganizationCreditsPanelProps = {
   organizationId: string;
