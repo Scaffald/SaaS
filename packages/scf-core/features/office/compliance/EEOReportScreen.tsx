@@ -22,7 +22,7 @@ import {
   Text,
   useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import {
   BarChart3,
   Download,
@@ -130,7 +130,7 @@ function AdverseImpactBadge({ ratio }: { ratio: number | null }) {
   const { theme } = useThemeContext()
 
   if (ratio === null) {
-    return <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>—</Text>
+    return <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].tertiary }}>—</Text>
   }
 
   const isFlagged = ratio < 0.8
@@ -139,7 +139,7 @@ function AdverseImpactBadge({ ratio }: { ratio: number | null }) {
       style={{
         paddingHorizontal: 8,
         paddingVertical: 2,
-        borderRadius: 7,
+        borderRadius: borderRadius.l,
         backgroundColor: isFlagged
           ? theme === 'dark'
             ? colors.error[900]
@@ -151,7 +151,7 @@ function AdverseImpactBadge({ ratio }: { ratio: number | null }) {
     >
       <Text
         style={{
-          fontSize: 12,
+          fontSize: fontSize.sm,
           fontWeight: '600',
           color: isFlagged ? colors.fg[theme].error : colors.fg[theme].success,
         }}
@@ -274,7 +274,7 @@ export function EEOReportScreen() {
                   {report.coverage.selfIdentified} of {report.coverage.totalApplications} applicants
                   self-identified
                 </Text>
-                <Text style={{ fontSize: 13, color: colors.text[theme].tertiary }}>
+                <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].tertiary }}>
                   {report.coverage.selfIdentified === 0
                     ? 'No EEO self-identification has been collected, so this report has nothing to summarise. The figures below are real and read zero.'
                     : `Self-identification is voluntary. Groups smaller than ${report.minCellSize} applicants are suppressed so individuals cannot be identified.`}
@@ -314,14 +314,14 @@ export function EEOReportScreen() {
                 style={{
                   paddingHorizontal: 16,
                   paddingVertical: 8,
-                  borderRadius: 7,
+                  borderRadius: borderRadius.l,
                   backgroundColor:
                     period === p.value ? colors.fg[theme].active : colors.bg[theme].subtle,
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 13,
+                    fontSize: fontSize.sm,
                     fontWeight: '500',
                     color: period === p.value ? '#fff' : colors.text[theme].secondary,
                   }}
@@ -378,13 +378,13 @@ export function EEOReportScreen() {
                           <Text
                             style={{
                               fontWeight: '600',
-                              fontSize: 15,
+                              fontSize: fontSize.md,
                               color: colors.text[theme].primary,
                             }}
                           >
                             {categoryLabel(group.jobGroup)}
                           </Text>
-                          <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>
+                          <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].tertiary }}>
                             {group.totalApplications} applicants • {group.totalHired} hired
                           </Text>
                         </Stack>
@@ -396,7 +396,7 @@ export function EEOReportScreen() {
                           <Text
                             style={{
                               flex: 2,
-                              fontSize: 11,
+                              fontSize: fontSize.xxs,
                               fontWeight: '600',
                               color: colors.text[theme].tertiary,
                             }}
@@ -406,7 +406,7 @@ export function EEOReportScreen() {
                           <Text
                             style={{
                               flex: 1,
-                              fontSize: 11,
+                              fontSize: fontSize.xxs,
                               fontWeight: '600',
                               color: colors.text[theme].tertiary,
                               textAlign: 'center',
@@ -417,7 +417,7 @@ export function EEOReportScreen() {
                           <Text
                             style={{
                               flex: 1,
-                              fontSize: 11,
+                              fontSize: fontSize.xxs,
                               fontWeight: '600',
                               color: colors.text[theme].tertiary,
                               textAlign: 'center',
@@ -428,7 +428,7 @@ export function EEOReportScreen() {
                           <Text
                             style={{
                               flex: 1,
-                              fontSize: 11,
+                              fontSize: fontSize.xxs,
                               fontWeight: '600',
                               color: colors.text[theme].tertiary,
                               textAlign: 'center',
@@ -439,7 +439,7 @@ export function EEOReportScreen() {
                           <Text
                             style={{
                               flex: 1,
-                              fontSize: 11,
+                              fontSize: fontSize.xxs,
                               fontWeight: '600',
                               color: colors.text[theme].tertiary,
                               textAlign: 'center',
@@ -456,7 +456,7 @@ export function EEOReportScreen() {
                           <Text
                             style={{
                               flex: 1,
-                              fontSize: 11,
+                              fontSize: fontSize.xxs,
                               fontWeight: '600',
                               color: colors.text[theme].tertiary,
                               textAlign: 'center',
@@ -473,16 +473,16 @@ export function EEOReportScreen() {
                             style={{
                               paddingVertical: 6,
                               paddingHorizontal: 4,
-                              borderRadius: 4,
+                              borderRadius: borderRadius.xs,
                               backgroundColor: colors.bg[theme].subtle,
                             }}
                           >
                             <Text
-                              style={{ flex: 2, fontSize: 13, color: colors.text[theme].primary }}
+                              style={{ flex: 2, fontSize: fontSize.sm, color: colors.text[theme].primary }}
                             >
                               {categoryLabel(cat.category)}
                               {cat.suppressed && (
-                                <Text style={{ fontSize: 11, color: colors.text[theme].tertiary }}>
+                                <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}>
                                   {'  '}(suppressed)
                                 </Text>
                               )}
@@ -490,7 +490,7 @@ export function EEOReportScreen() {
                             <Text
                               style={{
                                 flex: 1,
-                                fontSize: 13,
+                                fontSize: fontSize.sm,
                                 color: colors.text[theme].secondary,
                                 textAlign: 'center',
                               }}
@@ -500,7 +500,7 @@ export function EEOReportScreen() {
                             <Text
                               style={{
                                 flex: 1,
-                                fontSize: 13,
+                                fontSize: fontSize.sm,
                                 color: colors.text[theme].secondary,
                                 textAlign: 'center',
                               }}
@@ -510,7 +510,7 @@ export function EEOReportScreen() {
                             <Text
                               style={{
                                 flex: 1,
-                                fontSize: 13,
+                                fontSize: fontSize.sm,
                                 color: colors.text[theme].secondary,
                                 textAlign: 'center',
                               }}
@@ -520,7 +520,7 @@ export function EEOReportScreen() {
                             <Text
                               style={{
                                 flex: 1,
-                                fontSize: 13,
+                                fontSize: fontSize.sm,
                                 color: colors.text[theme].secondary,
                                 textAlign: 'center',
                               }}
@@ -552,7 +552,7 @@ export function EEOReportScreen() {
                 >
                   <Row gap={12} align="center">
                     <Info size={16} color={colors.icon[theme].default} />
-                    <Text style={{ flex: 1, fontSize: 13, color: colors.text[theme].secondary }}>
+                    <Text style={{ flex: 1, fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
                       The 4/5ths (80%) rule: A selection rate for any group that is less than 80% of
                       the highest group's rate may indicate adverse impact.
                     </Text>
@@ -563,7 +563,7 @@ export function EEOReportScreen() {
                 <Card variant="glass" padding="md">
                   <Stack gap={12}>
                     <Text
-                      style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}
+                      style={{ fontWeight: '600', fontSize: fontSize.md, color: colors.text[theme].primary }}
                     >
                       Gender Analysis
                     </Text>
@@ -571,7 +571,7 @@ export function EEOReportScreen() {
                       <Text
                         style={{
                           flex: 2,
-                          fontSize: 11,
+                          fontSize: fontSize.xxs,
                           fontWeight: '600',
                           color: colors.text[theme].tertiary,
                         }}
@@ -581,7 +581,7 @@ export function EEOReportScreen() {
                       <Text
                         style={{
                           flex: 1,
-                          fontSize: 11,
+                          fontSize: fontSize.xxs,
                           fontWeight: '600',
                           color: colors.text[theme].tertiary,
                           textAlign: 'center',
@@ -592,7 +592,7 @@ export function EEOReportScreen() {
                       <Text
                         style={{
                           flex: 1,
-                          fontSize: 11,
+                          fontSize: fontSize.xxs,
                           fontWeight: '600',
                           color: colors.text[theme].tertiary,
                           textAlign: 'center',
@@ -603,7 +603,7 @@ export function EEOReportScreen() {
                       <Text
                         style={{
                           flex: 1,
-                          fontSize: 11,
+                          fontSize: fontSize.xxs,
                           fontWeight: '600',
                           color: colors.text[theme].tertiary,
                           textAlign: 'center',
@@ -614,7 +614,7 @@ export function EEOReportScreen() {
                       <Text
                         style={{
                           flex: 1,
-                          fontSize: 11,
+                          fontSize: fontSize.xxs,
                           fontWeight: '600',
                           color: colors.text[theme].tertiary,
                           textAlign: 'center',
@@ -633,14 +633,14 @@ export function EEOReportScreen() {
                         style={{
                           paddingVertical: 6,
                           paddingHorizontal: 4,
-                          borderRadius: 4,
+                          borderRadius: borderRadius.xs,
                           backgroundColor: colors.bg[theme].subtle,
                         }}
                       >
-                        <Text style={{ flex: 2, fontSize: 13, color: colors.text[theme].primary }}>
+                        <Text style={{ flex: 2, fontSize: fontSize.sm, color: colors.text[theme].primary }}>
                           {categoryLabel(row.category)}
                           {row.suppressed && (
-                            <Text style={{ fontSize: 11, color: colors.text[theme].tertiary }}>
+                            <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}>
                               {'  '}(suppressed)
                             </Text>
                           )}
@@ -648,7 +648,7 @@ export function EEOReportScreen() {
                         <Text
                           style={{
                             flex: 1,
-                            fontSize: 13,
+                            fontSize: fontSize.sm,
                             color: colors.text[theme].secondary,
                             textAlign: 'center',
                           }}
@@ -658,7 +658,7 @@ export function EEOReportScreen() {
                         <Text
                           style={{
                             flex: 1,
-                            fontSize: 13,
+                            fontSize: fontSize.sm,
                             color: colors.text[theme].secondary,
                             textAlign: 'center',
                           }}
@@ -668,7 +668,7 @@ export function EEOReportScreen() {
                         <Text
                           style={{
                             flex: 1,
-                            fontSize: 13,
+                            fontSize: fontSize.sm,
                             color: colors.text[theme].secondary,
                             textAlign: 'center',
                           }}
@@ -687,7 +687,7 @@ export function EEOReportScreen() {
                 <Card variant="glass" padding="md">
                   <Stack gap={12}>
                     <Text
-                      style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}
+                      style={{ fontWeight: '600', fontSize: fontSize.md, color: colors.text[theme].primary }}
                     >
                       Veteran Status Analysis
                     </Text>
@@ -698,14 +698,14 @@ export function EEOReportScreen() {
                         style={{
                           paddingVertical: 6,
                           paddingHorizontal: 4,
-                          borderRadius: 4,
+                          borderRadius: borderRadius.xs,
                           backgroundColor: colors.bg[theme].subtle,
                         }}
                       >
-                        <Text style={{ flex: 2, fontSize: 13, color: colors.text[theme].primary }}>
+                        <Text style={{ flex: 2, fontSize: fontSize.sm, color: colors.text[theme].primary }}>
                           {categoryLabel(row.category)}
                           {row.suppressed && (
-                            <Text style={{ fontSize: 11, color: colors.text[theme].tertiary }}>
+                            <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}>
                               {'  '}(suppressed)
                             </Text>
                           )}
@@ -713,7 +713,7 @@ export function EEOReportScreen() {
                         <Text
                           style={{
                             flex: 1,
-                            fontSize: 13,
+                            fontSize: fontSize.sm,
                             color: colors.text[theme].secondary,
                             textAlign: 'center',
                           }}
@@ -723,7 +723,7 @@ export function EEOReportScreen() {
                         <Text
                           style={{
                             flex: 1,
-                            fontSize: 13,
+                            fontSize: fontSize.sm,
                             color: colors.text[theme].secondary,
                             textAlign: 'center',
                           }}
@@ -733,7 +733,7 @@ export function EEOReportScreen() {
                         <Text
                           style={{
                             flex: 1,
-                            fontSize: 13,
+                            fontSize: fontSize.sm,
                             color: colors.text[theme].secondary,
                             textAlign: 'center',
                           }}
@@ -760,7 +760,7 @@ export function EEOReportScreen() {
                 >
                   <Row gap={12} align="center">
                     <PieChart size={16} color={colors.icon[theme].default} />
-                    <Text style={{ flex: 1, fontSize: 13, color: colors.text[theme].secondary }}>
+                    <Text style={{ flex: 1, fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
                       OFCCP Applicant Flow Log — Tracks the demographic composition of applicants at
                       each stage of the hiring pipeline for federal contractor compliance.
                     </Text>
@@ -777,7 +777,7 @@ export function EEOReportScreen() {
                         <Text
                           style={{
                             fontWeight: '600',
-                            fontSize: 15,
+                            fontSize: fontSize.md,
                             color: colors.text[theme].primary,
                           }}
                         >
@@ -795,20 +795,20 @@ export function EEOReportScreen() {
                               <Row justify="space-between">
                                 <Text
                                   style={{
-                                    fontSize: 13,
+                                    fontSize: fontSize.sm,
                                     fontWeight: '500',
                                     color: colors.text[theme].primary,
                                   }}
                                 >
                                   {stage}
                                 </Text>
-                                <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>
+                                <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].tertiary }}>
                                   {total} total
                                 </Text>
                               </Row>
                               <Row
                                 gap={1}
-                                style={{ height: 24, borderRadius: 4, overflow: 'hidden' }}
+                                style={{ height: 24, borderRadius: borderRadius.xs, overflow: 'hidden' }}
                               >
                                 {group.categories.map((cat) => {
                                   const value = cat[key]
@@ -828,7 +828,7 @@ export function EEOReportScreen() {
                                     >
                                       {pct > 10 && (
                                         <Text
-                                          style={{ fontSize: 10, color: '#fff', fontWeight: '600' }}
+                                          style={{ fontSize: fontSize.xxs, color: '#fff', fontWeight: '600' }}
                                         >
                                           {value}
                                         </Text>
@@ -850,11 +850,11 @@ export function EEOReportScreen() {
                                   style={{
                                     width: 8,
                                     height: 8,
-                                    borderRadius: 4,
+                                    borderRadius: borderRadius.max,
                                     backgroundColor: categoryColor(cat.category),
                                   }}
                                 />
-                                <Text style={{ fontSize: 11, color: colors.text[theme].tertiary }}>
+                                <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}>
                                   {categoryLabel(cat.category)}
                                 </Text>
                               </Row>
