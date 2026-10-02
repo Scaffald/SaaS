@@ -332,7 +332,6 @@ app.post(
 
     let successFee: SuccessFeeRecord;
     let calculatedSchedule = schedule;
-    let createdNewSuccessFee = false;
 
     if (!latest) {
       const { data: inserted, error: insertError } = await supabaseAdmin
@@ -372,7 +371,6 @@ app.post(
       }
 
       successFee = inserted as SuccessFeeRecord;
-      createdNewSuccessFee = true;
     } else {
       successFee = latest as SuccessFeeRecord;
       calculatedSchedule = scheduleFromRecord(latest as SuccessFeeRecord);
@@ -392,7 +390,6 @@ app.post(
     try {
       const stripe = await loadStripeClient(supabaseAdmin);
       let intent: Stripe.PaymentIntent;
-      let createdNewIntent = false;
 
       if (successFee.upfront_payment_intent_id) {
         intent = await stripe.paymentIntents.retrieve(
@@ -421,24 +418,45 @@ app.post(
             error: `Failed to link payment intent: ${updateError.message}`,
           }, 500);
         }
-
-        createdNewIntent = true;
       }
 
-      if (createdNewSuccessFee || createdNewIntent) {
-        await supabaseAdmin
-          .schema("core")
-          .from("payment_transactions")
-          .insert({
-            organization_id: successFee.organization_id,
-            user_id: user.id ?? null,
-            amount_cents: calculatedSchedule.upfrontAmountCents,
-            currency: "usd",
-            transaction_type: "success_fee_upfront",
-            success_fee_id: successFee.id,
-            stripe_payment_intent_id: intent.id,
-            metadata: { stage: "upfront" },
-          });
+      // Every intent gets a row before its client_secret is handed out (#948).
+      //
+      // This used to be a bare `await` gated on whether this call had just
+      // created the fee or the intent, which left two holes. The error was
+      // discarded, so a
+      // failed insert still returned a client_secret and the customer could pay
+      // with nothing recorded. And the retrieve branch — a second call for an
+      // intent that already exists — skipped the insert entirely, so if the
+      // first call's insert had failed, the retry handed out a secret for an
+      // intent that still had no row.
+      //
+      // Unconditional and idempotent instead: `payment_transactions` has a
+      // unique index on `stripe_payment_intent_id`
+      // (payment_transactions_stripe_payment_intent_id_key), so an upsert that
+      // ignores duplicates is a no-op when the row is already there and repairs
+      // the gap when it is not.
+      const { error: txError } = await supabaseAdmin
+        .schema("core")
+        .from("payment_transactions")
+        .upsert({
+          organization_id: successFee.organization_id,
+          user_id: user.id ?? null,
+          amount_cents: calculatedSchedule.upfrontAmountCents,
+          currency: "usd",
+          transaction_type: "success_fee_upfront",
+          success_fee_id: successFee.id,
+          stripe_payment_intent_id: intent.id,
+          metadata: { stage: "upfront" },
+        }, { onConflict: "stripe_payment_intent_id", ignoreDuplicates: true });
+
+      // Fail rather than return the secret: with no client_secret the intent is
+      // never confirmed, so no money moves. Same invariant as id-verification
+      // in #949 — there is a row for every charge, not usually a row.
+      if (txError) {
+        return c.json({
+          error: `Failed to record payment intent: ${txError.message}`,
+        }, 500);
       }
 
       return c.json({
@@ -538,7 +556,7 @@ app.post(
         }, 500);
       }
 
-      await supabaseAdmin
+      const { error: txUpdateError } = await supabaseAdmin
         .schema("core")
         .from("payment_transactions")
         .update({
@@ -550,6 +568,18 @@ app.post(
           },
         })
         .eq("stripe_payment_intent_id", paymentIntentId);
+
+      // Not fatal, but no longer silent (#948). The fee is already marked
+      // upfront_paid above and the customer has paid, so failing the request
+      // here would be worse than a ledger row that lags — the webhook or a
+      // reconciliation sweep can still settle it. This was a bare `await`,
+      // so a failure returned 200 with the ledger quietly disagreeing with
+      // success_fees about whether the money arrived.
+      if (txUpdateError) {
+        console.error(
+          `[success-fees] upfront paid but could not advance payment_transactions for ${paymentIntentId}: ${txUpdateError.message}`,
+        );
+      }
 
       // Create hire agreement (non-fatal if it fails)
       try {
