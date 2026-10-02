@@ -152,12 +152,17 @@ export default defineConfig({
         find: "@unicornlove/ui",
         replacement: resolve(workspaceRoot, "packages/ui/src"),
       },
+      // The REAL tokens, not a stub. `packages/ui/src/tokens` is plain data
+      // modules — no react-native, expo, Platform or Dimensions import between
+      // them — so there was never a technical reason to stub them, and the stub
+      // that existed had drifted from production in both directions (#944): its
+      // `borderRadius` was still the pre-#621 scale, and it carried a `slate`
+      // ramp the real tokens do not have, so `colors.slate[...]` passed every
+      // test and was undefined in the app. Guarded by
+      // packages/scf-core/__tests__/tokens-alias-is-real.test.ts.
       {
         find: "@scaffald/ui/tokens",
-        replacement: resolve(
-          workspaceRoot,
-          "tests/infrastructure/vitest/mocks/beyond-ui-tokens.ts",
-        ),
+        replacement: resolve(workspaceRoot, "packages/ui/src/tokens"),
       },
       {
         find: "@scaffald/ui",
