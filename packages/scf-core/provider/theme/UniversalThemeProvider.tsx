@@ -2,6 +2,8 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router/react-naviga
 import { StatusBar } from 'expo-status-bar'
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { Appearance, Platform, useColorScheme } from 'react-native'
+
+import { resolveThemePreference } from './dark-mode-flag'
 import { useIsomorphicLayoutEffect } from '@scf/core/hooks/useIsomorphicLayoutEffect'
 import { kvStorage } from '@scf/core/utils/platform'
 import { colors } from '@scaffald/ui/tokens'
@@ -160,10 +162,11 @@ export const useThemeSetting = () => {
     throw new Error('useThemeSetting should be used within the context provider.')
   }
 
-  // TODO: re-enable when dark mode is ready — remove this cast and restore the line below
-  const resolvedTheme = 'light' as 'light' | 'dark'
-  // const resolvedTheme =
-  //   context.current === 'system' ? context.systemTheme : (context.current ?? 'system')
+  // Dark resolution is restored, gated on EXPO_PUBLIC_DARK_MODE=1 (#833 part 1).
+  // Without the flag this returns 'light' for every preference, so production
+  // behaves exactly as it did while the old hardcoded cast was here. See
+  // ./dark-mode-flag.ts for why it is an env flag and not `__DEV__`.
+  const resolvedTheme = resolveThemePreference(context.current, context.systemTheme)
 
   const outputContext = {
     ...context,
@@ -189,5 +192,8 @@ export const useThemeSetting = () => {
 
 export const useRootTheme = () => {
   const context = useThemeSetting()
-  return [context.current === 'system' ? context.systemTheme : context.current, context.set]
+  // The same resolution as the hook, through the same helper — open-coding it
+  // again is how the two drift, and this one was already reachable while the
+  // hook was hardcoded to light.
+  return [resolveThemePreference(context.current, context.systemTheme), context.set]
 }
