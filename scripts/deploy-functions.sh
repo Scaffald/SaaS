@@ -51,6 +51,12 @@ pnpx supabase secrets set --project-ref "$PROJECT_REF" \
 #    webhooks-email receives Resend delivery events (Svix-signed).
 #    All notify functions self-authenticate against the service role key —
 #    see functions/_shared/notifications/auth.ts.
+#
+#    stripe-webhook and payments-reconcile were added in #948 (items 3 and 5).
+#    stripe-webhook had never been in this list, so no environment had it: the
+#    function that advances payment_transactions and success_fees when Stripe
+#    says a charge landed was not deployed anywhere, and nothing said so.
+#    payments-reconcile is its backstop, driven by pg_cron (migration 361).
 echo
 echo "→ Deploying edge functions…"
 pnpx supabase functions deploy \
@@ -59,6 +65,7 @@ pnpx supabase functions deploy \
   notify-digest-daily notify-digest-weekly \
   notify-background-check-expiration notify-id-verification-expiration \
   send-team-invitation webhooks-email \
+  stripe-webhook payments-reconcile \
   --project-ref "$PROJECT_REF" \
   --use-api
 

@@ -203,6 +203,8 @@ verify_jwt = false
 verify_jwt = false
 [functions.notify-send-worker]
 verify_jwt = false
+[functions.payments-reconcile]
+verify_jwt = false
 [functions.persona-webhook]
 verify_jwt = false
 [functions.send-team-invitation]

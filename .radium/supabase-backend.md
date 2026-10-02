@@ -63,6 +63,29 @@ RLS is enabled on all tables. Every new table must include:
 2. At minimum: a `service_role` full-access policy and user-scoped select/insert policies
 3. Use `auth.uid()` for user-scoped policies
 
+### A `set_updated_at` trigger needs the column, and nothing tells you
+
+`core.set_updated_at()` assigns `NEW.updated_at`. Attach it to a table that has
+no such column and every UPDATE raises
+
+```
+record "new" has no field "updated_at"
+```
+
+and rolls back. The table reads fine, inserts fine, and cannot be updated at
+all.
+
+Migration 095 did this to `core.payment_transactions`: the `CREATE TABLE`
+omitted `updated_at`, the trigger was attached anyway, and no row in the
+payment ledger could ever leave its `'pending'` default — in any environment.
+It survived because the table was empty (Stripe unconfigured, #928) and because
+the handlers running that UPDATE discarded its error. Fixed in migration 361.
+
+`scripts/check-migrations.mjs` now fails on any table with the trigger and no
+column, so this specific shape cannot come back. The general lesson is the one
+to carry: a trigger is not verified by the migration applying cleanly. Anything
+a trigger touches needs one real write in a test.
+
 ### Never destructure only `data` from a Supabase query
 
 Two bugs shipped because the `error` half was dropped on the floor, and both

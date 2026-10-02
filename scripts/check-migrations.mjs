@@ -1,11 +1,13 @@
 #!/usr/bin/env node
-// Migration invariants. Three checks, all cheap, all earned.
+// Migration invariants. Four checks, all cheap, all earned.
 //
 // 1. No two migrations share a number.
 // 2. A migration above the baseline must declare search_path on any function
 //    it creates.
 // 3. Every core table a migration creates must be granted to service_role by
 //    that migration or a later one.
+// 4. Every table carrying a set_updated_at trigger must actually have an
+//    updated_at column.
 //
 // Why (#468): `308_function_search_path.sql` set a search_path on every owned
 // function in core/data/community/onet/public (Supabase advisor #172). Ten
@@ -34,22 +36,22 @@
 // depends on becomes whatever the filesystem says. Concurrent branches make
 // this likely rather than exotic.
 
-import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
-const MIGRATIONS = 'packages/supabase/migrations';
+const MIGRATIONS = 'packages/supabase/migrations'
 
 // 353 is the migration that cleared the backlog. Anything newer is new work and
 // must declare its own search_path. Raise this only when another sweep lands.
-const BASELINE = 353;
+const BASELINE = 353
 
 // The schemas 308 covered. A function created in some other schema is out of
 // scope here rather than silently exempt — widen this list deliberately.
-const OWNED = ['core', 'data', 'community', 'onet', 'public'];
+const OWNED = ['core', 'data', 'community', 'onet', 'public']
 
 // `CREATE [OR REPLACE] FUNCTION [schema.]name(` — capturing the optional schema.
 const CREATE_FN =
-  /\bcreate\s+(?:or\s+replace\s+)?function\s+(?:([a-z_][a-z0-9_]*)\s*\.\s*)?([a-z_][a-z0-9_]*)\s*\(/gi;
+  /\bcreate\s+(?:or\s+replace\s+)?function\s+(?:([a-z_][a-z0-9_]*)\s*\.\s*)?([a-z_][a-z0-9_]*)\s*\(/gi
 
 /**
  * The header of a function definition: everything from CREATE FUNCTION up to
@@ -58,34 +60,34 @@ const CREATE_FN =
  * the body — a function whose *body* mentions search_path has not declared one.
  */
 function header(source, fromIndex) {
-  const rest = source.slice(fromIndex);
-  const body = rest.search(/\bAS\s+(\$[a-z_]*\$|')/i);
-  return body === -1 ? rest : rest.slice(0, body);
+  const rest = source.slice(fromIndex)
+  const body = rest.search(/\bAS\s+(\$[a-z_]*\$|')/i)
+  return body === -1 ? rest : rest.slice(0, body)
 }
 
-const offenders = [];
-let coreTablesChecked = 0;
+const offenders = []
+let coreTablesChecked = 0
 
 const files = readdirSync(MIGRATIONS)
   .filter((f) => f.endsWith('.sql'))
   .filter((f) => {
-    const n = Number.parseInt(f.slice(0, f.indexOf('_')), 10);
-    return Number.isFinite(n) && n > BASELINE;
+    const n = Number.parseInt(f.slice(0, f.indexOf('_')), 10)
+    return Number.isFinite(n) && n > BASELINE
   })
-  .sort();
+  .sort()
 
 for (const file of files) {
-  const source = readFileSync(join(MIGRATIONS, file), 'utf8');
+  const source = readFileSync(join(MIGRATIONS, file), 'utf8')
 
   for (const m of source.matchAll(CREATE_FN)) {
-    const schema = (m[1] ?? 'public').toLowerCase();
-    if (!OWNED.includes(schema)) continue;
+    const schema = (m[1] ?? 'public').toLowerCase()
+    if (!OWNED.includes(schema)) continue
 
-    const head = header(source, m.index);
-    if (/\bset\s+search_path\s*=/i.test(head)) continue;
+    const head = header(source, m.index)
+    if (/\bset\s+search_path\s*=/i.test(head)) continue
 
-    const line = source.slice(0, m.index).split('\n').length;
-    offenders.push(`${file}:${line}  ${schema}.${m[2]}`);
+    const line = source.slice(0, m.index).split('\n').length
+    offenders.push(`${file}:${line}  ${schema}.${m[2]}`)
   }
 }
 
@@ -125,17 +127,18 @@ for (const file of files) {
 // tables there are granted automatically; core has no such default, which is
 // precisely why this keeps happening to core.
 
-const CORE_CREATE =
-  /\bcreate\s+table\s+(?:if\s+not\s+exists\s+)?core\.([a-z_][a-z0-9_]*)/gi;
-const CORE_INTO = /\balter\s+table\s+(?:if\s+exists\s+)?[a-z_]+\.([a-z_][a-z0-9_]*)\s+set\s+schema\s+core\b/gi;
-const CORE_OUT = /\balter\s+table\s+(?:if\s+exists\s+)?core\.([a-z_][a-z0-9_]*)\s+set\s+schema\s+(?!core\b)[a-z_]+/gi;
-const CORE_DROP = /\bdrop\s+table\s+(?:if\s+exists\s+)?core\.([a-z_][a-z0-9_]*)/gi;
+const CORE_CREATE = /\bcreate\s+table\s+(?:if\s+not\s+exists\s+)?core\.([a-z_][a-z0-9_]*)/gi
+const CORE_INTO =
+  /\balter\s+table\s+(?:if\s+exists\s+)?[a-z_]+\.([a-z_][a-z0-9_]*)\s+set\s+schema\s+core\b/gi
+const CORE_OUT =
+  /\balter\s+table\s+(?:if\s+exists\s+)?core\.([a-z_][a-z0-9_]*)\s+set\s+schema\s+(?!core\b)[a-z_]+/gi
+const CORE_DROP = /\bdrop\s+table\s+(?:if\s+exists\s+)?core\.([a-z_][a-z0-9_]*)/gi
 const CORE_RENAME =
-  /\balter\s+table\s+(?:if\s+exists\s+)?core\.([a-z_][a-z0-9_]*)\s+rename\s+to\s+([a-z_][a-z0-9_]*)/gi;
+  /\balter\s+table\s+(?:if\s+exists\s+)?core\.([a-z_][a-z0-9_]*)\s+rename\s+to\s+([a-z_][a-z0-9_]*)/gi
 // `[^;]` keeps a match inside one statement, so it cannot run into the next
 // GRANT's role and claim a table that was never named.
 const CORE_GRANT =
-  /\bgrant\s+[^;]*?\son\s+(?:table\s+)?core\.([a-z_][a-z0-9_]*)\s[^;]*?service_role/gis;
+  /\bgrant\s+[^;]*?\son\s+(?:table\s+)?core\.([a-z_][a-z0-9_]*)\s[^;]*?service_role/gis
 
 /**
  * Tables known to lack the grant. Shrink-only, like BASELINE_BROKEN in
@@ -143,52 +146,52 @@ const CORE_GRANT =
  * so the number can only go down. It is empty, and migration 357 is what
  * emptied it.
  */
-const BASELINE_UNGRANTED = [];
+const BASELINE_UNGRANTED = []
 
 {
   const all = readdirSync(MIGRATIONS)
     .filter((f) => f.endsWith('.sql'))
     .map((f) => ({ file: f, n: Number.parseInt(f.slice(0, f.indexOf('_')), 10) }))
     .filter(({ n }) => Number.isFinite(n))
-    .sort((a, b) => a.n - b.n);
+    .sort((a, b) => a.n - b.n)
 
-  const createdAt = new Map();
-  const grantedAt = new Map();
-  const gone = new Set();
+  const createdAt = new Map()
+  const grantedAt = new Map()
+  const gone = new Set()
 
   for (const { file, n } of all) {
     // Line comments only. A grant inside a DO block still counts as a grant —
     // whether it *ran* is the ordering question above, not a parsing one.
-    const sql = readFileSync(join(MIGRATIONS, file), 'utf8').replace(/--[^\n]*/g, '');
+    const sql = readFileSync(join(MIGRATIONS, file), 'utf8').replace(/--[^\n]*/g, '')
 
     for (const m of sql.matchAll(CORE_CREATE)) {
-      if (!createdAt.has(m[1].toLowerCase())) createdAt.set(m[1].toLowerCase(), n);
+      if (!createdAt.has(m[1].toLowerCase())) createdAt.set(m[1].toLowerCase(), n)
     }
     for (const m of sql.matchAll(CORE_INTO)) {
-      if (!createdAt.has(m[1].toLowerCase())) createdAt.set(m[1].toLowerCase(), n);
+      if (!createdAt.has(m[1].toLowerCase())) createdAt.set(m[1].toLowerCase(), n)
     }
     for (const m of sql.matchAll(CORE_GRANT)) {
-      const t = m[1].toLowerCase();
-      if (!grantedAt.has(t)) grantedAt.set(t, []);
-      grantedAt.get(t).push(n);
+      const t = m[1].toLowerCase()
+      if (!grantedAt.has(t)) grantedAt.set(t, [])
+      grantedAt.get(t).push(n)
     }
-    for (const m of sql.matchAll(CORE_DROP)) gone.add(m[1].toLowerCase());
-    for (const m of sql.matchAll(CORE_OUT)) gone.add(m[1].toLowerCase());
-    for (const m of sql.matchAll(CORE_RENAME)) gone.add(m[1].toLowerCase());
+    for (const m of sql.matchAll(CORE_DROP)) gone.add(m[1].toLowerCase())
+    for (const m of sql.matchAll(CORE_OUT)) gone.add(m[1].toLowerCase())
+    for (const m of sql.matchAll(CORE_RENAME)) gone.add(m[1].toLowerCase())
   }
 
   const ungranted = [...createdAt.entries()]
     .filter(([t]) => !gone.has(t))
     .filter(([t, created]) => !(grantedAt.get(t) ?? []).some((g) => g >= created))
     .map(([t]) => t)
-    .sort();
+    .sort()
 
-  const isNew = ungranted.filter((t) => !BASELINE_UNGRANTED.includes(t));
-  const isStale = BASELINE_UNGRANTED.filter((t) => !ungranted.includes(t));
+  const isNew = ungranted.filter((t) => !BASELINE_UNGRANTED.includes(t))
+  const isStale = BASELINE_UNGRANTED.filter((t) => !ungranted.includes(t))
 
   if (isNew.length > 0) {
-    console.error('\n❌ core tables with no GRANT to service_role:\n');
-    for (const t of isNew) console.error(`   core.${t}  (created in migration ${createdAt.get(t)})`);
+    console.error('\n❌ core tables with no GRANT to service_role:\n')
+    for (const t of isNew) console.error(`   core.${t}  (created in migration ${createdAt.get(t)})`)
     console.error(`
    Add one to the migration that creates the table:
 
@@ -197,54 +200,179 @@ const BASELINE_UNGRANTED = [];
    service_role bypasses RLS by design, but a missing GRANT fires first and the
    endpoint answers "permission denied" with nothing pointing at the cause. See
    migration 357 and issue #751.
-`);
-    process.exit(1);
+`)
+    process.exit(1)
   }
 
   if (isStale.length > 0) {
-    console.error('\n❌ BASELINE_UNGRANTED lists tables that now have a grant:\n');
-    for (const t of isStale) console.error(`   core.${t}`);
+    console.error('\n❌ BASELINE_UNGRANTED lists tables that now have a grant:\n')
+    for (const t of isStale) console.error(`   core.${t}`)
     console.error(`
    Remove them from BASELINE_UNGRANTED in scripts/check-migrations.mjs. The list
    only shrinks.
-`);
-    process.exit(1);
+`)
+    process.exit(1)
   }
 
-  coreTablesChecked = createdAt.size - gone.size;
+  coreTablesChecked = createdAt.size - gone.size
+}
+
+// ── set_updated_at triggers need the column (#948) ────────────────────────────
+//
+// `core.set_updated_at()` assigns NEW.updated_at. Attach it to a table with no
+// such column and the trigger raises
+//
+//     record "new" has no field "updated_at"
+//
+// on EVERY update, rolling the statement back. The table is writable and
+// readable and completely un-updatable.
+//
+// Migration 095 did exactly that to `core.payment_transactions` — the CREATE
+// TABLE omitted the column, the trigger was attached anyway, and no row in the
+// payment ledger could ever leave its 'pending' default. In any environment.
+// For eighteen months. It stayed invisible because Stripe has never been
+// configured (#928) so the table is empty, and because the two handlers that
+// ran that update discarded its error until #949 and #958. Migration 361 adds
+// the column; this makes the next one loud.
+//
+// Static, over the whole corpus rather than above a baseline: the trigger and
+// the column can be added by different migrations, so only the end state is
+// meaningful, and there is exactly one offender today — which is to say the
+// check starts green and anything new is new.
+
+const UPDATED_AT_TRIGGER_CREATE =
+  /\bcreate\s+trigger\s+([a-z_][a-z0-9_]*)\s[\s\S]{0,300}?\bon\s+([a-z_][a-z0-9_]*)\s*\.\s*([a-z_][a-z0-9_]*)\b[\s\S]{0,300}?\bexecute\s+(?:procedure|function)\s+(?:[a-z_][a-z0-9_]*\s*\.\s*)?set_updated_at\s*\(/gi
+
+const UPDATED_AT_TRIGGER_DROP =
+  /\bdrop\s+trigger\s+(?:if\s+exists\s+)?([a-z_][a-z0-9_]*)\s+on\s+([a-z_][a-z0-9_]*)\s*\.\s*([a-z_][a-z0-9_]*)/gi
+
+const ADD_UPDATED_AT =
+  /\balter\s+table\s+(?:if\s+exists\s+)?([a-z_][a-z0-9_]*)\s*\.\s*([a-z_][a-z0-9_]*)\s[^;]*?\badd\s+column\s+(?:if\s+not\s+exists\s+)?updated_at\b/gis
+
+const CREATE_TABLE_ANY =
+  /\bcreate\s+table\s+(?:if\s+not\s+exists\s+)?([a-z_][a-z0-9_]*)\s*\.\s*([a-z_][a-z0-9_]*)\s*\(/gi
+
+/** The parenthesised column list of a CREATE TABLE, by paren matching. */
+function tableBody(source, openParenIndex) {
+  let depth = 0
+  for (let i = openParenIndex; i < source.length; i++) {
+    if (source[i] === '(') depth += 1
+    else if (source[i] === ')') {
+      depth -= 1
+      if (depth === 0) return source.slice(openParenIndex, i + 1)
+    }
+  }
+  return source.slice(openParenIndex)
+}
+
+let updatedAtTriggersChecked = 0
+
+{
+  const ordered = readdirSync(MIGRATIONS)
+    .filter((f) => f.endsWith('.sql'))
+    .map((f) => ({ file: f, n: Number.parseInt(f.slice(0, f.indexOf('_')), 10) }))
+    .filter(({ n }) => Number.isFinite(n))
+    .sort((a, b) => a.n - b.n)
+
+  /** "schema.table" -> { file, trigger } for tables that currently carry one. */
+  const triggered = new Map()
+  /** Trigger names known to be set_updated_at triggers, keyed "table|trigger". */
+  const known = new Set()
+  /** "schema.table" of every table that has an updated_at column. */
+  const hasColumn = new Set()
+  const droppedTables = new Set()
+
+  for (const { file } of ordered) {
+    const sql = readFileSync(join(MIGRATIONS, file), 'utf8').replace(/--[^\n]*/g, '')
+
+    // Textual order within the file, so the universal
+    // `DROP TRIGGER IF EXISTS x; CREATE TRIGGER x ...` idiom ends up present.
+    const events = []
+    for (const m of sql.matchAll(UPDATED_AT_TRIGGER_CREATE)) {
+      events.push({ at: m.index, kind: 'create', trigger: m[1], table: `${m[2]}.${m[3]}` })
+    }
+    for (const m of sql.matchAll(UPDATED_AT_TRIGGER_DROP)) {
+      events.push({ at: m.index, kind: 'drop', trigger: m[1], table: `${m[2]}.${m[3]}` })
+    }
+    events.sort((a, b) => a.at - b.at)
+
+    for (const e of events) {
+      const key = `${e.table}|${e.trigger}`.toLowerCase()
+      if (e.kind === 'create') {
+        known.add(key)
+        triggered.set(e.table.toLowerCase(), { file, trigger: e.trigger })
+      } else if (known.has(key)) {
+        triggered.delete(e.table.toLowerCase())
+      }
+    }
+
+    for (const m of sql.matchAll(CREATE_TABLE_ANY)) {
+      const open = sql.indexOf('(', m.index + m[0].length - 1)
+      if (/\bupdated_at\b/i.test(tableBody(sql, open))) {
+        hasColumn.add(`${m[1]}.${m[2]}`.toLowerCase())
+      }
+    }
+    for (const m of sql.matchAll(ADD_UPDATED_AT)) {
+      hasColumn.add(`${m[1]}.${m[2]}`.toLowerCase())
+    }
+    for (const m of sql.matchAll(
+      /\bdrop\s+table\s+(?:if\s+exists\s+)?([a-z_][a-z0-9_]*)\s*\.\s*([a-z_][a-z0-9_]*)/gi
+    )) {
+      droppedTables.add(`${m[1]}.${m[2]}`.toLowerCase())
+    }
+  }
+
+  const broken = [...triggered.entries()]
+    .filter(([table]) => !hasColumn.has(table) && !droppedTables.has(table))
+    .sort(([a], [b]) => a.localeCompare(b))
+
+  if (broken.length > 0) {
+    console.error('\n❌ set_updated_at triggers on tables with no updated_at column:\n')
+    for (const [table, { file, trigger }] of broken) {
+      console.error(`   ${table}  (trigger ${trigger}, attached in ${file})`)
+    }
+    console.error(`
+   Add the column, or drop the trigger. As it stands EVERY update to
+   ${broken[0][0]} fails with \`record "new" has no field "updated_at"\` and is
+   rolled back — see migration 361 and issue #948.
+`)
+    process.exit(1)
+  }
+
+  updatedAtTriggersChecked = triggered.size
 }
 
 // ── 1. duplicate migration numbers ────────────────────────────────────────────
 
-const byNumber = new Map();
+const byNumber = new Map()
 for (const f of readdirSync(MIGRATIONS).filter((f) => f.endsWith('.sql'))) {
-  const n = Number.parseInt(f.slice(0, f.indexOf('_')), 10);
-  if (!Number.isFinite(n)) continue;
-  if (!byNumber.has(n)) byNumber.set(n, []);
-  byNumber.get(n).push(f);
+  const n = Number.parseInt(f.slice(0, f.indexOf('_')), 10)
+  if (!Number.isFinite(n)) continue
+  if (!byNumber.has(n)) byNumber.set(n, [])
+  byNumber.get(n).push(f)
 }
 
 const collisions = [...byNumber.entries()]
   .filter(([, files]) => files.length > 1)
-  .sort((a, b) => a[0] - b[0]);
+  .sort((a, b) => a[0] - b[0])
 
 if (collisions.length > 0) {
-  console.error('\n❌ Two or more migrations share a number:\n');
+  console.error('\n❌ Two or more migrations share a number:\n')
   for (const [n, files] of collisions) {
-    console.error(`   ${n}: ${files.join(', ')}`);
+    console.error(`   ${n}: ${files.join(', ')}`)
   }
   console.error(`
    Renumber the newer one to the next free slot. Migration order is the number,
    and duplicates make it whatever the filesystem returns.
-`);
-  process.exit(1);
+`)
+  process.exit(1)
 }
 
 // ── 2. search_path on functions in new migrations ─────────────────────────────
 
 if (offenders.length > 0) {
-  console.error('\n❌ Functions created without an explicit search_path:\n');
-  for (const o of offenders) console.error(`   ${o}`);
+  console.error('\n❌ Functions created without an explicit search_path:\n')
+  for (const o of offenders) console.error(`   ${o}`)
   console.error(`
    Add one to the definition, e.g.
 
@@ -256,12 +384,13 @@ if (offenders.length > 0) {
 
    Without it the function resolves unqualified names against the caller's
    search_path. See migration 353 and issue #468.
-`);
-  process.exit(1);
+`)
+  process.exit(1)
 }
 
 console.log(
   `✓ migration numbers unique (${byNumber.size}); search_path declared on every ` +
     `function created after ${BASELINE} (${files.length} checked); every core ` +
-    `table granted to service_role (${coreTablesChecked} checked)`,
-);
+    `table granted to service_role (${coreTablesChecked} checked); every ` +
+    `set_updated_at trigger has its column (${updatedAtTriggersChecked} checked)`
+)

@@ -22,6 +22,14 @@
 # profile-education-sdk-hooks. Their REST successors need HTTP coverage of
 # their own, tracked separately; work-logs-rest.test.ts is the pattern.
 
+# payments-settlement.test.ts is the one file here that does not speak HTTP:
+# it drives functions/_shared/payments/settlement.ts against the real database,
+# because what it tests is the UPDATE guards themselves. It belongs in the gate
+# rather than in tests/unit/ because nothing runs tests/unit/ — in CI or in
+# prepush — and this logic decides whether a payment is recorded. It is also
+# the test that caught core.payment_transactions having a set_updated_at
+# trigger and no updated_at column (migration 361).
+
 auth-session-regression.test.ts
 auth.test.ts
 ccpa.test.ts
@@ -35,6 +43,7 @@ office-settings-rest.test.ts
 office.test.ts
 onet.test.ts
 organizations.test.ts
+payments-settlement.test.ts
 prerequisites.test.ts
 resume.test.ts
 reviews.test.ts
