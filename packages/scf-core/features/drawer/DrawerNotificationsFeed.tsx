@@ -2,6 +2,19 @@
  * Compact, scrollable notifications feed embedded inside the mobile drawer.
  * Shows recent notifications on the same hairline rows as the full page.
  * "See all" link routes to the full notifications page.
+ *
+ * "Mark all read" sits BELOW the list rather than in the header (#940). Rows
+ * without a `ctaUrl` are deliberately not pressable — a dead tap is worse than
+ * an obviously inert row (#824) — but with no mark-read control on this
+ * surface, an unread link-less notification could not be cleared from the
+ * drawer at all while it kept the masthead badge lit. The badge is shared
+ * state, so it showed everywhere and the only way out was to open the full
+ * page.
+ *
+ * Below, not beside "See all", because the drawer is 300px wide: the uppercase
+ * title, "Mark all read" and "See all" together need roughly 286px against the
+ * ~250px this card actually has, and `Row` does not wrap. A full-width footer
+ * has the room and is a bigger touch target.
  */
 
 import { useCallback, useMemo } from 'react'
@@ -9,11 +22,14 @@ import { Pressable, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
 import { ChevronRight } from 'lucide-react-native'
 import { Row, Stack, Text, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
-import { useNotifications } from '@scf/core/utils/notifications-sdk-hooks'
+import { colors, fontSize } from '@scaffald/ui/tokens'
+import { useNotifications, useUnreadCount } from '@scf/core/utils/notifications-sdk-hooks'
 import { toNotificationItems } from '@scf/core/features/notifications/normalize'
 import { NotificationRow } from '@scf/core/features/notifications/components/NotificationRow'
-import { useOpenNotification } from '@scf/core/features/notifications/useNotificationActions'
+import {
+  useMarkAllNotificationsRead,
+  useOpenNotification,
+} from '@scf/core/features/notifications/useNotificationActions'
 import { ROUTES } from '@scf/core/constants/routes'
 
 const FEED_LIMIT = 8
@@ -34,6 +50,8 @@ export function DrawerNotificationsFeed({ onNavigate }: DrawerNotificationsFeedP
     [notificationsQuery.data]
   )
   const openNotification = useOpenNotification(onNavigate)
+  const unreadCount = useUnreadCount().data?.data?.unread_count ?? 0
+  const markAllRead = useMarkAllNotificationsRead()
 
   const handleSeeAllPress = useCallback(() => {
     router.push(ROUTES.DASHBOARD.NOTIFICATIONS.path)
@@ -107,6 +125,32 @@ export function DrawerNotificationsFeed({ onNavigate }: DrawerNotificationsFeedP
           ))}
         </ScrollView>
       )}
+
+      {unreadCount > 0 ? (
+        <Pressable
+          onPress={() => markAllRead.mutate()}
+          disabled={markAllRead.isPending}
+          accessibilityRole="button"
+          accessibilityLabel="Mark all notifications read"
+          hitSlop={8}
+          style={({ pressed }) => ({
+            minHeight: 44,
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: pressed || markAllRead.isPending ? 0.6 : 1,
+          })}
+        >
+          <Text
+            style={{
+              color: colors.text[theme].attention,
+              fontSize: fontSize.xs,
+              fontWeight: '600',
+            }}
+          >
+            Mark all read
+          </Text>
+        </Pressable>
+      ) : null}
     </Stack>
   )
 }
