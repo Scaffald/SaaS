@@ -13,14 +13,14 @@
 -- of bug:
 --
 --   marcus.rivera     100  full history, degree, 6 skills, 3 certs, location
---   carlos.gutierrez   65  two roles, trade school, 1 cert — but only 2 skills
---                          (under the >=3 threshold) and no location set
+--   carlos.gutierrez   80  two roles, trade school, 1 cert — but only 2 skills
+--                          (under the >=3 threshold)
 --   jake.hendricks     35  one current role, one skill — the sparse path
 --
 -- Scores are measured against core.v_profile_completion_scores, not estimated.
 -- Each component is all-or-nothing, so a mid-range profile has to *miss* whole
--- components; carlos is deliberately short on skills and location so the
--- "finish your profile" prompts have a realistic target.
+-- components; carlos is deliberately short on skills so the "finish your
+-- profile" prompts have a realistic target.
 --
 -- One certification expires within 60 days on purpose, so renewal reminders and
 -- the expiring-soon UI have something to act on.
@@ -34,12 +34,15 @@ BEGIN;
 
 -- ---------------------------------------------------------
 -- Work experience
+--
+-- description is jsonb, but the API writes and every screen renders a plain
+-- string. An object here crashes /profile for all three accounts.
 -- ---------------------------------------------------------
 
 INSERT INTO core.user_experience
   (user_id, job_title, company_name, employment_type, location, is_current, start_date, end_date, source, description)
 SELECT u.id, v.job_title, v.company_name, v.employment_type, v.location, v.is_current, v.start_date, v.end_date, 'self_reported',
-       jsonb_build_object('summary', v.summary)
+       to_jsonb(v.summary)
 FROM (VALUES
   ('marcus.rivera@example.test',    'Journeyman Electrician',      'Apex Mechanical Inc.',      'full_time', 'Denver, CO',      TRUE,  DATE '2022-03-01', NULL,              'Commercial fit-outs and panel upgrades; leads a two-person crew.'),
   ('marcus.rivera@example.test',    'Apprentice Electrician',      'Rocky Mountain Electric',   'full_time', 'Denver, CO',      FALSE, DATE '2018-06-01', DATE '2022-02-28', 'Four-year apprenticeship across residential and light commercial.'),
@@ -156,10 +159,11 @@ WHERE NOT EXISTS (
 -- ---------------------------------------------------------
 -- Identity + location
 --
--- The completion score awards 20 for first/last/headline and 15 for a location,
--- so without these a fully-documented worker still tops out in the sixties.
--- Given deliberately unevenly: jake keeps no location so the incomplete-profile
--- prompts still have someone to fire on.
+-- The completion score awards 20 for first/last/headline and 15 for a location.
+-- The home address is left to 005: /v1/prerequisites/check requires street,
+-- city, state and zip, and overwriting it here sent marcus and carlos back to
+-- /onboarding (#879). An onboarded worker always has an address, so "no
+-- location" is not a state these accounts can be in.
 -- ---------------------------------------------------------
 
 UPDATE core.users u
@@ -172,16 +176,12 @@ WHERE u.id = (SELECT id FROM auth.users a WHERE a.email = v.email)
   AND COALESCE(u.headline, '') = '';
 
 UPDATE core.profile p
-SET address = v.address,
-    preferred_work_locations = v.locations,
+SET preferred_work_locations = v.locations,
     education_level = v.education_level
 FROM (VALUES
-  ('marcus.rivera@example.test',
-   '{"city":"Denver","state":"CO","postal_code":"80205","country":"US"}'::jsonb,
-   ARRAY['Denver, CO','Aurora, CO','Boulder, CO'],
-   'associate'),
-  ('carlos.gutierrez@example.test', NULL::jsonb, NULL::text[], 'certificate')
-) AS v(email, address, locations, education_level)
+  ('marcus.rivera@example.test',    ARRAY['Denver, CO','Aurora, CO','Boulder, CO'], 'associate'),
+  ('carlos.gutierrez@example.test', NULL::text[],                                   'certificate')
+) AS v(email, locations, education_level)
 WHERE p.user_id = (SELECT id FROM auth.users a WHERE a.email = v.email);
 
 -- ---------------------------------------------------------
@@ -213,6 +213,31 @@ BEGIN
     RAISE EXCEPTION
       'Seeded % csi skills for the demo workers, expected 5. data.masterformat has % rows — if that is 0, 000_seed-csi-masterformat.sql did not run.',
       n, (SELECT count(*) FROM data.masterformat);
+  END IF;
+END $$;
+
+-- Same principle for the onboarding gate: these accounts exist to be signed
+-- into, so a seed that leaves them on /onboarding has failed (#879).
+DO $$
+DECLARE stuck TEXT;
+BEGIN
+  SELECT string_agg(u.email, ', ') INTO stuck
+  FROM auth.users u
+  JOIN core.profile p ON p.user_id = u.id
+  WHERE u.email IN (
+      'marcus.rivera@example.test',
+      'carlos.gutierrez@example.test',
+      'jake.hendricks@example.test'
+    )
+    AND (COALESCE(p.address->>'street', '') = ''
+      OR COALESCE(p.address->>'city', '') = ''
+      OR COALESCE(p.address->>'state', '') = ''
+      OR COALESCE(p.address->>'zip', '') = '');
+
+  IF stuck IS NOT NULL THEN
+    RAISE EXCEPTION
+      'Demo workers without a street/city/state/zip address fail /v1/prerequisites/check and land on /onboarding: %',
+      stuck;
   END IF;
 END $$;
 
