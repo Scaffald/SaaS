@@ -64,3 +64,33 @@ export function resolveThemePreference(
   // 'system', null and undefined all mean "follow the OS".
   return systemTheme === 'dark' ? 'dark' : 'light'
 }
+
+/**
+ * Route groups that render light regardless of the reader's theme.
+ *
+ * Decision (Clay, 2026-10-02) on #953: the marketing palette does not get a
+ * dark counterpart. `features/marketing/theme.ts` is a deliberate fixed palette
+ * — the file says so, and it is the one file pinned as an exception in the
+ * literal-styling ratchet (#819) — so with dark on it rendered its light
+ * surfaces on the app's near-black ground and produced a visible seam.
+ *
+ * The group, not just the five marketing screens. `(public)` also holds public
+ * profiles, job pages, reviews and teams, and `(public)/_layout.tsx` mounts
+ * `MarketingNav` above every one of them. A dark job page under a light-palette
+ * nav is the same seam in a smaller frame, so the whole anonymous surface stays
+ * light and the theme starts at the app proper.
+ */
+const LIGHT_ONLY_GROUP = '(public)'
+
+/**
+ * `segments` is what expo-router's `useSegments()` returns. The root index
+ * route — `/`, the landing page — reports `[]`.
+ *
+ * Takes the segments rather than calling the hook so it can be tested without a
+ * router, and so the one caller that needs it stays the only thing coupled to
+ * routing.
+ */
+export function isLightOnlySurface(segments: readonly string[]): boolean {
+  if (segments.length === 0) return true
+  return segments[0] === LIGHT_ONLY_GROUP
+}
