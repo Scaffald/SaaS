@@ -25,7 +25,7 @@ import {
   Tabs,
   useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import { StatusBadge } from '@scf/core/components/ui'
 import {
   Database,
@@ -122,12 +122,12 @@ function ProviderCard({ provider, onConnect }: { provider: HRISProvider; onConne
       padding="md"
       style={{
         backgroundColor: colors.bg[theme].subtle,
-        borderRadius: 7,
+        borderRadius: borderRadius.l,
         borderWidth: 1,
         borderColor: provider.is_connected ? colors.border[theme].active : colors.border[theme].default,
       }}
     >
-      <Stack style={{ width: 40, height: 40, borderRadius: 7, backgroundColor: colors.bg[theme].default, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border[theme].default }}>
+      <Stack style={{ width: 40, height: 40, borderRadius: borderRadius.l, backgroundColor: colors.bg[theme].default, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border[theme].default }}>
         <Database size={20} color={colors.icon[theme].default} />
       </Stack>
       <Stack style={{ flex: 1 }} gap={2}>
@@ -135,9 +135,9 @@ function ProviderCard({ provider, onConnect }: { provider: HRISProvider; onConne
           <Text style={{ color: colors.text[theme].primary, fontWeight: '600' }}>{provider.display_name}</Text>
           {provider.is_connected && <StatusBadge variant="success">Connected</StatusBadge>}
         </Row>
-        <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>{provider.description}</Text>
+        <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>{provider.description}</Text>
         {provider.is_connected && provider.last_sync_at && (
-          <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+          <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
             Last sync: {new Date(provider.last_sync_at).toLocaleString()} · {provider.records_synced} records
           </Text>
         )}
@@ -159,21 +159,21 @@ function SyncLogRow({ log }: { log: SyncLog }) {
   const startDate = new Date(log.started_at)
 
   return (
-    <Row gap={12} align="center" padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 7 }}>
+    <Row gap={12} align="center" padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: borderRadius.l }}>
       <Stack style={{ width: 80 }}>
-        <Text style={{ color: colors.text[theme].primary, fontSize: 13 }}>
+        <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.sm }}>
           {startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
         </Text>
-        <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+        <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
           {startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
         </Text>
       </Stack>
       <Stack style={{ flex: 1 }} gap={2}>
         <Row gap={8} align="center">
-          <Text style={{ color: colors.text[theme].primary, fontSize: 13 }}>{log.provider}</Text>
+          <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.sm }}>{log.provider}</Text>
           <StatusBadge variant="default">{log.sync_type}</StatusBadge>
         </Row>
-        <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+        <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
           {log.records_synced} synced{log.records_failed > 0 ? `, ${log.records_failed} failed` : ''}
         </Text>
       </Stack>
@@ -205,10 +205,10 @@ export function HRISIntegrationsScreen() {
         {/* Header */}
         <Row justify="space-between" align="center">
           <Stack gap={2}>
-            <Text style={{ color: colors.text[theme].primary, fontSize: 20, fontWeight: '700' }}>
+            <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.xl, fontWeight: '700' }}>
               HRIS & Payroll
             </Text>
-            <Text style={{ color: colors.text[theme].tertiary, fontSize: 14 }}>
+            <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.md }}>
               Connect HRIS platforms and sync hired candidates automatically
             </Text>
           </Stack>
@@ -252,20 +252,20 @@ export function HRISIntegrationsScreen() {
                 <Row gap={12}>
                   <Card variant="glass" style={{ flex: 1 }} padding="md">
                     <Stack align="center" gap={4}>
-                      <Text style={{ color: colors.text[theme].primary, fontSize: 24, fontWeight: '700' }}>47</Text>
-                      <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>Total Synced</Text>
+                      <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.xl, fontWeight: '700' }}>47</Text>
+                      <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>Total Synced</Text>
                     </Stack>
                   </Card>
                   <Card variant="glass" style={{ flex: 1 }} padding="md">
                     <Stack align="center" gap={4}>
-                      <Text style={{ color: colors.fg[theme].success, fontSize: 24, fontWeight: '700' }}>98%</Text>
-                      <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>Success Rate</Text>
+                      <Text style={{ color: colors.fg[theme].success, fontSize: fontSize.xl, fontWeight: '700' }}>98%</Text>
+                      <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>Success Rate</Text>
                     </Stack>
                   </Card>
                   <Card variant="glass" style={{ flex: 1 }} padding="md">
                     <Stack align="center" gap={4}>
-                      <Text style={{ color: colors.text[theme].primary, fontSize: 24, fontWeight: '700' }}>Daily</Text>
-                      <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>Sync Frequency</Text>
+                      <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.xl, fontWeight: '700' }}>Daily</Text>
+                      <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>Sync Frequency</Text>
                     </Stack>
                   </Card>
                 </Row>
@@ -295,24 +295,24 @@ export function HRISIntegrationsScreen() {
               <Stack gap={16} style={{ paddingTop: 16 }}>
                 <DashboardWidget>
                   <DashboardWidgetHeader title="Data Field Mappings" />
-                  <Text style={{ color: colors.text[theme].tertiary, fontSize: 13, marginBottom: 8 }}>
+                  <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm, marginBottom: 8 }}>
                     Configure how Scaffald fields map to your HRIS system
                   </Text>
                   <Stack gap={4}>
                     {/* Header */}
                     <Row gap={12} padding="sm">
-                      <Text style={{ flex: 1, color: colors.text[theme].tertiary, fontSize: 12, fontWeight: '600' }}>Scaffald Field</Text>
-                      <Text style={{ width: 80, textAlign: 'center', color: colors.text[theme].tertiary, fontSize: 12, fontWeight: '600' }}>Direction</Text>
-                      <Text style={{ flex: 1, color: colors.text[theme].tertiary, fontSize: 12, fontWeight: '600' }}>HRIS Field</Text>
+                      <Text style={{ flex: 1, color: colors.text[theme].tertiary, fontSize: fontSize.sm, fontWeight: '600' }}>Scaffald Field</Text>
+                      <Text style={{ width: 80, textAlign: 'center', color: colors.text[theme].tertiary, fontSize: fontSize.sm, fontWeight: '600' }}>Direction</Text>
+                      <Text style={{ flex: 1, color: colors.text[theme].tertiary, fontSize: fontSize.sm, fontWeight: '600' }}>HRIS Field</Text>
                     </Row>
                     <Separator />
                     {DEFAULT_FIELD_MAPPINGS.map((mapping, idx) => (
-                      <Row key={idx} gap={12} align="center" padding="sm" style={{ backgroundColor: idx % 2 === 0 ? colors.bg[theme].subtle : 'transparent', borderRadius: 4 }}>
-                        <Text style={{ flex: 1, color: colors.text[theme].primary, fontSize: 13 }}>{mapping.scaffald_field}</Text>
+                      <Row key={idx} gap={12} align="center" padding="sm" style={{ backgroundColor: idx % 2 === 0 ? colors.bg[theme].subtle : 'transparent', borderRadius: borderRadius.xs }}>
+                        <Text style={{ flex: 1, color: colors.text[theme].primary, fontSize: fontSize.sm }}>{mapping.scaffald_field}</Text>
                         <Stack style={{ width: 80, alignItems: 'center' }}>
                           <DirectionBadge direction={mapping.direction} />
                         </Stack>
-                        <Text style={{ flex: 1, color: colors.text[theme].secondary, fontSize: 13, fontFamily: 'monospace' }}>{mapping.hris_field}</Text>
+                        <Text style={{ flex: 1, color: colors.text[theme].secondary, fontSize: fontSize.sm, fontFamily: 'monospace' }}>{mapping.hris_field}</Text>
                       </Row>
                     ))}
                   </Stack>
@@ -327,23 +327,23 @@ export function HRISIntegrationsScreen() {
           <ModalHeader title={`Connect ${selectedProvider?.display_name ?? 'Provider'}`} />
           <ModalContent>
             <Stack gap={16}>
-              <Text style={{ color: colors.text[theme].secondary, fontSize: 14 }}>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.md }}>
                 Enter your API credentials to connect {selectedProvider?.display_name}. These will be encrypted and stored securely.
               </Text>
               <Stack gap={4}>
-                <Text style={{ color: colors.text[theme].primary, fontSize: 14, fontWeight: '500' }}>API Key</Text>
+                <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}>API Key</Text>
                 <Input placeholder="Enter API key" secureTextEntry onChangeText={() => {}} />
               </Stack>
               <Stack gap={4}>
-                <Text style={{ color: colors.text[theme].primary, fontSize: 14, fontWeight: '500' }}>Client ID</Text>
+                <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}>Client ID</Text>
                 <Input placeholder="Enter client ID" onChangeText={() => {}} />
               </Stack>
               <Stack gap={4}>
-                <Text style={{ color: colors.text[theme].primary, fontSize: 14, fontWeight: '500' }}>Client Secret</Text>
+                <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}>Client Secret</Text>
                 <Input placeholder="Enter client secret" secureTextEntry onChangeText={() => {}} />
               </Stack>
               <Stack gap={4}>
-                <Text style={{ color: colors.text[theme].primary, fontSize: 14, fontWeight: '500' }}>Sync Frequency</Text>
+                <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}>Sync Frequency</Text>
                 <Row gap={8}>
                   <Button size="sm" variant="outline" onPress={() => {}}>Realtime</Button>
                   <Button size="sm" variant="filled" onPress={() => {}}>Daily</Button>
