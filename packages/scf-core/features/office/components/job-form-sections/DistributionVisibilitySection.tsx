@@ -1,7 +1,7 @@
 import { Input, Text, ToggleSwitch, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
 import { Label } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 interface DistributionVisibilitySectionProps {
   isFeatured?: boolean
@@ -45,7 +45,7 @@ export function DistributionVisibilitySection({
       gap={16}
       padding="md"
       style={{ backgroundColor: colors.bg[theme].default }}
-      borderRadius={16}
+      borderRadius={borderRadius.l}
       borderWidth={1}
       borderColor={colors.border[theme].default}
     >

@@ -11,7 +11,7 @@ import {
   Users,
 } from 'lucide-react-native'
 import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 interface JobData {
   id?: string
@@ -123,7 +123,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               <Stack
                 width={80}
                 height={80}
-                borderRadius={24}
+                borderRadius={borderRadius.l}
                 style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
                 align="center"
                 justify="center"
@@ -150,7 +150,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
                     paddingHorizontal={12}
                     paddingVertical={4}
-                    borderRadius={12}
+                    borderRadius={borderRadius.l}
                     gap={8}
                     align="center"
                   >
@@ -165,7 +165,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
                     paddingHorizontal={12}
                     paddingVertical={4}
-                    borderRadius={12}
+                    borderRadius={borderRadius.l}
                     gap={8}
                     align="center"
                   >
@@ -254,7 +254,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                         style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
                         paddingHorizontal={8}
                         paddingVertical={4}
-                        borderRadius={12}
+                        borderRadius={borderRadius.l}
                       >
                         <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{skillName}</Text>
                       </Row>
@@ -310,7 +310,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 }
                 paddingHorizontal={12}
                 paddingVertical={4}
-                borderRadius={12}
+                borderRadius={borderRadius.l}
               >
                 <Text
                   color={

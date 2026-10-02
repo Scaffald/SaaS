@@ -10,7 +10,7 @@ import {
 import { UserSearch } from '@scf/core/components/user'
 import { useState } from 'react'
 import { Label } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 interface JobMetadataSectionProps {
   internalJobCode?: string
@@ -97,7 +97,7 @@ export function JobMetadataSection({
       gap={16}
       padding="md"
       style={{ backgroundColor: colors.bg[theme].default }}
-      borderRadius={16}
+      borderRadius={borderRadius.l}
       borderWidth={1}
       borderColor={colors.border[theme].default}
     >

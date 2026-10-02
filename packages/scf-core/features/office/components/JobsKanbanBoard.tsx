@@ -17,7 +17,7 @@ import { ScrollView, View } from 'react-native'
 import { Text, Row, Stack, useToast } from '@scaffald/ui'
 import { logger } from '@scf/core'
 import { JobCard } from './JobCard'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 import type { Job } from '@scaffald/sdk/resources/jobs'
 
 export type JobStatus = 'draft' | 'open' | 'paused' | 'closed'
@@ -218,20 +218,20 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
           borderWidth: 1,
           borderColor: colors.border[theme].default,
         }}
-        borderRadius={16}
+        borderRadius={borderRadius.l}
         padding="sm"
       >
         {/* Column Header */}
         <Row justify="space-between" align="center" style={{ marginBottom: 12 }}>
           <Row gap={8} align="center">
-            <Stack width={8} height={8} borderRadius={10} style={{ backgroundColor: color }} />
+            <Stack width={8} height={8} borderRadius={borderRadius.l} style={{ backgroundColor: color }} />
             <Text>{label}</Text>
           </Row>
           <Stack
             style={{ backgroundColor: colors.bg[theme].muted }}
             paddingHorizontal={8}
             paddingVertical={4}
-            borderRadius={8}
+            borderRadius={borderRadius.l}
           >
             <Text>{jobs.length}</Text>
           </Stack>
@@ -243,7 +243,7 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
             <Stack
               padding="md"
               style={{ backgroundColor: colors.bg[theme].muted, minHeight: 100 }}
-              borderRadius={12}
+              borderRadius={borderRadius.l}
               align="center"
               justify="center"
             >

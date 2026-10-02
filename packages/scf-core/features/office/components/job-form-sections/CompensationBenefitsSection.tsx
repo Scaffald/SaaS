@@ -9,7 +9,7 @@ import {
 } from '@scaffald/ui'
 import { useState } from 'react'
 import { Label, TextArea } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 interface CompensationBenefitsSectionProps {
   benefitsSummary?: string
@@ -85,7 +85,7 @@ export function CompensationBenefitsSection({
       gap={16}
       padding="md"
       style={{ backgroundColor: colors.bg[theme].default }}
-      borderRadius={16}
+      borderRadius={borderRadius.l}
       borderWidth={1}
       borderColor={colors.border[theme].default}
     >
