@@ -13,7 +13,7 @@ import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { Button, H2, Text, Row, Stack } from "@scaffald/ui";
 import { QuickActionsWidget } from "../components/QuickActionsWidget";
-import { colors } from "@scaffald/ui/tokens";
+import { borderRadius, colors } from '@scaffald/ui/tokens';
 
 type ProjectStatus = "planning" | "active" | "completed" | "on_hold";
 
@@ -228,7 +228,7 @@ export function OfficeProjectsList({
                     key={project.id}
                     padding="md"
                     style={{ backgroundColor: colors.bg[theme].default }}
-                    borderRadius={16}
+                    borderRadius={borderRadius.l}
                     justify="space-between"
                     align="center"
                     borderWidth={1}
