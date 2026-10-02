@@ -1,0 +1,177 @@
+{
+  "$schema": "./literal-baseline.md",
+  "note": "Ceilings for literal styling in packages/scf-core/features, per directory per pattern. They may only come down. Enforced by scripts/lint/check-literal-ratchet.mjs (pnpm lint:literals); lower them with --update. Do not raise a number to make a build pass — reach for the token instead. The map from each literal value to its token is in .radium/scaffald-ui.md.",
+  "measuredAt": "2026-10-02",
+  "root": "packages/scf-core/features",
+  "patterns": {
+    "borderRadius": "borderRadius: <n> and borderRadius={<n>} — use the borderRadius tokens (2 / 4 / 7 / 999)",
+    "fontSize": "fontSize: <n> and fontSize={<n>} — use the fontSize or fontScale tokens (11 / 12.5 / 14 / 17 / 22 / 30, display 42)",
+    "hexColor": "'#rgb' and \"#rrggbb\" — use colors.*[theme] tokens"
+  },
+  "pinned": {
+    "marketing/theme.ts": "A deliberate marketing palette, darker and higher-contrast than the product UI, ported from the retired Next.js site. The file documents why it is not in @scaffald/ui tokens. Its WCAG notes are the reason to keep the values literal and commented."
+  },
+  "ceilings": {
+    "analytics": {
+      "borderRadius": 6,
+      "fontSize": 42,
+      "hexColor": 1
+    },
+    "api-keys": {
+      "borderRadius": 15,
+      "hexColor": 1
+    },
+    "applications": {
+      "borderRadius": 31,
+      "fontSize": 22,
+      "hexColor": 1
+    },
+    "assessments": {
+      "borderRadius": 5
+    },
+    "auth": {
+      "borderRadius": 2,
+      "fontSize": 11,
+      "hexColor": 4
+    },
+    "background-check": {
+      "borderRadius": 49,
+      "fontSize": 2
+    },
+    "career-assessment": {
+      "borderRadius": 3,
+      "hexColor": 6
+    },
+    "career-explorer": {
+      "borderRadius": 4,
+      "fontSize": 22
+    },
+    "communities": {
+      "borderRadius": 30,
+      "fontSize": 53,
+      "hexColor": 8
+    },
+    "connections": {
+      "borderRadius": 7,
+      "fontSize": 6
+    },
+    "dashboard": {
+      "borderRadius": 36,
+      "fontSize": 34,
+      "hexColor": 1
+    },
+    "dev": {
+      "borderRadius": 2,
+      "fontSize": 3,
+      "hexColor": 2
+    },
+    "discover": {
+      "borderRadius": 55,
+      "fontSize": 41,
+      "hexColor": 33
+    },
+    "drawer": {
+      "borderRadius": 15,
+      "fontSize": 20,
+      "hexColor": 4
+    },
+    "feedback": {
+      "borderRadius": 3
+    },
+    "id-verification": {
+      "borderRadius": 7
+    },
+    "inquiries": {
+      "borderRadius": 33
+    },
+    "ipip-assessment": {
+      "borderRadius": 21,
+      "fontSize": 9
+    },
+    "luscher-test": {
+      "borderRadius": 4,
+      "fontSize": 19
+    },
+    "marketing": {
+      "borderRadius": 24,
+      "fontSize": 9,
+      "hexColor": 24
+    },
+    "moderation": {
+      "borderRadius": 1,
+      "fontSize": 8
+    },
+    "news": {
+      "borderRadius": 3,
+      "fontSize": 6
+    },
+    "notifications": {
+      "borderRadius": 6,
+      "fontSize": 17
+    },
+    "oauth": {
+      "borderRadius": 3
+    },
+    "occupation-assessment": {
+      "fontSize": 8
+    },
+    "office": {
+      "borderRadius": 118,
+      "fontSize": 219,
+      "hexColor": 27
+    },
+    "organizations": {
+      "borderRadius": 1
+    },
+    "personality-assessment": {
+      "borderRadius": 11,
+      "fontSize": 1,
+      "hexColor": 10
+    },
+    "privacy": {
+      "borderRadius": 39,
+      "fontSize": 15,
+      "hexColor": 1
+    },
+    "profile": {
+      "borderRadius": 65,
+      "fontSize": 15,
+      "hexColor": 111
+    },
+    "profile-import": {
+      "hexColor": 3
+    },
+    "profile-wizard": {
+      "borderRadius": 2,
+      "hexColor": 32
+    },
+    "resume": {
+      "borderRadius": 15
+    },
+    "reviews": {
+      "borderRadius": 8,
+      "fontSize": 8
+    },
+    "riasec-assessment": {
+      "fontSize": 9
+    },
+    "search": {
+      "borderRadius": 2,
+      "fontSize": 3
+    },
+    "skills-analytics": {
+      "borderRadius": 9,
+      "fontSize": 35
+    },
+    "tasks": {
+      "borderRadius": 2,
+      "hexColor": 4
+    },
+    "user-profile": {
+      "borderRadius": 23
+    },
+    "work-logs": {
+      "borderRadius": 33
+    }
+  }
+}

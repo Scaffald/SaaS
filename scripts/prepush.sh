@@ -161,6 +161,13 @@ echo "🔍 Checking migration numbers and function search_path…"
 node scripts/check-migrations.mjs
 MIGRATIONS_STATUS=$?
 
+# Literal fontSize/borderRadius/hex in scf-core features, per directory. The
+# tokens landed in #621 and nothing held the line, so the counts rose through
+# three releases of reskinning (#819). Ceilings may only come down.
+echo "🔍 Checking literal styling against the ratchet…"
+node scripts/lint/check-literal-ratchet.mjs
+LITERALS_STATUS=$?
+
 FAILED=""
 [ "$BUILD_STATUS" -ne 0 ] && FAILED="$FAILED build"
 [ "$TEST_STATUS" -ne 0 ]  && FAILED="$FAILED test"
@@ -169,6 +176,7 @@ FAILED=""
 [ "$AUTOLINK_STATUS" -ne 0 ] && FAILED="$FAILED expo-autolinking"
 [ "$ALIGN_STATUS" -ne 0 ] && FAILED="$FAILED override-catalog"
 [ "$MIGRATIONS_STATUS" -ne 0 ] && FAILED="$FAILED migrations"
+[ "$LITERALS_STATUS" -ne 0 ] && FAILED="$FAILED literal-ratchet"
 
 if [ -n "$FAILED" ]; then
   echo

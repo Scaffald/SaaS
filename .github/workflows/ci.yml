@@ -121,6 +121,14 @@ jobs:
         with:
           main-branch-name: main
 
+      # Literal fontSize/borderRadius/hex ceilings per feature directory (#819).
+      # Its own step rather than inside `pnpm check`, which runs only
+      # locales:validate + nx lint + typecheck — the `pnpm lint` tail of custom
+      # checks (routes, sorted-keys, overrides, migrations) is not in CI at all,
+      # and this one is seconds, so it runs before the slow job and fails fast.
+      - name: Literal styling ratchet
+        run: pnpm lint:literals
+
       # `pnpm check` = locales:validate + lint (run-many) + typecheck (run-many).
       - name: Check
         run: pnpm check
