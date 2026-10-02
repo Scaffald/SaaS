@@ -744,82 +744,18 @@ paymentsRouter.get("/credits", async (c) => {
 });
 
 /**
- * POST /v1/payments/credits/deposit
- * Deposit credits to an organization account via Stripe.
- * Body: { organizationId, amountCents, paymentMethodId? }
+ * Credit deposits were removed (#928, #948).
+ *
+ * `POST /credits/deposit` created a Stripe PaymentIntent and, with a saved
+ * card, charged it immediately — then issued no credit. Both credit-table
+ * usages below are reads; the only code that writes `account_credits` or
+ * `credit_ledger` is in the undeployed legacy trpc router
+ * (trpc/routers/payments.router.ts), which is where to port it from if
+ * prepaid credits are ever wanted. Credit on a CONFIRMED payment, not at
+ * intent creation.
+ *
+ * Reading the balance and the ledger still works and is kept.
  */
-paymentsRouter.post("/credits/deposit", async (c) => {
-  const user = c.get("user");
-  if (!user?.id) return c.json({ error: "Unauthorized" }, 401);
-
-  const body = await c.req.json();
-  const { organizationId, amountCents, paymentMethodId } = body;
-  if (!organizationId || !amountCents) {
-    return c.json(
-      { error: "organizationId and amountCents are required" },
-      400,
-    );
-  }
-
-  const supabaseAdmin = getServiceClient();
-
-  try {
-    const stripe = await loadStripeClient(supabaseAdmin);
-    const customerId = await getOrCreateStripeCustomer(
-      supabaseAdmin,
-      stripe,
-      organizationId,
-    );
-
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountCents,
-      currency: "usd",
-      customer: customerId,
-      payment_method: paymentMethodId,
-      confirm: Boolean(paymentMethodId),
-      description: `Account credit deposit - ${amountCents / 100} USD`,
-      metadata: {
-        organization_id: organizationId,
-        transaction_type: "credit_deposit",
-      },
-    });
-
-    const { data: transaction, error: txError } = await supabaseAdmin
-      .schema("core")
-      .from("payment_transactions")
-      .insert({
-        organization_id: organizationId,
-        user_id: user.id,
-        stripe_payment_intent_id: paymentIntent.id,
-        amount_cents: amountCents,
-        currency: "usd",
-        transaction_type: "credit_deposit",
-        status: paymentIntent.status === "succeeded" ? "succeeded" : "pending",
-        succeeded_at: paymentIntent.status === "succeeded"
-          ? new Date().toISOString()
-          : null,
-      })
-      .select("id,status,stripe_payment_intent_id")
-      .single();
-
-    if (txError || !transaction) {
-      return c.json({
-        error: txError?.message ?? "Failed to record transaction",
-      }, 500);
-    }
-
-    return c.json({
-      transactionId: transaction.id,
-      status: transaction.status,
-      clientSecret: paymentIntent.client_secret,
-      stripePaymentIntentId: paymentIntent.id,
-    }, 201);
-  } catch (e) {
-    return c.json({
-      error: e instanceof Error ? e.message : "Failed to deposit credits",
-    }, 500);
-  }
-});
 
 /**
  * GET /v1/payments/credits/ledger

@@ -15,8 +15,6 @@ import type {
   SavePaymentMethodParams,
   TransactionReceipt,
   AccountCredits,
-  DepositCreditsParams,
-  DepositCreditsResponse,
   CreditLedgerResponse,
 } from "@scaffald/sdk";
 
@@ -161,22 +159,6 @@ export function useAccountCredits(
   });
 }
 
-export function useDepositCreditsMutation(
-  options?: UseMutationOptions<
-    DepositCreditsResponse,
-    Error,
-    DepositCreditsParams
-  >
-) {
-  const client = useScaffaldJobsClient();
-  return useMutation<DepositCreditsResponse, Error, DepositCreditsParams>({
-    mutationFn: async (params) => {
-      if (!client) throw new Error("Missing Scaffald client");
-      return client.payments.depositCredits(params);
-    },
-    ...options,
-  });
-}
 
 export function useCreditLedger(
   params: {
