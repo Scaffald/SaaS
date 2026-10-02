@@ -6,7 +6,7 @@ import type { CreditLedgerEntry } from "@scaffald/sdk";
 import { DollarSign } from "lucide-react-native";
 import { useThemeContext } from "@scaffald/ui";
 import { Card, Spinner, Text, Row, Stack } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
+import { borderRadius, colors } from '@scaffald/ui/tokens';
 
 /**
  * Account credits, read-only.
@@ -124,7 +124,7 @@ export function OrganizationCreditsPanel({
                       align="center"
                       padding="xs"
                       style={{ backgroundColor: colors.bg[theme].subtle }}
-                      borderRadius={8}
+                      borderRadius={borderRadius.l}
                     >
                       <Stack flex={1}>
                         <Text>
