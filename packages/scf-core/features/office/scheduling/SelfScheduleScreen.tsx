@@ -128,7 +128,7 @@ function SlotCard({ slot, isSelected, onSelect }: { slot: AvailableSlot; isSelec
         </Stack>
         {isSelected && (
           <Stack style={{ width: 28, height: 28, borderRadius: borderRadius.max, backgroundColor: colors.fg[theme].success, alignItems: 'center', justifyContent: 'center' }}>
-            <Check size={16} color="#fff" />
+            <Check size={16} color={colors.text[theme].quaternary} />
           </Stack>
         )}
       </Row>

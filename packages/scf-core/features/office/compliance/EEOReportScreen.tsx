@@ -71,18 +71,18 @@ function periodRange(period: ReportPeriod): { start: string; end: string } {
  * still be visible.
  */
 const CATEGORY_COLORS: Record<string, string> = {
-  hispanic: '#3b82f6',
-  white: '#6366f1',
-  black: '#8b5cf6',
-  asian: '#ec4899',
-  native_american: '#f59e0b',
-  pacific_islander: '#10b981',
-  two_or_more: '#64748b',
-  declined: '#94a3b8',
+  hispanic: colors.blue[500],
+  white: colors.indigo[500],
+  black: colors.violet[500],
+  asian: colors.pink[500],
+  native_american: colors.amber[500],
+  pacific_islander: colors.emerald[500],
+  two_or_more: colors.zinc[500],
+  declined: colors.zinc[400],
 }
 
 function categoryColor(category: string): string {
-  return CATEGORY_COLORS[category] ?? '#94a3b8'
+  return CATEGORY_COLORS[category] ?? colors.zinc[400]
 }
 
 /** Display labels for the database's category vocabulary. */
@@ -323,7 +323,7 @@ export function EEOReportScreen() {
                   style={{
                     fontSize: fontSize.sm,
                     fontWeight: '500',
-                    color: period === p.value ? '#fff' : colors.text[theme].secondary,
+                    color: period === p.value ? colors.text[theme].quaternary : colors.text[theme].secondary,
                   }}
                 >
                   {p.label}
@@ -828,7 +828,7 @@ export function EEOReportScreen() {
                                     >
                                       {pct > 10 && (
                                         <Text
-                                          style={{ fontSize: fontSize.xxs, color: '#fff', fontWeight: '600' }}
+                                          style={{ fontSize: fontSize.xxs, color: colors.white, fontWeight: '600' }}
                                         >
                                           {value}
                                         </Text>

@@ -157,7 +157,7 @@ export function MessageTemplatesManager({
                           fontSize: fontSize.sm,
                           color:
                             formStage === stage
-                              ? '#fff'
+                              ? colors.text[theme].quaternary
                               : colors.text[theme].secondary,
                         }}
                       >

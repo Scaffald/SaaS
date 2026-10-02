@@ -143,10 +143,10 @@ const MOCK_PROJECTS: HiringProject[] = [
 // ============================================================================
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  planning: { bg: '#dbeafe', text: '#1e40af' },
-  hiring: { bg: '#fef3c7', text: '#92400e' },
-  active: { bg: '#d1fae5', text: '#065f46' },
-  completed: { bg: '#e5e7eb', text: '#374151' },
+  planning: { bg: colors.blue[100], text: colors.blue[800] },
+  hiring: { bg: colors.amber[100], text: colors.amber[800] },
+  active: { bg: colors.emerald[100], text: colors.emerald[800] },
+  completed: { bg: colors.zinc[200], text: colors.zinc[700] },
 }
 
 function ProjectCard({ project, onPress }: { project: HiringProject; onPress: () => void }) {
@@ -220,7 +220,7 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
                   width: `${fillPct}%`,
                   height: '100%',
                   borderRadius: borderRadius.xxs,
-                  backgroundColor: fillPct === 100 ? '#10b981' : '#3b82f6',
+                  backgroundColor: fillPct === 100 ? colors.fg[theme].success : colors.fg[theme].active,
                 }}
               />
             </Stack>
@@ -316,7 +316,7 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
                       justifyContent: 'center',
                     }}
                   >
-                    {isSelected && <Check size={14} color="#fff" />}
+                    {isSelected && <Check size={14} color={colors.text[theme].quaternary} />}
                   </Stack>
 
                   <Stack flex={1} gap={4}>
@@ -381,7 +381,7 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
                       width: 8,
                       height: 8,
                       borderRadius: borderRadius.max,
-                      backgroundColor: member.status === 'active' ? '#10b981' : '#f59e0b',
+                      backgroundColor: member.status === 'active' ? colors.fg[theme].success : colors.fg[theme].warning,
                     }}
                   />
                 </Row>
@@ -552,7 +552,7 @@ export function ProjectHiringScreen() {
                 <Text
                   style={{
                     fontSize: fontSize.sm,
-                    color: statusFilter === s ? '#fff' : colors.text[theme].secondary,
+                    color: statusFilter === s ? colors.text[theme].quaternary : colors.text[theme].secondary,
                   }}
                 >
                   {s.charAt(0).toUpperCase() + s.slice(1)} ({statusCounts[s] ?? 0})
