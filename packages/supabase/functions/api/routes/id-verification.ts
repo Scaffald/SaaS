@@ -189,6 +189,39 @@ app.post(
         );
       }
 
+      // Record the charge BEFORE the client can make it (#948).
+      //
+      // This row used to be written only at the very end of /confirm, after a
+      // permission check, an external Persona call and another insert — so
+      // Persona being down was enough to leave a paid customer with no
+      // database trace at all. `stripe-webhook` could not recover that either:
+      // it looks rows up by `stripe_payment_intent_id` and would find none.
+      //
+      // Failing here rather than returning the secret is the point. Without a
+      // client_secret the intent is never confirmed, so no money moves — which
+      // makes "there is a row for every charge" an invariant rather than a
+      // best effort. `status` defaults to 'pending'; /confirm advances it.
+      const { error: txError } = await supabaseAdmin
+        .schema("core")
+        .from("payment_transactions")
+        .insert({
+          organization_id: input.organizationId ?? null,
+          user_id: input.workerUserId,
+          amount_cents: selectedPricing.price_cents,
+          currency: intent.currency ?? "usd",
+          transaction_type: "id_verification",
+          stripe_payment_intent_id: intent.id,
+          metadata: { source: "id_verification_rest", stage: "intent" },
+        });
+
+      if (txError) {
+        return toError(
+          c,
+          `Failed to record payment intent: ${txError.message}`,
+          500,
+        );
+      }
+
       return toJson(c, {
         data: {
           paymentIntentId: intent.id,
@@ -309,21 +342,56 @@ app.post(
         );
       }
 
-      await supabaseAdmin
+      // Advance the row /request already wrote, rather than inserting a second
+      // one (#948). Matching on the intent id makes a repeated /confirm
+      // idempotent — the `existing` check above returns early on the happy
+      // path, but a retry that races it lands here.
+      const { data: advanced, error: advanceError } = await supabaseAdmin
         .schema("core")
         .from("payment_transactions")
-        .insert({
-          organization_id: organizationId,
-          user_id: workerUserId,
-          amount_cents: intent.amount ?? 0,
-          currency: "usd",
-          transaction_type: "id_verification",
+        .update({
           id_verification_id: record.id,
-          stripe_payment_intent_id: intent.id,
+          organization_id: organizationId,
           status: "succeeded",
           succeeded_at: new Date().toISOString(),
-          metadata: { source: "id_verification_rest" },
-        });
+          metadata: { source: "id_verification_rest", stage: "confirmed" },
+        })
+        .eq("stripe_payment_intent_id", intent.id)
+        .select("id");
+
+      // An intent created before #948, or by some other path, has no row to
+      // advance. Insert one so the charge is still recorded — the point is
+      // that money never goes unrecorded, not that /request always won.
+      if (!advanceError && (advanced?.length ?? 0) === 0) {
+        await supabaseAdmin
+          .schema("core")
+          .from("payment_transactions")
+          .insert({
+            organization_id: organizationId,
+            user_id: workerUserId,
+            amount_cents: intent.amount ?? 0,
+            currency: intent.currency ?? "usd",
+            transaction_type: "id_verification",
+            id_verification_id: record.id,
+            stripe_payment_intent_id: intent.id,
+            status: "succeeded",
+            succeeded_at: new Date().toISOString(),
+            metadata: {
+              source: "id_verification_rest",
+              stage: "confirmed-backfill",
+            },
+          });
+      }
+
+      // Not fatal: the verification exists and the customer has paid, so
+      // failing the request here would be worse than a mismatched ledger row
+      // the webhook or a reconciliation sweep can still fix. Say so, though —
+      // this used to be an unchecked `await` that returned 200 regardless.
+      if (advanceError) {
+        console.error(
+          `[id-verification] paid but could not advance payment_transactions for ${intent.id}: ${advanceError.message}`,
+        );
+      }
 
       return toJson(c, {
         data: {
