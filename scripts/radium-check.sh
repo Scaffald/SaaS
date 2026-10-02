@@ -75,6 +75,17 @@ else
   echo -e "${GREEN}OK${NC}"
 fi
 
+# 6. Literal styling ratchet (per-directory ceilings, #819)
+echo -n "Checking literal styling ratchet... "
+if LITERALS=$(node "$(dirname "$0")/lint/check-literal-ratchet.mjs" 2>&1); then
+  echo -e "${GREEN}OK${NC}"
+  echo "$LITERALS" | sed 's/^/    /'
+else
+  echo -e "${RED}FAIL${NC}"
+  echo "$LITERALS" | sed 's/^/    /'
+  ERRORS=$((ERRORS + 1))
+fi
+
 echo ""
 if [ "$ERRORS" -gt 0 ]; then
   echo -e "${RED}Found $ERRORS constraint violation(s)${NC}"
