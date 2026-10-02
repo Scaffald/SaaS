@@ -8,7 +8,15 @@ on:
       - 'packages/supabase/tests/**'
       - 'packages/supabase/types.ts'
       - 'scripts/test-api-local.ts'
+      - 'scripts/types-owned-schemas.mjs'
       - 'scripts/deno.json'
+      # This job runs the Supabase CLI — `supabase start`, `gen types` — so a
+      # bump to it breaks the job without touching any path above. #936 did
+      # exactly that (CLI 2.117 -> 2.118) and nothing noticed, because the
+      # filter meant this never ran on main again. It surfaced days later on
+      # an unrelated PR and read as that PR's fault.
+      - 'pnpm-workspace.yaml'
+      - 'pnpm-lock.yaml'
       - '.github/workflows/api-tests.yml'
   push:
     branches:
@@ -19,7 +27,10 @@ on:
       - 'packages/supabase/tests/**'
       - 'packages/supabase/types.ts'
       - 'scripts/test-api-local.ts'
+      - 'scripts/types-owned-schemas.mjs'
       - 'scripts/deno.json'
+      - 'pnpm-workspace.yaml'
+      - 'pnpm-lock.yaml'
 
 permissions:
   contents: read
