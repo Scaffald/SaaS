@@ -73,33 +73,52 @@ const ROUTES = [
 const browser = await chromium.launch()
 const results = []
 
-// There is no dark pass, and it is not an oversight.
+// The dark pass exists now. It did not before, and the reason is worth keeping:
 //
-// DARK MODE IS SWITCHED OFF IN THE APP. `useThemeSetting` in
-// packages/scf-core/provider/theme/UniversalThemeProvider.tsx hardcodes:
+// DARK MODE WAS SWITCHED OFF IN THE APP. `useThemeSetting` in
+// packages/scf-core/provider/theme/UniversalThemeProvider.tsx hardcoded:
 //
 //   const resolvedTheme = 'light' as 'light' | 'dark'
 //
 // with the real resolution commented out beneath it, since 78caa00b
 // ("feat: force light mode and hide theme toggle", 2026-04-21). Every other
-// part of the theming stack works — the provider resolves a preference,
-// persists it, and stamps `data-theme` on <html> — but that one line
-// short-circuits all of it.
+// part of the theming stack worked — the provider resolved a preference,
+// persisted it, and stamped `data-theme` on <html> — but that one line
+// short-circuited all of it, and three earlier attempts at a dark pass
+// produced LIGHT screenshots labelled "dark".
 //
-// So a dark pass here cannot render dark no matter how the browser or storage
-// is configured, and three earlier attempts at one produced LIGHT screenshots
-// labelled "dark". Restoring it is a one-line change in that file plus a
-// deliberate decision to ship dark mode; until then, a pass that claims to
-// exercise the dark palette is worse than none.
+// #833 restored the resolution behind `EXPO_PUBLIC_DARK_MODE=1`. That flag is
+// inlined by Expo at BUILD time, so the dev server has to be *started* with it:
 //
-// Three separate theme keys exist, which is worth knowing if this is revisited:
+//   EXPO_PUBLIC_DARK_MODE=1 pnpm web
+//
+// and Metro's cache does not notice env changes, so wipe it when switching:
+//
+//   rm -rf "$TMPDIR/metro-cache"
+//
+// Without both of those, `--scheme dark` renders light. It does not pass
+// quietly when that happens — see the exit check at the bottom.
+//
+// Three separate theme keys exist, which is worth knowing:
 //   beyond-ui-theme     ThemeProvider's own default (packages/ui)
 //   scaffald-ui-theme   themeStorage.ts (packages/ui) — nothing reads it
 //   @preferred_theme    UniversalThemeProvider via kvStorage — the app's
-for (const [w, h, tag, scheme] of [
-  [1440, 900, 'desktop', 'light'],
-  [390, 844, 'mobile', 'light'],
-]) {
+// --scheme light | dark | both   (default: light)
+const schemeArg = (process.argv.find((a) => a.startsWith('--scheme=')) ?? '').split('=')[1]
+  ?? (process.argv.includes('--scheme') ? process.argv[process.argv.indexOf('--scheme') + 1] : null)
+  ?? 'light'
+if (!['light', 'dark', 'both'].includes(schemeArg)) {
+  console.error(`Unknown --scheme ${schemeArg}. Use light, dark or both.`)
+  process.exit(2)
+}
+const SCHEMES = schemeArg === 'both' ? ['light', 'dark'] : [schemeArg]
+
+const MATRIX = SCHEMES.flatMap((scheme) => [
+  [1440, 900, `desktop-${scheme}`, scheme],
+  [390, 844, `mobile-${scheme}`, scheme],
+])
+
+for (const [w, h, tag, scheme] of MATRIX) {
   const ctx = await browser.newContext({
     viewport: { width: w, height: h },
     deviceScaleFactor: 2,
@@ -252,4 +271,29 @@ for (const r of results) {
   if (r.renderedTheme) console.log('    theme:', r.renderedTheme)
   if (r.snippet) console.log('   ', r.snippet)
   for (const e of r.newErrors ?? []) console.log('    !', e)
+}
+
+// A pass labelled "dark" that rendered light manufactures confidence in exactly
+// the half of the palette nobody has looked at. Three earlier attempts did
+// precisely that, so this is an exit code, not a warning.
+const wrongTheme = results.filter(
+  (r) => r.renderedTheme && r.renderedTheme !== 'unset' && !r.tag.endsWith(r.renderedTheme),
+)
+const unsetTheme = results.filter((r) => r.renderedTheme === 'unset')
+
+if (wrongTheme.length > 0 || unsetTheme.length > 0) {
+  console.log('\n--- THEME ASSERTION FAILED ---')
+  for (const r of wrongTheme) {
+    console.log(`  ${r.tag}/${r.name}: rendered ${r.renderedTheme}`)
+  }
+  for (const r of unsetTheme) {
+    console.log(`  ${r.tag}/${r.name}: <html data-theme> was never stamped`)
+  }
+  console.log(
+    '\n  A dark pass renders dark only when the dev server was STARTED with\n' +
+      '  EXPO_PUBLIC_DARK_MODE=1 (Expo inlines it at build time) and Metro\n' +
+      "  rebuilt — `rm -rf \"$TMPDIR/metro-cache\"` if you switched the flag on a\n" +
+      '  server that had already bundled. See provider/theme/dark-mode-flag.ts.',
+  )
+  process.exit(1)
 }
