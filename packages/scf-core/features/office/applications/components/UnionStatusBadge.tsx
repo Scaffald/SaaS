@@ -7,7 +7,7 @@
 
 import { Award, HardHat, Shield } from 'lucide-react-native'
 import { Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import type { ATSApplication } from '../types'
 
 interface UnionStatusBadgeProps {
@@ -26,14 +26,14 @@ export function UnionStatusBadge({ unionStatus, compact }: UnionStatusBadgeProps
           backgroundColor: unionStatus.isUnionMember
             ? `${colors.blue[500]}20`
             : `${colors.gray[400]}20`,
-          borderRadius: 4,
+          borderRadius: borderRadius.xs,
           paddingHorizontal: 6,
           paddingVertical: 2,
         }}
       >
         <Text
           style={{
-            fontSize: 10,
+            fontSize: fontSize.xxs,
             fontWeight: '600',
             color: unionStatus.isUnionMember ? colors.blue[600] : colors.gray[500],
           }}
@@ -61,7 +61,7 @@ export function UnionStatusBadge({ unionStatus, compact }: UnionStatusBadgeProps
             style={{
               width: 32,
               height: 32,
-              borderRadius: 7,
+              borderRadius: borderRadius.l,
               backgroundColor: unionStatus.isUnionMember
                 ? `${colors.blue[500]}20`
                 : `${colors.gray[400]}20`,
@@ -79,7 +79,7 @@ export function UnionStatusBadge({ unionStatus, compact }: UnionStatusBadgeProps
               {unionStatus.isUnionMember ? 'Union Member' : 'Non-Union'}
             </Text>
             {unionStatus.unionName && (
-              <Text style={{ color: colors.text[theme].secondary, fontSize: 13 }}>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.sm }}>
                 {unionStatus.unionName}
                 {unionStatus.localNumber ? ` Local ${unionStatus.localNumber}` : ''}
               </Text>
@@ -93,7 +93,7 @@ export function UnionStatusBadge({ unionStatus, compact }: UnionStatusBadgeProps
             {unionStatus.membershipId && (
               <Row gap={8} align="center">
                 <Shield size={14} color={colors.icon[theme].default} />
-                <Text style={{ color: colors.text[theme].secondary, fontSize: 13 }}>
+                <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.sm }}>
                   Member ID: {unionStatus.membershipId}
                 </Text>
               </Row>
@@ -103,7 +103,7 @@ export function UnionStatusBadge({ unionStatus, compact }: UnionStatusBadgeProps
             {unionStatus.journeymanStatus && (
               <Row gap={8} align="center">
                 <Award size={14} color={colors.icon[theme].default} />
-                <Text style={{ color: colors.text[theme].secondary, fontSize: 13 }}>
+                <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.sm }}>
                   {unionStatus.journeymanStatus.charAt(0).toUpperCase() +
                     unionStatus.journeymanStatus.slice(1)}
                 </Text>
@@ -111,24 +111,24 @@ export function UnionStatusBadge({ unionStatus, compact }: UnionStatusBadgeProps
                   <Stack
                     style={{
                       backgroundColor: `${colors.success[500]}20`,
-                      borderRadius: 4,
+                      borderRadius: borderRadius.xs,
                       paddingHorizontal: 6,
                       paddingVertical: 1,
                     }}
                   >
-                    <Text style={{ fontSize: 10, color: colors.success[500] }}>Certified</Text>
+                    <Text style={{ fontSize: fontSize.xxs, color: colors.success[500] }}>Certified</Text>
                   </Stack>
                 )}
                 {unionStatus.journeymanStatus === 'master' && (
                   <Stack
                     style={{
                       backgroundColor: `${colors.warning[500]}20`,
-                      borderRadius: 4,
+                      borderRadius: borderRadius.xs,
                       paddingHorizontal: 6,
                       paddingVertical: 1,
                     }}
                   >
-                    <Text style={{ fontSize: 10, color: colors.warning[500] }}>Master</Text>
+                    <Text style={{ fontSize: fontSize.xxs, color: colors.warning[500] }}>Master</Text>
                   </Stack>
                 )}
               </Row>
@@ -141,13 +141,13 @@ export function UnionStatusBadge({ unionStatus, compact }: UnionStatusBadgeProps
                   style={{
                     width: 14,
                     height: 14,
-                    borderRadius: 7,
+                    borderRadius: borderRadius.max,
                     backgroundColor: unionStatus.prevailingWageEligible
                       ? colors.success[500]
                       : colors.gray[400],
                   }}
                 />
-                <Text style={{ color: colors.text[theme].secondary, fontSize: 13 }}>
+                <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.sm }}>
                   Prevailing wage{' '}
                   {unionStatus.prevailingWageEligible ? 'eligible' : 'not eligible'}
                 </Text>

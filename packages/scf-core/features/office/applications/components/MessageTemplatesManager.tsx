@@ -18,7 +18,7 @@ import {
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import type { ApplicationStatus } from '../types'
 import type { MessageTemplate } from './message-templates'
 import { STAGE_LABELS, TEMPLATE_VARIABLES } from './message-templates'
@@ -134,7 +134,7 @@ export function MessageTemplatesManager({
 
             {/* Stage selector */}
             <Stack gap={4}>
-              <Text style={{ color: colors.text[theme].secondary, fontSize: 12 }}>Stage</Text>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.sm }}>Stage</Text>
               <Row gap={4} style={{ flexWrap: 'wrap' }}>
                 {STAGE_OPTIONS.map((stage) => (
                   <Pressable key={stage} onPress={() => setFormStage(stage)}>
@@ -145,7 +145,7 @@ export function MessageTemplatesManager({
                           formStage === stage
                             ? colors.fg[theme].active
                             : colors.bg[theme].default,
-                        borderRadius: 4,
+                        borderRadius: borderRadius.xs,
                         paddingHorizontal: 10,
                         paddingVertical: 4,
                         borderWidth: 1,
@@ -154,7 +154,7 @@ export function MessageTemplatesManager({
                     >
                       <Text
                         style={{
-                          fontSize: 12,
+                          fontSize: fontSize.sm,
                           color:
                             formStage === stage
                               ? '#fff'
@@ -178,7 +178,7 @@ export function MessageTemplatesManager({
 
             {/* Variable insertion buttons */}
             <Stack gap={4}>
-              <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+              <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
                 Insert variable:
               </Text>
               <Row gap={4} style={{ flexWrap: 'wrap' }}>
@@ -187,14 +187,14 @@ export function MessageTemplatesManager({
                     <Stack
                       style={{
                         backgroundColor: colors.bg[theme].default,
-                        borderRadius: 4,
+                        borderRadius: borderRadius.xs,
                         paddingHorizontal: 8,
                         paddingVertical: 2,
                         borderWidth: 1,
                         borderColor: colors.border[theme].default,
                       }}
                     >
-                      <Text style={{ fontSize: 11, color: colors.text[theme].secondary }}>
+                      <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].secondary }}>
                         {v.label}
                       </Text>
                     </Stack>
@@ -246,29 +246,29 @@ export function MessageTemplatesManager({
                     <Stack
                       style={{
                         backgroundColor: colors.bg[theme].subtle,
-                        borderRadius: 4,
+                        borderRadius: borderRadius.xs,
                         paddingHorizontal: 6,
                         paddingVertical: 1,
                       }}
                     >
-                      <Text style={{ fontSize: 10, color: colors.text[theme].tertiary }}>
+                      <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}>
                         {STAGE_LABELS[template.stage]}
                       </Text>
                     </Stack>
                     {template.isDefault && (
-                      <Text style={{ fontSize: 10, color: colors.text[theme].tertiary }}>
+                      <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}>
                         Built-in
                       </Text>
                     )}
                   </Row>
                   <Text
-                    style={{ color: colors.text[theme].tertiary, fontSize: 12 }}
+                    style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}
                     numberOfLines={2}
                   >
                     {template.body}
                   </Text>
                   {template.usageCount > 0 && (
-                    <Text style={{ color: colors.text[theme].tertiary, fontSize: 10 }}>
+                    <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
                       Used {template.usageCount} times
                     </Text>
                   )}

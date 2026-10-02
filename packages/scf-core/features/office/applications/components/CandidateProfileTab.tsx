@@ -1,6 +1,6 @@
 import { Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { ATSApplication } from '../types'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 interface CandidateProfileTabProps {
   candidate: ATSApplication['candidate']
@@ -87,7 +87,7 @@ export const CandidateProfileTab = ({
                 }}
                 paddingHorizontal={12}
                 paddingVertical={4}
-                borderRadius={8}
+                borderRadius={borderRadius.l}
               >
                 <Text
                   style={{

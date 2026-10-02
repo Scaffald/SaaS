@@ -25,7 +25,7 @@ import { useState } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
 import { ChevronDown } from 'lucide-react-native'
 import { Popover, PopoverContent, Text, useThemeContext } from '@scaffald/ui'
-import { colors, radius, spacing } from '@scaffald/ui/tokens'
+import { colors, fontSize, radius, spacing } from '@scaffald/ui/tokens'
 import type { ApplicationStatus } from '../types'
 
 export interface MoveMenuProps {
@@ -69,7 +69,7 @@ export const MoveMenu = ({
         },
       ]}
     >
-      <Text style={{ fontSize: 13, color: colors.text[theme].primary }}>Move</Text>
+      <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].primary }}>Move</Text>
       <ChevronDown size={14} color={colors.text[theme].tertiary} />
     </Pressable>
   )
@@ -95,7 +95,7 @@ export const MoveMenu = ({
                 accessibilityLabel={`Move ${candidateName} to ${labels[target] ?? target}`}
                 style={styles.item}
               >
-                <Text style={{ fontSize: 14, color: colors.text[theme].primary }}>
+                <Text style={{ fontSize: fontSize.md, color: colors.text[theme].primary }}>
                   {labels[target] ?? target}
                 </Text>
               </Pressable>

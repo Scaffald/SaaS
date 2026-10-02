@@ -1,7 +1,7 @@
 import { Download } from 'lucide-react-native'
 import { Button, Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { ATSApplication } from '../types'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 interface ApplicationDetailsTabProps {
   application: ATSApplication
@@ -71,7 +71,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
               align="center"
               padding="sm"
               style={{ backgroundColor: colors.bg[theme].muted }}
-              borderRadius={12}
+              borderRadius={borderRadius.l}
             >
               <Stack flex={1}>
                 <Text>Resume</Text>
@@ -91,7 +91,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
               align="center"
               padding="sm"
               style={{ backgroundColor: colors.bg[theme].muted }}
-              borderRadius={12}
+              borderRadius={borderRadius.l}
             >
               <Stack flex={1}>
                 <Text>Cover Letter</Text>
@@ -111,7 +111,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
               align="center"
               padding="sm"
               style={{ backgroundColor: colors.bg[theme].muted }}
-              borderRadius={12}
+              borderRadius={borderRadius.l}
             >
               <Stack flex={1}>
                 <Text>Portfolio</Text>
@@ -137,7 +137,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
               <Stack
                 width={3}
                 style={{ backgroundColor: colors.fg[theme].active }}
-                borderRadius={8}
+                borderRadius={borderRadius.l}
               />
               <Stack flex={1} gap={4}>
                 <Text style={{ textTransform: 'capitalize' }}>{history.toStage}</Text>
