@@ -18,7 +18,7 @@
 import { useMemo } from 'react'
 import { View } from 'react-native'
 import { Lane, LaneGroup, Row, Text, useResponsive, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { colors, fontSize } from '@scaffald/ui/tokens'
 import type { ApplicationStatus, ATSApplication } from '../types'
 import { daysInStage, formatStageAge, isStageOverdue, stageOverdueReason } from '../stage-timing'
 
@@ -121,7 +121,7 @@ export const ApplicationsLanes = ({
     return map
   }, [applications, nowMs])
 
-  const muted = { fontSize: 14, color: colors.text[theme].tertiary }
+  const muted = { fontSize: fontSize.md, color: colors.text[theme].tertiary }
 
   /**
    * One labelled cell: "Score 88".
@@ -137,11 +137,11 @@ export const ApplicationsLanes = ({
     if (value == null && stacked) return null
     return (
       <Row gap={6} align="baseline">
-        <Text style={{ fontSize: 13, color: colors.text[theme].tertiary }}>{label}</Text>
+        <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].tertiary }}>{label}</Text>
         <Text
           style={
             opts?.emphasis
-              ? { fontSize: 14, color: colors.text[theme].primary, fontVariant: ['tabular-nums'] }
+              ? { fontSize: fontSize.md, color: colors.text[theme].primary, fontVariant: ['tabular-nums'] }
               : muted
           }
         >

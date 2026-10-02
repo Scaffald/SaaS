@@ -9,7 +9,7 @@ import { ResponsiveSelect } from '@scaffald/ui'
 import { Button, Card, Separator, Spinner, Switch, Text, Row, Stack } from '@scaffald/ui'
 import { z } from 'zod'
 import { useTeamFormOptions } from '../teams/hooks/useTeamFormOptions'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 const DEFAULT_SETTINGS = {
   defaultRoleId: null as string | null,
@@ -434,7 +434,7 @@ function PermissionBanner() {
       borderWidth={1}
       borderColor={colors.border[theme].default}
       style={{ backgroundColor: colors.bg[theme].muted }}
-      borderRadius={16}
+      borderRadius={borderRadius.l}
       paddingHorizontal={12}
       paddingVertical={8}
     >

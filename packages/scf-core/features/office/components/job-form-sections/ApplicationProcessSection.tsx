@@ -1,4 +1,4 @@
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 import {
   Button,
   Card,
@@ -128,7 +128,7 @@ export function ApplicationProcessSection({
       gap={16}
       padding="md"
       style={{ backgroundColor: colors.bg[theme].default }}
-      borderRadius={16}
+      borderRadius={borderRadius.l}
       borderWidth={1}
       borderColor={colors.border[theme].default}
     >

@@ -22,7 +22,7 @@ import {
   useBookSlotMutation,
   useSchedulingLink,
 } from '@scf/core/utils/scheduling-sdk-hooks'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import {
   Calendar,
   Check,
@@ -74,7 +74,7 @@ function LocationBadge({ type }: { type: AvailableSlot['location_type'] }) {
   return (
     <Row gap={4} align="center">
       <Icon size={12} color={colors.gray[500]} />
-      <Text style={{ color: colors.gray[500], fontSize: 12 }}>{labelMap[type]}</Text>
+      <Text style={{ color: colors.gray[500], fontSize: fontSize.sm }}>{labelMap[type]}</Text>
     </Row>
   )
 }
@@ -93,42 +93,42 @@ function SlotCard({ slot, isSelected, onSelect }: { slot: AvailableSlot; isSelec
         padding="md"
         style={{
           backgroundColor: isSelected ? colors.bg[theme].selected : colors.bg[theme].subtle,
-          borderRadius: 7,
+          borderRadius: borderRadius.l,
           borderWidth: isSelected ? 2 : 1,
           borderColor: isSelected ? colors.border[theme].active : colors.border[theme].default,
         }}
       >
         <Stack style={{ width: 56, alignItems: 'center' }}>
-          <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+          <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
             {start.toLocaleDateString('en-US', { weekday: 'short' })}
           </Text>
-          <Text style={{ color: colors.text[theme].primary, fontWeight: '700', fontSize: 16 }}>
+          <Text style={{ color: colors.text[theme].primary, fontWeight: '700', fontSize: fontSize.md }}>
             {start.getDate()}
           </Text>
-          <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+          <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
             {start.toLocaleDateString('en-US', { month: 'short' })}
           </Text>
         </Stack>
         <Separator orientation="vertical" />
         <Stack style={{ flex: 1 }} gap={4}>
-          <Text style={{ color: colors.text[theme].primary, fontWeight: '600', fontSize: 15 }}>
+          <Text style={{ color: colors.text[theme].primary, fontWeight: '600', fontSize: fontSize.md }}>
             {start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} –{' '}
             {end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
           </Text>
           <Row gap={8} align="center">
             <Row gap={4} align="center">
               <Clock size={12} color={colors.text[theme].tertiary} />
-              <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>{durationMin} min</Text>
+              <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>{durationMin} min</Text>
             </Row>
             <LocationBadge type={slot.location_type} />
           </Row>
           {slot.location_details && (
-            <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>{slot.location_details}</Text>
+            <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>{slot.location_details}</Text>
           )}
         </Stack>
         {isSelected && (
-          <Stack style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: colors.fg[theme].success, alignItems: 'center', justifyContent: 'center' }}>
-            <Check size={16} color="#fff" />
+          <Stack style={{ width: 28, height: 28, borderRadius: borderRadius.max, backgroundColor: colors.fg[theme].success, alignItems: 'center', justifyContent: 'center' }}>
+            <Check size={16} color={colors.text[theme].quaternary} />
           </Stack>
         )}
       </Row>
@@ -212,14 +212,14 @@ export function SelfScheduleScreen({ token }: SelfScheduleScreenProps = {}) {
     return (
       <ScrollView showsVerticalScrollIndicator={false}>
         <Stack gap={24} align="center" style={{ paddingVertical: 60, paddingHorizontal: 20 }}>
-          <Stack style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: `${colors.success[500]}20`, alignItems: 'center', justifyContent: 'center' }}>
+          <Stack style={{ width: 64, height: 64, borderRadius: borderRadius.max, backgroundColor: `${colors.success[500]}20`, alignItems: 'center', justifyContent: 'center' }}>
             <Check size={32} color={colors.success[500]} />
           </Stack>
           <Stack gap={8} align="center">
-            <Text style={{ color: colors.text[theme].primary, fontSize: 22, fontWeight: '700' }}>
+            <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.xl, fontWeight: '700' }}>
               Interview Booked!
             </Text>
-            <Text style={{ color: colors.text[theme].secondary, fontSize: 15, textAlign: 'center' }}>
+            <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.md, textAlign: 'center' }}>
               Your interview with {orgName} has been scheduled.
             </Text>
           </Stack>
@@ -243,7 +243,7 @@ export function SelfScheduleScreen({ token }: SelfScheduleScreenProps = {}) {
               </Stack>
             </Card>
           )}
-          <Text style={{ color: colors.text[theme].tertiary, fontSize: 13, textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm, textAlign: 'center' }}>
             A calendar invite has been sent to your email. You can also add it to your calendar below.
           </Text>
           <Button variant="outline" iconStart={Calendar} onPress={() => {}}>
@@ -259,13 +259,13 @@ export function SelfScheduleScreen({ token }: SelfScheduleScreenProps = {}) {
       <Stack gap={24} style={{ paddingVertical: 20, paddingHorizontal: 20, maxWidth: 600, alignSelf: 'center', width: '100%' }}>
         {/* Header */}
         <Stack gap={8} align="center">
-          <Text style={{ color: colors.text[theme].primary, fontSize: 24, fontWeight: '700' }}>
+          <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.xl, fontWeight: '700' }}>
             Schedule Your Interview
           </Text>
-          <Text style={{ color: colors.text[theme].secondary, fontSize: 15, textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.md, textAlign: 'center' }}>
             {orgName} — {jobTitle}
           </Text>
-          <Text style={{ color: colors.text[theme].tertiary, fontSize: 14, textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.md, textAlign: 'center' }}>
             Select a time that works best for you
           </Text>
         </Stack>
@@ -281,7 +281,7 @@ export function SelfScheduleScreen({ token }: SelfScheduleScreenProps = {}) {
         {/* Slot Groups */}
         {Object.entries(slotsByDate).map(([date, slots]) => (
           <Stack key={date} gap={8}>
-            <Text style={{ color: colors.text[theme].secondary, fontWeight: '600', fontSize: 14 }}>{date}</Text>
+            <Text style={{ color: colors.text[theme].secondary, fontWeight: '600', fontSize: fontSize.md }}>{date}</Text>
             <Stack gap={6}>
               {slots.map((slot) => (
                 <SlotCard
@@ -312,7 +312,7 @@ export function SelfScheduleScreen({ token }: SelfScheduleScreenProps = {}) {
           </Button>
         ) : null}
 
-        <Text style={{ color: colors.text[theme].tertiary, fontSize: 12, textAlign: 'center' }}>
+        <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm, textAlign: 'center' }}>
           All times shown in your local timezone
         </Text>
       </Stack>

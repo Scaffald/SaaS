@@ -1,3 +1,17 @@
+// Token mock used by every vitest run — `@scaffald/ui/tokens` is aliased here
+// in vitest.config.ts, so a token that exists in packages/ui but not in this
+// file reads as `undefined` at module scope and fails the whole suite on
+// import, with no stack pointing here.
+//
+// It drifts from the real tokens in both directions. Known divergences:
+//   * `borderRadius` below is the PRE-#621 scale (xs 6, s 8, l 12, xl 16).
+//     The real interface scale is 2 / 4 / 7. Nothing asserts on these values
+//     today, which is the only reason it has not been noticed.
+//   * `slate` exists here and NOT in the real tokens; `zinc` is the real ramp.
+//     Reaching for `colors.slate[...]` therefore passes tests and crashes the
+//     app.
+// Tracked separately; add what you need rather than working around a gap.
+
 export const borderRadius = {
   none: 0,
   xxxs: 2,
@@ -84,6 +98,8 @@ export const colors = {
   orange: { 50: '#fff7ed', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' },
   violet: { 50: '#f5f3ff', 100: '#ede9fe', 300: '#c4b5fd', 400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9', 800: '#5b21b6', 900: '#4c1d95' },
   teal: { 50: '#f0fdfa', 100: '#ccfbf1', 300: '#5eead4', 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 800: '#115e59', 900: '#134e4a' },
+  // Real tokens have `zinc`, not `slate` — see the note at the top of this file.
+  zinc: { 50: '#fafafa', 100: '#f4f4f5', 200: '#e4e4e7', 300: '#d4d4d8', 400: '#a1a1aa', 500: '#71717a', 600: '#52525b', 700: '#3f3f46', 800: '#27272a', 900: '#18181b' },
   slate: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' },
   sky: { 50: '#f0f9ff', 100: '#e0f2fe', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' },
   emerald: { 50: '#ecfdf5', 100: '#d1fae5', 300: '#6ee7b7', 400: '#34d399', 500: '#10b981', 600: '#059669', 700: '#047857', 800: '#065f46', 900: '#064e3b' },

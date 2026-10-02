@@ -2,7 +2,7 @@ import { useUser } from '@scf/core/utils/useUser'
 import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { Check, MessageSquare } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 interface InquiryStatusBadgesProps {
   inquiryData: {
@@ -57,7 +57,7 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
           paddingHorizontal={8}
           paddingVertical={4}
-          borderRadius={8}
+          borderRadius={borderRadius.l}
           align="center"
           gap={4}
         >
@@ -72,7 +72,7 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
           paddingHorizontal={8}
           paddingVertical={4}
-          borderRadius={8}
+          borderRadius={borderRadius.l}
           align="center"
           gap={4}
         >
@@ -87,7 +87,7 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           style={{ backgroundColor: colors.bg[theme].muted }}
           paddingHorizontal={8}
           paddingVertical={4}
-          borderRadius={8}
+          borderRadius={borderRadius.l}
         >
           <Text style={{ color: colors.text[theme].secondary }}>{pendingSections} Pending</Text>
         </Stack>
@@ -99,7 +99,7 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
           paddingHorizontal={8}
           paddingVertical={4}
-          borderRadius={8}
+          borderRadius={borderRadius.l}
         >
           <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{acceptedSections} Completed</Text>
         </Stack>
@@ -111,7 +111,7 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           style={{ backgroundColor: colors.bg[theme].muted }}
           paddingHorizontal={8}
           paddingVertical={4}
-          borderRadius={8}
+          borderRadius={borderRadius.l}
         >
           <Text style={{ color: colors.text[theme].secondary }}>Pending checks</Text>
         </Stack>
@@ -123,7 +123,7 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
           style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
           paddingHorizontal={8}
           paddingVertical={4}
-          borderRadius={8}
+          borderRadius={borderRadius.l}
         >
           <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
             {acceptedSections}/{totalSections}

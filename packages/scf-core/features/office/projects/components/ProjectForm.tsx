@@ -6,7 +6,7 @@ import {
 } from "@scf/core/utils/projects-sdk-hooks";
 import { useAllOrganizations } from "@scf/core/utils/useAllOrganizations";
 import { useOrganization } from "@scf/core/utils/organizations-sdk-hooks";
-import { colors } from "@scaffald/ui/tokens";
+import { borderRadius, colors } from '@scaffald/ui/tokens';
 import {
   Button,
   Card,
@@ -313,7 +313,7 @@ export function ProjectForm({
                         ? colors.yellow[50]
                         : colors.yellow[900],
                   }}
-                  borderRadius={8}
+                  borderRadius={borderRadius.l}
                 >
                   <Text
                     style={{

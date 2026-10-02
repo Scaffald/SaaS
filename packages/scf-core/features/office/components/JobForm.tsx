@@ -43,7 +43,7 @@ import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Card, Toggle } from '@scaffald/ui'
 import { JobPreviewModal } from './JobPreviewModal'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 import {
   ApplicationProcessSection,
   ApplicationScreeningSection,
@@ -697,7 +697,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 style={{ backgroundColor: colors.bg[theme].muted }}
                 paddingHorizontal={8}
                 paddingVertical={4}
-                borderRadius={12}
+                borderRadius={borderRadius.l}
                 gap={4}
                 align="center"
               >
@@ -859,7 +859,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 style={{ backgroundColor: colors.bg[theme].muted }}
                 paddingHorizontal={8}
                 paddingVertical={4}
-                borderRadius={12}
+                borderRadius={borderRadius.l}
                 gap={4}
                 align="center"
               >

@@ -35,7 +35,7 @@ import {
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { MoveMenu } from './MoveMenu'
 import { CandidateDetailModal } from './CandidateDetailModal'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 
 const STATUSES: ApplicationStatus[] = [
   'new',
@@ -352,7 +352,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                       style={{ backgroundColor: colors.bg[theme].muted }}
                       paddingHorizontal={8}
                       paddingVertical={4}
-                      borderRadius={8}
+                      borderRadius={borderRadius.l}
                       marginTop={4}
                     >
                       <Text style={{ color: colors.text[theme].secondary }}>
@@ -420,7 +420,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                   {activeApplication.job.title}
                 </Text>
                 <Row gap={8} justify="space-between">
-                  <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
+                  <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>
                     {Math.floor(
                       (Date.now() - new Date(activeApplication.appliedAt).getTime()) /
                         (1000 * 60 * 60 * 24)
@@ -431,7 +431,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                     (activeApplication.attachments.coverLetter ? 1 : 0) +
                     (activeApplication.attachments.portfolio ? 1 : 0) >
                     0 && (
-                    <Text style={{ color: colors.text[theme].secondary, fontSize: 12 }}>
+                    <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.sm }}>
                       {(activeApplication.attachments.resume ? 1 : 0) +
                         (activeApplication.attachments.coverLetter ? 1 : 0) +
                         (activeApplication.attachments.portfolio ? 1 : 0)}{' '}
@@ -614,21 +614,21 @@ function DraggableCard({
                   alignSelf: 'flex-start',
                   paddingHorizontal: 8,
                   paddingVertical: 2,
-                  borderRadius: 7,
+                  borderRadius: borderRadius.l,
                   backgroundColor: colors.bg[theme].subtle,
                 }}
               >
-                <Text style={{ fontSize: 11, color: colors.text[theme].secondary }}>
+                <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].secondary }}>
                   Withdrawn by candidate
                 </Text>
               </Stack>
             )}
             <Row gap={8} justify="space-between">
-              <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
+              <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>
                 {kanbanCardProps.durationDays}d ago
               </Text>
               {kanbanCardProps.attachmentCount > 0 && (
-                <Text style={{ color: colors.text[theme].secondary, fontSize: 12 }}>
+                <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.sm }}>
                   {kanbanCardProps.attachmentCount} attachments
                 </Text>
               )}

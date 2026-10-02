@@ -27,7 +27,7 @@ import { useApplications } from './hooks/useApplications'
 import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
 import { STATUS_MAP } from './hooks/useApplicationStatusChange'
 import { toATSApplication } from './transform'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import { useScreenRhythm } from '@scf/core/constants/layout'
 
 /** `lanes` is the default — see ApplicationsLanes for why it beats the board. */
@@ -169,7 +169,7 @@ export const OfficeApplicationsScreen = ({
             style={{
               marginBottom: 12,
               padding: 12,
-              borderRadius: 10,
+              borderRadius: borderRadius.l,
               borderWidth: 1,
               borderColor: colors.border[theme].default,
               backgroundColor: colors.bg[theme].subtle,
@@ -187,7 +187,7 @@ export const OfficeApplicationsScreen = ({
                 a different kind of thing. */}
             <Text
               style={{
-                fontSize: 11,
+                fontSize: fontSize.xxs,
                 letterSpacing: 1.4,
                 textTransform: 'uppercase',
                 fontWeight: '500',
@@ -198,7 +198,7 @@ export const OfficeApplicationsScreen = ({
             </Text>
             <Text
               style={{
-                fontSize: 12.5,
+                fontSize: fontSize.sm,
                 fontStyle: 'italic',
                 color: colors.text[theme].tertiary,
                 marginBottom: 4,

@@ -7,7 +7,7 @@ import { useToast, useThemeContext } from "@scaffald/ui";
 import { useState } from "react";
 import { Button, Card, Spinner, Text, Row, Stack } from "@scaffald/ui";
 import { SetupIntentForm } from "./SetupIntentForm";
-import { colors } from "@scaffald/ui/tokens";
+import { borderRadius, colors } from '@scaffald/ui/tokens';
 
 type OrganizationPaymentMethodsPanelProps = {
   organizationId: string;
@@ -122,7 +122,7 @@ export function OrganizationPaymentMethodsPanel({
               align="center"
               padding="sm"
               style={{ backgroundColor: colors.bg[theme].subtle }}
-              borderRadius={16}
+              borderRadius={borderRadius.l}
               borderWidth={1}
               borderColor={colors.border[theme].default}
             >
@@ -183,7 +183,7 @@ export function OrganizationPaymentMethodsPanel({
             gap={8}
             padding="sm"
             style={{ backgroundColor: colors.bg[theme].subtle }}
-            borderRadius={16}
+            borderRadius={borderRadius.l}
           >
             <Text style={{ color: colors.text[theme].secondary }}>
               No payment method on file

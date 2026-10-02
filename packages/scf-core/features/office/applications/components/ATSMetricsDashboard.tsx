@@ -22,7 +22,7 @@ import {
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import type { ApplicationStatus, ATSApplication } from '../types'
 
 /** Pipeline stage display config */
@@ -360,7 +360,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                     style={{
                       width: 80,
                       color: colors.text[theme].secondary,
-                      fontSize: 12,
+                      fontSize: fontSize.sm,
                     }}
                   >
                     {stage.label}
@@ -371,13 +371,13 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                         height: 20,
                         width: `${barWidth}%`,
                         backgroundColor: stage.color,
-                        borderRadius: 4,
+                        borderRadius: borderRadius.xs,
                         justifyContent: 'center',
                         paddingHorizontal: 6,
                         minWidth: 30,
                       }}
                     >
-                      <Text style={{ color: colors.text[theme].quaternary, fontSize: 11 }}>
+                      <Text style={{ color: colors.text[theme].quaternary, fontSize: fontSize.xxs }}>
                         {count}
                       </Text>
                     </Stack>
@@ -395,10 +395,10 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
               }}
             >
               <Row gap={8} align="center">
-                <Text style={{ width: 80, color: colors.text[theme].tertiary, fontSize: 12 }}>
+                <Text style={{ width: 80, color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>
                   Rejected
                 </Text>
-                <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
+                <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>
                   {rejectedCount}
                 </Text>
               </Row>
@@ -415,7 +415,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
               <Stack gap={6}>
                 {conversionRates.map((item, idx) => (
                   <Row key={item.stage} gap={8} align="center">
-                    <Text style={{ width: 80, color: colors.text[theme].secondary, fontSize: 12 }}>
+                    <Text style={{ width: 80, color: colors.text[theme].secondary, fontSize: fontSize.sm }}>
                       {item.stage}
                     </Text>
                     <Stack style={{ flex: 1 }}>
@@ -423,7 +423,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                         style={{
                           height: 6,
                           backgroundColor: colors.bg[theme].muted,
-                          borderRadius: 3,
+                          borderRadius: borderRadius.max,
                         }}
                       >
                         <Stack
@@ -432,7 +432,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                             width: `${item.rate}%`,
                             backgroundColor:
                               PIPELINE_STAGES[idx]?.color ?? colors.text[theme].tertiary,
-                            borderRadius: 3,
+                            borderRadius: borderRadius.max,
                           }}
                         />
                       </Stack>
@@ -442,7 +442,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                         width: 50,
                         textAlign: 'right',
                         color: colors.text[theme].secondary,
-                        fontSize: 12,
+                        fontSize: fontSize.sm,
                       }}
                     >
                       {item.rate}%
@@ -471,14 +471,14 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                     style={{
                       width: 10,
                       height: 10,
-                      borderRadius: 5,
+                      borderRadius: borderRadius.max,
                       backgroundColor: item.color,
                     }}
                   />
-                  <Text style={{ flex: 1, color: colors.text[theme].secondary, fontSize: 13 }}>
+                  <Text style={{ flex: 1, color: colors.text[theme].secondary, fontSize: fontSize.sm }}>
                     {item.label}
                   </Text>
-                  <Text style={{ color: colors.text[theme].primary, fontSize: 13 }}>
+                  <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.sm }}>
                     {item.count}
                   </Text>
                   <Text
@@ -486,7 +486,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                       width: 40,
                       textAlign: 'right',
                       color: colors.text[theme].tertiary,
-                      fontSize: 12,
+                      fontSize: fontSize.sm,
                     }}
                   >
                     {item.percentage}%
@@ -517,7 +517,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
 
               {/* Distribution bars */}
               <Stack gap={6}>
-                <Text style={{ color: colors.text[theme].secondary, fontSize: 12 }}>
+                <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.sm }}>
                   Distribution
                 </Text>
                 {timeToHireStats.distribution.map((bucket) => {
@@ -525,7 +525,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                   const barWidth = Math.max((bucket.count / maxBucket) * 100, 4)
                   return (
                     <Row key={bucket.label} gap={8} align="center">
-                      <Text style={{ width: 80, color: colors.text[theme].tertiary, fontSize: 11 }}>
+                      <Text style={{ width: 80, color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
                         {bucket.label}
                       </Text>
                       <Stack style={{ flex: 1, height: 18, justifyContent: 'center' }}>
@@ -534,13 +534,13 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
                             height: 14,
                             width: `${barWidth}%`,
                             backgroundColor: colors.warning[theme === 'light' ? 600 : 300],
-                            borderRadius: 3,
+                            borderRadius: borderRadius.xxs,
                             justifyContent: 'center',
                             paddingHorizontal: 4,
                             minWidth: 24,
                           }}
                         >
-                          <Text style={{ color: colors.text[theme].quaternary, fontSize: 10 }}>
+                          <Text style={{ color: colors.text[theme].quaternary, fontSize: fontSize.xxs }}>
                             {bucket.count}
                           </Text>
                         </Stack>

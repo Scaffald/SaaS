@@ -9,7 +9,7 @@ import { BookTemplate, ChevronDown, ChevronUp, FileText } from 'lucide-react-nat
 import { useState } from 'react'
 import { Pressable, ScrollView } from 'react-native'
 import { Button, Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import type { ApplicationStatus } from '../types'
 import type { MessageTemplate } from './message-templates'
 import { STAGE_LABELS } from './message-templates'
@@ -47,7 +47,7 @@ export function MessageTemplateSelector({
           padding="sm"
           style={{
             backgroundColor: colors.bg[theme].subtle,
-            borderRadius: 7,
+            borderRadius: borderRadius.l,
             borderWidth: 1,
             borderColor: colors.border[theme].default,
           }}
@@ -99,7 +99,7 @@ export function MessageTemplateSelector({
                         <Text
                           style={{
                             color: colors.text[theme].tertiary,
-                            fontSize: 12,
+                            fontSize: fontSize.sm,
                           }}
                           numberOfLines={1}
                         >
@@ -110,7 +110,7 @@ export function MessageTemplateSelector({
                         <Text
                           style={{
                             color: colors.text[theme].tertiary,
-                            fontSize: 10,
+                            fontSize: fontSize.xxs,
                           }}
                         >
                           Default

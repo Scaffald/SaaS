@@ -12,7 +12,7 @@ import {
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { Text, Row, Stack } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import {
   jobPalette,
   textSmall,
@@ -118,7 +118,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
                 style={{
                   flex: 1,
                   fontWeight: '600',
-                  fontSize: 15,
+                  fontSize: fontSize.md,
                   color: isSelected ? pal.accent : colors.text[theme].primary,
                 }}
               >
@@ -202,7 +202,7 @@ function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; va
       style={{
         borderWidth: 1,
         borderColor: colors.border[theme].default,
-        borderRadius: 7,
+        borderRadius: borderRadius.l,
         paddingHorizontal: 8,
         paddingVertical: 4,
         backgroundColor: colors.bg[theme].muted,

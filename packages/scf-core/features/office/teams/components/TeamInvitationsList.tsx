@@ -10,7 +10,7 @@ import { useToast, useThemeContext } from "@scaffald/ui";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { ResponsiveSelect } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
+import { borderRadius, colors } from '@scaffald/ui/tokens';
 import { Button, Card, Spinner, Text, Row, Stack } from "@scaffald/ui";
 
 type InvitationRecord = TeamInvitation;
@@ -181,7 +181,7 @@ export function TeamInvitationsList({
           gap={8}
           borderWidth={1}
           borderColor={colors.border[theme].default}
-          borderRadius={16}
+          borderRadius={borderRadius.l}
           padding="md"
           style={{ backgroundColor: colors.bg[theme].subtle }}
         >

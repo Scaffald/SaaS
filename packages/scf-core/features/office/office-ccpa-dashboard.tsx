@@ -27,7 +27,7 @@ import {
   useCCPAAdminRequests,
   useCCPAProcessRequestMutation,
 } from "@scf/core/utils/ccpa-sdk-hooks";
-import { colors } from "@scaffald/ui/tokens";
+import { borderRadius, colors } from '@scaffald/ui/tokens';
 
 /**
  * Request status type for admin view
@@ -135,7 +135,7 @@ function StatusBadge({ status }: { status: AdminRequestStatus }) {
       backgroundColor={statusColors.bg}
       paddingHorizontal={8}
       paddingVertical={4}
-      borderRadius={8}
+      borderRadius={borderRadius.l}
     >
       <Text style={{ color: statusColors.text, textTransform: "capitalize" }}>
         {status}
@@ -156,7 +156,7 @@ function PriorityBadge({ priority }: { priority: string }) {
       backgroundColor={selectedColors.bg}
       paddingHorizontal={8}
       paddingVertical={4}
-      borderRadius={8}
+      borderRadius={borderRadius.l}
     >
       <Text style={{ color: selectedColors.text, textTransform: "capitalize" }}>
         {priority}
@@ -193,7 +193,7 @@ function RequestRow({
             : colors.error[900]
           : colors.bg[theme].subtle,
       }}
-      borderRadius={8}
+      borderRadius={borderRadius.l}
       borderWidth={1}
       borderColor={
         request.is_overdue
@@ -523,7 +523,7 @@ export function CCPAAdminDashboard() {
               backgroundColor:
                 theme === "light" ? colors.error[50] : colors.error[900],
             }}
-            borderRadius={12}
+            borderRadius={borderRadius.l}
             borderWidth={1}
             borderColor={
               theme === "light" ? colors.error[300] : colors.error[700]
@@ -566,7 +566,7 @@ export function CCPAAdminDashboard() {
             <Stack
               padding="xl"
               style={{ backgroundColor: colors.bg[theme].subtle }}
-              borderRadius={12}
+              borderRadius={borderRadius.l}
               borderWidth={1}
               borderColor={colors.border[theme].default}
               align="center"
@@ -611,7 +611,7 @@ export function CCPAAdminDashboard() {
           gap={12}
           padding="md"
           style={{ backgroundColor: colors.bg[theme].subtle }}
-          borderRadius={16}
+          borderRadius={borderRadius.l}
           borderWidth={1}
           borderColor={colors.border[theme].default}
         >
@@ -621,7 +621,7 @@ export function CCPAAdminDashboard() {
               <Stack
                 width={8}
                 height={8}
-                borderRadius={4}
+                borderRadius={borderRadius.max}
                 style={{
                   backgroundColor:
                     theme === "light" ? colors.blue[700] : colors.blue[300],
@@ -635,7 +635,7 @@ export function CCPAAdminDashboard() {
               <Stack
                 width={8}
                 height={8}
-                borderRadius={4}
+                borderRadius={borderRadius.max}
                 style={{
                   backgroundColor:
                     theme === "light" ? colors.yellow[700] : colors.yellow[300],
@@ -650,7 +650,7 @@ export function CCPAAdminDashboard() {
               <Stack
                 width={8}
                 height={8}
-                borderRadius={4}
+                borderRadius={borderRadius.max}
                 style={{
                   backgroundColor:
                     theme === "light" ? colors.green[700] : colors.green[300],
@@ -664,7 +664,7 @@ export function CCPAAdminDashboard() {
               <Stack
                 width={8}
                 height={8}
-                borderRadius={4}
+                borderRadius={borderRadius.max}
                 style={{
                   backgroundColor:
                     theme === "light" ? colors.error[700] : colors.error[300],

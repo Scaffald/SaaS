@@ -22,7 +22,7 @@ import { Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
 import { Caption, Paragraph, Row, Stack, Text, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import { ChevronRight, KeyRound, Puzzle, Webhook } from 'lucide-react-native'
 
 type DeveloperLink = {
@@ -73,7 +73,7 @@ export function OfficeDeveloperLinks() {
             style={({ pressed }) => ({
               paddingVertical: 10,
               paddingHorizontal: 12,
-              borderRadius: 7,
+              borderRadius: borderRadius.l,
               borderWidth: 1,
               borderColor: colors.border[theme].subtle,
               backgroundColor: pressed ? colors.bg[theme].muted : colors.bg[theme].subtle,
@@ -85,7 +85,7 @@ export function OfficeDeveloperLinks() {
                 <Text
                   style={{
                     color: colors.text[theme].primary,
-                    fontSize: 14,
+                    fontSize: fontSize.md,
                     fontWeight: '600',
                   }}
                 >

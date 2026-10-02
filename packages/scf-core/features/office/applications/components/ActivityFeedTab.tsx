@@ -23,7 +23,7 @@ import {
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import type { ATSApplication } from '../types'
 
 /** Activity event types for the feed */
@@ -174,7 +174,7 @@ export function ActivityFeedTab({ application, isLoading }: ActivityFeedTabProps
                   style={{
                     width: 28,
                     height: 28,
-                    borderRadius: 14,
+                    borderRadius: borderRadius.max,
                     backgroundColor: `${color}20`,
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -198,14 +198,14 @@ export function ActivityFeedTab({ application, isLoading }: ActivityFeedTabProps
               {/* Event content */}
               <Stack style={{ flex: 1, paddingBottom: 16 }}>
                 <Row justify="space-between" align="center">
-                  <Text style={{ color: colors.text[theme].primary, fontWeight: '500', fontSize: 13 }}>
+                  <Text style={{ color: colors.text[theme].primary, fontWeight: '500', fontSize: fontSize.sm }}>
                     {event.actor}
                   </Text>
-                  <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+                  <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
                     {formatRelativeTime(event.timestamp)}
                   </Text>
                 </Row>
-                <Text style={{ color: colors.text[theme].secondary, fontSize: 13, marginTop: 2 }}>
+                <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.sm, marginTop: 2 }}>
                   {getEventDescription(event)}
                 </Text>
               </Stack>

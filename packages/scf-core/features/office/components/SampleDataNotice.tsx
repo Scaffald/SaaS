@@ -14,7 +14,7 @@
  */
 
 import { Card, Row, Stack, Text, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { colors, fontSize } from '@scaffald/ui/tokens'
 import { AlertTriangle } from 'lucide-react-native'
 
 export interface SampleDataNoticeProps {
@@ -41,7 +41,7 @@ export function SampleDataNotice({ title, description }: SampleDataNoticeProps) 
         <AlertTriangle size={24} color={colors.fg[theme].warning} />
         <Stack flex={1} gap={2}>
           <Text style={{ fontWeight: '700', color: colors.fg[theme].warning }}>{title}</Text>
-          <Text style={{ fontSize: 13, color: colors.fg[theme].warning }}>{description}</Text>
+          <Text style={{ fontSize: fontSize.sm, color: colors.fg[theme].warning }}>{description}</Text>
         </Stack>
       </Row>
     </Card>

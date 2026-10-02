@@ -32,7 +32,7 @@ import { MessagesTab } from './MessagesTab'
 import { NotesTab } from './NotesTab'
 import { ActivityFeedTab } from './ActivityFeedTab'
 import { UnionStatusBadge } from './UnionStatusBadge'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 // biome-ignore lint/suspicious/noExplicitAny: legacy inquiry record mapping
 const mapInquiryToFormValues = (inquiry: Record<string, any>): InquiryCreateInput => ({
@@ -261,7 +261,7 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
         backgroundColor={scoreBg}
         paddingHorizontal={16}
         paddingVertical={12}
-        borderRadius={16}
+        borderRadius={borderRadius.l}
         align="center"
       >
         <Text color={scoreColor}>{application.score}</Text>

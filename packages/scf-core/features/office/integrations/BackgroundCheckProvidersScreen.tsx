@@ -26,7 +26,7 @@ import {
   Tabs,
   useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import { StatusBadge } from '@scf/core/components/ui'
 import {
   Check,
@@ -137,12 +137,12 @@ function ProviderCard({ provider, onConfigure }: { provider: BGCheckProvider; on
       padding="md"
       style={{
         backgroundColor: colors.bg[theme].subtle,
-        borderRadius: 7,
+        borderRadius: borderRadius.l,
         borderWidth: 1,
         borderColor: provider.is_connected ? colors.border[theme].active : colors.border[theme].default,
       }}
     >
-      <Stack style={{ width: 40, height: 40, borderRadius: 7, backgroundColor: colors.bg[theme].default, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border[theme].default }}>
+      <Stack style={{ width: 40, height: 40, borderRadius: borderRadius.l, backgroundColor: colors.bg[theme].default, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border[theme].default }}>
         <ShieldCheck size={20} color={provider.is_connected ? colors.fg[theme].active : colors.icon[theme].subtle} />
       </Stack>
       <Stack style={{ flex: 1 }} gap={2}>
@@ -151,9 +151,9 @@ function ProviderCard({ provider, onConfigure }: { provider: BGCheckProvider; on
           {provider.is_default && <StatusBadge variant="success">Default</StatusBadge>}
           {provider.is_connected && !provider.is_default && <StatusBadge variant="default">Connected</StatusBadge>}
         </Row>
-        <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>{provider.description}</Text>
+        <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>{provider.description}</Text>
         {provider.is_connected && (
-          <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+          <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
             {provider.supported_packages.length} packages available · Default: {provider.default_package ?? 'none'}
           </Text>
         )}
@@ -174,13 +174,13 @@ function WebhookEventRow({ event }: { event: WebhookEvent }) {
   const date = new Date(event.received_at)
 
   return (
-    <Row gap={12} align="center" padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 7 }}>
-      <Stack style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: event.processed ? `${colors.success[500]}20` : `${colors.warning[500]}20`, alignItems: 'center', justifyContent: 'center' }}>
+    <Row gap={12} align="center" padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: borderRadius.l }}>
+      <Stack style={{ width: 24, height: 24, borderRadius: borderRadius.max, backgroundColor: event.processed ? `${colors.success[500]}20` : `${colors.warning[500]}20`, alignItems: 'center', justifyContent: 'center' }}>
         {event.processed ? <Check size={12} color={colors.success[500]} /> : <Clock size={12} color={colors.warning[500]} />}
       </Stack>
       <Stack style={{ flex: 1 }} gap={2}>
-        <Text style={{ color: colors.text[theme].primary, fontSize: 13, fontFamily: 'monospace' }}>{event.event_type}</Text>
-        <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>{date.toLocaleString()}</Text>
+        <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.sm, fontFamily: 'monospace' }}>{event.event_type}</Text>
+        <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>{date.toLocaleString()}</Text>
       </Stack>
       {event.check_status && (
         <StatusBadge variant={event.check_status === 'clear' ? 'success' : event.check_status === 'consider' ? 'warning' : 'default'}>
@@ -201,23 +201,23 @@ function PackageCard({ pkg }: { pkg: CheckPackage }) {
     <Card variant="glass" padding="md" style={{ borderWidth: 1, borderColor: colors.border[theme].default }}>
       <Stack gap={10}>
         <Row justify="space-between" align="center">
-          <Text style={{ color: colors.text[theme].primary, fontWeight: '600', fontSize: 15 }}>{pkg.name}</Text>
-          <Text style={{ color: colors.fg[theme].active, fontWeight: '700', fontSize: 14 }}>{pkg.price_range}</Text>
+          <Text style={{ color: colors.text[theme].primary, fontWeight: '600', fontSize: fontSize.md }}>{pkg.name}</Text>
+          <Text style={{ color: colors.fg[theme].active, fontWeight: '700', fontSize: fontSize.md }}>{pkg.price_range}</Text>
         </Row>
-        <Text style={{ color: colors.text[theme].tertiary, fontSize: 13 }}>{pkg.description}</Text>
+        <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>{pkg.description}</Text>
         <Separator />
         <Stack gap={4}>
           {pkg.checks_included.map((check) => (
             <Row key={check} gap={6} align="center">
               <Check size={12} color={colors.fg[theme].success} />
-              <Text style={{ color: colors.text[theme].secondary, fontSize: 12 }}>{check}</Text>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.sm }}>{check}</Text>
             </Row>
           ))}
         </Stack>
         <Row justify="space-between" align="center" style={{ paddingTop: 4 }}>
           <Row gap={4} align="center">
             <Clock size={12} color={colors.icon[theme].subtle} />
-            <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>{pkg.avg_turnaround}</Text>
+            <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>{pkg.avg_turnaround}</Text>
           </Row>
           <Button size="sm" variant="outline" onPress={() => {}}>Set as Default</Button>
         </Row>
@@ -244,10 +244,10 @@ export function BackgroundCheckProvidersScreen() {
         {/* Header */}
         <Row justify="space-between" align="center">
           <Stack gap={2}>
-            <Text style={{ color: colors.text[theme].primary, fontSize: 20, fontWeight: '700' }}>
+            <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.xl, fontWeight: '700' }}>
               Background Check Providers
             </Text>
-            <Text style={{ color: colors.text[theme].tertiary, fontSize: 14 }}>
+            <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.md }}>
               Manage provider integrations and check configurations
             </Text>
           </Stack>
@@ -287,7 +287,7 @@ export function BackgroundCheckProvidersScreen() {
               <Stack gap={16} style={{ paddingTop: 16 }}>
                 <DashboardWidget>
                   <DashboardWidgetHeader title="Background Check Packages" />
-                  <Text style={{ color: colors.text[theme].tertiary, fontSize: 13, marginBottom: 8 }}>
+                  <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm, marginBottom: 8 }}>
                     Available screening packages from your connected provider
                   </Text>
                   <Stack gap={12}>
@@ -307,9 +307,9 @@ export function BackgroundCheckProvidersScreen() {
                 {/* Webhook URL */}
                 <DashboardWidget>
                   <DashboardWidgetHeader title="Webhook Configuration" />
-                  <Row gap={8} align="center" padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: 7 }}>
+                  <Row gap={8} align="center" padding="sm" style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: borderRadius.l }}>
                     <Webhook size={16} color={colors.icon[theme].default} />
-                    <Text style={{ flex: 1, color: colors.text[theme].primary, fontSize: 12, fontFamily: 'monospace' }}>
+                    <Text style={{ flex: 1, color: colors.text[theme].primary, fontSize: fontSize.sm, fontFamily: 'monospace' }}>
                       https://api.scaffald.com/webhooks/checkr/abc123
                     </Text>
                     <Button size="sm" variant="outline" iconStart={Copy} onPress={() => {}}>Copy</Button>
@@ -336,27 +336,27 @@ export function BackgroundCheckProvidersScreen() {
           <ModalContent>
             <Stack gap={16}>
               {!selectedProvider?.is_connected && (
-                <Text style={{ color: colors.text[theme].secondary, fontSize: 14 }}>
+                <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.md }}>
                   Enter your API credentials to integrate {selectedProvider?.display_name}.
                 </Text>
               )}
               <Stack gap={4}>
-                <Text style={{ color: colors.text[theme].primary, fontSize: 14, fontWeight: '500' }}>API Key</Text>
+                <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}>API Key</Text>
                 <Input placeholder="Enter API key" secureTextEntry onChangeText={() => {}} />
               </Stack>
               <Stack gap={4}>
-                <Text style={{ color: colors.text[theme].primary, fontSize: 14, fontWeight: '500' }}>Webhook Secret</Text>
+                <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}>Webhook Secret</Text>
                 <Input placeholder="Enter webhook secret" secureTextEntry onChangeText={() => {}} />
               </Stack>
               {selectedProvider?.is_connected && (
                 <>
                   <Separator />
                   <Row justify="space-between" align="center">
-                    <Text style={{ color: colors.text[theme].primary, fontSize: 14 }}>Set as Default Provider</Text>
+                    <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.md }}>Set as Default Provider</Text>
                     <Toggle checked={selectedProvider.is_default} onChange={() => {}} />
                   </Row>
                   <Row justify="space-between" align="center">
-                    <Text style={{ color: colors.text[theme].primary, fontSize: 14 }}>Active</Text>
+                    <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.md }}>Active</Text>
                     <Toggle checked={selectedProvider.is_active} onChange={() => {}} />
                   </Row>
                 </>

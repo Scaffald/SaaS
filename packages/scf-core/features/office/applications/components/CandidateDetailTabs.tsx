@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Stack, Tabs, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 export type CandidateTab = 'profile' | 'application' | 'notes' | 'messages' | 'activity' | 'inquiry'
 
@@ -25,7 +25,7 @@ export const CandidateDetailTabs = ({ value, onValueChange, tabs }: CandidateDet
         gap={8}
         style={{ backgroundColor: colors.bg[theme].subtle }}
         padding={4}
-        borderRadius={12}
+        borderRadius={borderRadius.l}
       >
         <Tabs value={value} onValueChange={(next) => onValueChange(next as CandidateTab)}>
           {tabs.map((tab) => (

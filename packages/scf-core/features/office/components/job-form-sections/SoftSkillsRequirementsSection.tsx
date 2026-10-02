@@ -2,7 +2,7 @@ import { useSoftSkillsByCategory } from '@scf/core/utils/reviews-sdk-hooks'
 import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
 import { Label, Spinner } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 interface SoftSkillsRequirementsSectionProps {
   requiredSoftSkills?: Array<{ skill_id: string; importance: number }> | null
@@ -84,7 +84,7 @@ export function SoftSkillsRequirementsSection({
         gap={16}
         padding="md"
         style={{ backgroundColor: colors.bg[theme].default }}
-        borderRadius={16}
+        borderRadius={borderRadius.l}
         borderWidth={1}
         borderColor={colors.border[theme].default}
       >
@@ -105,7 +105,7 @@ export function SoftSkillsRequirementsSection({
         gap={16}
         padding="md"
         style={{ backgroundColor: colors.bg[theme].default }}
-        borderRadius={16}
+        borderRadius={borderRadius.l}
         borderWidth={1}
         borderColor={colors.border[theme].default}
       >
@@ -124,7 +124,7 @@ export function SoftSkillsRequirementsSection({
       gap={16}
       padding="md"
       style={{ backgroundColor: colors.bg[theme].default }}
-      borderRadius={16}
+      borderRadius={borderRadius.l}
       borderWidth={1}
       borderColor={colors.border[theme].default}
     >
@@ -200,7 +200,7 @@ export function SoftSkillsRequirementsSection({
           gap={8}
           padding="sm"
           style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
-          borderRadius={12}
+          borderRadius={borderRadius.l}
           borderWidth={1}
           borderColor={theme === "light" ? colors.blue[300] : colors.blue[700]}
         >

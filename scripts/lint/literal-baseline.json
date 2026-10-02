@@ -115,11 +115,6 @@
     "occupation-assessment": {
       "fontSize": 8
     },
-    "office": {
-      "borderRadius": 118,
-      "fontSize": 219,
-      "hexColor": 27
-    },
     "organizations": {
       "borderRadius": 1
     },

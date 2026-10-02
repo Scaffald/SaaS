@@ -19,7 +19,7 @@ import {
   Input,
   useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import {
   Calendar,
   Check,
@@ -143,10 +143,10 @@ const MOCK_PROJECTS: HiringProject[] = [
 // ============================================================================
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  planning: { bg: '#dbeafe', text: '#1e40af' },
-  hiring: { bg: '#fef3c7', text: '#92400e' },
-  active: { bg: '#d1fae5', text: '#065f46' },
-  completed: { bg: '#e5e7eb', text: '#374151' },
+  planning: { bg: colors.blue[100], text: colors.blue[800] },
+  hiring: { bg: colors.amber[100], text: colors.amber[800] },
+  active: { bg: colors.emerald[100], text: colors.emerald[800] },
+  completed: { bg: colors.zinc[200], text: colors.zinc[700] },
 }
 
 function ProjectCard({ project, onPress }: { project: HiringProject; onPress: () => void }) {
@@ -162,10 +162,10 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
         <Stack gap={12}>
           <Row justify="space-between" align="center">
             <Stack flex={1} gap={2}>
-              <Text style={{ fontWeight: '600', fontSize: 16, color: colors.text[theme].primary }}>
+              <Text style={{ fontWeight: '600', fontSize: fontSize.md, color: colors.text[theme].primary }}>
                 {project.name}
               </Text>
-              <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
+              <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
                 {project.client}
               </Text>
             </Stack>
@@ -173,11 +173,11 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
               style={{
                 paddingHorizontal: 10,
                 paddingVertical: 4,
-                borderRadius: 7,
+                borderRadius: borderRadius.l,
                 backgroundColor: statusStyle.bg,
               }}
             >
-              <Text style={{ fontSize: 12, fontWeight: '600', color: statusStyle.text }}>
+              <Text style={{ fontSize: fontSize.sm, fontWeight: '600', color: statusStyle.text }}>
                 {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
               </Text>
             </Stack>
@@ -186,11 +186,11 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
           <Row gap={16}>
             <Row gap={4} align="center">
               <MapPin size={14} color={colors.icon[theme].default} />
-              <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>{project.location}</Text>
+              <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>{project.location}</Text>
             </Row>
             <Row gap={4} align="center">
               <Calendar size={14} color={colors.icon[theme].default} />
-              <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
+              <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
                 {new Date(project.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} –{' '}
                 {new Date(project.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </Text>
@@ -200,17 +200,17 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
           {/* Progress bar */}
           <Stack gap={4}>
             <Row justify="space-between">
-              <Text style={{ fontSize: 12, color: colors.text[theme].secondary }}>
+              <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
                 Crew: {project.filledPositions}/{project.totalPositions} positions filled
               </Text>
-              <Text style={{ fontSize: 12, fontWeight: '600', color: colors.text[theme].primary }}>
+              <Text style={{ fontSize: fontSize.sm, fontWeight: '600', color: colors.text[theme].primary }}>
                 {fillPct}%
               </Text>
             </Row>
             <Stack
               style={{
                 height: 6,
-                borderRadius: 3,
+                borderRadius: borderRadius.max,
                 backgroundColor: colors.bg[theme].subtle,
                 overflow: 'hidden',
               }}
@@ -219,8 +219,8 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
                 style={{
                   width: `${fillPct}%`,
                   height: '100%',
-                  borderRadius: 3,
-                  backgroundColor: fillPct === 100 ? '#10b981' : '#3b82f6',
+                  borderRadius: borderRadius.xxs,
+                  backgroundColor: fillPct === 100 ? colors.fg[theme].success : colors.fg[theme].active,
                 }}
               />
             </Stack>
@@ -234,11 +234,11 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
                 style={{
                   paddingHorizontal: 8,
                   paddingVertical: 4,
-                  borderRadius: 7,
+                  borderRadius: borderRadius.l,
                   backgroundColor: colors.bg[theme].subtle,
                 }}
               >
-                <Text style={{ fontSize: 12, color: colors.text[theme].secondary }}>
+                <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
                   {role.title}: {role.filled}/{role.count}
                 </Text>
               </Stack>
@@ -246,7 +246,7 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
           </Row>
 
           <Row justify="space-between" align="center">
-            <Text style={{ fontSize: 13, fontWeight: '500', color: colors.text[theme].tertiary }}>
+            <Text style={{ fontSize: fontSize.sm, fontWeight: '500', color: colors.text[theme].tertiary }}>
               {project.budget}
             </Text>
             <ChevronRight size={16} color={colors.icon[theme].default} />
@@ -276,7 +276,7 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
       <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
         <Stack gap={12}>
           <Row justify="space-between" align="center">
-            <Text style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}>
+            <Text style={{ fontWeight: '600', fontSize: fontSize.md, color: colors.text[theme].primary }}>
               Open Positions
             </Text>
             {selectedRoles.size > 0 && (
@@ -298,7 +298,7 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
                   style={{
                     paddingVertical: 10,
                     paddingHorizontal: 12,
-                    borderRadius: 7,
+                    borderRadius: borderRadius.l,
                     backgroundColor: isSelected ? colors.bg[theme].selected : colors.bg[theme].subtle,
                     borderWidth: isSelected ? 1 : 0,
                     borderColor: colors.border[theme].active,
@@ -308,7 +308,7 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
                     style={{
                       width: 20,
                       height: 20,
-                      borderRadius: 4,
+                      borderRadius: borderRadius.xs,
                       borderWidth: 1.5,
                       borderColor: isSelected ? colors.fg[theme].active : colors.border[theme].default,
                       backgroundColor: isSelected ? colors.fg[theme].active : 'transparent',
@@ -316,7 +316,7 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
                       justifyContent: 'center',
                     }}
                   >
-                    {isSelected && <Check size={14} color="#fff" />}
+                    {isSelected && <Check size={14} color={colors.text[theme].quaternary} />}
                   </Stack>
 
                   <Stack flex={1} gap={4}>
@@ -324,15 +324,15 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
                       <Text style={{ fontWeight: '500', color: colors.text[theme].primary }}>
                         {role.title}
                       </Text>
-                      <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
+                      <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
                         {role.payRate}
                       </Text>
                     </Row>
                     <Row gap={8}>
-                      <Text style={{ fontSize: 12, color: remaining > 0 ? colors.fg[theme].warning : colors.fg[theme].success }}>
+                      <Text style={{ fontSize: fontSize.sm, color: remaining > 0 ? colors.fg[theme].warning : colors.fg[theme].success }}>
                         {remaining > 0 ? `${remaining} needed` : 'Filled ✓'}
                       </Text>
-                      <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>
+                      <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].tertiary }}>
                         {role.filled}/{role.count} filled
                       </Text>
                     </Row>
@@ -343,11 +343,11 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
                           style={{
                             paddingHorizontal: 6,
                             paddingVertical: 1,
-                            borderRadius: 4,
+                            borderRadius: borderRadius.xs,
                             backgroundColor: colors.bg[theme].muted,
                           }}
                         >
-                          <Text style={{ fontSize: 11, color: colors.text[theme].tertiary }}>{skill}</Text>
+                          <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}>{skill}</Text>
                         </Stack>
                       ))}
                     </Row>
@@ -363,25 +363,25 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
       {project.crew.length > 0 && (
         <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
           <Stack gap={12}>
-            <Text style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}>
+            <Text style={{ fontWeight: '600', fontSize: fontSize.md, color: colors.text[theme].primary }}>
               Assigned Crew ({project.crew.length})
             </Text>
             {project.crew.map((member) => (
               <Row key={member.id} justify="space-between" align="center" style={{ paddingVertical: 6 }}>
                 <Stack>
                   <Text style={{ color: colors.text[theme].primary }}>{member.name}</Text>
-                  <Text style={{ fontSize: 12, color: colors.text[theme].secondary }}>{member.role}</Text>
+                  <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>{member.role}</Text>
                 </Stack>
                 <Row gap={8} align="center">
-                  <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>
+                  <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].tertiary }}>
                     Start: {new Date(member.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </Text>
                   <Stack
                     style={{
                       width: 8,
                       height: 8,
-                      borderRadius: 4,
-                      backgroundColor: member.status === 'active' ? '#10b981' : '#f59e0b',
+                      borderRadius: borderRadius.max,
+                      backgroundColor: member.status === 'active' ? colors.fg[theme].success : colors.fg[theme].warning,
                     }}
                   />
                 </Row>
@@ -394,13 +394,13 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
       {/* Project timeline */}
       <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
         <Stack gap={8}>
-          <Text style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}>
+          <Text style={{ fontWeight: '600', fontSize: fontSize.md, color: colors.text[theme].primary }}>
             Project Timeline
           </Text>
           <Row gap={16}>
             <Row gap={6} align="center">
               <Clock size={14} color={colors.icon[theme].default} />
-              <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
+              <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
                 {Math.ceil(
                   (new Date(project.endDate).getTime() - new Date(project.startDate).getTime()) /
                     (1000 * 60 * 60 * 24 * 7)
@@ -410,7 +410,7 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
             </Row>
             <Row gap={6} align="center">
               <Calendar size={14} color={colors.icon[theme].default} />
-              <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
+              <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
                 Starts {new Date(project.startDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </Text>
             </Row>
@@ -462,7 +462,7 @@ export function ProjectHiringScreen() {
             <Button size="sm" variant="outline" onPress={() => setSelectedProject(null)}>
               ← Back
             </Button>
-            <Text style={{ fontWeight: '600', fontSize: 18, color: colors.text[theme].primary }}>
+            <Text style={{ fontWeight: '600', fontSize: fontSize.lg, color: colors.text[theme].primary }}>
               {selectedProject.name}
             </Text>
           </Row>
@@ -494,9 +494,9 @@ export function ProjectHiringScreen() {
             <Stack gap={4}>
               <Row gap={6} align="center">
                 <HardHat size={16} color={colors.icon[theme].default} />
-                <Text style={{ fontSize: 12, color: colors.text[theme].secondary }}>Active Projects</Text>
+                <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>Active Projects</Text>
               </Row>
-              <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text[theme].primary }}>
+              <Text style={{ fontSize: fontSize.xl, fontWeight: '700', color: colors.text[theme].primary }}>
                 {MOCK_PROJECTS.filter((p) => p.status === 'active' || p.status === 'hiring').length}
               </Text>
             </Stack>
@@ -505,9 +505,9 @@ export function ProjectHiringScreen() {
             <Stack gap={4}>
               <Row gap={6} align="center">
                 <Users size={16} color={colors.icon[theme].default} />
-                <Text style={{ fontSize: 12, color: colors.text[theme].secondary }}>Open Positions</Text>
+                <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>Open Positions</Text>
               </Row>
-              <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text[theme].primary }}>
+              <Text style={{ fontSize: fontSize.xl, fontWeight: '700', color: colors.text[theme].primary }}>
                 {MOCK_PROJECTS.reduce((sum, p) => sum + (p.totalPositions - p.filledPositions), 0)}
               </Text>
             </Stack>
@@ -516,9 +516,9 @@ export function ProjectHiringScreen() {
             <Stack gap={4}>
               <Row gap={6} align="center">
                 <CheckSquare size={16} color={colors.icon[theme].default} />
-                <Text style={{ fontSize: 12, color: colors.text[theme].secondary }}>Positions Filled</Text>
+                <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>Positions Filled</Text>
               </Row>
-              <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text[theme].primary }}>
+              <Text style={{ fontSize: fontSize.xl, fontWeight: '700', color: colors.text[theme].primary }}>
                 {MOCK_PROJECTS.reduce((sum, p) => sum + p.filledPositions, 0)}
               </Text>
             </Stack>
@@ -544,15 +544,15 @@ export function ProjectHiringScreen() {
                 style={{
                   paddingHorizontal: 14,
                   paddingVertical: 6,
-                  borderRadius: 7,
+                  borderRadius: borderRadius.l,
                   backgroundColor:
                     statusFilter === s ? colors.fg[theme].active : colors.bg[theme].subtle,
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 13,
-                    color: statusFilter === s ? '#fff' : colors.text[theme].secondary,
+                    fontSize: fontSize.sm,
+                    color: statusFilter === s ? colors.text[theme].quaternary : colors.text[theme].secondary,
                   }}
                 >
                   {s.charAt(0).toUpperCase() + s.slice(1)} ({statusCounts[s] ?? 0})

@@ -4,7 +4,7 @@ import { Platform, View } from "react-native";
 import { Button, Row, useThemeContext } from "@scaffald/ui";
 import { DeleteButton } from "./DeleteButton";
 import { DuplicateButton } from "./DuplicateButton";
-import { colors } from "@scaffald/ui/tokens";
+import { borderRadius, colors } from '@scaffald/ui/tokens';
 
 export interface RowActionOverlayProps<TData> {
   /** The row data */
@@ -114,7 +114,7 @@ export function RowActionOverlay<TData>({
         zIndex: 1000,
         borderWidth: 1,
         borderColor: colors.border[theme].default,
-        borderRadius: 7,
+        borderRadius: borderRadius.l,
         padding: 8,
         backgroundColor: colors.bg[theme].subtle,
         ...(typeof window !== "undefined"
