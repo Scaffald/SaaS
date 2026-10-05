@@ -31,6 +31,7 @@ import { Avatar, Row, Sheet, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { ROUTES } from '@scf/core/constants/routes'
 import { supabase } from '@scf/core/utils/supabase/client'
+import { AppearanceControl } from './AppearanceControl'
 import { useAccountContexts, type AccountContext } from './useAccountContexts'
 
 export interface MobileAccountSheetProps {
@@ -180,6 +181,10 @@ export function MobileAccountSheet({
             </Pressable>
           )
         })}
+
+        <View style={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 14, ...divider }}>
+          <AppearanceControl />
+        </View>
 
         <Pressable
           onPress={goNotifications}
