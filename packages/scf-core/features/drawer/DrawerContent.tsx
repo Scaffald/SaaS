@@ -20,6 +20,7 @@ import {
 } from 'react-native'
 import { Avatar, Text, useResponsive, useThemeContext } from '@scaffald/ui'
 import { borderRadius, boxShadows, colors, fontSize, lineHeight } from '@scaffald/ui/tokens'
+import { AppearanceControl } from './AppearanceControl'
 import { DrawerLink } from './DrawerLink'
 import { getNavItems } from './config'
 import { MobileDrawerSections } from './MobileDrawerSections'
@@ -421,6 +422,9 @@ function AccountRow({
                 />
               )
             })}
+            <View style={[styles.menuSection, { borderTopColor: colors.border[theme].subtle }]}>
+              <AppearanceControl />
+            </View>
             <View style={[styles.menuDivider, { borderTopColor: colors.border[theme].subtle }]}>
               <MenuRow
                 theme={theme}
@@ -718,6 +722,13 @@ const styles = StyleSheet.create({
   menuRowText: {
     fontSize: fontSize.sm,
     lineHeight: lineHeight.sm,
+  },
+  menuSection: {
+    marginTop: 6,
+    paddingTop: 10,
+    paddingHorizontal: 10,
+    paddingBottom: 4,
+    borderTopWidth: 1,
   },
   menuDivider: {
     marginTop: 6,
