@@ -360,7 +360,19 @@ jobs:
           name: benchmark-results
           path: packages/supabase/benchmark-results.txt
 
+      # Same-repo only (#986). A pull request from a fork gets a read-only
+      # GITHUB_TOKEN no matter what the `permissions:` block above says, so
+      # `createComment` throws `Resource not accessible by integration` and —
+      # with no guard and no continue-on-error — took the whole job down. Every
+      # fork PR therefore showed a red REST API Tests for a cosmetic step, with
+      # the contributor's own tests green: #972 was a four-line SQL seed.
+      #
+      # Skipped rather than tolerated. `continue-on-error` would also stop it
+      # failing the build, but silently; this says what it is. The figures are
+      # kept either way by `Upload Benchmark Results` above, which is the step
+      # that actually preserves them.
       - name: Comment Benchmark Results on PR
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v9
         with:
           script: |
