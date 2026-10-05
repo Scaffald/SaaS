@@ -49,6 +49,31 @@ colors.text.primary               // ❌ missing [theme] — use colors.text[the
 colors.border.default             // ❌ missing [theme] — use colors.border[theme].default
 ```
 
+## Accent Colours — Teal and Amber, the Rule
+
+Decided on #983 (Clay, 2026-10-05): the app runs **two** accents, each with a
+job, and the job decides the colour — never the component.
+
+- **Teal (`primary[*]`, `text[theme].emphasis`)** is the interactive accent:
+  links, selected and active states (the drawer's rule, the selected folder
+  tab, the inset ring on a segmented control), focus, count tags, the brand.
+- **Amber (`warning[*]`, `text[theme].attention`, `bg[theme].attention`)** is
+  priority and context: caution (`warning`), act-on-this (`attention` —
+  overdue, over-SLA, stale in stage, "needs work"), the transparency banner,
+  and the `ScreenHeader` kicker. The `warning` ramp is the SCF prototype's
+  accent ramp step for step, so an amber detail carries the same weight it
+  does in the comp.
+
+The comp is amber-only, so when a comp detail is amber ask which job it is
+doing: a selected tab or an active nav item is *interaction* → teal; an
+overdue row or a kicker is *priority / context* → amber. Do not add a third
+accent, and do not retint teal to amber to "match the comp".
+
+Contrast: the comp's raw accent `#b68235` is 3.4:1 on white — a border and
+rule colour, not a text colour. Text in amber is `warning[700]` in light and
+`warning[400]` in dark; text in teal is `primary[600]` in light and
+`primary[300]` in dark (see the `text.*.emphasis` / `.attention` aliases).
+
 ## Spacing Tokens
 
 **Valid indices only:** 0, 2, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 80, 96, 128, 160, 192, 256, 384, 512, 768
