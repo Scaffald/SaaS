@@ -301,8 +301,12 @@ export async function completeMagicLinkAuth(
 
     if (!token || !type) {
       console.error(
+        // `params`, not `url.searchParams`: #932 swapped `new URL()` for
+        // `new URLSearchParams()` above and left this reading a binding that no
+        // longer exists, so the branch meant to log and return null threw a
+        // ReferenceError instead (#987).
         `Missing token or type in magic link (params: ${
-          [...url.searchParams.keys()].join(", ") || "none"
+          [...params.keys()].join(", ") || "none"
         })`,
       );
       return null;

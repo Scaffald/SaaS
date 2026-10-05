@@ -316,7 +316,12 @@ jobs:
   benchmark:
     name: Performance Benchmarks
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # 15, not 10. The bench itself is 83s locally with the bounded sample set
+    # below, but this job also pays for checkout, pnpm install, the Supabase
+    # CLI and `supabase start`, and a GitHub runner is slower than the machine
+    # that measured it. 10 left no margin, and the failure mode of being wrong
+    # here is a cancelled job with no named cause (#987).
+    timeout-minutes: 15
     # `needs: test` so the two jobs don't boot their own Supabase stacks in
     # parallel — that was ~5 minutes of duplicate Docker pull and init per PR.
     needs: test
@@ -348,11 +353,48 @@ jobs:
           cd packages
           supabase start
 
+      # `--config`, or deno's config discovery walks out of packages/supabase and
+      # lands on apps/ui-storybook-native/tsconfig.json, whose `"jsx":
+      # "react-native"` deno does not accept:
+      #
+      #   error: Unsupported 'jsx' compiler option value 'react-native'
+      #
+      # That has been the case since the Expo 55->56 upgrade (#298), and
+      # `continue-on-error` below swallowed it, so this step reported success
+      # while the bench never ran. The `>` redirect still created an empty
+      # benchmark-results.txt, which is why the artifact and the PR comment were
+      # empty rather than missing, and why nothing looked broken (#987).
       - name: Run Benchmarks
         working-directory: packages/supabase
         continue-on-error: true
+        env:
+          # Measured against a local stack: the file's defaults took 389s,
+          # cutting requests per iteration alone still took 180s (deno keeps
+          # sampling until it is confident, so it just took more samples), and
+          # bounding the sample count with BENCH_ITERATIONS brought it to 83s.
+          # This job also pays for checkout, install and `supabase start`
+          # inside its 15 minutes, so the bounded set is what makes it finish
+          # rather than be killed (#987). Local runs keep the larger defaults.
+          BENCH_WARMUP_RUNS: '3'
+          BENCH_MEASUREMENT_RUNS: '20'
+          BENCH_ITERATIONS: '3'
+          BENCH_SAMPLE_WARMUP: '1'
         run: |
-          deno bench --allow-all functions/api/__tests__/benchmarks/rest-vs-trpc.bench.ts > benchmark-results.txt
+          deno bench --allow-all --config=functions/api/deno.json \
+            functions/api/__tests__/benchmarks/rest-vs-trpc.bench.ts > benchmark-results.txt
+
+      # continue-on-error above is deliberate: a slow benchmark should not block
+      # a PR. "It ran and was slow" and "it never ran" are different states
+      # though, and only the first one deserves to be quiet — so an empty or
+      # missing results file fails here instead (#987).
+      - name: Verify the benchmark produced results
+        working-directory: packages/supabase
+        run: |
+          if [ ! -s benchmark-results.txt ]; then
+            echo "::error file=.github/workflows/api-tests.yml::The benchmark produced no output. Its exit code is swallowed by continue-on-error, so an empty results file is the only signal that it did not run — read the 'Run Benchmarks' step log for the real error. See #987."
+            exit 1
+          fi
+          echo "✓ benchmark produced $(wc -l < benchmark-results.txt) lines of results"
 
       - name: Upload Benchmark Results
         uses: actions/upload-artifact@v7
