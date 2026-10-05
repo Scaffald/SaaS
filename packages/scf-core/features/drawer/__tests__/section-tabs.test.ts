@@ -75,6 +75,14 @@ describe('getSectionTabs', () => {
     expect(getSectionTabs('/office/applications', worker)).toBeNull()
   })
 
+  it('lands Jobs on the signed-in listing and owns the rest of /jobs', () => {
+    expect(getSectionTabs('/jobs/browse', worker)?.activeKey).toBe('jobs-index')
+    expect(getSectionTabs('/jobs/saved', worker)?.ownerKey).toBe('jobs')
+    expect(getSectionTabs('/jobs/view/42', worker)?.activeKey).toBeNull()
+    const jobs = worker.find((item) => item.key === 'jobs')
+    expect(jobs?.href).toBe('/jobs/browse')
+  })
+
   it('only lists My Listings for an organisation member', () => {
     expect(keys('/jobs/saved')).not.toContain('jobs-my-listings')
     expect(keys('/jobs/saved', member)).toContain('jobs-my-listings')

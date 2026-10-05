@@ -170,7 +170,12 @@ export const generateDashboardDrawerItems = (
 
   // Jobs
   const jobSubItems: DrawerItemConfig[] = [
-    { key: 'jobs-index', titleKey: ROUTES.JOBS.titleKey, href: ROUTES.JOBS.path, exact: true },
+    {
+      key: 'jobs-index',
+      titleKey: ROUTES.JOBS.BROWSE.titleKey,
+      href: ROUTES.JOBS.BROWSE.path,
+      exact: true,
+    },
     { key: 'jobs-saved', titleKey: 'navigation.jobsSaved', href: ROUTES.JOBS.SAVED.path },
     {
       key: 'jobs-applications',
@@ -186,10 +191,13 @@ export const generateDashboardDrawerItems = (
     })
   }
 
+  // The row lands on the signed-in listing, not the public one, which has no
+  // drawer (#766) — but it owns everything under /jobs.
   items.push({
     key: 'jobs',
     titleKey: 'navigation.discoverJobs',
-    href: ROUTES.JOBS.path,
+    href: ROUTES.JOBS.BROWSE.path,
+    matchPrefix: ROUTES.JOBS.path,
     routeKey: 'JOBS',
     icon: Briefcase,
     subItems: jobSubItems,
@@ -444,7 +452,7 @@ export const MOBILE_SECTIONS: MobileSection[] = [
     key: 'jobs',
     label: 'Jobs',
     icon: Briefcase,
-    route: ROUTES.JOBS.path,
+    route: ROUTES.JOBS.BROWSE.path,
     matchPrefixes: ['/jobs'],
     subItems: [],
   },

@@ -75,6 +75,7 @@
       "jobs": {
         "detail": "Job Details",
         "apply": "Apply",
+        "browse": "Browse jobs",
         "myListings": "My Listings",
         "title": "Jobs"
       },

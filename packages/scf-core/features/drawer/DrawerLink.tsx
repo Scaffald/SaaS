@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View, type GestureResponderEvent } from 'react-n
 import { Text, useThemeContext } from '@scaffald/ui'
 import { colors, fontSize, lineHeight, borderRadius } from '@scaffald/ui/tokens'
 import type { DrawerLinkProps } from './types'
-import { isActivePath } from './utils'
+import { ownsPath } from './utils'
 
 const ICON_SIZE = 18
 const RULE_WIDTH = 2
@@ -22,7 +22,7 @@ const RULE_WIDTH = 2
  */
 export const DrawerLink = ({ item, pathname, onNavigate, isCollapsed }: DrawerLinkProps) => {
   const collapsed = isCollapsed ?? false
-  const active = isActivePath(pathname, item.href, item.exact)
+  const active = ownsPath(item, pathname)
   const Icon = item.icon
   const { t } = useTranslation()
   const { theme } = useThemeContext()
