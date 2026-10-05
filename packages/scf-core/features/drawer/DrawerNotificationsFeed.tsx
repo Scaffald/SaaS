@@ -20,8 +20,7 @@
 import { useCallback, useMemo } from 'react'
 import { Pressable, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
-import { ChevronRight } from 'lucide-react-native'
-import { Row, Stack, Text, useThemeContext } from '@scaffald/ui'
+import { Row, Stack, Text, TextLink, useThemeContext } from '@scaffald/ui'
 import { colors, fontSize } from '@scaffald/ui/tokens'
 import { useNotifications, useUnreadCount } from '@scf/core/utils/notifications-sdk-hooks'
 import { toNotificationItems } from '@scf/core/features/notifications/normalize'
@@ -84,20 +83,9 @@ export function DrawerNotificationsFeed({ onNavigate }: DrawerNotificationsFeedP
         >
           Notifications
         </Text>
-        <Pressable
-          onPress={handleSeeAllPress}
-          accessibilityRole="link"
-          accessibilityLabel="See all notifications"
-          hitSlop={8}
-          style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
-        >
-          <Row align="center" gap={2}>
-            <Text style={{ color: colors.primary[500], fontSize: 12, fontWeight: '600' }}>
-              See all
-            </Text>
-            <ChevronRight size={14} color={colors.primary[500]} />
-          </Row>
-        </Pressable>
+        <TextLink onPress={handleSeeAllPress} accessibilityLabel="See all notifications">
+          See all
+        </TextLink>
       </Row>
 
       {isLoading ? (

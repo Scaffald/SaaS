@@ -27,7 +27,7 @@ import { useCallback } from 'react'
 import { Pressable, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { Check } from 'lucide-react-native'
-import { Avatar, Row, Sheet, Text, useThemeContext } from '@scaffald/ui'
+import { Avatar, Chip, Row, Sheet, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { ROUTES } from '@scf/core/constants/routes'
 import { supabase } from '@scf/core/utils/supabase/client'
@@ -205,22 +205,14 @@ export function MobileAccountSheet({
         >
           <Text style={{ fontSize: 14, color: colors.text[theme].primary }}>Notifications</Text>
           {unreadCount > 0 ? (
-            <View
-              style={{
-                minWidth: 20,
-                paddingHorizontal: 6,
-                paddingVertical: 2,
-                borderRadius: 999,
-                backgroundColor: colors.primary[600],
-                alignItems: 'center',
-              }}
+            <Chip
+              tone="accent"
+              size="sm"
+              accessibilityElementsHidden
+              importantForAccessibility="no"
             >
-              <Text
-                style={{ fontSize: 11, fontWeight: '600', color: colors.text[theme].quaternary }}
-              >
-                {unreadCount}
-              </Text>
-            </View>
+              {`${unreadCount} new`}
+            </Chip>
           ) : null}
         </Pressable>
 

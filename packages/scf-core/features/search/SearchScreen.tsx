@@ -1,4 +1,4 @@
-import { Row, Stack, Text, useThemeContext } from '@scaffald/ui'
+import { Row, Stack, Text, TextLink, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Briefcase, Hammer, Search as SearchIcon } from 'lucide-react-native'
@@ -72,11 +72,7 @@ function ResultRow({ item }: { item: UniversalSearchResult }) {
           {item.title}
         </Text>
         {item.subtitle ? (
-          <Text
-            size="xs"
-            style={{ color: colors.text[theme].secondary }}
-            numberOfLines={1}
-          >
+          <Text size="xs" style={{ color: colors.text[theme].secondary }} numberOfLines={1}>
             {item.subtitle}
           </Text>
         ) : null}
@@ -110,21 +106,7 @@ function Group({ group }: { group: UniversalSearchGroup }) {
           {group.label}
         </Text>
         {group.seeAllRoute ? (
-          <Pressable
-            onPress={() => router.push(group.seeAllRoute!)}
-            hitSlop={8}
-            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-          >
-            <Text
-              style={{
-                fontSize: 13,
-                fontWeight: '600',
-                color: colors.primary[600],
-              }}
-            >
-              See all
-            </Text>
-          </Pressable>
+          <TextLink onPress={() => router.push(group.seeAllRoute!)}>See all</TextLink>
         ) : null}
       </Row>
       {group.isLoading ? (
@@ -162,10 +144,7 @@ export function SearchScreen() {
         <Stack gap={24} style={{ padding: 24 }}>
           <Stack gap={8} style={{ alignItems: 'center' }}>
             <SearchIcon size={32} color={colors.icon[theme].muted} />
-            <Text
-              size="sm"
-              style={{ color: colors.text[theme].secondary, textAlign: 'center' }}
-            >
+            <Text size="sm" style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
               Search jobs, skills, and more
             </Text>
           </Stack>
@@ -199,9 +178,7 @@ export function SearchScreen() {
                     borderRadius: 999,
                     borderWidth: 1,
                     borderColor: colors.border[theme].default,
-                    backgroundColor: pressed
-                      ? colors.bg[theme].subtle
-                      : colors.bg[theme].default,
+                    backgroundColor: pressed ? colors.bg[theme].subtle : colors.bg[theme].default,
                   })}
                 >
                   <Hammer size={14} color={colors.icon[theme].muted} />
@@ -225,17 +202,10 @@ export function SearchScreen() {
     if (isEmpty) {
       return (
         <Stack gap={6} style={{ padding: 24, alignItems: 'center' }}>
-          <Text
-            size="sm"
-            weight="semibold"
-            style={{ color: colors.text[theme].primary }}
-          >
+          <Text size="sm" weight="semibold" style={{ color: colors.text[theme].primary }}>
             No results for “{trimmed}”
           </Text>
-          <Text
-            size="xs"
-            style={{ color: colors.text[theme].secondary, textAlign: 'center' }}
-          >
+          <Text size="xs" style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             Try a different keyword or check spelling.
           </Text>
         </Stack>
@@ -252,10 +222,7 @@ export function SearchScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg[theme].default }}>
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 40 }}
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
         {content}
       </ScrollView>
     </View>

@@ -1,6 +1,15 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useAssessmentCatalogue } from '@scf/core/features/assessments/assessment-catalogue'
-import { Button, Row, Skeleton, SkeletonGroup, Stack, Text, useThemeContext } from '@scaffald/ui'
+import {
+  Button,
+  Row,
+  Skeleton,
+  SkeletonGroup,
+  Stack,
+  Text,
+  TextLink,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { HomeSection } from './HomeSection'
@@ -42,11 +51,7 @@ export function AssessmentsSection() {
   return (
     <HomeSection
       title="Assessments"
-      action={
-        <Button size="sm" variant="outline" onPress={() => router.push(ROUTES.ASSESSMENTS.path)}>
-          See all
-        </Button>
-      }
+      action={<TextLink onPress={() => router.push(ROUTES.ASSESSMENTS.path)}>See all</TextLink>}
     >
       <Text style={{ color: colors.text[t].secondary }}>
         {done === rows.length

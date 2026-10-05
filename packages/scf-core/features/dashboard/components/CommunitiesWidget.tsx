@@ -14,6 +14,7 @@ import {
   SkeletonGroup,
   Stack,
   Text,
+  TextLink,
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -269,15 +270,7 @@ export function CommunitiesWidget() {
     <Stack gap={16}>
       <Row justify="space-between" align="center" gap={12} wrap>
         <H3 style={{ color: colors.text[theme].primary, flex: 1, minWidth: 0 }}>Communities</H3>
-        <Pressable
-          onPress={() => router.push(ROUTES.COMMUNITIES.path)}
-          hitSlop={8}
-          style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-        >
-          <Text style={{ fontSize: 14, fontWeight: '600', color: colors.primary[600] }}>
-            See all
-          </Text>
-        </Pressable>
+        <TextLink onPress={() => router.push(ROUTES.COMMUNITIES.path)}>See all</TextLink>
       </Row>
 
       <ScrollView
