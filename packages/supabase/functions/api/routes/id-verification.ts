@@ -166,6 +166,41 @@ app.post(
       );
     }
 
+    // Persona BEFORE Stripe, deliberately (#948 item 2).
+    //
+    // This call used to sit in /confirm, between a successful charge and the
+    // `id_verifications` insert that records it. Persona being down was
+    // therefore enough to leave a paid customer with no verification and no
+    // way to get one: `persona_inquiry_id` is NOT NULL so the row could not be
+    // written without an inquiry, a retried /confirm called Persona again and
+    // failed again, and once the client lost the payment intent id nothing
+    // could ever finish the job.
+    //
+    // Creating the inquiry first inverts the failure: Persona down now means
+    // /request returns 503 and the customer has paid nothing. The only
+    // fallible work left after the charge is our own database writes, and
+    // those already have a ledger row to repair from (#949).
+    //
+    // The cost is an orphan inquiry when a customer abandons checkout. Persona
+    // inquiries that are created and never started expire on their side, and
+    // `reference_id` is the worker's id so they stay traceable — a much better
+    // failure than charging for a verification we then cannot create.
+    let personaInquiry: { inquiryId: string; status: string };
+    try {
+      personaInquiry = await createPersonaInquiry(input.workerUserId);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Persona inquiry failed";
+      console.error(
+        `[id-verification] inquiry creation failed before charging ${input.workerUserId}: ${msg}`,
+      );
+      // 503, not 500: nothing was charged, and the request is worth retrying.
+      return toError(
+        c,
+        "Identity verification is temporarily unavailable. No payment was taken; please try again.",
+        503,
+      );
+    }
+
     try {
       const stripe = await loadStripeClient(supabaseAdmin);
       const intent = await stripe.paymentIntents.create({
@@ -177,6 +212,10 @@ app.post(
           initiated_by_user_id: user.id,
           organization_id: input.organizationId ?? "",
           service_pricing_id: selectedPricing.id,
+          // Carried on the intent so /confirm uses the inquiry this call
+          // created, instead of making one of its own after the money moved.
+          persona_inquiry_id: personaInquiry.inquiryId,
+          persona_status: personaInquiry.status,
         },
         automatic_payment_methods: { enabled: true },
       });
@@ -211,7 +250,15 @@ app.post(
           currency: intent.currency ?? "usd",
           transaction_type: "id_verification",
           stripe_payment_intent_id: intent.id,
-          metadata: { source: "id_verification_rest", stage: "intent" },
+          metadata: {
+            source: "id_verification_rest",
+            stage: "intent",
+            // Second copy of the inquiry id. /confirm reads the intent's
+            // metadata first; this is the audit trail, and the fallback if an
+            // intent ever reaches /confirm without it.
+            persona_inquiry_id: personaInquiry.inquiryId,
+            persona_status: personaInquiry.status,
+          },
         });
 
       if (txError) {
@@ -236,6 +283,60 @@ app.post(
     }
   },
 );
+
+/**
+ * The Persona inquiry for an intent that has just been paid.
+ *
+ * In order of preference:
+ *
+ *   1. the intent's own metadata, where `/request` puts it before the customer
+ *      can pay — the only path a new purchase takes;
+ *   2. the ledger row's metadata, the second copy `/request` writes;
+ *   3. a fresh inquiry, for intents created before #948 item 2 moved the call.
+ *
+ * Only (3) makes a network call, and only for an intent that predates this
+ * change. That is the point: on the normal path there is nothing fallible
+ * between a successful charge and the record of it.
+ */
+async function resolvePersonaInquiry(
+  // deno-lint-ignore no-explicit-any
+  supabaseAdmin: any,
+  intentMetadata: Record<string, string>,
+  intentId: string,
+  workerUserId: string,
+): Promise<{ inquiryId: string; status: string }> {
+  const fromIntent = intentMetadata.persona_inquiry_id;
+  if (fromIntent) {
+    return {
+      inquiryId: fromIntent,
+      status: intentMetadata.persona_status || "pending",
+    };
+  }
+
+  const { data: ledger } = await supabaseAdmin
+    .schema("core")
+    .from("payment_transactions")
+    .select("metadata")
+    .eq("stripe_payment_intent_id", intentId)
+    .maybeSingle();
+
+  const ledgerMetadata = (ledger?.metadata ?? {}) as Record<string, unknown>;
+  const fromLedger = ledgerMetadata.persona_inquiry_id;
+  if (typeof fromLedger === "string" && fromLedger.length > 0) {
+    const status = ledgerMetadata.persona_status;
+    return {
+      inquiryId: fromLedger,
+      status: typeof status === "string" && status.length > 0
+        ? status
+        : "pending",
+    };
+  }
+
+  console.warn(
+    `[id-verification] no inquiry carried on ${intentId}; creating one after payment (pre-#948 intent)`,
+  );
+  return createPersonaInquiry(workerUserId);
+}
 
 // POST /confirm - protected
 app.post(
@@ -302,7 +403,20 @@ app.post(
         });
       }
 
-      const personaInquiry = await createPersonaInquiry(workerUserId);
+      // Use the inquiry /request created before the charge (#948 item 2).
+      //
+      // Reaching for Persona here is the legacy path now: it exists for
+      // intents created before that change which are still in flight, and for
+      // the case of an intent whose metadata somehow lost the id. Failing
+      // those outright would strand a customer who has already paid, which is
+      // the thing this whole change is trying to stop.
+      const personaInquiry = await resolvePersonaInquiry(
+        supabaseAdmin,
+        metadata,
+        intent.id,
+        workerUserId,
+      );
+
       const paidAt = new Date(
         (intent.created ?? Math.floor(Date.now() / 1000)) * 1000,
       );
