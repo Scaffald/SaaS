@@ -3,7 +3,6 @@ import type { OrganizationMembership } from '@scf/core/utils/useOrganizations'
 import {
   AlertTriangle,
   BarChart3,
-  Bell as BellIcon,
   Bookmark,
   Briefcase,
   Building2,
@@ -20,8 +19,8 @@ import {
 import type { DrawerItemConfig } from './types'
 
 /**
- * Build per-organization sub-items for the Employers drawer group.
- * Each org expands to show Teams and Logs.
+ * Per-organization entries under Employers. On an org's own pages the tab
+ * strip becomes that org's: its overview, Teams and Logs.
  */
 const buildOrgSubItems = (memberships: OrganizationMembership[]): DrawerItemConfig[] => {
   const seen = new Set<string>()
@@ -35,8 +34,6 @@ const buildOrgSubItems = (memberships: OrganizationMembership[]): DrawerItemConf
       key: `org-${m.organization_slug}`,
       title: m.organization_name,
       href: `/employers/org/${m.organization_slug}`,
-      isExpandable: true,
-      expandOnActive: true,
       subItems: [
         {
           key: `org-${m.organization_slug}-teams`,
@@ -62,19 +59,18 @@ export const generateDashboardDrawerItems = (
 ): DrawerItemConfig[] => {
   const items: DrawerItemConfig[] = []
 
-  // Dashboard - expandable with News subnav
+  // Home — the worker dashboard. Its tabs are Overview, News, Analytics;
+  // Notifications is the drawer's own footer row, not a tab.
   items.push({
     key: 'dashboard',
-    titleKey: 'navigation.dashboard',
+    titleKey: 'routes.dashboard.home',
     href: ROUTES.DASHBOARD.path,
     routeKey: 'DASHBOARD',
     icon: BarChart3,
-    isExpandable: true,
-    expandOnActive: true,
     subItems: [
       {
         key: 'dashboard-index',
-        titleKey: 'routes.dashboard.home',
+        titleKey: 'routes.dashboard.analytics.overview',
         href: ROUTES.DASHBOARD.path,
         exact: true,
       },
@@ -89,24 +85,16 @@ export const generateDashboardDrawerItems = (
         href: ROUTES.DASHBOARD.ANALYTICS.path,
         icon: TrendingUp,
       },
-      {
-        key: 'dashboard-notifications',
-        title: 'Notifications',
-        href: ROUTES.DASHBOARD.NOTIFICATIONS.path,
-        icon: BellIcon,
-      },
     ],
   })
 
-  // Communities - expandable (top-level /communities section)
+  // Communities
   items.push({
     key: 'communities',
     titleKey: ROUTES.COMMUNITIES.titleKey,
     href: ROUTES.COMMUNITIES.path,
     routeKey: 'COMMUNITIES',
     icon: Bookmark,
-    isExpandable: true,
-    expandOnActive: true,
     subItems: [
       {
         key: 'communities-hub',
@@ -132,15 +120,13 @@ export const generateDashboardDrawerItems = (
     ],
   })
 
-  // Workers - expandable with Search and Map
+  // Workers
   items.push({
     key: 'workers',
     titleKey: 'navigation.discoverWorkers',
     href: ROUTES.WORKERS.path,
     routeKey: 'WORKERS',
     icon: Users,
-    isExpandable: true,
-    expandOnActive: true,
     subItems: [
       {
         key: 'workers-index',
@@ -152,7 +138,7 @@ export const generateDashboardDrawerItems = (
     ],
   })
 
-  // Employers - expandable with Search, Create, Join, and per-org sub-items
+  // Employers — search, create, join, then each organisation you belong to
   const employerSubItems: DrawerItemConfig[] = [
     {
       key: 'employers-index',
@@ -179,12 +165,10 @@ export const generateDashboardDrawerItems = (
     href: ROUTES.EMPLOYERS.path,
     routeKey: 'EMPLOYERS',
     icon: Building2,
-    isExpandable: true,
-    expandOnActive: true,
     subItems: employerSubItems,
   })
 
-  // Jobs - expandable with applications and optional My Listings
+  // Jobs
   const jobSubItems: DrawerItemConfig[] = [
     { key: 'jobs-index', titleKey: ROUTES.JOBS.titleKey, href: ROUTES.JOBS.path, exact: true },
     { key: 'jobs-saved', titleKey: 'navigation.jobsSaved', href: ROUTES.JOBS.SAVED.path },
@@ -208,20 +192,16 @@ export const generateDashboardDrawerItems = (
     href: ROUTES.JOBS.path,
     routeKey: 'JOBS',
     icon: Briefcase,
-    isExpandable: true,
-    expandOnActive: true,
     subItems: jobSubItems,
   })
 
-  // Assessments - expandable with second-tier (pulse, ipip, riasec, occupation)
+  // Assessments
   items.push({
     key: 'assessments',
     titleKey: ROUTES.ASSESSMENTS.titleKey,
     href: ROUTES.ASSESSMENTS.path,
     routeKey: 'ASSESSMENTS',
     icon: ClipboardCheck,
-    isExpandable: true,
-    expandOnActive: true,
     subItems: [
       {
         key: 'assessments-index',
@@ -256,15 +236,13 @@ export const generateDashboardDrawerItems = (
     ],
   })
 
-  // Profile - expandable with Overview + all tier-1 (tabs)
+  // Profile
   items.push({
     key: 'profile',
     titleKey: ROUTES.PROFILE.titleKey,
     href: ROUTES.PROFILE.path,
     routeKey: 'PROFILE',
     icon: User,
-    isExpandable: true,
-    expandOnActive: true,
     subItems: [
       {
         key: 'profile-overview',
@@ -301,16 +279,13 @@ export const generateDashboardDrawerItems = (
 }
 
 /**
- * Generates the Office drawer item with expandable sub-navigation.
- * Sub-items auto-expand when the user is within the /office route group.
+ * The Office section. Its sub-items are the Office tab strip.
  */
 export const generateOfficeDrawerItem = (): DrawerItemConfig => ({
   key: 'office',
   title: 'Office',
   href: ROUTES.OFFICE.path,
   icon: Building2,
-  isExpandable: true,
-  expandOnActive: true,
   subItems: [
     {
       key: 'office-cms',
@@ -328,12 +303,14 @@ export const generateOfficeDrawerItem = (): DrawerItemConfig => ({
       key: 'office-compliance',
       titleKey: 'routes.office.compliance.title',
       href: ROUTES.OFFICE.COMPLIANCE.EEO_REPORTS.path,
+      matchPrefix: ROUTES.OFFICE.COMPLIANCE.path,
       icon: ShieldCheck,
     },
     {
       key: 'office-integrations',
       titleKey: 'routes.office.integrations.title',
       href: ROUTES.OFFICE.INTEGRATIONS.BACKGROUND_CHECKS.path,
+      matchPrefix: ROUTES.OFFICE.INTEGRATIONS.path,
       icon: Database,
     },
     {
@@ -399,6 +376,21 @@ export const getCommunitiesDrawerItems = (): DrawerItemConfig[] => [
 export const getDrawerItems = (memberships?: OrganizationMembership[]): DrawerItemConfig[] => {
   return generateDashboardDrawerItems(memberships)
 }
+
+const OFFICE_ITEM = generateOfficeDrawerItem()
+
+/**
+ * The whole navigation tree for one person: Office first when they hold the
+ * role, then the sections everyone has. The drawer draws the top level; the
+ * section tab strip draws the level beneath.
+ */
+export const getNavItems = (
+  memberships: OrganizationMembership[] | undefined,
+  hasOfficeRole: boolean
+): DrawerItemConfig[] => [
+  ...(hasOfficeRole ? [OFFICE_ITEM] : []),
+  ...generateDashboardDrawerItems(memberships),
+]
 
 // ============================================================================
 // Mobile Bottom Nav Configuration

@@ -23,7 +23,7 @@
  * — the same reason the employer tab bar has no Recruiting tab. The row list is
  * data-driven; a third context becomes a third row when it becomes real.
  */
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { Pressable, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { Check } from 'lucide-react-native'
@@ -31,9 +31,7 @@ import { Avatar, Row, Sheet, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { ROUTES } from '@scf/core/constants/routes'
 import { supabase } from '@scf/core/utils/supabase/client'
-import { useAppMode, type AppMode } from '@scf/core/utils/useAppMode'
-import { useOrganizations } from '@scf/core/utils/useOrganizations'
-import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
+import { useAccountContexts, type AccountContext } from './useAccountContexts'
 
 export interface MobileAccountSheetProps {
   visible: boolean
@@ -46,16 +44,6 @@ export interface MobileAccountSheetProps {
   subtitle?: string
   verified?: boolean
   unreadCount?: number
-}
-
-/** One row under "Using Scaffald as". */
-interface ContextRow {
-  mode: AppMode
-  label: string
-  /** Where picking this row lands you. */
-  href: string
-  /** Slug to remember alongside employer mode. */
-  slug?: string | null
 }
 
 const SECTION_LABEL = {
@@ -77,44 +65,16 @@ export function MobileAccountSheet({
 }: MobileAccountSheetProps) {
   const { theme } = useThemeContext()
   const router = useRouter()
-  const { mode, orgSlug, setAppMode } = useAppMode()
-  const { data: organizations } = useOrganizations()
-  const { hasOfficeRole } = useUserRoles()
-
-  const memberships = useMemo(() => organizations ?? [], [organizations])
-
-  const contexts = useMemo<ContextRow[]>(() => {
-    const rows: ContextRow[] = [{ mode: 'worker', label: 'Worker', href: ROUTES.DASHBOARD.path }]
-
-    // Same gate the drawer's ModeSelector uses: an office role, or membership
-    // of at least one organization. Without either there is no employer context
-    // to switch into, and a row that only leads to "create an organization"
-    // belongs in the drawer, not in a context switcher.
-    if (hasOfficeRole || memberships.length > 0) {
-      const slug =
-        memberships.find((m) => m.organization_slug === orgSlug)?.organization_slug ??
-        memberships[0]?.organization_slug ??
-        null
-      rows.push({
-        mode: 'employer',
-        label: 'Employer',
-        slug,
-        href: slug
-          ? ROUTES.EMPLOYERS.ORG.DETAIL.path.replace(':slug', slug)
-          : ROUTES.EMPLOYERS.CREATE.path,
-      })
-    }
-
-    return rows
-  }, [hasOfficeRole, memberships, orgSlug])
+  // The rows and the gate behind the Employer row are shared with the
+  // desktop drawer's account menu, so the two never disagree.
+  const { mode, contexts, pick: pickContext } = useAccountContexts()
 
   const pick = useCallback(
-    (row: ContextRow) => {
-      void setAppMode(row.mode, row.slug ?? undefined)
+    (row: AccountContext) => {
       onClose()
-      router.push(row.href as never)
+      pickContext(row)
     },
-    [setAppMode, onClose, router]
+    [onClose, pickContext]
   )
 
   const goNotifications = useCallback(() => {
