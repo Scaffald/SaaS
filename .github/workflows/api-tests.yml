@@ -5,6 +5,12 @@ on:
     paths:
       - 'packages/supabase/functions/api/**'
       - 'packages/supabase/migrations/**'
+      # The stack this job builds seeds itself from `seeds/*.sql`
+      # (config.toml [db.seed]), so a broken seed reddens every suite below —
+      # and until #972 a seed-only change could not trigger this workflow at
+      # all. That PR got two skipped checks and a `pending` combined status,
+      # which reads as "nothing to see" rather than "nothing ran".
+      - 'packages/supabase/seeds/**'
       - 'packages/supabase/tests/**'
       - 'packages/supabase/types.ts'
       - 'scripts/test-api-local.ts'
@@ -24,6 +30,7 @@ on:
     paths:
       - 'packages/supabase/functions/api/**'
       - 'packages/supabase/migrations/**'
+      - 'packages/supabase/seeds/**'
       - 'packages/supabase/tests/**'
       - 'packages/supabase/types.ts'
       - 'scripts/test-api-local.ts'
