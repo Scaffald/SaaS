@@ -5,8 +5,8 @@ import { usePathname } from '@scf/core/utils/usePathname'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'
-import { View } from 'react-native'
-import { Tabs } from '@scaffald/ui'
+import { ScrollView, View } from 'react-native'
+import { Chip, Tabs } from '@scaffald/ui'
 import { getNavItems } from './config'
 import { getSectionTabs } from './section-tabs'
 import { normalizePath } from './utils'
@@ -44,15 +44,49 @@ export function SectionTabs() {
 
   if (!strip) return null
 
+  const label = (tab: (typeof strip.tabs)[number]) =>
+    tab.titleKey ? t(tab.titleKey) : (tab.title ?? tab.key)
+
+  // On a phone the prototype does not draw folder tabs: a list screen's
+  // partition is one row of chips, scrolling sideways, the chosen one tinted
+  // (#980). Five folder tabs at 390px wrapped onto two rows of cards.
+  if (!isDesktop) {
+    return (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        testID="section-tabs"
+        accessibilityRole="tablist"
+        style={{ flexGrow: 0 }}
+        contentContainerStyle={{ paddingHorizontal: gutter, paddingVertical: 10, gap: 6 }}
+      >
+        {strip.tabs.map((tab) => {
+          const active = tab.key === strip.activeKey
+          return (
+            <Chip
+              key={tab.key}
+              size="md"
+              tone={active ? 'accent' : 'neutral'}
+              selected={active}
+              onPress={() => go(tab.key)}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: active }}
+              aria-selected={active}
+            >
+              {label(tab)}
+            </Chip>
+          )
+        })}
+      </ScrollView>
+    )
+  }
+
   return (
-    <View
-      testID="section-tabs"
-      style={{ paddingHorizontal: gutter, paddingTop: isDesktop ? 20 : 12 }}
-    >
-      <Tabs type="folder" value={strip.activeKey ?? ''} onValueChange={go} scrollable={!isDesktop}>
+    <View testID="section-tabs" style={{ paddingHorizontal: gutter, paddingTop: 20 }}>
+      <Tabs type="folder" value={strip.activeKey ?? ''} onValueChange={go}>
         {strip.tabs.map((tab) => (
           <Tabs.Item key={tab.key} value={tab.key}>
-            <Tabs.Trigger>{tab.titleKey ? t(tab.titleKey) : (tab.title ?? tab.key)}</Tabs.Trigger>
+            <Tabs.Trigger>{label(tab)}</Tabs.Trigger>
           </Tabs.Item>
         ))}
       </Tabs>

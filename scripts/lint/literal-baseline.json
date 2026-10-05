@@ -57,7 +57,7 @@
     },
     "dashboard": {
       "borderRadius": 36,
-      "fontSize": 34,
+      "fontSize": 33,
       "hexColor": 1
     },
     "dev": {
@@ -71,8 +71,8 @@
       "hexColor": 33
     },
     "drawer": {
-      "borderRadius": 7,
-      "fontSize": 15,
+      "borderRadius": 6,
+      "fontSize": 13,
       "hexColor": 3
     },
     "feedback": {
@@ -152,7 +152,7 @@
     },
     "search": {
       "borderRadius": 2,
-      "fontSize": 3
+      "fontSize": 2
     },
     "skills-analytics": {
       "borderRadius": 9,

@@ -18,7 +18,7 @@ import {
   View,
   type PressableStateCallbackType,
 } from 'react-native'
-import { Avatar, Text, useResponsive, useThemeContext } from '@scaffald/ui'
+import { Avatar, Chip, Text, useResponsive, useThemeContext } from '@scaffald/ui'
 import { borderRadius, boxShadows, colors, fontSize, lineHeight } from '@scaffald/ui/tokens'
 import { AppearanceControl } from './AppearanceControl'
 import { DrawerLink } from './DrawerLink'
@@ -266,13 +266,11 @@ function SquareIconButton({
   )
 }
 
-function CountTag({ theme, label }: { theme: ResolvedTheme; label: string }) {
+function CountTag({ label }: { theme: ResolvedTheme; label: string }) {
   return (
-    <View style={[styles.countTag, { backgroundColor: colors.bg[theme].selected }]}>
-      <Text style={StyleSheet.flatten([styles.countTagText, { color: colors.primary[700] }])}>
-        {label}
-      </Text>
-    </View>
+    <Chip tone="accent" size="sm" accessibilityElementsHidden importantForAccessibility="no">
+      {label}
+    </Chip>
   )
 }
 
@@ -630,17 +628,6 @@ const styles = StyleSheet.create({
   footerLabel: {
     fontSize: fontSize.sm,
     lineHeight: lineHeight.sm,
-  },
-  countTag: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: borderRadius.xs,
-  },
-  countTagText: {
-    fontSize: fontSize.xxs,
-    lineHeight: lineHeight.xxs,
-    fontWeight: '600',
-    fontVariant: ['tabular-nums'],
   },
   accountRow: {
     position: 'relative',
