@@ -2475,7 +2475,11 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
             .string()
             .trim()
             .transform((value) => new Date(value))
-            .pipe(z.date({ message: 'Metric date must be a valid date string' }))
+            // `invalid_type_error`, not `message`: zod is pinned to 3.22.4 in
+            // every edge-function import map, and top-level `message` only
+            // arrived in zod 4. On 3.x the unknown key was ignored, so this
+            // custom message never reached a caller (#969).
+            .pipe(z.date({ invalid_type_error: 'Metric date must be a valid date string' }))
             .transform((date) => date.toISOString().slice(0, 10))
             .optional(),
         })

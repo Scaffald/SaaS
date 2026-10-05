@@ -1,4 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import type { DrawerItemConfig } from './types'
 
 /**
  * Normalizes a path string by cleaning up query parameters, tabs routes, and extra slashes
@@ -85,11 +86,22 @@ export const isActivePath = (pathname: string, href: string, exact?: boolean) =>
   // Special case for employers: match /employers and children
   const employersPath = ROUTES.EMPLOYERS.path
   if (href === employersPath) {
-    return (
-      pathname === employersPath ||
-      pathname.startsWith(`${employersPath}/`)
-    )
+    return pathname === employersPath || pathname.startsWith(`${employersPath}/`)
   }
 
   return pathname === href || pathname.startsWith(`${href}/`)
 }
+
+/**
+ * Whether `item` owns `pathname`. An item whose link target is one of
+ * several pages it owns — the Jobs section lands on `/jobs/browse` but owns
+ * everything under `/jobs` — says so with `matchPrefix`; the rest match on
+ * their `href`.
+ */
+export const ownsPath = (
+  item: Pick<DrawerItemConfig, 'href' | 'exact' | 'matchPrefix'>,
+  pathname: string
+) =>
+  item.matchPrefix
+    ? pathname === item.matchPrefix || pathname.startsWith(`${item.matchPrefix}/`)
+    : isActivePath(pathname, item.href, item.exact)

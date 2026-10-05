@@ -465,6 +465,16 @@ const ROUTES_CONFIG = {
     // saved jobs and my-listings are all per-user.
     protected: false,
     exact: false,
+    // The signed-in listing: the same screen as the public `/jobs`, inside the
+    // drawer shell. The drawer's Jobs row and the phone's Jobs tab land here,
+    // so a signed-in person never leaves the shell by choosing Jobs; the
+    // public listing above stays for crawlers and signed-out visitors (#756).
+    BROWSE: {
+      path: '/jobs/browse',
+      titleKey: 'routes.dashboard.discover.jobs.browse',
+      protected: true,
+      exact: true,
+    },
     DETAIL: {
       path: '/jobs/view/:id',
       titleKey: 'routes.dashboard.discover.jobs.detail',

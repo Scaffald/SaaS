@@ -54,6 +54,31 @@
 // baseline. Improvements do not fail the build — that would put unrelated PRs in
 // the business of editing this file — but the nudge makes tightening it a
 // one-line edit.
+//
+// ## Why TS2589 is counted separately (#969)
+//
+// `TS2589: Type instantiation is excessively deep and possibly infinite` is not
+// a property of the code alone. It fires when the checker exhausts its
+// instantiation budget, and how much budget is left depends on what is already
+// in the type cache — so the same commit answers differently depending on how
+// warm DENO_DIR is.
+//
+// Measured on 1a735c9cc, `trpc`, same worktree, same second:
+//
+//     warm (shared DENO_DIR)   11 errors — teams.router.ts:824 TS2589 + :2478 TS2353
+//     cold (DENO_DIR=$(mktemp -d))   10 errors — teams.router.ts:2478 TS2353 only
+//
+// Nothing else differed. That made the gate green in CI (fresh runner cache) and
+// red locally (warm cache) on the same commit, which is worse than no gate: the
+// green is the half people trust, and a contributor gets blocked by a failure CI
+// will not reproduce.
+//
+// So TS2589 is excluded from the counts the ratchet enforces and reported on its
+// own line. The counted diagnostics are then reproducible, which is the only way
+// "may only come down" can mean anything. The cost is that a genuinely new
+// excessively-deep instantiation will not fail this gate — it will show in the
+// TS2589 line instead, and that is the honest trade: a signal that cannot be
+// reproduced cannot be ratcheted.
 
 import { execFileSync } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
@@ -120,6 +145,7 @@ function checkOne(fnName) {
   // biome-ignore lint/suspicious/noControlCharactersInRegex: matching the ANSI escape is the point
   const text = raw.replace(/\x1b\[[0-9;]*m/g, '')
   const counts = new Map()
+  const unstable = new Map()
   let unattributed = 0
 
   for (const block of text.split(/(?=^TS\d+ \[ERROR\])/m)) {
@@ -131,7 +157,11 @@ function checkOne(fnName) {
     }
     let file = fileURLToPath(at[1])
     file = file.startsWith(ROOT) ? file.slice(ROOT.length + 1) : file
-    counts.set(file, (counts.get(file) ?? 0) + 1)
+
+    // Cache-dependent, so not ratchetable. See the header note for the
+    // measurement this is based on (#969).
+    const target = block.startsWith('TS2589 ') ? unstable : counts
+    target.set(file, (target.get(file) ?? 0) + 1)
   }
 
   // A startup abort produces an `error:` line and NO diagnostics — deno never
@@ -144,26 +174,32 @@ function checkOne(fnName) {
     .filter((l) => l.startsWith('error: ') && !l.includes('Type checking failed'))
     .map((l) => l.slice('error: '.length).trim())
 
-  return { counts, unattributed, aborted }
+  return { counts, unstable, unattributed, aborted }
 }
 
 const baseline = JSON.parse(readFileSync(BASELINE, 'utf8'))
 const allowed = baseline.files ?? {}
 
 const observed = new Map()
+const observedUnstable = new Map()
 let unattributed = 0
 const perFunction = []
 const unexpectedlyUncheckable = []
 const knownUncheckable = baseline.uncheckable ?? {}
 
 for (const fn of functionsWithEntrypoints()) {
-  const { counts, unattributed: u, aborted } = checkOne(fn)
+  const { counts, unstable, unattributed: u, aborted } = checkOne(fn)
   unattributed += u
   if (aborted.length > 0) {
     if (!Object.hasOwn(knownUncheckable, fn)) {
       unexpectedlyUncheckable.push({ fn, why: aborted[0] })
     }
     continue
+  }
+  // After the abort check, like the counted diagnostics: a function deno never
+  // loaded has nothing to report either way.
+  for (const [file, n] of unstable) {
+    observedUnstable.set(file, (observedUnstable.get(file) ?? 0) + n)
   }
   let subtotal = 0
   for (const [file, n] of counts) {
@@ -192,6 +228,25 @@ if (unattributed > 0) {
       "  deno's output format may have changed; this script's parser needs a look."
   )
   process.exit(1)
+}
+
+/**
+ * TS2589s, listed but not enforced (#969).
+ *
+ * Printed rather than dropped: they are real diagnostics about real code, and
+ * somebody may want to act on one. They are just not reproducible enough to
+ * gate on — see the header note.
+ */
+function reportUnstable() {
+  if (observedUnstable.size === 0) return
+
+  const n = [...observedUnstable.values()].reduce((a, b) => a + b, 0)
+  console.log(
+    `\n  ${n} TS2589 (excessively deep instantiation) not counted — cache-dependent, see #969:`
+  )
+  for (const [file, count] of [...observedUnstable].sort()) {
+    console.log(`    ${file} — ${count}`)
+  }
 }
 
 const worse = []
@@ -230,10 +285,13 @@ if (newFiles.length > 0 || worse.length > 0) {
       '    * a value does not match the shape the function it is passed to wants\n' +
       '\n  Fix them. Do not raise the baseline — it may only come down.'
   )
+  reportUnstable()
   process.exit(1)
 }
 
 console.log(`✓ Edge function type errors within baseline (${total} total — ${summary})`)
+
+reportUnstable()
 
 if (better.length > 0) {
   console.log(

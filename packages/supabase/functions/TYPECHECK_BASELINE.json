@@ -1,6 +1,6 @@
 {
   "//": "Known type errors per file across the Supabase edge functions. See #921 and scripts/check-edge-fn-types.mjs. May only come down: a new file here, a higher number, or a newly-uncheckable function fails CI.",
-  "//recorded": "2026-09-26, after fixing the zod import-map split in functions/api/deno.json that accounted for 70 errors on its own. 13 functions sit at a clean zero and are held there by their absence from `files`.",
+  "//recorded": "2026-10-05, re-measured after #969 split TS2589 out of the counted diagnostics: it fires on checker-budget exhaustion, so it depended on DENO_DIR warmth and made the same commit answer 333 or 334 on `api` and 10 or 11 on `trpc`. teams.router.ts also left this list — its one entry was a zod 4 `message` param against the pinned zod 3, now fixed. Originally recorded 2026-09-26 after fixing the zod import-map split in functions/api/deno.json that accounted for 70 errors on its own.",
   "uncheckable": {},
   "files": {
     "packages/scf-schemas/src/feedback/feedback.schema.ts": 1,
@@ -60,7 +60,7 @@
     "packages/supabase/functions/api/routes/skills.ts": 12,
     "packages/supabase/functions/api/routes/tasks.ts": 5,
     "packages/supabase/functions/api/routes/teams.ts": 18,
-    "packages/supabase/functions/api/routes/user-profiles.ts": 12,
+    "packages/supabase/functions/api/routes/user-profiles.ts": 11,
     "packages/supabase/functions/api/routes/webhooks.ts": 3,
     "packages/supabase/functions/api/routes/work-logs.ts": 23,
     "packages/supabase/functions/api/routes/workers.ts": 2,
@@ -75,7 +75,6 @@
     "packages/supabase/functions/persona-webhook/index.ts": 1,
     "packages/supabase/functions/send-team-invitation/index.ts": 3,
     "packages/supabase/functions/trpc/routers/profile/import.router.ts": 1,
-    "packages/supabase/functions/trpc/routers/teams.router.ts": 1,
     "packages/supabase/functions/webhooks/email/index.ts": 1
   }
 }

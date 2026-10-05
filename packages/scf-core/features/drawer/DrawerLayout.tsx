@@ -29,6 +29,7 @@ import { DrawerProvider, useDrawer } from './DrawerContext'
 import { DrawerContent } from './DrawerContent'
 import { MobileBottomNav } from './MobileBottomNav'
 import { MobileAccountSheet } from './MobileAccountSheet'
+import { SectionTabs } from './SectionTabs'
 
 interface DrawerLayoutProps {
   /**
@@ -308,6 +309,9 @@ function DrawerLayoutInner({
               </Pressable>
             </Row>
           </Row>
+          {/* The section's tabs ride under the masthead on a phone, where the
+              shell has no column to put them beside. */}
+          <SectionTabs />
         </View>
       )
     },
@@ -333,6 +337,7 @@ function DrawerLayoutInner({
       isCollapsed={!isSmall && isDrawerCollapsed}
       canCollapse={!isSmall}
       onToggleCollapse={() => setIsDrawerCollapsed((prev) => !prev)}
+      unreadCount={unreadCount}
     />
   )
 
@@ -347,6 +352,11 @@ function DrawerLayoutInner({
         drawerContent={drawerContentNode}
         panelBackgroundColor={colors.bg[theme].default}
       >
+        {/* What used to nest under a drawer section is the section's tab
+            strip, across the top of its screens. On desktop it sits here,
+            between the column and the screen; on a phone it rides in the
+            masthead above. */}
+        {!isSmall && !hideDrawer ? <SectionTabs /> : null}
         <Stack
           screenLayout={screenLayout}
           screenOptions={{

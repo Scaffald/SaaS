@@ -1,34 +1,30 @@
 import { ScaffaldLogo } from '@scf/core/assets'
 import { ROUTES } from '@scf/core/constants/routes'
-import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
-import { usePathname } from '@scf/core/utils/usePathname'
-import { openPublicProfileInNewTab } from '@scf/core/utils/publicProfileUrl'
-import { supabase } from '@scf/core/utils/supabase/client'
-import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { getInitials } from '@scf/core/features/discover/utils/getInitials'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
-import { useUser } from '@scf/core/utils/useUser'
-import {
-  ExternalLink,
-  LogOut,
-  PanelLeftClose,
-  PanelRightClose,
-  Settings as SettingsIcon,
-} from 'lucide-react-native'
-import { Image } from 'expo-image'
-import { useRouter } from 'expo-router'
-import { useCallback, type ReactNode } from 'react'
-import { Pressable, ScrollView, View, type PressableStateCallbackType } from 'react-native'
-import type { GestureResponderEvent } from 'react-native'
-import { Text, useWindowDimensions, Row, Stack, useThemeContext } from '@scaffald/ui'
-import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
+import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
+import { supabase } from '@scf/core/utils/supabase/client'
+import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
+import { usePathname } from '@scf/core/utils/usePathname'
+import { useUser } from '@scf/core/utils/useUser'
+import { useRouter } from 'expo-router'
+import { Bell, Check, ChevronLeft, ChevronRight, ChevronUp, LogOut } from 'lucide-react-native'
+import { useCallback, useMemo, useState, type ReactNode } from 'react'
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+  type PressableStateCallbackType,
+} from 'react-native'
+import { Avatar, Text, useResponsive, useThemeContext } from '@scaffald/ui'
+import { borderRadius, boxShadows, colors, fontSize, lineHeight } from '@scaffald/ui/tokens'
 import { DrawerLink } from './DrawerLink'
-import { getDrawerItems, generateOfficeDrawerItem } from './config'
+import { getNavItems } from './config'
 import { MobileDrawerSections } from './MobileDrawerSections'
-import { normalizePath } from './utils'
-
-const OFFICE_DRAWER_ITEM = generateOfficeDrawerItem()
+import { useAccountContexts, type AccountContext } from './useAccountContexts'
+import { isActivePath, normalizePath } from './utils'
 
 export type DrawerContentProps = {
   /** Called when the drawer should close (after navigating to a link). */
@@ -39,20 +35,40 @@ export type DrawerContentProps = {
   canCollapse?: boolean
   /** Toggle collapse handler. */
   onToggleCollapse?: () => void
+  /** Unread notifications, for the footer row's count. */
+  unreadCount?: number
 }
 
+const COLLAPSE_ICON = 14
+const FOOTER_ICON = 16
+
+type ResolvedTheme = 'light' | 'dark'
+
 /**
- * DrawerContent renders the main content area of the drawer.
- * Used by both the mobile overlay drawer and the desktop permanent sidebar.
+ * The drawer's body — the permanent sidebar on desktop, the sheet behind
+ * "More" on a phone.
+ *
+ * Desktop follows the prototype's column: logo and collapse control on top,
+ * then the sections as a flat list with a rule marking the one you are in,
+ * then Notifications with its count, then the account row — who you are,
+ * which role you are using Scaffald as, and sign out. Nothing nests: a
+ * section's children are its tab strip, drawn by `SectionTabs` across the
+ * top of its screens. Role switching lives in the account row's menu so the
+ * nav owns the whole column.
+ *
+ * The phone keeps its identity-first sheet (notifications feed, mode,
+ * organisations, account), since the bottom bar carries navigation there.
  */
 export const DrawerContent = ({
   onClose,
   isCollapsed = false,
   canCollapse = false,
   onToggleCollapse,
+  unreadCount = 0,
 }: DrawerContentProps) => {
-  const { width } = useWindowDimensions()
+  const { width } = useResponsive()
   const { theme } = useThemeContext()
+  const resolvedTheme: ResolvedTheme = theme === 'dark' ? 'dark' : 'light'
   const pathname = normalizePath(usePathname())
   const router = useRouter()
   const { user, profile } = useUser()
@@ -61,8 +77,13 @@ export const DrawerContent = ({
     staleTime: 5 * 60 * 1000,
   })
   const { data: orgMemberships } = useOrganizations()
-  const drawerItems = getDrawerItems(orgMemberships ?? undefined)
   const isSmall = width < 1024
+  const collapsed = !isSmall && isCollapsed
+
+  const items = useMemo(
+    () => getNavItems(orgMemberships ?? undefined, hasOfficeRole),
+    [orgMemberships, hasOfficeRole]
+  )
 
   const displayName =
     generalInfo?.display_name?.trim() ||
@@ -76,26 +97,26 @@ export const DrawerContent = ({
     (typeof user?.user_metadata?.avatar_url === 'string' ? user.user_metadata.avatar_url : null)
   // charAt(0) showed a single "M" for "Marcus Rivera" while the header showed
   // "MR" — use the shared helper so all surfaces agree (#384).
-  const fallbackInitial =
-    displayName && displayName.trim().length > 0 ? getInitials(displayName) : 'U'
+  const initials = displayName.trim().length > 0 ? getInitials(displayName) : 'U'
 
-  const handleNavigate = useCallback(
-    (_href: string, _event?: GestureResponderEvent) => {
-      onClose?.()
-    },
-    [onClose]
-  )
+  const handleNavigate = useCallback(() => {
+    onClose?.()
+  }, [onClose])
 
   const handleSettingsPress = useCallback(() => {
     router.push(ROUTES.DASHBOARD.SETTINGS.path)
-    handleNavigate(ROUTES.DASHBOARD.SETTINGS.path)
+    handleNavigate()
   }, [router, handleNavigate])
 
-  const profilePath = ROUTES.PROFILE.path
   const handleProfilePress = useCallback(() => {
-    router.push(profilePath)
-    handleNavigate(profilePath)
-  }, [router, handleNavigate, profilePath])
+    router.push(ROUTES.PROFILE.path)
+    handleNavigate()
+  }, [router, handleNavigate])
+
+  const handleNotificationsPress = useCallback(() => {
+    router.push(ROUTES.DASHBOARD.NOTIFICATIONS.path)
+    handleNavigate()
+  }, [router, handleNavigate])
 
   const handleLogoutPress = useCallback(async () => {
     try {
@@ -108,282 +129,606 @@ export const DrawerContent = ({
     }
   }, [router])
 
-  const footerIconSize = 22
+  const hairline = colors.border[resolvedTheme].subtle
 
-  const FooterActionButton = ({
-    label,
-    onPress,
-    children,
-  }: {
-    label: string
-    onPress: () => void
-    children: ReactNode
-  }) => (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      onPress={onPress}
-      hitSlop={12}
-      style={({ pressed }: PressableStateCallbackType) => ({
-        opacity: pressed ? 0.6 : 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-      })}
-    >
-      {children}
-    </Pressable>
-  )
-
-  const glassTheme: 'light' | 'dark' = theme === 'dark' ? 'dark' : 'light'
-  const FooterContainer = isCollapsed ? Stack : Row
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        width: '100%',
-        paddingHorizontal: isCollapsed ? 8 : 24,
-        paddingVertical: 20,
-        alignItems: isCollapsed ? 'center' : 'stretch',
-        borderRightWidth: isSmall ? 0 : 1,
-        borderRightColor: colors.border[theme].subtle,
-      }}
-    >
-      <Stack flex={1} justify="space-between" gap={20} width="100%">
-        {!isSmall ? (
-          <Row
-            justify="center"
-            align="center"
-            gap={12}
-            paddingTop={16}
-            paddingBottom={8}
-            width="100%"
-          >
-            <ScaffaldLogo
-              height={isCollapsed ? 30 : 40}
-              width={isCollapsed ? 30 : 160}
-              showWordmark={!isCollapsed}
-            />
-          </Row>
-        ) : null}
-
-        {!isCollapsed ? (
-          <DrawerProfileCard
-            displayName={displayName}
-            avatarUri={avatarUri}
-            fallbackInitial={fallbackInitial}
-            slug={generalInfo?.slug ?? undefined}
-            onEditProfilePress={handleProfilePress}
-            onLogoutPress={handleLogoutPress}
-          />
-        ) : null}
-
+  if (isSmall) {
+    return (
+      <View style={styles.root}>
         <ScrollView
-          style={{ flex: 1, marginTop: 8 }}
-          contentContainerStyle={{
-            gap: isSmall ? 0 : 4,
-            width: '100%',
-            alignItems: isCollapsed ? 'center' : 'stretch',
-            paddingBottom: 16,
-          }}
+          style={styles.scroll}
+          contentContainerStyle={styles.sheetContent}
           showsVerticalScrollIndicator={false}
         >
-          {isSmall && !isCollapsed ? (
-            <MobileDrawerSections
-              organizations={orgMemberships ?? null}
-              hasOfficeRole={hasOfficeRole}
-              onNavigate={() => onClose?.()}
-              onSettingsPress={handleSettingsPress}
-              onLogoutPress={handleLogoutPress}
-            />
-          ) : (
-            <>
-              {hasOfficeRole ? (
-                <DrawerLink
-                  item={OFFICE_DRAWER_ITEM}
-                  pathname={pathname}
-                  onNavigate={handleNavigate}
-                  isCollapsed={isCollapsed}
-                />
-              ) : null}
-              {drawerItems.map((item) => (
-                <DrawerLink
-                  key={item.key}
-                  item={item}
-                  pathname={pathname}
-                  onNavigate={handleNavigate}
-                  isCollapsed={isCollapsed}
-                />
-              ))}
-            </>
-          )}
+          <MobileIdentityRow
+            theme={resolvedTheme}
+            name={displayName}
+            avatarUri={avatarUri}
+            initials={initials}
+            onProfilePress={handleProfilePress}
+          />
+          <MobileDrawerSections
+            organizations={orgMemberships ?? null}
+            hasOfficeRole={hasOfficeRole}
+            onNavigate={handleNavigate}
+            onSettingsPress={handleSettingsPress}
+            onLogoutPress={handleLogoutPress}
+          />
         </ScrollView>
+      </View>
+    )
+  }
 
-        {/* Footer controls — pill container (desktop only; mobile has settings inline).
-            Collapsed rail is only wide enough for one icon, so stack vertically. */}
-        {!isSmall ? (
-          <FooterContainer
-            justify={isCollapsed ? 'center' : 'space-between'}
-            align="center"
-            gap={isCollapsed ? 16 : 0}
-            style={{
-              backgroundColor:
-                glassTheme === 'dark' ? 'rgba(80,73,64,0.4)' : 'rgba(200,195,188,0.4)',
-              borderRadius: 7,
-              padding: 8,
-              width: '100%',
-            }}
+  return (
+    <View style={[styles.root, { borderRightWidth: 1, borderRightColor: hairline }]}>
+      <View
+        style={[
+          styles.header,
+          collapsed && styles.headerCollapsed,
+          { borderBottomColor: hairline },
+        ]}
+      >
+        <Pressable
+          onPress={() => router.push(ROUTES.DASHBOARD.path)}
+          accessibilityRole="link"
+          accessibilityLabel="Scaffald home"
+          style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+        >
+          <ScaffaldLogo
+            height={collapsed ? 26 : 22}
+            width={collapsed ? 26 : 132}
+            showWordmark={!collapsed}
+          />
+        </Pressable>
+        {canCollapse && onToggleCollapse ? (
+          <SquareIconButton
+            theme={resolvedTheme}
+            label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
+            onPress={onToggleCollapse}
           >
-            <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-              <SettingsIcon size={footerIconSize} color={colors.icon[glassTheme].default} />
-            </FooterActionButton>
-            {canCollapse && onToggleCollapse ? (
-              <FooterActionButton
-                label={isCollapsed ? 'Expand navigation' : 'Collapse navigation'}
-                onPress={onToggleCollapse}
-              >
-                {isCollapsed ? (
-                  <PanelRightClose size={footerIconSize} color={colors.icon[glassTheme].default} />
-                ) : (
-                  <PanelLeftClose size={footerIconSize} color={colors.icon[glassTheme].default} />
-                )}
-              </FooterActionButton>
-            ) : null}
-          </FooterContainer>
+            {collapsed ? (
+              <ChevronRight size={COLLAPSE_ICON} color={colors.icon[resolvedTheme].default} />
+            ) : (
+              <ChevronLeft size={COLLAPSE_ICON} color={colors.icon[resolvedTheme].default} />
+            )}
+          </SquareIconButton>
         ) : null}
-      </Stack>
+      </View>
+
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.navContent}
+        showsVerticalScrollIndicator={false}
+        accessibilityRole="menu"
+      >
+        {items.map((item) => (
+          <DrawerLink
+            key={item.key}
+            item={item}
+            pathname={pathname}
+            onNavigate={handleNavigate}
+            isCollapsed={collapsed}
+          />
+        ))}
+      </ScrollView>
+
+      <NotificationsRow
+        theme={resolvedTheme}
+        collapsed={collapsed}
+        count={unreadCount}
+        active={isActivePath(pathname, ROUTES.DASHBOARD.NOTIFICATIONS.path)}
+        onPress={handleNotificationsPress}
+      />
+
+      <AccountRow
+        theme={resolvedTheme}
+        collapsed={collapsed}
+        name={displayName}
+        avatarUri={avatarUri}
+        initials={initials}
+        onExpand={onToggleCollapse}
+        onSettingsPress={handleSettingsPress}
+        onLogoutPress={handleLogoutPress}
+      />
     </View>
   )
 }
 
-type DrawerProfileCardProps = {
-  displayName: string
-  avatarUri: string | null
-  fallbackInitial: string
-  slug?: string | null
-  onEditProfilePress: () => void
-  onLogoutPress: () => void
-}
+// ── Pieces ───────────────────────────────────────────────────────────────────
 
-const nameTextStyle = (theme: 'light' | 'dark') => ({
-  color: theme === 'dark' ? colors.gray[100] : colors.gray[900],
-  fontWeight: '700' as const,
-  fontSize: 15,
-  letterSpacing: -0.3,
-})
-
-const linkTextStyle = {
-  fontWeight: '600' as const,
-  fontSize: 12,
-}
-
-const DrawerProfileCard = ({
-  displayName,
-  avatarUri,
-  fallbackInitial,
-  slug,
-  onEditProfilePress,
-  onLogoutPress,
-}: DrawerProfileCardProps) => {
-  const { theme } = useThemeContext()
-  const avatarSize = 48
-
-  const handlePublicProfilePress = useCallback(() => {
-    if (slug) openPublicProfileInNewTab(slug)
-  }, [slug])
-
-  const nameContent = slug ? (
+function SquareIconButton({
+  theme,
+  label,
+  onPress,
+  children,
+}: {
+  theme: ResolvedTheme
+  label: string
+  onPress: () => void
+  children: ReactNode
+}) {
+  return (
     <Pressable
-      onPress={handlePublicProfilePress}
-      style={({ pressed }) => ({
-        opacity: pressed ? 0.8 : 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 4,
-      })}
-      accessibilityRole="link"
-      accessibilityLabel="View public profile"
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      hitSlop={6}
+      style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [
+        styles.squareButton,
+        {
+          borderColor: hovered || pressed ? colors.primary[500] : colors.border[theme].default,
+          opacity: pressed ? 0.7 : 1,
+        },
+      ]}
     >
-      <Text style={nameTextStyle(theme)}>{displayName}</Text>
-      <ExternalLink size={14} color={colors.primary[500]} />
+      {children}
     </Pressable>
-  ) : (
-    <Text style={nameTextStyle(theme)}>{displayName}</Text>
   )
+}
+
+function CountTag({ theme, label }: { theme: ResolvedTheme; label: string }) {
+  return (
+    <View style={[styles.countTag, { backgroundColor: colors.bg[theme].selected }]}>
+      <Text style={StyleSheet.flatten([styles.countTagText, { color: colors.primary[700] }])}>
+        {label}
+      </Text>
+    </View>
+  )
+}
+
+function NotificationsRow({
+  theme,
+  collapsed,
+  count,
+  active,
+  onPress,
+}: {
+  theme: ResolvedTheme
+  collapsed: boolean
+  count: number
+  active: boolean
+  onPress: () => void
+}) {
+  const label = count > 0 ? `Notifications, ${count} unread` : 'Notifications'
+  const fg = active ? colors.primary[600] : colors.text[theme].secondary
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="link"
+      accessibilityLabel={label}
+      accessibilityState={{ selected: active }}
+      style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [
+        styles.footerRow,
+        collapsed && styles.footerRowCollapsed,
+        {
+          borderTopColor: colors.border[theme].subtle,
+          backgroundColor: hovered || pressed ? colors.bg[theme].subtle : 'transparent',
+        },
+      ]}
+    >
+      {collapsed ? (
+        count > 0 ? (
+          <CountTag theme={theme} label={String(count)} />
+        ) : (
+          <Bell size={FOOTER_ICON} color={fg} />
+        )
+      ) : (
+        <>
+          <Text style={StyleSheet.flatten([styles.footerLabel, { color: fg }])}>Notifications</Text>
+          {count > 0 ? <CountTag theme={theme} label={`${count} new`} /> : null}
+        </>
+      )}
+    </Pressable>
+  )
+}
+
+function AccountRow({
+  theme,
+  collapsed,
+  name,
+  avatarUri,
+  initials,
+  onExpand,
+  onSettingsPress,
+  onLogoutPress,
+}: {
+  theme: ResolvedTheme
+  collapsed: boolean
+  name: string
+  avatarUri: string | null
+  initials: string
+  onExpand?: () => void
+  onSettingsPress: () => void
+  onLogoutPress: () => void
+}) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const { contexts, current, pick } = useAccountContexts()
+  const closeMenu = useCallback(() => setMenuOpen(false), [])
+  const toggleMenu = useCallback(() => setMenuOpen((open) => !open), [])
+
+  const pickContext = useCallback(
+    (row: AccountContext) => {
+      closeMenu()
+      pick(row)
+    },
+    [closeMenu, pick]
+  )
+
+  const openSettings = useCallback(() => {
+    closeMenu()
+    onSettingsPress()
+  }, [closeMenu, onSettingsPress])
+
+  if (collapsed) {
+    return (
+      <Pressable
+        onPress={onExpand}
+        accessibilityRole="button"
+        accessibilityLabel={`Signed in as ${name}, using as ${current.label}. Expand navigation to switch.`}
+        style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [
+          styles.footerRow,
+          styles.footerRowCollapsed,
+          {
+            borderTopColor: colors.border[theme].subtle,
+            backgroundColor: hovered || pressed ? colors.bg[theme].subtle : 'transparent',
+          },
+        ]}
+      >
+        <Avatar size={32} src={avatarUri ?? undefined} initials={initials} alt={name} />
+      </Pressable>
+    )
+  }
 
   return (
-    <Row
-      align="center"
-      gap={12}
-      style={{
-        padding: 12,
-        borderRadius: 7,
-        backgroundColor: glassVibrantColors[theme === 'dark' ? 'dark' : 'light'].tertiaryFill,
-        borderWidth: 1,
-        borderColor: glassVibrantColors[theme === 'dark' ? 'dark' : 'light'].separator,
-      }}
-    >
-      {avatarUri ? (
-        <Stack
-          style={{
-            width: avatarSize,
-            height: avatarSize,
-            overflow: 'hidden',
-            backgroundColor: colors.gray[100],
-            borderRadius: 7,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Image
-            source={{ uri: avatarUri }}
-            contentFit="cover"
-            style={{ width: avatarSize, height: avatarSize }}
-          />
-        </Stack>
-      ) : (
-        <Stack
-          width={avatarSize}
-          height={avatarSize}
-          align="center"
-          justify="center"
-          style={{
-            backgroundColor: colors.primary[600],
-            borderRadius: 7,
-          }}
-        >
-          <Text style={{ color: colors.white, fontWeight: '700', fontSize: 18 }}>
-            {fallbackInitial}
-          </Text>
-        </Stack>
-      )}
-      <Stack flex={1} gap={6}>
-        {nameContent}
-        <Row align="center" gap={4}>
+    <View style={[styles.accountRow, { borderTopColor: colors.border[theme].subtle }]}>
+      {menuOpen ? (
+        <>
           <Pressable
-            onPress={onEditProfilePress}
-            style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
-            accessibilityRole="button"
-            accessibilityLabel="Edit profile"
+            onPress={closeMenu}
+            accessibilityLabel="Close role menu"
+            style={styles.menuBackdrop}
+          />
+          <View
+            style={[
+              styles.menu,
+              {
+                backgroundColor: colors.bg[theme].default,
+                borderColor: colors.border[theme].default,
+                boxShadow: boxShadows.l,
+              } as object,
+            ]}
+            accessibilityRole="menu"
           >
-            <Text style={{ ...linkTextStyle, color: colors.primary[500] }}>Edit profile</Text>
-          </Pressable>
-        </Row>
-      </Stack>
+            <Text
+              style={StyleSheet.flatten([
+                styles.menuKicker,
+                { color: colors.text[theme].tertiary },
+              ])}
+            >
+              Using Scaffald as
+            </Text>
+            {contexts.map((row) => {
+              const selected = row.mode === current.mode
+              return (
+                <MenuRow
+                  key={row.mode}
+                  theme={theme}
+                  label={row.label}
+                  selected={selected}
+                  onPress={() => pickContext(row)}
+                  trailing={
+                    selected ? <Check size={COLLAPSE_ICON} color={colors.primary[700]} /> : null
+                  }
+                />
+              )
+            })}
+            <View style={[styles.menuDivider, { borderTopColor: colors.border[theme].subtle }]}>
+              <MenuRow
+                theme={theme}
+                label="Account & settings"
+                onPress={openSettings}
+                trailing={<ChevronRight size={COLLAPSE_ICON} color={colors.icon[theme].muted} />}
+              />
+            </View>
+          </View>
+        </>
+      ) : null}
+
+      <Avatar size={36} src={avatarUri ?? undefined} initials={initials} alt={name} />
+      <Pressable
+        onPress={toggleMenu}
+        accessibilityRole="button"
+        accessibilityLabel={`${name}, using as ${current.label}. Switch role`}
+        accessibilityState={{ expanded: menuOpen }}
+        style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [
+          styles.accountIdentity,
+          { opacity: pressed ? 0.7 : 1 },
+          hovered && { backgroundColor: colors.bg[theme].subtle },
+        ]}
+      >
+        <View style={styles.accountText}>
+          <Text
+            numberOfLines={1}
+            style={StyleSheet.flatten([styles.accountName, { color: colors.text[theme].primary }])}
+          >
+            {name}
+          </Text>
+          <Text
+            numberOfLines={1}
+            style={StyleSheet.flatten([
+              styles.accountMode,
+              { color: colors.text[theme].secondary },
+            ])}
+          >
+            Using as {current.label}
+          </Text>
+        </View>
+        <ChevronUp size={COLLAPSE_ICON} color={colors.icon[theme].muted} />
+      </Pressable>
       <Pressable
         onPress={onLogoutPress}
-        hitSlop={8}
-        style={({ pressed }) => ({
-          opacity: pressed ? 0.6 : 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 4,
-        })}
         accessibilityRole="button"
         accessibilityLabel="Sign out"
+        hitSlop={8}
+        style={({ pressed }) => [styles.signOut, { opacity: pressed ? 0.6 : 1 }]}
       >
-        <LogOut size={18} color={colors.icon[theme === 'dark' ? 'dark' : 'light'].default} />
+        {({ hovered }: PressableStateCallbackType & { hovered?: boolean }) => (
+          <LogOut
+            size={FOOTER_ICON}
+            color={hovered ? colors.primary[600] : colors.icon[theme].muted}
+          />
+        )}
       </Pressable>
-    </Row>
+    </View>
   )
 }
+
+function MenuRow({
+  theme,
+  label,
+  selected = false,
+  onPress,
+  trailing,
+}: {
+  theme: ResolvedTheme
+  label: string
+  selected?: boolean
+  onPress: () => void
+  trailing?: ReactNode
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="menuitem"
+      accessibilityLabel={label}
+      accessibilityState={{ selected }}
+      style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [
+        styles.menuRow,
+        (hovered || pressed) && { backgroundColor: colors.bg[theme].subtle },
+      ]}
+    >
+      <Text
+        style={StyleSheet.flatten([
+          styles.menuRowText,
+          {
+            color: selected ? colors.primary[700] : colors.text[theme].primary,
+            fontWeight: selected ? '600' : '400',
+          },
+        ])}
+      >
+        {label}
+      </Text>
+      {trailing}
+    </Pressable>
+  )
+}
+
+function MobileIdentityRow({
+  theme,
+  name,
+  avatarUri,
+  initials,
+  onProfilePress,
+}: {
+  theme: ResolvedTheme
+  name: string
+  avatarUri: string | null
+  initials: string
+  onProfilePress: () => void
+}) {
+  return (
+    <View style={[styles.identityRow, { borderBottomColor: colors.border[theme].subtle }]}>
+      <Avatar size={40} src={avatarUri ?? undefined} initials={initials} alt={name} />
+      <View style={styles.accountText}>
+        <Text
+          numberOfLines={1}
+          style={StyleSheet.flatten([styles.accountName, { color: colors.text[theme].primary }])}
+        >
+          {name}
+        </Text>
+        <Pressable
+          onPress={onProfilePress}
+          accessibilityRole="link"
+          accessibilityLabel="Edit profile"
+          style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, alignSelf: 'flex-start' })}
+        >
+          <Text
+            style={StyleSheet.flatten([
+              styles.accountMode,
+              { color: colors.primary[600], fontWeight: '600' },
+            ])}
+          >
+            Edit profile
+          </Text>
+        </Pressable>
+      </View>
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    width: '100%',
+  },
+  scroll: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+    paddingTop: 22,
+    paddingBottom: 18,
+    paddingLeft: 24,
+    paddingRight: 18,
+    borderBottomWidth: 1,
+  },
+  headerCollapsed: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    gap: 10,
+    paddingTop: 20,
+    paddingBottom: 14,
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
+  squareButton: {
+    width: 26,
+    height: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderRadius: borderRadius.xs,
+  },
+  navContent: {
+    paddingVertical: 12,
+  },
+  sheetContent: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 24,
+    gap: 20,
+  },
+  footerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+    paddingVertical: 13,
+    paddingHorizontal: 24,
+    borderTopWidth: 1,
+  },
+  footerRowCollapsed: {
+    justifyContent: 'center',
+    paddingHorizontal: 0,
+  },
+  footerLabel: {
+    fontSize: fontSize.sm,
+    lineHeight: lineHeight.sm,
+  },
+  countTag: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: borderRadius.xs,
+  },
+  countTagText: {
+    fontSize: fontSize.xxs,
+    lineHeight: lineHeight.xxs,
+    fontWeight: '600',
+    fontVariant: ['tabular-nums'],
+  },
+  accountRow: {
+    position: 'relative',
+    zIndex: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 14,
+    paddingLeft: 20,
+    paddingRight: 14,
+    borderTopWidth: 1,
+  },
+  accountIdentity: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    minWidth: 0,
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    borderRadius: borderRadius.xs,
+  },
+  accountText: {
+    flex: 1,
+    minWidth: 0,
+    gap: 2,
+  },
+  accountName: {
+    fontSize: fontSize.sm,
+    lineHeight: lineHeight.sm,
+    fontWeight: '600',
+  },
+  accountMode: {
+    fontSize: fontSize.xxs,
+    lineHeight: lineHeight.xxs,
+  },
+  signOut: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuBackdrop: {
+    position: 'absolute',
+    left: -1000,
+    right: -1000,
+    top: -4000,
+    bottom: 0,
+  },
+  menu: {
+    position: 'absolute',
+    bottom: '100%',
+    left: 12,
+    right: 12,
+    marginBottom: 4,
+    padding: 6,
+    borderWidth: 1,
+    borderRadius: borderRadius.l,
+  },
+  menuKicker: {
+    fontSize: fontSize.h6,
+    lineHeight: lineHeight.h6,
+    fontWeight: '500',
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+    paddingTop: 8,
+    paddingHorizontal: 10,
+    paddingBottom: 6,
+  },
+  menuRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: borderRadius.xs,
+  },
+  menuRowText: {
+    fontSize: fontSize.sm,
+    lineHeight: lineHeight.sm,
+  },
+  menuDivider: {
+    marginTop: 6,
+    paddingTop: 6,
+    borderTopWidth: 1,
+  },
+  identityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+  },
+})

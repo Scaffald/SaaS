@@ -12,6 +12,8 @@ key_files:
   - packages/scf-core/components/layouts/DashboardLayout.tsx
   - packages/scf-core/features/drawer/DrawerLayout.tsx
   - packages/scf-core/features/drawer/DrawerContent.tsx
+  - packages/scf-core/features/drawer/config.ts
+  - packages/scf-core/features/drawer/SectionTabs.tsx
 critical_constraints:
   - "NEVER conditionally render different wrapper components around Stack/Drawer navigators"
   - "Use useResponsive from @scaffald/ui, NOT useWindowDimensions from react-native-web"
@@ -52,6 +54,30 @@ This has caused **7 distinct crashes** in this codebase. The pattern applies to:
 - `apps/scaffald/app/dashboard/_layout.tsx` — Drawer navigator
 - `ScaffaldJobsSdkProviderFromSession` — SDK context wrapper
 - Any component wrapping a `NativeStackNavigator` or `Drawer`
+
+## Drawer Sections and Section Tabs
+
+The nav tree lives in `features/drawer/config.ts` and is read two ways:
+
+- **The drawer draws only the top level** — Office (with the role), Home,
+  Communities, Workers, Employers, Jobs, Assessments, Profile. Nothing nests
+  under a section in the drawer; `DrawerLink` is a flat row with a 2px rule.
+- **A section's `subItems` are its tab strip.** `SectionTabs` (rendered once by
+  `DrawerLayout`, above the screen on desktop and under the masthead on a
+  phone) resolves the strip for the current pathname through
+  `getSectionTabs()` in `section-tabs.ts`. An item that itself has `subItems`
+  and owns the pathname — an organisation under Employers — takes over the
+  strip on its own pages.
+
+So to add a page to a section's navigation, add it to that section's
+`subItems`; do not render a `Tabs` strip inside the screen for section-level
+navigation (in-page `Tabs type="folder"` are for a list's own partition, like
+`ApplicationsList`'s filter). A tab whose landing page is one of several it
+owns sets `matchPrefix` so the whole prefix lights it. Notifications is the
+drawer's footer row, not a Home tab.
+
+Role switching is the drawer's account row (`useAccountContexts`, shared with
+the phone's `MobileAccountSheet`), not a segmented control in the nav.
 
 ## Navigation Guard Pattern
 
