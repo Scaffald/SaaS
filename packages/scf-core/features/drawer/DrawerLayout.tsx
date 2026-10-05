@@ -8,10 +8,11 @@ import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useQueryClient } from '@tanstack/react-query'
 import { useThemeContext, useResponsive, Avatar, Row, Text } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { borderRadius, colors, fontSize, lineHeight } from '@scaffald/ui/tokens'
+import { ScaffaldLogo } from '@scf/core/assets'
 import type { NotificationItem } from '@scf/core/components/notifications'
 import { ROUTES } from '@scf/core/constants/routes'
-import { ArrowLeft, Search, X } from 'lucide-react-native'
+import { ArrowLeft, Bell, Search, X } from 'lucide-react-native'
 import { Stack } from 'expo-router'
 import { useRouter } from 'expo-router'
 import {
@@ -22,7 +23,7 @@ import {
   type ComponentProps,
   type ReactNode,
 } from 'react'
-import { Pressable, TextInput, View } from 'react-native'
+import { Pressable, StyleSheet, TextInput, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { CustomDrawer } from './CustomDrawer'
 import { DrawerProvider, useDrawer } from './DrawerContext'
@@ -53,6 +54,34 @@ interface DrawerLayoutProps {
 }
 
 const DRAWER_WIDTH_FULL = 300
+
+/** Masthead controls are 44pt targets around 21px glyphs, the prototype's floor. */
+const mastheadStyles = StyleSheet.create({
+  control: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  badge: {
+    position: 'absolute',
+    top: 6,
+    right: 5,
+    minWidth: 15,
+    height: 15,
+    paddingHorizontal: 3,
+    borderRadius: borderRadius.max,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: {
+    fontSize: fontSize.xxs,
+    lineHeight: 15,
+    fontWeight: '600',
+    fontVariant: ['tabular-nums'],
+  },
+})
 const DRAWER_WIDTH_COLLAPSED = 92
 
 export function DrawerLayout(props: DrawerLayoutProps) {
@@ -186,150 +215,166 @@ function DrawerLayoutInner({
       ? DRAWER_WIDTH_COLLAPSED
       : DRAWER_WIDTH_FULL
 
-  const renderMobileHeader = useCallback(
-    ({ options }: { options: { title?: string } }) => {
-      if (searchActive) {
-        return (
-          <View
-            style={{
-              paddingTop: insets.top,
-              backgroundColor: colors.bg[theme].default,
-              borderBottomWidth: 1,
-              borderBottomColor: colors.border[theme].subtle,
-            }}
-          >
-            <Row gap={8} align="center" style={{ paddingHorizontal: 12, paddingVertical: 10 }}>
-              <Pressable
-                onPress={closeSearch}
-                hitSlop={8}
-                accessibilityRole="button"
-                accessibilityLabel="Close search"
-                style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, padding: 4 })}
-              >
-                <ArrowLeft size={22} color={colors.icon[theme].default} />
-              </Pressable>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 8,
-                  paddingHorizontal: 12,
-                  paddingVertical: 8,
-                  backgroundColor: colors.bg[theme].subtle,
-                  borderRadius: 999,
-                }}
-              >
-                <Search size={18} color={colors.icon[theme].muted} />
-                <TextInput
-                  ref={searchInputRef}
-                  value={searchQuery}
-                  onChangeText={setSearchQuery}
-                  onSubmitEditing={submitSearch}
-                  placeholder="Search Scaffald"
-                  placeholderTextColor={colors.text[theme].tertiary}
-                  returnKeyType="search"
-                  autoCorrect={false}
-                  style={[
-                    {
-                      flex: 1,
-                      fontSize: 15,
-                      color: colors.text[theme].primary,
-                      paddingVertical: 0,
-                    },
-                    { outlineStyle: 'none' } as object,
-                  ]}
-                />
-                {searchQuery.length > 0 ? (
-                  <Pressable
-                    onPress={() => setSearchQuery('')}
-                    hitSlop={8}
-                    accessibilityRole="button"
-                    accessibilityLabel="Clear search"
-                    style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-                  >
-                    <X size={16} color={colors.icon[theme].muted} />
-                  </Pressable>
-                ) : null}
-              </View>
-            </Row>
-          </View>
-        )
-      }
+  const renderMobileHeader = useCallback(() => {
+    if (searchActive) {
       return (
         <View
           style={{
             paddingTop: insets.top,
-            backgroundColor: 'transparent',
+            backgroundColor: colors.bg[theme].default,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border[theme].subtle,
           }}
         >
-          <Row
-            gap={12}
-            align="center"
-            style={{
-              paddingHorizontal: 20,
-              paddingVertical: 10,
-              minHeight: 44,
-            }}
-          >
+          <Row gap={8} align="center" style={{ paddingHorizontal: 12, paddingVertical: 10 }}>
             <Pressable
-              onPress={openAccount}
+              onPress={closeSearch}
               hitSlop={8}
-              accessibilityLabel="Account and role"
               accessibilityRole="button"
-              style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+              accessibilityLabel="Close search"
+              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, padding: 4 })}
             >
-              <Avatar
-                size={32}
-                src={avatarUrl}
-                initials={avatarInitials}
-                verified={isVerified}
-                badgeCount={unreadCount}
-                alt={avatarAlt}
-              />
+              <ArrowLeft size={22} color={colors.icon[theme].default} />
             </Pressable>
-            <View style={{ flex: 1, alignItems: 'center' }}>
-              {options.title ? (
-                <Text
-                  style={{ color: colors.text[theme].primary, fontSize: 17, fontWeight: '600' }}
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                backgroundColor: colors.bg[theme].subtle,
+                borderRadius: 999,
+              }}
+            >
+              <Search size={18} color={colors.icon[theme].muted} />
+              <TextInput
+                ref={searchInputRef}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                onSubmitEditing={submitSearch}
+                placeholder="Search Scaffald"
+                placeholderTextColor={colors.text[theme].tertiary}
+                returnKeyType="search"
+                autoCorrect={false}
+                style={[
+                  {
+                    flex: 1,
+                    fontSize: 15,
+                    color: colors.text[theme].primary,
+                    paddingVertical: 0,
+                  },
+                  { outlineStyle: 'none' } as object,
+                ]}
+              />
+              {searchQuery.length > 0 ? (
+                <Pressable
+                  onPress={() => setSearchQuery('')}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel="Clear search"
+                  style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
                 >
-                  {options.title}
-                </Text>
+                  <X size={16} color={colors.icon[theme].muted} />
+                </Pressable>
               ) : null}
             </View>
-            <Row gap={16} align="center">
-              <Pressable
-                onPress={() => setSearchActive(true)}
-                hitSlop={8}
-                accessibilityLabel="Search"
-                accessibilityRole="button"
-                style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-              >
-                <Search size={22} color={colors.icon[theme].default} />
-              </Pressable>
-            </Row>
           </Row>
-          {/* The section's tabs ride under the masthead on a phone, where the
-              shell has no column to put them beside. */}
-          <SectionTabs />
         </View>
       )
-    },
-    [
-      avatarAlt,
-      avatarInitials,
-      avatarUrl,
-      closeSearch,
-      insets.top,
-      isVerified,
-      searchActive,
-      searchQuery,
-      submitSearch,
-      theme,
-      openAccount,
-      unreadCount,
-    ]
-  )
+    }
+    // The masthead: logo / search / bell with its count / avatar, on a
+    // hairline — the prototype's arrangement (#976). It used to be avatar /
+    // centred screen title / search: the title now comes from each screen's
+    // ScreenHeader, the unread count moves from the avatar's corner to a
+    // bell of its own, and the logo takes the left edge so a phone screen
+    // says whose app it is. The section's tabs ride beneath the row.
+    return (
+      <View style={{ paddingTop: insets.top, backgroundColor: colors.bg[theme].default }}>
+        <Row
+          gap={4}
+          align="center"
+          style={{
+            paddingHorizontal: 16,
+            height: 52,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border[theme].subtle,
+          }}
+        >
+          <Pressable
+            onPress={() => router.push(ROUTES.DASHBOARD.path)}
+            accessibilityRole="link"
+            accessibilityLabel="Scaffald home"
+            style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, marginRight: 'auto' })}
+          >
+            <ScaffaldLogo height={18} width={108} showWordmark />
+          </Pressable>
+          <Pressable
+            onPress={() => setSearchActive(true)}
+            accessibilityLabel="Search"
+            accessibilityRole="button"
+            style={({ pressed }) => [mastheadStyles.control, { opacity: pressed ? 0.5 : 1 }]}
+          >
+            <Search size={21} color={colors.icon[theme].default} />
+          </Pressable>
+          <Pressable
+            onPress={() => router.push(ROUTES.DASHBOARD.NOTIFICATIONS.path)}
+            accessibilityLabel={
+              unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'
+            }
+            accessibilityRole="link"
+            style={({ pressed }) => [mastheadStyles.control, { opacity: pressed ? 0.5 : 1 }]}
+          >
+            <Bell size={21} color={colors.icon[theme].default} />
+            {unreadCount > 0 ? (
+              <View style={[mastheadStyles.badge, { backgroundColor: colors.primary[600] }]}>
+                <Text
+                  style={StyleSheet.flatten([mastheadStyles.badgeText, { color: colors.white }])}
+                >
+                  {unreadCount > 99 ? '99+' : String(unreadCount)}
+                </Text>
+              </View>
+            ) : null}
+          </Pressable>
+          <Pressable
+            onPress={openAccount}
+            accessibilityLabel="Account and role"
+            accessibilityRole="button"
+            style={({ pressed }) => [
+              mastheadStyles.control,
+              { marginRight: -10, opacity: pressed ? 0.6 : 1 },
+            ]}
+          >
+            <Avatar
+              size={32}
+              src={avatarUrl}
+              initials={avatarInitials}
+              verified={isVerified}
+              alt={avatarAlt}
+            />
+          </Pressable>
+        </Row>
+        {/* The section's tabs ride under the masthead on a phone, where the
+              shell has no column to put them beside. */}
+        <SectionTabs />
+      </View>
+    )
+  }, [
+    avatarAlt,
+    avatarInitials,
+    avatarUrl,
+    closeSearch,
+    insets.top,
+    isVerified,
+    searchActive,
+    searchQuery,
+    submitSearch,
+    theme,
+    openAccount,
+    unreadCount,
+    router,
+  ])
 
   const drawerContentNode = (
     <DrawerContent

@@ -72,8 +72,8 @@
     },
     "drawer": {
       "borderRadius": 7,
-      "fontSize": 16,
-      "hexColor": 4
+      "fontSize": 15,
+      "hexColor": 3
     },
     "feedback": {
       "borderRadius": 3
