@@ -1,38 +1,26 @@
 /**
- * Mobile primary navigation — 3-tab glass pill (Home / Jobs / Community).
+ * Mobile primary navigation — the flat strip at the foot of every phone
+ * screen.
  *
- * - Profile, settings, notifications, organizations live in the drawer
- *   (header avatar tap), not in this bar.
- * - Search lives in the header.
- * - Active-tab pill animates between tabs with vanilla Animated
- *   (no Reanimated worklets, per the project's animation policy).
+ * The SCF prototype's bar is a strip, not a floating pill: full width, a
+ * hairline on top, five slots at a 52px floor, an icon over an 11px label,
+ * the active one in the accent and the rest in the secondary text colour.
+ * Ours was a glass pill — blur, a 32px radius, a drop shadow, an animated
+ * indicator sliding under the active tab (#975). Everything the pill did to
+ * stay legible over scrolled content (#378) the strip gets for free by being
+ * opaque.
  *
- * GlassTabBar encapsulates the blur surface:
- *   iOS    → expo-blur BlurView (systemChromeMaterial, intensity 80)
- *   Android → expo-blur BlurView (intensity 40) + opaque fallback bg
- *   Web    → GlassSurface (CSS backdrop-filter)
+ * - The tab set mirrors the role you are in (worker / employer); see config.
+ * - More opens the navigation drawer; it owns no route and never lights.
+ * - Profile, settings, notifications and organisations live in the drawer
+ *   and the account sheet, not here. Search lives in the masthead.
  */
 
-import {
-  GlassSurface,
-  Text,
-  useResponsive,
-  useThemeContext,
-  useBottomBarContext,
-} from '@scaffald/ui'
-import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
-import { BlurView } from './NativeBlurView'
+import { Text, useResponsive, useThemeContext, useBottomBarContext } from '@scaffald/ui'
+import { colors, fontSize, lineHeight } from '@scaffald/ui/tokens'
 import { usePathname, useRouter } from 'expo-router'
-import { useEffect, useMemo, useRef, type ReactNode } from 'react'
-import {
-  Animated,
-  Easing,
-  type LayoutChangeEvent,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native'
+import { useEffect, useMemo } from 'react'
+import { Platform, Pressable, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MoreHorizontal } from 'lucide-react-native'
 import { EMPLOYER_MOBILE_SECTIONS, MOBILE_SECTIONS, type MobileSection } from './config'
@@ -41,13 +29,9 @@ import { useAppMode } from '@scf/core/utils/useAppMode'
 
 // ── Constants ──
 
-const PILL_HEIGHT = 56
-const TAB_VERTICAL_PAD = 6
-const ICON_SIZE = 22
-const LABEL_FONT_SIZE = 11
-const ACTIVE_INDICATOR_RADIUS = 22
-const PILL_HORIZONTAL_PAD = 6
-const PILL_BORDER_RADIUS = 32
+/** The strip's own height; the safe-area inset is added beneath it. */
+export const BOTTOM_NAV_HEIGHT = 52
+const ICON_SIZE = 21
 
 // ── Helpers ──
 
@@ -71,72 +55,6 @@ function getActiveSectionIndex(pathname: string, sections: MobileSection[]): num
   return -1
 }
 
-// ── GlassTabBar ──
-// Platform-branched blur surface. Callers render children inside without
-// needing to branch on platform themselves.
-
-const pillShadow = {
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 6 },
-  shadowOpacity: 0.14,
-  shadowRadius: 16,
-  elevation: 12,
-}
-
-function GlassTabBar({ children, theme }: { children: ReactNode; theme: 'light' | 'dark' }) {
-  const borderColor = theme === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.07)'
-
-  if (Platform.OS === 'ios') {
-    return (
-      <View style={[styles.pillWrapper, pillShadow, { borderColor }]}>
-        <BlurView intensity={80} tint="systemChromeMaterial" style={styles.blurFill}>
-          {children}
-        </BlurView>
-      </View>
-    )
-  }
-
-  if (Platform.OS === 'android') {
-    const fallbackBg = theme === 'dark' ? 'rgba(30,30,30,0.85)' : 'rgba(245,245,245,0.88)'
-    return (
-      <View style={[styles.pillWrapper, pillShadow, { borderColor, backgroundColor: fallbackBg }]}>
-        <BlurView
-          intensity={40}
-          tint={theme === 'dark' ? 'dark' : 'light'}
-          experimentalBlurMethod="dimezisBlurView"
-          style={styles.blurFill}
-        >
-          {children}
-        </BlurView>
-      </View>
-    )
-  }
-
-  // Web: CSS backdrop-filter via GlassSurface.
-  // "thin" (45% white) let page text read straight through the bar on every
-  // scrolled screen (#378) — backdrop-filter blur isn't enough on its own.
-  // "thick" (88%) keeps the glass look while staying legible over content.
-  return (
-    <GlassSurface
-      material="thick"
-      radius="3xl"
-      elevated
-      style={[
-        styles.webSurface,
-        {
-          boxShadow: '0 6px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)',
-          // Near-opaque backing: even at material="thick" (84%) scrolled text
-          // stayed legible through the pill (#378). Keeps the backdrop blur
-          // for depth at the edges while making the surface itself read solid.
-          backgroundColor: theme === 'dark' ? 'rgba(28,28,30,0.97)' : 'rgba(252,251,249,0.97)',
-        } as object,
-      ]}
-    >
-      {children}
-    </GlassSurface>
-  )
-}
-
 // ── Component ──
 
 export function MobileBottomNav() {
@@ -156,200 +74,116 @@ export function MobileBottomNav() {
   const { open: openDrawer } = useDrawer()
   const visible = isMobile || shouldForceMobile()
 
-  // Register nav height so page-level BottomBars can offset above the pill.
-  // PILL_HEIGHT (56) + paddingTop (8) + gap (8) = 72.
+  // Register the strip's height so page-level BottomBars and the scrolling
+  // screen wrapper can clear it; they add the safe-area inset themselves.
   useEffect(() => {
-    setNavBarHeight(visible ? 72 : 0)
+    setNavBarHeight(visible ? BOTTOM_NAV_HEIGHT : 0)
     return () => setNavBarHeight(0)
   }, [visible, setNavBarHeight])
 
   const activeIndex = useMemo(() => getActiveSectionIndex(pathname, sections), [pathname, sections])
 
-  const indicatorX = useRef(new Animated.Value(0)).current
-  const indicatorWidth = useRef(new Animated.Value(0)).current
-  const tabLayoutsRef = useRef<Array<{ x: number; width: number } | null>>(sections.map(() => null))
-
-  // Switching mode swaps the tab set, and the two sets are different lengths.
-  // The layout cache is a ref, so it keeps its old size unless we clear it —
-  // which would leave the active pill measuring a tab that is no longer there.
-  useEffect(() => {
-    tabLayoutsRef.current = sections.map(() => null)
-  }, [sections])
-
-  useEffect(() => {
-    const layout = tabLayoutsRef.current[activeIndex]
-    if (!layout) return
-    Animated.parallel([
-      Animated.timing(indicatorX, {
-        toValue: layout.x,
-        duration: 220,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: false,
-      }),
-      Animated.timing(indicatorWidth, {
-        toValue: layout.width,
-        duration: 220,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: false,
-      }),
-    ]).start()
-  }, [activeIndex, indicatorX, indicatorWidth])
-
   if (!visible) return null
 
   const resolvedTheme: 'light' | 'dark' = theme === 'dark' ? 'dark' : 'light'
-  const vibrant = glassVibrantColors[resolvedTheme]
-  const inactiveText = vibrant.tertiaryText
-  const activeText = colors.primary[600]
-  const activeBg = resolvedTheme === 'dark' ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.06)'
-
-  const handleTabLayout = (index: number) => (event: LayoutChangeEvent) => {
-    const { x, width } = event.nativeEvent.layout
-    const next = { x, width }
-    const prev = tabLayoutsRef.current[index]
-    tabLayoutsRef.current[index] = next
-    if (index === activeIndex && (!prev || prev.x !== x || prev.width !== width)) {
-      indicatorX.setValue(x)
-      indicatorWidth.setValue(width)
-    }
-  }
+  const activeColor = resolvedTheme === 'dark' ? colors.primary[300] : colors.primary[600]
+  const inactiveColor = colors.text[resolvedTheme].secondary
 
   const handleTabPress = (section: MobileSection, index: number) => {
     if (index === activeIndex) return
     router.push(section.route)
   }
 
-  const bottomPadding = Platform.OS === 'web' ? 0 : Math.max(insets.bottom, 8)
+  const bottomPadding = Platform.OS === 'web' ? 0 : insets.bottom
 
   return (
     <View
-      pointerEvents="box-none"
-      style={{
-        position: Platform.OS === 'web' ? ('fixed' as never) : 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 9999,
-        paddingBottom: bottomPadding,
-        paddingHorizontal: 16,
-        paddingTop: 8,
-      }}
+      accessibilityRole="tablist"
+      style={[
+        styles.bar,
+        {
+          position: Platform.OS === 'web' ? ('fixed' as never) : 'absolute',
+          paddingBottom: bottomPadding,
+          backgroundColor: colors.bg[resolvedTheme].default,
+          borderTopColor: colors.border[resolvedTheme].subtle,
+        },
+      ]}
     >
-      <GlassTabBar theme={resolvedTheme}>
-        <View style={styles.tabRow}>
-          {/* Animated active indicator */}
-          <Animated.View
-            pointerEvents="none"
-            style={{
-              position: 'absolute',
-              top: TAB_VERTICAL_PAD,
-              bottom: TAB_VERTICAL_PAD,
-              left: 0,
-              transform: [{ translateX: indicatorX }],
-              width: indicatorWidth,
-              borderRadius: ACTIVE_INDICATOR_RADIUS,
-              backgroundColor: activeBg,
-              // No tab owns this route (e.g. Profile, employer screens) —
-              // hide the pill rather than stranding it on Home (#385).
-              opacity: activeIndex < 0 ? 0 : 1,
-            }}
-          />
-
-          {sections.map((section, index) => {
-            const Icon = section.icon
-            const isActive = index === activeIndex
-            return (
-              <Pressable
-                key={section.key}
-                onPress={() => handleTabPress(section, index)}
-                onLayout={handleTabLayout(index)}
-                accessibilityRole="tab"
-                // Both, deliberately. react-native-web 0.21 maps `aria-selected`
-                // but has NO mapping for `accessibilityState` — so the state
-                // below reaches native and nothing else, and on web the active
-                // tab was never announced. Verified against
-                // react-native-web/dist/modules/createDOMProps: the excluded-prop
-                // list carries aria-selected/accessibilitySelected and no
-                // accessibilityState entry.
-                accessibilityState={{ selected: isActive }}
-                aria-selected={isActive}
-                accessibilityLabel={section.label}
-                style={({ pressed }) => ({
-                  flex: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingVertical: TAB_VERTICAL_PAD,
-                  opacity: pressed ? 0.7 : 1,
-                })}
-              >
-                <Icon size={ICON_SIZE} color={isActive ? activeText : inactiveText} />
-                <Text
-                  size="xs"
-                  weight={isActive ? 'semibold' : 'medium'}
-                  style={{
-                    marginTop: 2,
-                    fontSize: LABEL_FONT_SIZE,
-                    color: isActive ? activeText : inactiveText,
-                  }}
-                >
-                  {section.label}
-                </Text>
-              </Pressable>
-            )
-          })}
-
-          {/* More — the drawer's door.
-              The masthead avatar used to be the only way to open the drawer on
-              a phone. It now opens the account-and-role sheet, so the drawer
-              needs this. It is deliberately NOT a section: it navigates
-              nowhere, owns no route, and must never take the active pill, so
-              keeping it out of `sections` keeps the index arithmetic and the
-              layout cache honest. */}
+      {sections.map((section, index) => {
+        const Icon = section.icon
+        const isActive = index === activeIndex
+        const color = isActive ? activeColor : inactiveColor
+        return (
           <Pressable
-            onPress={openDrawer}
-            accessibilityRole="button"
-            accessibilityLabel="More — open navigation drawer"
-            style={({ pressed }) => ({
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingVertical: TAB_VERTICAL_PAD,
-              opacity: pressed ? 0.7 : 1,
-            })}
+            key={section.key}
+            onPress={() => handleTabPress(section, index)}
+            accessibilityRole="tab"
+            // Both, deliberately. react-native-web 0.21 maps `aria-selected`
+            // but has NO mapping for `accessibilityState` — so the state
+            // below reaches native and nothing else, and on web the active
+            // tab was never announced (#638).
+            accessibilityState={{ selected: isActive }}
+            aria-selected={isActive}
+            accessibilityLabel={section.label}
+            style={({ pressed }) => [styles.tab, { opacity: pressed ? 0.6 : 1 }]}
           >
-            <MoreHorizontal size={ICON_SIZE} color={inactiveText} />
+            <Icon size={ICON_SIZE} color={color} />
             <Text
-              size="xs"
-              weight="medium"
-              style={{ marginTop: 2, fontSize: LABEL_FONT_SIZE, color: inactiveText }}
+              style={StyleSheet.flatten([
+                styles.label,
+                { color, fontWeight: isActive ? '600' : '500' },
+              ])}
             >
-              More
+              {section.label}
             </Text>
           </Pressable>
-        </View>
-      </GlassTabBar>
+        )
+      })}
+
+      {/* More — the drawer's door.
+          The masthead avatar opens the account-and-role sheet, so the drawer
+          needs this. It is deliberately NOT a section: it navigates nowhere,
+          owns no route, and must never take the active colour, so keeping it
+          out of `sections` keeps the index arithmetic honest. */}
+      <Pressable
+        onPress={openDrawer}
+        accessibilityRole="button"
+        accessibilityLabel="More — open navigation drawer"
+        style={({ pressed }) => [styles.tab, { opacity: pressed ? 0.6 : 1 }]}
+      >
+        <MoreHorizontal size={ICON_SIZE} color={inactiveColor} />
+        <Text
+          style={StyleSheet.flatten([styles.label, { color: inactiveColor, fontWeight: '500' }])}
+        >
+          More
+        </Text>
+      </Pressable>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  pillWrapper: {
-    borderRadius: PILL_BORDER_RADIUS,
-    overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
-    height: PILL_HEIGHT,
-  },
-  blurFill: {
-    flex: 1,
-  },
-  webSurface: {
-    height: PILL_HEIGHT,
-  },
-  tabRow: {
-    height: PILL_HEIGHT,
+  bar: {
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 9999,
     flexDirection: 'row',
     alignItems: 'stretch',
-    paddingHorizontal: PILL_HORIZONTAL_PAD,
-    position: 'relative',
+    borderTopWidth: 1,
+  },
+  tab: {
+    flex: 1,
+    minHeight: BOTTOM_NAV_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 3,
+    paddingTop: 8,
+    paddingBottom: 9,
+  },
+  label: {
+    fontSize: fontSize.xxs,
+    lineHeight: lineHeight.xxs,
+    letterSpacing: 0.2,
   },
 })
