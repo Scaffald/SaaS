@@ -6,6 +6,9 @@ on:
       - 'packages/supabase/functions/api/**'
       - 'packages/supabase/migrations/**'
       - 'packages/supabase/tests/**'
+      # The gated HTTP suites read seeded state (orgs, jobs, the office user), so
+      # a seed change has to run them too. #966 shipped one past this filter.
+      - 'packages/supabase/seeds/**'
       - 'packages/supabase/types.ts'
       - 'scripts/test-api-local.ts'
       - 'scripts/types-owned-schemas.mjs'
@@ -25,6 +28,9 @@ on:
       - 'packages/supabase/functions/api/**'
       - 'packages/supabase/migrations/**'
       - 'packages/supabase/tests/**'
+      # The gated HTTP suites read seeded state (orgs, jobs, the office user), so
+      # a seed change has to run them too. #966 shipped one past this filter.
+      - 'packages/supabase/seeds/**'
       - 'packages/supabase/types.ts'
       - 'scripts/test-api-local.ts'
       - 'scripts/types-owned-schemas.mjs'
