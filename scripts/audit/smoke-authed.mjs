@@ -152,7 +152,25 @@ for (const [w, h, tag, scheme] of MATRIX) {
     const before = consoleErrors.length
     try {
       await page.goto(BASE + path, { waitUntil: 'networkidle', timeout: 90000 })
-      await page.waitForTimeout(5000)
+      // networkidle is not "rendered". The app has its own gates after the network
+      // goes quiet — the theme resolves from storage and InnerProvider stamps
+      // <html data-theme>, and the protected layout holds a "Loading..." overlay
+      // until the session and prerequisites settle. On a cold Metro bundle both
+      // outlast the old fixed 5s wait, and the first dark run captured a white
+      // overlay on one route and a half-themed frame on another (#967), while
+      // the data-theme assertion below — read AFTER the screenshots — still said
+      // "dark". So: wait for the stamp and for the overlay to go, then settle.
+      await page
+        .waitForFunction(
+          () =>
+            document.documentElement.getAttribute('data-theme') !== null &&
+            !/\bLoading\.\.\./.test(document.body.innerText),
+          { timeout: 45000 },
+        )
+        .catch(() => {
+          console.log(`  ↳ ${tag} ${name}: theme not stamped or overlay still up after 45s — capturing anyway`)
+        })
+      await page.waitForTimeout(2500)
       // Dismiss Expo's dev-only error overlay so it does not cover the UI.
       // It is a dev-server artifact, not part of the app.
       const overlayInfo = await page.evaluate(() => {
