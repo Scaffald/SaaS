@@ -26,6 +26,11 @@ vi.mock('@scf/core/utils/useTranslation', () => ({
   }),
 }))
 
+vi.mock('@scaffald/ui', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  useThemeContext: () => ({ theme: 'light' }),
+}))
+
 describe('DrawerLink Chevron Icons', () => {
   const baseItem: DrawerItemConfig = {
     key: 'test-item',
@@ -38,8 +43,6 @@ describe('DrawerLink Chevron Icons', () => {
       <DrawerLink
         item={baseItem}
         pathname="/test"
-        expandedItems={new Set()}
-        onToggleExpanded={vi.fn()}
       />
     )
 
@@ -47,19 +50,16 @@ describe('DrawerLink Chevron Icons', () => {
     expect(screen.queryByTestId('chevron-down')).not.toBeInTheDocument()
   })
 
-  it('should show ChevronRight for non-expandable items with hasChevron=true', () => {
+  it('should show ChevronRight for items with hasChevron=true', () => {
     const item: DrawerItemConfig = {
       ...baseItem,
       hasChevron: true,
-      isExpandable: false,
     }
 
     render(
       <DrawerLink
         item={item}
         pathname="/test"
-        expandedItems={new Set()}
-        onToggleExpanded={vi.fn()}
       />
     )
 
@@ -67,10 +67,9 @@ describe('DrawerLink Chevron Icons', () => {
     expect(screen.queryByTestId('chevron-down')).not.toBeInTheDocument()
   })
 
-  it('should not show chevron for expandable items (they handle expansion differently)', () => {
+  it('does not draw a section with children as a tree — its children are its tabs', () => {
     const item: DrawerItemConfig = {
       ...baseItem,
-      isExpandable: true,
       subItems: [{ key: 'sub-1', title: 'Sub Item', href: '/test/sub' }],
     }
 
@@ -78,13 +77,10 @@ describe('DrawerLink Chevron Icons', () => {
       <DrawerLink
         item={item}
         pathname="/test"
-        expandedItems={new Set()}
-        onToggleExpanded={vi.fn()}
       />
     )
 
-    // Expandable items don't show chevron in renderRightSide (per current implementation)
-    // This test documents current behavior
     expect(screen.queryByTestId('chevron-right')).not.toBeInTheDocument()
+    expect(screen.queryByText('Sub Item')).not.toBeInTheDocument()
   })
 })

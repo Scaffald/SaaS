@@ -5,5 +5,7 @@ export type { DrawerContentProps } from './DrawerContent'
 // Default export for backward compatibility
 export { DrawerContent, DrawerContent as default } from './DrawerContent'
 export { DrawerLayout } from './DrawerLayout'
-export type { DrawerItemConfig, DrawerSectionConfig } from './types'
+export type { DrawerItemConfig } from './types'
+export { SectionTabs } from './SectionTabs'
+export { getSectionTabs, type SectionTabStrip } from './section-tabs'
 export { normalizePath } from './utils'
