@@ -205,12 +205,7 @@ export function MobileAccountSheet({
         >
           <Text style={{ fontSize: 14, color: colors.text[theme].primary }}>Notifications</Text>
           {unreadCount > 0 ? (
-            <Chip
-              tone="accent"
-              size="sm"
-              accessibilityElementsHidden
-              importantForAccessibility="no"
-            >
+            <Chip tone="accent" size="sm">
               {`${unreadCount} new`}
             </Chip>
           ) : null}

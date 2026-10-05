@@ -11,7 +11,6 @@ import {
   Row,
   Spinner,
   Stack,
-  Tabs,
   Text,
   useThemeContext,
 } from '@scaffald/ui'
@@ -84,10 +83,7 @@ export function ApplicationsList() {
     [response?.data]
   )
 
-  const submitted = useMemo(
-    () => allApplications.filter((app) => !isDraft(app)),
-    [allApplications]
-  )
+  const submitted = useMemo(() => allApplications.filter((app) => !isDraft(app)), [allApplications])
 
   const counts = useMemo(() => {
     const out: Record<FilterGroup, number> = {
@@ -124,9 +120,7 @@ export function ApplicationsList() {
 
   const drafts = useMemo(
     () =>
-      filter === 'all'
-        ? allApplications.filter((app) => isDraft(app) && matchesSearch(app))
-        : [],
+      filter === 'all' ? allApplications.filter((app) => isDraft(app) && matchesSearch(app)) : [],
     [allApplications, filter, matchesSearch]
   )
 
@@ -200,20 +194,17 @@ export function ApplicationsList() {
 
   return (
     <Stack gap={20}>
-      {/* The status partition as folder tabs, the treatment the rest of the
-          app uses for a view switch. It was five pill buttons that looked
-          like actions. */}
-      <Tabs type="folder" value={filter} onValueChange={(next) => setFilter(next as FilterGroup)}>
-        {FILTER_GROUPS.map((group) => (
-          <Tabs.Item key={group.key} value={group.key}>
-            <Tabs.Trigger>
-              {group.label} {counts[group.key]}
-            </Tabs.Trigger>
-          </Tabs.Item>
-        ))}
-      </Tabs>
-
+      {/* The status partition rides on the toolbar's top edge as folder tabs
+          (#984) — the toolbar is the panel they attach to. It was five pill
+          buttons that looked like actions. */}
       <ListToolbar
+        tabs={FILTER_GROUPS.map((group) => ({
+          key: group.key,
+          label: group.label,
+          count: counts[group.key],
+        }))}
+        activeTab={filter}
+        onTabChange={(next) => setFilter(next as FilterGroup)}
         searchValue={search}
         onSearchChange={setSearch}
         searchPlaceholder="Search by role or employer…"

@@ -268,7 +268,7 @@ function SquareIconButton({
 
 function CountTag({ label }: { theme: ResolvedTheme; label: string }) {
   return (
-    <Chip tone="accent" size="sm" accessibilityElementsHidden importantForAccessibility="no">
+    <Chip tone="accent" size="sm">
       {label}
     </Chip>
   )

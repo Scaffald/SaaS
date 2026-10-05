@@ -8,11 +8,11 @@ import {
   Button,
   Separator,
   Spinner,
-  Tabs,
   Text,
   Row,
   Stack,
   useThemeContext,
+  ListToolbar,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
@@ -103,28 +103,25 @@ export function CheckStatusDashboard() {
         Track your screenings, and manage who can see the results.
       </Text>
 
-      {/* Folder tabs, the treatment the rest of the app uses for a view
-          switch. These were four pill buttons that looked like actions. */}
-      <Tabs
-        type="folder"
-        value={activeFilter}
-        onValueChange={(next) => setActiveFilter(next as FilterValue)}
-      >
-        {FILTER_DEFINITIONS.map((filter) => (
-          <Tabs.Item key={filter.value} value={filter.value}>
-            <Tabs.Trigger>
-              {filter.label} {counts[filter.value === 'all' ? 'total' : filter.value]}
-            </Tabs.Trigger>
-          </Tabs.Item>
-        ))}
-      </Tabs>
+      {/* The status partition on a toolbar's top edge (#984); the panel
+          beneath carries the count. These were four pill buttons that
+          looked like actions. */}
+      <ListToolbar
+        tabs={FILTER_DEFINITIONS.map((filter) => ({
+          key: filter.value,
+          label: filter.label,
+          count: counts[filter.value === 'all' ? 'total' : filter.value],
+        }))}
+        activeTab={activeFilter}
+        onTabChange={(next) => setActiveFilter(next as FilterValue)}
+        resultCount={counts[activeFilter === 'all' ? 'total' : activeFilter]}
+        resultNoun="check"
+      />
 
       {checksQuery.isLoading && (
         <Stack gap={8} align="center" paddingVertical={24}>
           <Spinner variant="ios" size="lg" color="gray" />
-          <Text style={{ color: colors.text[t].secondary }}>
-            Loading your background checks…
-          </Text>
+          <Text style={{ color: colors.text[t].secondary }}>Loading your background checks…</Text>
         </Stack>
       )}
 
