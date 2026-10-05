@@ -7,7 +7,6 @@ import {
   Skeleton,
   SkeletonGroup,
   Stack,
-  Tabs,
   Text,
   useThemeContext,
 } from '@scaffald/ui'
@@ -75,17 +74,14 @@ export function AssessmentsHub() {
 
   return (
     <Stack gap={20}>
-      <Tabs type="folder" value={filter} onValueChange={(next) => setFilter(next as HubFilter)}>
-        {FILTERS.map((entry) => (
-          <Tabs.Item key={entry.key} value={entry.key}>
-            <Tabs.Trigger>
-              {entry.label} {counts[entry.key]}
-            </Tabs.Trigger>
-          </Tabs.Item>
-        ))}
-      </Tabs>
-
       <ListToolbar
+        tabs={FILTERS.map((entry) => ({
+          key: entry.key,
+          label: entry.label,
+          count: counts[entry.key],
+        }))}
+        activeTab={filter}
+        onTabChange={(next) => setFilter(next as HubFilter)}
         searchValue={search}
         onSearchChange={setSearch}
         searchPlaceholder="Search assessments…"

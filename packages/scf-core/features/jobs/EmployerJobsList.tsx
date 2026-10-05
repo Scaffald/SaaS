@@ -12,7 +12,6 @@ import {
   Row,
   Spinner,
   Stack,
-  Tabs,
   Text,
   useThemeContext,
 } from '@scaffald/ui'
@@ -63,10 +62,14 @@ export function EmployerJobsList() {
   const organizationId = orgIds[0]
 
   // The SDK takes one org at a time; multi-org employers see their first.
-  const { data: response, isLoading, isError, refetch } = useOfficeListJobs(
-    organizationId ? { organization_id: organizationId } : undefined,
-    { enabled: !!organizationId },
-  )
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useOfficeListJobs(organizationId ? { organization_id: organizationId } : undefined, {
+    enabled: !!organizationId,
+  })
 
   // One request for the org's applications, counted by job. The alternative
   // is a request per posting, and the count is the first thing an employer
@@ -78,7 +81,7 @@ export function EmployerJobsList() {
   // fix is a counts endpoint, not a bigger page.
   const { data: applications } = useEmployerApplications(
     organizationId ? { organization_id: organizationId, limit: 100 } : undefined,
-    { enabled: !!organizationId },
+    { enabled: !!organizationId }
   )
 
   const applicantsByJob = useMemo(() => {
@@ -171,17 +174,14 @@ export function EmployerJobsList() {
 
   return (
     <Stack gap={20}>
-      <Tabs type="folder" value={filter} onValueChange={(next) => setFilter(next as ListingFilter)}>
-        {LISTING_FILTERS.map((group) => (
-          <Tabs.Item key={group.key} value={group.key}>
-            <Tabs.Trigger>
-              {group.label} {counts[group.key]}
-            </Tabs.Trigger>
-          </Tabs.Item>
-        ))}
-      </Tabs>
-
       <ListToolbar
+        tabs={LISTING_FILTERS.map((group) => ({
+          key: group.key,
+          label: group.label,
+          count: counts[group.key],
+        }))}
+        activeTab={filter}
+        onTabChange={(next) => setFilter(next as ListingFilter)}
         searchValue={search}
         onSearchChange={setSearch}
         searchPlaceholder="Search your postings…"
@@ -236,9 +236,7 @@ export function EmployerJobsList() {
                         size="sm"
                         variant="outline"
                         onPress={() =>
-                          router.push(
-                            buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }),
-                          )
+                          router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
                         }
                       >
                         Edit
