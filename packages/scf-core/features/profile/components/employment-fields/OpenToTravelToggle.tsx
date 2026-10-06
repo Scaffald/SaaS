@@ -3,7 +3,10 @@ import type { SettingsToggleCardProps } from '@scaffald/ui'
 import { Plane } from 'lucide-react-native'
 
 export interface OpenToTravelToggleProps
-  extends Omit<SettingsToggleCardProps, 'icon' | 'title' | 'description' | 'enabled' | 'onToggleChange'> {
+  extends Omit<
+    SettingsToggleCardProps,
+    'icon' | 'title' | 'description' | 'enabled' | 'onToggleChange'
+  > {
   /** Optional override for description */
   description?: string
   /** Whether the toggle is checked */

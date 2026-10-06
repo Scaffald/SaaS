@@ -1,6 +1,6 @@
-import { ProfileSectionIntro } from "@scf/core/features/profile/components";
-import { Stack } from "@scaffald/ui";
-import { VanityUrlSection } from "./components/VanityUrlSection";
+import { ProfileSectionIntro } from '@scf/core/features/profile/components'
+import { Stack } from '@scaffald/ui'
+import { VanityUrlSection } from './components/VanityUrlSection'
 
 /**
  * Profile General Right Component
@@ -24,5 +24,5 @@ export function ProfileGeneralRight() {
       {/* TODO: Uncomment this when we implement fully */}
       {/* <WorkLogVisibilitySettingsCard /> */}
     </Stack>
-  );
+  )
 }

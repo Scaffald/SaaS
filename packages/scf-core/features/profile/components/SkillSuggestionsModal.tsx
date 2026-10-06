@@ -35,7 +35,9 @@ interface SkillItem {
 interface SkillSuggestionsModalProps {
   visible: boolean
   onClose: () => void
-  onAddSkills: (skills: Array<{ name: string; onetCode: string; proficiency: number; taxonomy: string }>) => void
+  onAddSkills: (
+    skills: Array<{ name: string; onetCode: string; proficiency: number; taxonomy: string }>
+  ) => void
   existingSkillNames: string[]
   isAdding?: boolean
 }
@@ -220,9 +222,7 @@ export function SkillSuggestionsModal({
                         borderColor: isSelected
                           ? colors.fg[theme].active
                           : colors.border[theme].default,
-                        backgroundColor: isSelected
-                          ? colors.fg[theme].active
-                          : 'transparent',
+                        backgroundColor: isSelected ? colors.fg[theme].active : 'transparent',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
@@ -263,10 +263,7 @@ export function SkillSuggestionsModal({
 
   return (
     <Modal visible={visible} onClose={onClose} width={560}>
-      <ModalHeader
-        title="Quick Add Skills from O*NET"
-        onClose={onClose}
-      />
+      <ModalHeader title="Quick Add Skills from O*NET" onClose={onClose} />
       <ModalContent>
         <Stack gap={16}>
           {/* Occupation selector */}
@@ -289,9 +286,7 @@ export function SkillSuggestionsModal({
                       style={{
                         fontSize: 13,
                         color:
-                          idx === selectedOccupationIdx
-                            ? '#fff'
-                            : colors.text[theme].secondary,
+                          idx === selectedOccupationIdx ? '#fff' : colors.text[theme].secondary,
                       }}
                     >
                       {occ.title}

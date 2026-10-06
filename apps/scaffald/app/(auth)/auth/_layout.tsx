@@ -38,7 +38,7 @@ export default function Layout() {
               backgroundColor: colors.bg[theme].default,
             }}
           >
-            <Text>Loading...</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
           </Box>
         )}
       </View>

@@ -127,7 +127,7 @@ export function CompactNewsWidget() {
             style={{
               fontSize: 14,
               fontWeight: '600',
-              color: colors.primary[600],
+              color: colors.text[theme].emphasis,
             }}
           >
             All news

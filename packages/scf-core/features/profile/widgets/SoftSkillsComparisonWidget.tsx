@@ -58,7 +58,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 }) => {
   const router = useRouter()
   const { theme } = useThemeContext()
-  const t = theme === 'dark' ? 'dark' : 'light' as const
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
   const pal = workerPalette[t]
   const isOwner = useIsProfileOwner(userId)
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')

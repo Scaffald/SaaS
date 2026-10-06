@@ -136,7 +136,7 @@ export default function ProtectedLayout() {
         ) : (
           <Stack style={overlayStyle} justify="center" align="center">
             <Spinner size="lg" />
-            <Text>Loading...</Text>
+            <Text style={{ color: colors.text[resolvedTheme].secondary }}>Loading...</Text>
           </Stack>
         ))}
     </View>

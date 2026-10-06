@@ -8,7 +8,7 @@
  * - Google Drive - Cloud storage via OAuth
  */
 
-import { Cloud, Database, HardDrive } from "lucide-react-native";
+import { Cloud, Database, HardDrive } from 'lucide-react-native'
 import {
   Button,
   DashboardWidget,
@@ -19,87 +19,84 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from "@scaffald/ui";
-import type { ComponentType } from "react";
-import { useState, useEffect } from "react";
-import { Pressable } from "react-native";
-import { colors } from "@scaffald/ui/tokens";
-import { workerPalette } from "@scf/core/components/ui/styles";
-import { useQueryClient } from "@tanstack/react-query";
+} from '@scaffald/ui'
+import type { ComponentType } from 'react'
+import { useState, useEffect } from 'react'
+import { Pressable } from 'react-native'
+import { colors } from '@scaffald/ui/tokens'
+import { workerPalette } from '@scf/core/components/ui/styles'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   useStoragePreference,
   useSetStoragePreferenceMutation,
   STORAGE_PREFERENCE_QUERY_KEY,
-} from "@scf/core/utils/documents-storage-sdk-hooks";
+} from '@scf/core/utils/documents-storage-sdk-hooks'
 
-type StorageBackend = "supabase" | "dropbox" | "google_drive";
+type StorageBackend = 'supabase' | 'dropbox' | 'google_drive'
 
 interface StorageOption {
-  value: StorageBackend;
-  label: string;
-  description: string;
-  icon: ComponentType<{ size?: number; color?: string }>;
-  available: boolean;
+  value: StorageBackend
+  label: string
+  description: string
+  icon: ComponentType<{ size?: number; color?: string }>
+  available: boolean
 }
 
 const STORAGE_OPTIONS: StorageOption[] = [
   {
-    value: "supabase",
-    label: "Local Storage",
-    description:
-      "Store documents on Scaffald servers. Secure, fast, always available.",
+    value: 'supabase',
+    label: 'Local Storage',
+    description: 'Store documents on Scaffald servers. Secure, fast, always available.',
     icon: Database,
     available: true,
   },
   {
-    value: "dropbox",
-    label: "Dropbox",
-    description:
-      "Sync documents with your Dropbox account. Requires OAuth connection.",
+    value: 'dropbox',
+    label: 'Dropbox',
+    description: 'Sync documents with your Dropbox account. Requires OAuth connection.',
     icon: Cloud,
     available: false, // Will be enabled later
   },
   {
-    value: "google_drive",
-    label: "Google Drive",
-    description: "Sync documents with Google Drive. Requires OAuth connection.",
+    value: 'google_drive',
+    label: 'Google Drive',
+    description: 'Sync documents with Google Drive. Requires OAuth connection.',
     icon: HardDrive,
     available: false, // Will be enabled later
   },
-];
+]
 
 export function StoragePreferencesWidget() {
-  const [selectedPreference, setSelectedPreference] =
-    useState<StorageBackend>("supabase");
-  const [hasChanges, setHasChanges] = useState(false);
-  const { theme } = useThemeContext();
-  const t = theme === "dark" ? "dark" : "light" as const;
-  const pal = workerPalette[t];
+  const [selectedPreference, setSelectedPreference] = useState<StorageBackend>('supabase')
+  const [hasChanges, setHasChanges] = useState(false)
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
+  const pal = workerPalette[t]
 
-  const { data, isLoading, error } = useStoragePreference();
-  const queryClient = useQueryClient();
+  const { data, isLoading, error } = useStoragePreference()
+  const queryClient = useQueryClient()
 
   const mutation = useSetStoragePreferenceMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: STORAGE_PREFERENCE_QUERY_KEY });
-      setHasChanges(false);
+      queryClient.invalidateQueries({ queryKey: STORAGE_PREFERENCE_QUERY_KEY })
+      setHasChanges(false)
     },
-  });
+  })
 
   useEffect(() => {
     if (data?.storagePreference) {
-      setSelectedPreference(data.storagePreference as StorageBackend);
+      setSelectedPreference(data.storagePreference as StorageBackend)
     }
-  }, [data?.storagePreference]);
+  }, [data?.storagePreference])
 
   const handleSelect = (value: StorageBackend) => {
-    setSelectedPreference(value);
-    setHasChanges(value !== data?.storagePreference);
-  };
+    setSelectedPreference(value)
+    setHasChanges(value !== data?.storagePreference)
+  }
 
   const handleSave = () => {
-    mutation.mutate({ storagePreference: selectedPreference });
-  };
+    mutation.mutate({ storagePreference: selectedPreference })
+  }
 
   if (isLoading) {
     return (
@@ -111,20 +108,18 @@ export function StoragePreferencesWidget() {
           ))}
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
   if (error) {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: colors.fg[theme].error }}>
-            Failed to load storage preferences
-          </Text>
+          <Text style={{ color: colors.fg[theme].error }}>Failed to load storage preferences</Text>
           <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
   return (
@@ -142,7 +137,7 @@ export function StoragePreferencesWidget() {
                 disabled={mutation.isPending}
                 onPress={handleSave}
               >
-                {mutation.isPending ? "Saving..." : "Save"}
+                {mutation.isPending ? 'Saving...' : 'Save'}
               </Button>
             ) : undefined
           }
@@ -154,8 +149,8 @@ export function StoragePreferencesWidget() {
         {/* Storage Options */}
         <Stack gap={12}>
           {STORAGE_OPTIONS.map((option) => {
-            const isSelected = selectedPreference === option.value;
-            const IconComponent = option.icon;
+            const isSelected = selectedPreference === option.value
+            const IconComponent = option.icon
 
             return (
               <Pressable
@@ -220,7 +215,7 @@ export function StoragePreferencesWidget() {
                   </Stack>
                 </Row>
               </Pressable>
-            );
+            )
           })}
         </Stack>
 
@@ -247,11 +242,11 @@ export function StoragePreferencesWidget() {
           }}
         >
           <Text style={{ color: pal.pillText }}>
-            Note: Existing documents will remain in their current storage
-            location. Only new documents will use your selected preference.
+            Note: Existing documents will remain in their current storage location. Only new
+            documents will use your selected preference.
           </Text>
         </Stack>
       </Stack>
     </DashboardWidget>
-  );
+  )
 }

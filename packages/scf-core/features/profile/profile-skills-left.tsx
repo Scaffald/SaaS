@@ -1,9 +1,11 @@
+import { colors } from '@scaffald/ui/tokens'
 import {
   DashboardWidget,
   ResponsiveSelect,
   SaveStatusIndicator,
   SavingModal,
   SkeletonForm,
+  useThemeContext,
 } from '@scaffald/ui'
 import { Check, Sparkles } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
@@ -20,6 +22,7 @@ import { useProfileSkillsContext } from './profile-skills-context'
  * Inline form for searching and adding skills
  */
 export function ProfileSkillsLeft() {
+  const { theme } = useThemeContext()
   const {
     isLoadingIndustries,
     industries,
@@ -51,7 +54,9 @@ export function ProfileSkillsLeft() {
 
   // Handle adding skills from O*NET suggestions
   const handleAddOnetSkills = useCallback(
-    async (skills: Array<{ name: string; onetCode: string; proficiency: number; taxonomy: string }>) => {
+    async (
+      skills: Array<{ name: string; onetCode: string; proficiency: number; taxonomy: string }>
+    ) => {
       setIsAddingOnetSkills(true)
       try {
         for (const skill of skills) {
@@ -134,20 +139,17 @@ export function ProfileSkillsLeft() {
                 testID="primary-industry-select-trigger"
                 sheetTitle="Select Industry"
               />
-              <Text style={{ color: '#414e62' }}>Select your industry to search for relevant skills</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Select your industry to search for relevant skills
+              </Text>
             </Stack>
 
             <Separator />
 
             {/* Inline Skill Search */}
             {!selectedIndustryId ? (
-              <Stack
-                padding="md"
-                align="center"
-                gap={8}
-                borderRadius={16}
-              >
-                <Text style={{ color: '#414e62', textAlign: 'center' }}>
+              <Stack padding="md" align="center" gap={8} borderRadius={16}>
+                <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
                   Please select an industry above to search for skills
                 </Text>
               </Stack>
@@ -191,7 +193,11 @@ export function ProfileSkillsLeft() {
                 disabled={saveButtonState === 'saving' || saveButtonState === 'saved'}
                 iconStart={saveButtonState === 'saved' ? Check : undefined}
               >
-                {saveButtonState === 'saving' ? 'Saving…' : saveButtonState === 'saved' ? 'Saved ✓' : 'Save'}
+                {saveButtonState === 'saving'
+                  ? 'Saving…'
+                  : saveButtonState === 'saved'
+                    ? 'Saved ✓'
+                    : 'Save'}
               </Button>
             </Row>
 

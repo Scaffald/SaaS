@@ -288,7 +288,7 @@ function NotificationsRow({
   onPress: () => void
 }) {
   const label = count > 0 ? `Notifications, ${count} unread` : 'Notifications'
-  const fg = active ? colors.primary[600] : colors.text[theme].secondary
+  const fg = active ? colors.text[theme].emphasis : colors.text[theme].secondary
   return (
     <Pressable
       onPress={onPress}
@@ -556,7 +556,7 @@ function MobileIdentityRow({
           <Text
             style={StyleSheet.flatten([
               styles.accountMode,
-              { color: colors.primary[600], fontWeight: '600' },
+              { color: colors.text[theme].emphasis, fontWeight: '600' },
             ])}
           >
             Edit profile

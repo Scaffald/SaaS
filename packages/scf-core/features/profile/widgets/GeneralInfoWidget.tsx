@@ -1,12 +1,12 @@
-import { ConnectionFollowButtonsInline } from "@scf/core/features/connections/components/ConnectionFollowButtonsInline";
-import { IdVerificationBadge } from "@scf/core/features/id-verification";
-import { ReviewWizard } from "@scf/core/features/reviews/components/ReviewWizard";
-import { useGeneralInfoWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
-import { useUserProfile } from "@scf/core/utils/user-profiles-sdk-hooks";
-import { useUser } from "@scf/core/utils/useUser";
-import { openPublicProfileInNewTab } from "@scf/core/utils/publicProfileUrl";
-import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
-import { getInitials } from "@scf/core/features/discover/utils/getInitials";
+import { ConnectionFollowButtonsInline } from '@scf/core/features/connections/components/ConnectionFollowButtonsInline'
+import { IdVerificationBadge } from '@scf/core/features/id-verification'
+import { ReviewWizard } from '@scf/core/features/reviews/components/ReviewWizard'
+import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
+import { useUserProfile } from '@scf/core/utils/user-profiles-sdk-hooks'
+import { useUser } from '@scf/core/utils/useUser'
+import { openPublicProfileInNewTab } from '@scf/core/utils/publicProfileUrl'
+import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
+import { getInitials } from '@scf/core/features/discover/utils/getInitials'
 import {
   Avatar,
   Button,
@@ -21,19 +21,19 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from "@scaffald/ui";
-import { MessageSquarePlus } from "lucide-react-native";
-import { useState } from "react";
-import { colors } from "@scaffald/ui/tokens";
-import { workerPalette } from "@scf/core/components/ui/styles";
-import { Pill } from "@scf/core/components/ui/CardPrimitives";
-import type { ProfileWidgetProps } from "./types";
+} from '@scaffald/ui'
+import { MessageSquarePlus } from 'lucide-react-native'
+import { useState } from 'react'
+import { colors } from '@scaffald/ui/tokens'
+import { workerPalette } from '@scf/core/components/ui/styles'
+import { Pill } from '@scf/core/components/ui/CardPrimitives'
+import type { ProfileWidgetProps } from './types'
 
 interface GeneralInfoWidgetProps extends ProfileWidgetProps {
   /** Show connection/follow buttons in header (for viewing other users' profiles) */
-  showButtons?: boolean;
+  showButtons?: boolean
   /** Whether this is the current user's own profile */
-  isOwnProfile?: boolean;
+  isOwnProfile?: boolean
 }
 
 /**
@@ -48,26 +48,26 @@ interface GeneralInfoWidgetProps extends ProfileWidgetProps {
  */
 export function GeneralInfoWidget({
   userId,
-  variant = "full",
+  variant = 'full',
   showEdit = false,
   showButtons = false,
   isOwnProfile = false,
 }: GeneralInfoWidgetProps) {
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  const { theme } = useThemeContext();
-  const t = theme === "dark" ? "dark" : "light" as const;
-  const pal = workerPalette[t];
-  const { user: currentUser } = useUser();
+  const [showReviewModal, setShowReviewModal] = useState(false)
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
+  const pal = workerPalette[t]
+  const { user: currentUser } = useUser()
   const { data, isLoading, error, refetch, isFetching } = useGeneralInfoWidget(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     }
-  );
+  )
   // Call unconditionally so hook order is stable (needed for review modal when showButtons is true)
   const { data: profile } = useUserProfile(userId, {
     enabled: showButtons,
-  });
+  })
 
   if (isLoading) {
     return (
@@ -93,23 +93,21 @@ export function GeneralInfoWidget({
           </Stack>
         </SkeletonGroup>
       </DashboardWidget>
-    );
+    )
   }
 
   if (error) {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: colors.fg[theme].error }}>
-            Failed to load profile information
-          </Text>
+          <Text style={{ color: colors.fg[theme].error }}>Failed to load profile information</Text>
           <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
           <Button
             variant="filled"
             color="primary"
             size="sm"
             onPress={() => {
-              void refetch();
+              void refetch()
             }}
             disabled={isFetching}
           >
@@ -117,7 +115,7 @@ export function GeneralInfoWidget({
           </Button>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
   if (!data) {
@@ -127,37 +125,36 @@ export function GeneralInfoWidget({
           <Text style={{ color: colors.text[theme].secondary }}>No profile data available</Text>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
   const displayName =
     data.display_name ||
     (data.privateData?.first_name && data.privateData?.last_name
       ? `${data.privateData.first_name} ${data.privateData.last_name}`
-      : data.username);
+      : data.username)
 
-  const showPrivateInfo = !!data.privateData;
-  const badge = data.idVerificationBadge;
+  const showPrivateInfo = !!data.privateData
+  const badge = data.idVerificationBadge
 
   // Treat the viewed profile as "self" when it's the current user's, even if the
   // caller didn't pass isOwnProfile (e.g. the profile overview passes only userId).
-  const isSelf =
-    isOwnProfile || (!!currentUser?.id && currentUser.id === userId);
+  const isSelf = isOwnProfile || (!!currentUser?.id && currentUser.id === userId)
 
   // Only show "Add Review" button if viewing someone else's profile
-  const canLeaveReview = showButtons && !isSelf;
+  const canLeaveReview = showButtons && !isSelf
 
   const handleLeaveReview = () => {
-    setShowReviewModal(true);
-  };
+    setShowReviewModal(true)
+  }
 
   const handleCloseReview = () => {
-    setShowReviewModal(false);
-  };
+    setShowReviewModal(false)
+  }
 
   const handleReviewComplete = async (_reviewId: string) => {
-    setShowReviewModal(false);
-  };
+    setShowReviewModal(false)
+  }
 
   return (
     <>
@@ -180,10 +177,7 @@ export function GeneralInfoWidget({
                     <Text>View public profile</Text>
                   </Button>
                 ) : null}
-                <ConnectionFollowButtonsInline
-                  targetUserId={userId || ""}
-                  isOwnProfile={isSelf}
-                />
+                <ConnectionFollowButtonsInline targetUserId={userId || ''} isOwnProfile={isSelf} />
                 {canLeaveReview && (
                   <Button
                     size="sm"
@@ -202,7 +196,7 @@ export function GeneralInfoWidget({
           <Stack gap={12} align="center">
             <Avatar
               size={40}
-              src={getAvatarUrl(data.avatar_path) || data.avatar_url || ""}
+              src={getAvatarUrl(data.avatar_path) || data.avatar_url || ''}
               // slice(0, 2) rendered "MA" for "Marcus Rivera" — use the shared
               // helper so every surface shows first+last initials (#384).
               initials={displayName ? getInitials(displayName) : undefined}
@@ -220,13 +214,7 @@ export function GeneralInfoWidget({
               )}
               {badge && (
                 <IdVerificationBadge
-                  status={
-                    badge.badge_status as
-                      | "active"
-                      | "expired"
-                      | "revoked"
-                      | null
-                  }
+                  status={badge.badge_status as 'active' | 'expired' | 'revoked' | null}
                   badgeExpiresAt={badge.badge_expires_at ?? undefined}
                   size="sm"
                   muted={false}
@@ -241,7 +229,7 @@ export function GeneralInfoWidget({
           </Stack>
 
           {/* About Section */}
-          {data.about && variant === "full" && (
+          {data.about && variant === 'full' && (
             <Stack gap={8}>
               <Text>About</Text>
               <Text style={{ color: colors.text[theme].secondary, lineHeight: 20 }}>
@@ -251,7 +239,7 @@ export function GeneralInfoWidget({
           )}
 
           {/* Contact Information (Private - only for own profile) */}
-          {showPrivateInfo && data.privateData && variant === "full" && (
+          {showPrivateInfo && data.privateData && variant === 'full' && (
             <Stack gap={12}>
               <Text>Contact Information</Text>
 
@@ -279,32 +267,31 @@ export function GeneralInfoWidget({
           )}
 
           {/* Professional Details */}
-          {variant === "full" && (
+          {variant === 'full' && (
             <Stack gap={12}>
               <Text>Professional Details</Text>
 
               <Row gap={16} wrap>
                 {(() => {
                   const yearsValue =
-                    typeof data.calculatedYearsOfExperience === "number"
+                    typeof data.calculatedYearsOfExperience === 'number'
                       ? data.calculatedYearsOfExperience
-                      : data.years_of_experience;
+                      : data.years_of_experience
                   const formattedYears =
-                    typeof yearsValue === "number" && !Number.isNaN(yearsValue)
+                    typeof yearsValue === 'number' && !Number.isNaN(yearsValue)
                       ? yearsValue % 1 !== 0
                         ? yearsValue.toFixed(1)
                         : yearsValue
-                      : null;
-                  if (formattedYears === null) return null;
+                      : null
+                  if (formattedYears === null) return null
                   return (
                     <Stack gap={4} flex={1} minWidth={120}>
                       <Text style={{ color: colors.text[theme].secondary }}>Experience</Text>
                       <Text>
-                        {formattedYears}{" "}
-                        {Number(formattedYears) === 1 ? "year" : "years"}
+                        {formattedYears} {Number(formattedYears) === 1 ? 'year' : 'years'}
                       </Text>
                     </Stack>
-                  );
+                  )
                 })()}
 
                 {data.industries && (
@@ -324,17 +311,17 @@ export function GeneralInfoWidget({
         <ResponsiveModal
           open={showReviewModal}
           onOpenChange={setShowReviewModal}
-          title={`Review ${profile?.name || "User"}`}
+          title={`Review ${profile?.name || 'User'}`}
           size="lg"
         >
           <ReviewWizard
-            subjectId={userId || ""}
-            subjectName={profile?.name || "this user"}
+            subjectId={userId || ''}
+            subjectName={profile?.name || 'this user'}
             onCancel={handleCloseReview}
             onComplete={handleReviewComplete}
           />
         </ResponsiveModal>
       )}
     </>
-  );
+  )
 }

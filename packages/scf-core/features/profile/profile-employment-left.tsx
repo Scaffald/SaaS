@@ -1,3 +1,5 @@
+import { colors } from '@scaffald/ui/tokens'
+import { useThemeContext } from '@scaffald/ui'
 import {
   EmploymentAvailabilityCard,
   EmploymentDriversLicenseCard,
@@ -6,41 +8,39 @@ import {
   EmploymentMilitaryCard,
   EmploymentResidencyCard,
   EmploymentTravelCard,
-} from "@scf/core/features/profile/components/employment-atoms";
+} from '@scf/core/features/profile/components/employment-atoms'
 import {
   useEmployment,
   useEmploymentUpdateMutationWithSync,
-} from "@scf/core/utils/profile-employment-sdk-hooks";
-import { DashboardWidget, SkeletonForm, Spinner, Stack, Text } from "@scaffald/ui";
-import { useAdaptiveProfileSync } from "./utils/profile-sync-store";
+} from '@scf/core/utils/profile-employment-sdk-hooks'
+import { DashboardWidget, SkeletonForm, Spinner, Stack, Text } from '@scaffald/ui'
+import { useAdaptiveProfileSync } from './utils/profile-sync-store'
 
 /**
  * Profile Employment Left Component
  * Atomic save-as-you-go: each card saves its own slice on change.
  */
 export function ProfileEmploymentLeft() {
-  const syncStatus = useAdaptiveProfileSync(300);
-  const isSyncing = syncStatus === "syncing";
+  const { theme } = useThemeContext()
+  const syncStatus = useAdaptiveProfileSync(300)
+  const isSyncing = syncStatus === 'syncing'
 
-  const {
-    data: employmentData,
-    isLoading: isLoadingEmployment,
-  } = useEmployment();
+  const { data: employmentData, isLoading: isLoadingEmployment } = useEmployment()
   // No overrides: errors surface through the hook's own onError toast, and the
   // hook owns the invalidation. This used to pass an empty `onSuccess` as a
   // place to hang that comment, which — because options were merged by object
   // spread — replaced the hook's onSuccess and deleted the only working
   // invalidation on the page (#586).
-  const updateMutation = useEmploymentUpdateMutationWithSync();
+  const updateMutation = useEmploymentUpdateMutationWithSync()
 
-  const isSaving = updateMutation.isPending || isSyncing;
+  const isSaving = updateMutation.isPending || isSyncing
 
   if (isLoadingEmployment) {
     return (
       <Stack gap={16} padding="md">
         <SkeletonForm fields={5} />
       </Stack>
-    );
+    )
   }
 
   const data = employmentData ?? {
@@ -53,9 +53,9 @@ export function ProfileEmploymentLeft() {
     drivers_license_classes: [] as string[],
     military_status: [] as string[],
     availability: [] as string[],
-  };
+  }
 
-  const onSave = updateMutation.mutate;
+  const onSave = updateMutation.mutate
 
   return (
     <Stack gap={20}>
@@ -67,13 +67,13 @@ export function ProfileEmploymentLeft() {
           {isSaving && (
             <Stack
               style={{
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: 'row',
+                alignItems: 'center',
                 gap: 8,
               }}
             >
               <Spinner variant="ios" size="sm" />
-              <Text size="sm" style={{ color: "#637083" }}>
+              <Text size="sm" style={{ color: colors.text[theme].secondary }}>
                 Saving preferences...
               </Text>
             </Stack>
@@ -130,5 +130,5 @@ export function ProfileEmploymentLeft() {
         </Stack>
       </DashboardWidget>
     </Stack>
-  );
+  )
 }

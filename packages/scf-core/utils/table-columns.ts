@@ -5,17 +5,17 @@
 
 import type { ColumnDef } from '@tanstack/react-table'
 import { flexRender } from '@tanstack/react-table'
-import { createElement, isValidElement } from 'react'
-import { Text } from 'react-native'
+import { isValidElement } from 'react'
 import type { TableColumn, TableRowData } from '@scaffald/ui'
 
 /**
- * @scaffald/ui's Table drops `render()` output straight into a <View>. On web
- * a bare string is fine there; on native it is the "Text strings must be
- * rendered within a <Text> component" render error — which is what every
- * Office table did on iPad, because flexRender returns the raw value for any
- * column without a custom cell (and for custom cells that return a string).
- * Primitives get a <Text>; elements pass through untouched.
+ * Primitives pass through as primitives. @scaffald/ui's Table wraps a bare
+ * string or number from `render()` in its own themed <Text> on both the
+ * stacked and the grid path (ui#52). The react-native <Text> this used to
+ * add here — for the "Text strings must be rendered within a <Text>
+ * component" error native stacked threw (#768) — carried no colour, so every
+ * Office table read in the DOM default: black on the dark row (#840).
+ * Elements pass through untouched either way.
  */
 function isClassComponent(component: unknown): boolean {
   return (
@@ -29,9 +29,7 @@ function isClassComponent(component: unknown): boolean {
 function asRenderable(result: unknown) {
   if (result === null || result === undefined || result === false) return null
   if (isValidElement(result)) return result
-  if (typeof result === 'string' || typeof result === 'number') {
-    return createElement(Text, null, String(result))
-  }
+  if (typeof result === 'string' || typeof result === 'number') return result
   return result as never
 }
 

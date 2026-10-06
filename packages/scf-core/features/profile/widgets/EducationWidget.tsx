@@ -1,5 +1,5 @@
-import { ROUTES } from "@scf/core/constants/routes";
-import { useEducationWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
+import { ROUTES } from '@scf/core/constants/routes'
+import { useEducationWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import {
   Button,
   DashboardWidget,
@@ -14,18 +14,18 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from "@scaffald/ui";
-import { GraduationCap } from "lucide-react-native";
-import { useRouter } from "expo-router";
-import { colors } from "@scaffald/ui/tokens";
-import { workerPalette } from "@scf/core/components/ui/styles";
-import { Pill } from "@scf/core/components/ui/CardPrimitives";
-import { formatDate } from "../utils/date-formatting";
-import type { ProfileWidgetProps } from "./types";
-import { useIsProfileOwner } from "./useIsProfileOwner";
-import type { EducationWidgetEntry } from "@scaffald/sdk";
+} from '@scaffald/ui'
+import { GraduationCap } from 'lucide-react-native'
+import { useRouter } from 'expo-router'
+import { colors } from '@scaffald/ui/tokens'
+import { workerPalette } from '@scf/core/components/ui/styles'
+import { Pill } from '@scf/core/components/ui/CardPrimitives'
+import { formatDate } from '../utils/date-formatting'
+import type { ProfileWidgetProps } from './types'
+import { useIsProfileOwner } from './useIsProfileOwner'
+import type { EducationWidgetEntry } from '@scaffald/sdk'
 
-type UserEducation = EducationWidgetEntry;
+type UserEducation = EducationWidgetEntry
 
 /**
  * EducationWidget
@@ -38,19 +38,19 @@ type UserEducation = EducationWidgetEntry;
 export function EducationWidget({
   userId,
   showEdit = false,
-  variant = "full",
+  variant = 'full',
 }: ProfileWidgetProps) {
-  const router = useRouter();
-  const { theme } = useThemeContext();
-  const t = theme === "dark" ? "dark" : "light" as const;
-  const pal = workerPalette[t];
-  const isOwner = useIsProfileOwner(userId);
+  const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
+  const pal = workerPalette[t]
+  const isOwner = useIsProfileOwner(userId)
   const { data, isLoading, error, refetch, isFetching } = useEducationWidget(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     }
-  );
+  )
 
   if (isLoading) {
     return (
@@ -65,7 +65,7 @@ export function EducationWidget({
           ))}
         </SkeletonGroup>
       </DashboardWidget>
-    );
+    )
   }
 
   if (error) {
@@ -79,7 +79,7 @@ export function EducationWidget({
             color="primary"
             size="sm"
             onPress={() => {
-              void refetch();
+              void refetch()
             }}
             disabled={isFetching}
           >
@@ -87,12 +87,12 @@ export function EducationWidget({
           </Button>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
-  const education = data || [];
-  if (education.length === 0 && !isOwner) return null;
-  const showCompact = variant === "compact";
+  const education = data || []
+  if (education.length === 0 && !isOwner) return null
+  const showCompact = variant === 'compact'
 
   return (
     <DashboardWidget>
@@ -105,9 +105,7 @@ export function EducationWidget({
               <Button
                 variant="outline"
                 size="sm"
-                onPress={() =>
-                  router.push(ROUTES.PROFILE.EDUCATION.path)
-                }
+                onPress={() => router.push(ROUTES.PROFILE.EDUCATION.path)}
               >
                 Edit
               </Button>
@@ -123,9 +121,8 @@ export function EducationWidget({
             action={
               showEdit
                 ? {
-                    label: "Add Education",
-                    onPress: () =>
-                      router.push(ROUTES.PROFILE.EDUCATION.path),
+                    label: 'Add Education',
+                    onPress: () => router.push(ROUTES.PROFILE.EDUCATION.path),
                   }
                 : undefined
             }
@@ -139,11 +136,11 @@ export function EducationWidget({
                   {/* Degree & Field */}
                   <Stack gap={4}>
                     <Text>
-                      {edu.degree_type || "Degree"}
+                      {edu.degree_type || 'Degree'}
                       {edu.field_of_study && ` in ${edu.field_of_study}`}
                     </Text>
                     <Text style={{ color: colors.text[theme].secondary }}>
-                      {edu.institution_name || "Institution"}
+                      {edu.institution_name || 'Institution'}
                     </Text>
                   </Stack>
 
@@ -154,7 +151,7 @@ export function EducationWidget({
                     </Text>
                     <Text style={{ color: colors.text[theme].secondary }}>-</Text>
                     <Text style={{ color: colors.text[theme].secondary }}>
-                      {edu.is_current ? "Present" : formatDate(edu.end_date)}
+                      {edu.is_current ? 'Present' : formatDate(edu.end_date)}
                     </Text>
                     {edu.is_current && (
                       <Pill label="Current" bgColor={pal.pillBg} textColor={pal.pillText} />
@@ -174,19 +171,15 @@ export function EducationWidget({
                   )}
 
                   {/* Separator between items */}
-                  {index < education.length - 1 && (
-                    <Separator marginVertical={8} />
-                  )}
+                  {index < education.length - 1 && <Separator marginVertical={8} />}
                 </Stack>
               ))}
 
             {/* Show More link for compact view */}
             {showCompact && education.length > 2 && (
               <Text
-                style={{ color: pal.accent, cursor: "pointer" }}
-                onPress={() =>
-                  router.push(ROUTES.PROFILE.EDUCATION.path)
-                }
+                style={{ color: pal.accent, cursor: 'pointer' }}
+                onPress={() => router.push(ROUTES.PROFILE.EDUCATION.path)}
               >
                 View all {education.length} entries →
               </Text>
@@ -195,5 +188,5 @@ export function EducationWidget({
         )}
       </Stack>
     </DashboardWidget>
-  );
+  )
 }

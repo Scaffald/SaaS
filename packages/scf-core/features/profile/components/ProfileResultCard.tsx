@@ -52,7 +52,9 @@ export function ProfileResultCard({
   return (
     <Card
       variant={bordered ? 'outlined' : undefined}
-      style={isNew ? { backgroundColor: '#f0fdf4', borderColor: '#4ade80', borderWidth: 2 } : undefined}
+      style={
+        isNew ? { backgroundColor: '#f0fdf4', borderColor: '#4ade80', borderWidth: 2 } : undefined
+      }
       {...props}
     >
       <CardHeader>

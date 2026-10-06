@@ -1,19 +1,13 @@
-import {
-  Modal,
-  ModalHeader,
-  ModalActions,
-  ModalContent,
-  Text,
-} from "@scaffald/ui";
+import { Modal, ModalHeader, ModalActions, ModalContent, Text } from '@scaffald/ui'
 
 interface ConfirmationDialogProps {
-  visible: boolean;
-  onClose: () => void;
-  title: string;
-  message: string;
-  confirmLabel: string;
-  cancelLabel: string;
-  onConfirm: () => void;
+  visible: boolean
+  onClose: () => void
+  title: string
+  message: string
+  confirmLabel: string
+  cancelLabel: string
+  onConfirm: () => void
 }
 
 /**
@@ -40,10 +34,10 @@ export function ConfirmationDialog({
         secondaryAction={{
           label: cancelLabel,
           onPress: onClose,
-          variant: "outline",
-          color: "gray",
+          variant: 'outline',
+          color: 'gray',
         }}
       />
     </Modal>
-  );
+  )
 }

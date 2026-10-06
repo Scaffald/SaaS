@@ -47,7 +47,13 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
     : null
 
   return (
-    <Card pressable onPress={() => onViewDetails(employer)} padding="md" variant="glass" glassMaterial="thin">
+    <Card
+      pressable
+      onPress={() => onViewDetails(employer)}
+      padding="md"
+      variant="glass"
+      glassMaterial="thin"
+    >
       <Stack gap={12}>
         <CardHeader
           icon={Building2}
@@ -70,18 +76,14 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
           {location && <MetricRow icon={MapPin} text={location} theme={t} />}
 
           {employer.employee_count_range && (
-            <MetricRow
-              icon={Users}
-              text={`${employer.employee_count_range} employees`}
-              theme={t}
-            />
+            <MetricRow icon={Users} text={`${employer.employee_count_range} employees`} theme={t} />
           )}
 
           {employer.website_url && (
             <MetricRow
               icon={ExternalLink}
               text={employer.website_url.replace(/^https?:\/\//, '')}
-              color={colors.primary[500]}
+              color={colors.text[t].emphasis}
               theme={t}
             />
           )}

@@ -1,44 +1,17 @@
 /**
- * The one switch that decides whether this build may render dark.
+ * Dark mode ships (#840). The build flag that gated it through #833's audit
+ * is gone; this stays as the one place a build could say otherwise, and so
+ * the callers that asked it (the Appearance control, the resolver) keep one
+ * question to ask.
  *
- * Dark mode has been hard-off since 78caa00b ("feat: force light mode and hide
- * theme toggle", 2026-04-21), by a single line in `useThemeSetting`:
- *
- *   const resolvedTheme = 'light' as 'light' | 'dark'
- *
- * Everything else in the stack already worked — the provider resolves a
- * preference, persists it, stamps `data-theme` on `<html>`, and bridges to
- * `@scaffald/ui`'s ThemeProvider as a controlled prop. That one line
- * short-circuited all of it, which is why three earlier attempts at a dark
- * smoke pass produced light screenshots labelled "dark"
- * (scripts/audit/smoke-authed.mjs says so at length).
- *
- * Part 1 of #833 restores the resolution behind this flag. Part 2 (#840) fixes
- * what the audit finds and removes the gate.
- *
- * ## Why an env flag and not `__DEV__`
- *
- * `__DEV__` would be convenient — false in release builds, so production could
- * not go dark by accident. But it would also flip every developer's app to
- * follow their OS appearance from the next `pnpm web`, with no one having asked
- * for that, and a half-audited palette is a bad thing to discover by surprise
- * in the middle of unrelated work. An explicit opt-in costs one line in `.env`
- * and makes "am I looking at dark on purpose?" answerable.
- *
- * ## Reading it
- *
- * `EXPO_PUBLIC_*` is inlined by Expo at build time, so this must stay a
- * literal, statically-analysable member expression — no destructuring, no
- * computed key, no helper that takes the name as an argument. Written any other
- * way it reads `undefined` in a bundle and the flag silently never turns on.
- *
- * Because it is inlined, a web server or native build has to be *started* with
- * the flag set; exporting it into an already-running process does nothing:
- *
- *   EXPO_PUBLIC_DARK_MODE=1 pnpm web
+ * History, because three earlier attempts at a dark smoke pass produced
+ * light screenshots labelled "dark": dark had been hard-off since 78caa00b
+ * by a single cast in `useThemeSetting`, restored behind
+ * `EXPO_PUBLIC_DARK_MODE=1` in #833 part 1, and opened here once every
+ * screen had been looked at in both appearances.
  */
 export function isDarkModeEnabled(): boolean {
-  return process.env.EXPO_PUBLIC_DARK_MODE === '1'
+  return true
 }
 
 /**

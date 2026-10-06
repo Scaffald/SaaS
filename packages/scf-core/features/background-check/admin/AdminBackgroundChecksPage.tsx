@@ -286,7 +286,7 @@ export function AdminBackgroundChecksPage() {
         ),
       },
     ],
-    []
+    [t]
   )
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: theme-aware colors used in render cells
@@ -334,7 +334,7 @@ export function AdminBackgroundChecksPage() {
         ),
       },
     ],
-    []
+    [t]
   )
 
   const summaryStats = useMemo(() => {

@@ -48,9 +48,7 @@ interface ExternalJobCardProps {
 function formatRelativeDate(dateString?: string): string | null {
   if (!dateString) return null
   const date = new Date(dateString)
-  const diffDays = Math.floor(
-    (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)
-  )
+  const diffDays = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24))
   // Past ~a month, an absolute date is more useful than "2 months ago" here.
   if (diffDays >= 30) return date.toLocaleDateString()
   // Shared helper pluralizes correctly ("1 week ago", not "1 weeks ago") (#387).
@@ -83,9 +81,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
   return (
     <Card
       pressable
-      onPress={() =>
-        router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))
-      }
+      onPress={() => router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))}
       padding="md"
       variant={job.featured ? 'elevated' : 'surface'}
       testID="job-card"
@@ -120,10 +116,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
               {job.title}
             </Text>
             {job.company_name && (
-              <Text
-                style={{ ...textSmall, color: colors.text[t].tertiary }}
-                numberOfLines={1}
-              >
+              <Text style={{ ...textSmall, color: colors.text[t].tertiary }} numberOfLines={1}>
                 {job.company_name}
               </Text>
             )}
@@ -143,7 +136,12 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
           {job.job_location && <MetricRow icon={MapPin} text={job.job_location} theme={t} />}
           {job.job_type && <MetricRow icon={Clock} text={job.job_type} theme={t} />}
           {compensation && (
-            <MetricRow icon={DollarSign} text={compensation} color={colors.success[500]} theme={t} />
+            <MetricRow
+              icon={DollarSign}
+              text={compensation}
+              color={t === 'dark' ? colors.success[300] : colors.success[500]}
+              theme={t}
+            />
           )}
         </Row>
 

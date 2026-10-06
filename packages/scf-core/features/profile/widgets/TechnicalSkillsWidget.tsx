@@ -1,5 +1,5 @@
-import { ROUTES } from "@scf/core/constants/routes";
-import { useSkillsWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
+import { ROUTES } from '@scf/core/constants/routes'
+import { useSkillsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import {
   Button,
   DashboardWidget,
@@ -12,17 +12,17 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from "@scaffald/ui";
-import { CheckCircle } from "lucide-react-native";
-import { useRouter } from "expo-router";
-import { colors } from "@scaffald/ui/tokens";
-import { workerPalette } from "@scf/core/components/ui/styles";
-import { getProficiencyLabel } from "../constants/proficiency-levels";
-import type { ProfileWidgetProps } from "./types";
-import { useIsProfileOwner } from "./useIsProfileOwner";
-import type { SkillWidgetEntry } from "@scaffald/sdk";
+} from '@scaffald/ui'
+import { CheckCircle } from 'lucide-react-native'
+import { useRouter } from 'expo-router'
+import { colors } from '@scaffald/ui/tokens'
+import { workerPalette } from '@scf/core/components/ui/styles'
+import { getProficiencyLabel } from '../constants/proficiency-levels'
+import type { ProfileWidgetProps } from './types'
+import { useIsProfileOwner } from './useIsProfileOwner'
+import type { SkillWidgetEntry } from '@scaffald/sdk'
 
-type EnrichedUserSkill = SkillWidgetEntry;
+type EnrichedUserSkill = SkillWidgetEntry
 
 /**
  * TechnicalSkillsWidget
@@ -35,13 +35,13 @@ type EnrichedUserSkill = SkillWidgetEntry;
 export function TechnicalSkillsWidget({
   userId,
   showEdit = false,
-  variant = "full",
+  variant = 'full',
 }: ProfileWidgetProps) {
-  const router = useRouter();
-  const { theme } = useThemeContext();
-  const t = theme === "dark" ? "dark" : "light" as const;
-  const pal = workerPalette[t];
-  const isOwner = useIsProfileOwner(userId);
+  const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
+  const pal = workerPalette[t]
+  const isOwner = useIsProfileOwner(userId)
 
   // Fetch technical skills
   const { data, isLoading, error, refetch, isFetching } = useSkillsWidget(
@@ -49,7 +49,7 @@ export function TechnicalSkillsWidget({
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     }
-  );
+  )
 
   if (isLoading) {
     return (
@@ -63,7 +63,7 @@ export function TechnicalSkillsWidget({
           </SkeletonGroup>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
   if (error) {
@@ -77,7 +77,7 @@ export function TechnicalSkillsWidget({
             color="primary"
             size="sm"
             onPress={() => {
-              void refetch();
+              void refetch()
             }}
             disabled={isFetching}
           >
@@ -85,35 +85,35 @@ export function TechnicalSkillsWidget({
           </Button>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
-  const skills = (data || []) as EnrichedUserSkill[];
-  if (skills.length === 0 && !isOwner) return null;
-  const showCompact = variant === "compact";
+  const skills = (data || []) as EnrichedUserSkill[]
+  if (skills.length === 0 && !isOwner) return null
+  const showCompact = variant === 'compact'
 
   // Group skills by taxonomy
   const groupedSkills = skills.reduce(
     (acc: Record<string, EnrichedUserSkill[]>, skill: EnrichedUserSkill) => {
-      const taxonomy = skill.taxonomy || "Other";
+      const taxonomy = skill.taxonomy || 'Other'
       if (!acc[taxonomy]) {
-        acc[taxonomy] = [];
+        acc[taxonomy] = []
       }
-      acc[taxonomy].push(skill);
-      return acc;
+      acc[taxonomy].push(skill)
+      return acc
     },
     {}
-  );
+  )
 
-  const taxonomyOrder = ["onet", "csi", "Other"];
+  const taxonomyOrder = ['onet', 'csi', 'Other']
   const sortedTaxonomies = Object.keys(groupedSkills).sort((a, b) => {
-    const aIndex = taxonomyOrder.indexOf(a);
-    const bIndex = taxonomyOrder.indexOf(b);
-    if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
-    if (aIndex === -1) return 1;
-    if (bIndex === -1) return -1;
-    return aIndex - bIndex;
-  });
+    const aIndex = taxonomyOrder.indexOf(a)
+    const bIndex = taxonomyOrder.indexOf(b)
+    if (aIndex === -1 && bIndex === -1) return a.localeCompare(b)
+    if (aIndex === -1) return 1
+    if (bIndex === -1) return -1
+    return aIndex - bIndex
+  })
 
   return (
     <DashboardWidget>
@@ -127,7 +127,7 @@ export function TechnicalSkillsWidget({
                 variant="outline"
                 size="sm"
                 onPress={() => {
-                  router.push(ROUTES.PROFILE.SKILLS.path);
+                  router.push(ROUTES.PROFILE.SKILLS.path)
                 }}
               >
                 Edit
@@ -144,84 +144,68 @@ export function TechnicalSkillsWidget({
             action={
               showEdit
                 ? {
-                    label: "Add Skills",
-                    onPress: () =>
-                      router.push(ROUTES.PROFILE.SKILLS.path),
+                    label: 'Add Skills',
+                    onPress: () => router.push(ROUTES.PROFILE.SKILLS.path),
                   }
                 : undefined
             }
           />
         ) : (
           <Stack gap={16}>
-            {sortedTaxonomies
-              .slice(0, showCompact ? 1 : undefined)
-              .map((taxonomy) => (
-                <Stack key={taxonomy} gap={8}>
-                  {/* Taxonomy Header */}
-                  <Text
-                    style={{ color: colors.text[theme].secondary, textTransform: "uppercase" }}
-                  >
-                    {taxonomy === "onet"
-                      ? "O*NET"
-                      : taxonomy === "csi"
-                      ? "CSI"
-                      : taxonomy}
-                  </Text>
+            {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
+              <Stack key={taxonomy} gap={8}>
+                {/* Taxonomy Header */}
+                <Text style={{ color: colors.text[theme].secondary, textTransform: 'uppercase' }}>
+                  {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
+                </Text>
 
-                  {/* Skills in this taxonomy */}
-                  <Row gap={8} wrap>
-                    {groupedSkills[taxonomy]
-                      .slice(0, showCompact ? 5 : undefined)
-                      .map((skill: EnrichedUserSkill) => (
-                        <Row
-                          key={skill.id}
-                          paddingHorizontal={12}
-                          paddingVertical={8}
-                          borderRadius={12}
-                          borderWidth={1}
-                          gap={8}
-                          align="center"
-                          style={{
-                            backgroundColor: pal.pillBg,
-                            borderColor: skill.verified ? pal.pillText : pal.accent,
-                          }}
-                        >
-                          {skill.verified && (
-                            <CheckCircle size={16} color={pal.pillText} />
+                {/* Skills in this taxonomy */}
+                <Row gap={8} wrap>
+                  {groupedSkills[taxonomy]
+                    .slice(0, showCompact ? 5 : undefined)
+                    .map((skill: EnrichedUserSkill) => (
+                      <Row
+                        key={skill.id}
+                        paddingHorizontal={12}
+                        paddingVertical={8}
+                        borderRadius={12}
+                        borderWidth={1}
+                        gap={8}
+                        align="center"
+                        style={{
+                          backgroundColor: pal.pillBg,
+                          borderColor: skill.verified ? pal.pillText : pal.accent,
+                        }}
+                      >
+                        {skill.verified && <CheckCircle size={16} color={pal.pillText} />}
+                        <Stack gap={2}>
+                          <Text style={{ color: pal.pillText }}>{skill.name}</Text>
+                          {!showCompact && (
+                            <Row gap={8}>
+                              {skill.proficiency > 0 && (
+                                <Text style={{ color: pal.pillText }}>
+                                  {getProficiencyLabel(skill.proficiency)}
+                                </Text>
+                              )}
+                              {skill.yearsExperience !== null && skill.yearsExperience > 0 && (
+                                <Text style={{ color: pal.pillText }}>
+                                  • {skill.yearsExperience}y
+                                </Text>
+                              )}
+                            </Row>
                           )}
-                          <Stack gap={2}>
-                            <Text style={{ color: pal.pillText }}>
-                              {skill.name}
-                            </Text>
-                            {!showCompact && (
-                              <Row gap={8}>
-                                {skill.proficiency > 0 && (
-                                  <Text style={{ color: pal.pillText }}>
-                                    {getProficiencyLabel(skill.proficiency)}
-                                  </Text>
-                                )}
-                                {skill.yearsExperience !== null &&
-                                  skill.yearsExperience > 0 && (
-                                    <Text style={{ color: pal.pillText }}>
-                                      • {skill.yearsExperience}y
-                                    </Text>
-                                  )}
-                              </Row>
-                            )}
-                          </Stack>
-                        </Row>
-                      ))}
-                  </Row>
-                </Stack>
-              ))}
+                        </Stack>
+                      </Row>
+                    ))}
+                </Row>
+              </Stack>
+            ))}
 
             {/* Show More link for compact view */}
             {showCompact && skills.length > 5 && (
               <Text
-                style={{ color: pal.accent, cursor: "pointer" }}
-                onPress={() =>
-                  router.push(ROUTES.PROFILE.SKILLS.path)
-                }
+                style={{ color: pal.accent, cursor: 'pointer' }}
+                onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}
               >
                 View all {skills.length} skills →
               </Text>
@@ -230,5 +214,5 @@ export function TechnicalSkillsWidget({
         )}
       </Stack>
     </DashboardWidget>
-  );
+  )
 }

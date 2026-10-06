@@ -3,7 +3,10 @@ import type { SettingsToggleCardProps } from '@scaffald/ui'
 import { MapPin } from 'lucide-react-native'
 
 export interface USPassportToggleProps
-  extends Omit<SettingsToggleCardProps, 'icon' | 'title' | 'description' | 'enabled' | 'onToggleChange'> {
+  extends Omit<
+    SettingsToggleCardProps,
+    'icon' | 'title' | 'description' | 'enabled' | 'onToggleChange'
+  > {
   /** Optional override for description */
   description?: string
   /** Whether the toggle is checked */

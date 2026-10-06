@@ -17,7 +17,15 @@ import {
   useToast,
 } from '@scaffald/ui'
 import { randomUUID } from 'expo-crypto'
-import { MessageSquarePlus, Pin, PinOff, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
+import {
+  MessageSquarePlus,
+  Pin,
+  PinOff,
+  Shield,
+  Star,
+  ThumbsDown,
+  ThumbsUp,
+} from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import { Pressable } from 'react-native'
 import { colors } from '@scaffald/ui/tokens'
@@ -58,7 +66,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [completedReviewId, setCompletedReviewId] = useState<string | null>(null)
   const { theme } = useThemeContext()
-  const t = theme === 'dark' ? 'dark' : 'light' as const
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
   const pal = workerPalette[t]
   const { user: currentUser } = useUser()
   const toast = useToast()
@@ -108,7 +116,12 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     const currentPosition = pinPositionByReviewId.get(reviewId)
     if (currentPosition !== undefined) {
       unpinReview.mutate(reviewId, {
-        onError: (err) => toast.show({ variant: 'error', title: 'Could not unpin', message: (err as Error).message }),
+        onError: (err) =>
+          toast.show({
+            variant: 'error',
+            title: 'Could not unpin',
+            message: (err as Error).message,
+          }),
       })
       return
     }
@@ -123,7 +136,10 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     }
     pinReview.mutate(
       { reviewId, position: slot },
-      { onError: (err) => toast.show({ variant: 'error', title: 'Could not pin', message: (err as Error).message }) },
+      {
+        onError: (err) =>
+          toast.show({ variant: 'error', title: 'Could not pin', message: (err as Error).message }),
+      }
     )
   }
 
@@ -169,7 +185,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
           <Text style={{ color: colors.fg[theme].error }}>Failed to load reviews</Text>
           <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
           <Button
-            variant="filled" color="primary"
+            variant="filled"
+            color="primary"
             size="sm"
             onPress={() => {
               void refetch()
@@ -193,7 +210,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
               action={
                 canLeaveReview ? (
                   <Button
-                    variant="filled" color="primary"
+                    variant="filled"
+                    color="primary"
                     size="sm"
                     iconStart={MessageSquarePlus}
                     onPress={handleLeaveReview}
@@ -205,7 +223,11 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             />
             <Stack align="center" justify="center" minHeight={150} gap={8}>
               <Text style={{ color: colors.text[theme].secondary }}>No reviews yet</Text>
-              {canLeaveReview && <Text style={{ color: colors.text[theme].secondary }}>Be the first to leave a review</Text>}
+              {canLeaveReview && (
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  Be the first to leave a review
+                </Text>
+              )}
             </Stack>
           </Stack>
         </DashboardWidget>
@@ -289,7 +311,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             action={
               canLeaveReview ? (
                 <Button
-                  variant="filled" color="primary"
+                  variant="filled"
+                  color="primary"
                   size="sm"
                   iconStart={MessageSquarePlus}
                   onPress={handleLeaveReview}
@@ -305,7 +328,9 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             <Stack gap={12} padding="md">
               <Row gap={16} align="center">
                 <Stack align="center">
-                  <Text style={{ color: colors.text[theme].secondary }}>{overallRating.toFixed(1)}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>
+                    {overallRating.toFixed(1)}
+                  </Text>
                   <Row gap={4}>
                     {[...Array(5)].map((_, i) => (
                       <Star
@@ -327,7 +352,13 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                       const categoryData = data as { sum: number; count: number }
                       return (
                         <Row key={category} gap={8} align="center">
-                          <Text style={{ color: colors.text[theme].secondary, width: 100, textTransform: 'capitalize' }}>
+                          <Text
+                            style={{
+                              color: colors.text[theme].secondary,
+                              width: 100,
+                              textTransform: 'capitalize',
+                            }}
+                          >
                             {category}
                           </Text>
                           <Row
@@ -363,7 +394,9 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                   borderRadius={12}
                 >
                   <ThumbsUp size={16} color={colors.fg[theme].success} />
-                  <Text style={{ color: colors.fg[theme].success }}>{recommendCount} Recommend</Text>
+                  <Text style={{ color: colors.fg[theme].success }}>
+                    {recommendCount} Recommend
+                  </Text>
                 </Row>
                 <Row
                   gap={8}
@@ -374,7 +407,9 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                   borderRadius={12}
                 >
                   <ThumbsDown size={16} color={colors.fg[theme].error} />
-                  <Text style={{ color: colors.fg[theme].error }}>{notRecommendCount} Don't Recommend</Text>
+                  <Text style={{ color: colors.fg[theme].error }}>
+                    {notRecommendCount} Don't Recommend
+                  </Text>
                 </Row>
               </Row>
             </Stack>
@@ -388,86 +423,100 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
               const canPinAction = isOwnProfile && (isPinned || !atPinCap)
               const pinBusy = pinReview.isPending || unpinReview.isPending
               return (
-              <Card key={review.id} variant="outlined" backgroundColor={colors.bg[theme].subtle}>
-                <Stack gap={12} padding="md">
-                  <Row justify="space-between" align="flex-start">
-                    <Stack gap={4}>
-                      <Row gap={8} align="center">
-                        <Text style={{ color: colors.text[theme].secondary }}>Anonymous Reviewer</Text>
-                        <Row gap={4} align="center">
-                          <Shield size={14} color={pal.accent} />
-                          <Pill label="VERIFIED" bgColor={pal.pillBg} textColor={pal.pillText} />
+                <Card key={review.id} variant="outlined" backgroundColor={colors.bg[theme].subtle}>
+                  <Stack gap={12} padding="md">
+                    <Row justify="space-between" align="flex-start">
+                      <Stack gap={4}>
+                        <Row gap={8} align="center">
+                          <Text style={{ color: colors.text[theme].secondary }}>
+                            Anonymous Reviewer
+                          </Text>
+                          <Row gap={4} align="center">
+                            <Shield size={14} color={pal.accent} />
+                            <Pill label="VERIFIED" bgColor={pal.pillBg} textColor={pal.pillText} />
+                          </Row>
+                          {isPinned ? (
+                            <Pill label="PINNED" bgColor={pal.pillBg} textColor={pal.pillText} />
+                          ) : null}
                         </Row>
-                        {isPinned ? (
-                          <Pill label="PINNED" bgColor={pal.pillBg} textColor={pal.pillText} />
+                      </Stack>
+                      <Row gap={8} align="center">
+                        <Text style={{ color: colors.text[theme].secondary }}>
+                          {new Date(review.created_at).toLocaleDateString()}
+                        </Text>
+                        {isOwnProfile ? (
+                          <Pressable
+                            accessibilityRole="button"
+                            accessibilityLabel={isPinned ? 'Unpin from profile' : 'Pin to profile'}
+                            disabled={!canPinAction || pinBusy}
+                            onPress={() => handleTogglePin(review.id)}
+                            hitSlop={8}
+                            style={({ pressed }) => ({
+                              opacity: !canPinAction ? 0.35 : pressed ? 0.6 : 1,
+                            })}
+                          >
+                            {isPinned ? (
+                              <PinOff size={18} color={pal.accent} />
+                            ) : (
+                              <Pin
+                                size={18}
+                                color={canPinAction ? pal.accent : colors.text[theme].secondary}
+                              />
+                            )}
+                          </Pressable>
                         ) : null}
                       </Row>
-                    </Stack>
-                    <Row gap={8} align="center">
-                      <Text style={{ color: colors.text[theme].secondary }}>{new Date(review.created_at).toLocaleDateString()}</Text>
-                      {isOwnProfile ? (
-                        <Pressable
-                          accessibilityRole="button"
-                          accessibilityLabel={isPinned ? 'Unpin from profile' : 'Pin to profile'}
-                          disabled={!canPinAction || pinBusy}
-                          onPress={() => handleTogglePin(review.id)}
-                          hitSlop={8}
-                          style={({ pressed }) => ({
-                            opacity: !canPinAction ? 0.35 : pressed ? 0.6 : 1,
+                    </Row>
+
+                    {/* Overall Rating */}
+                    {review.review_category_ratings &&
+                      review.review_category_ratings.length > 0 && (
+                        <Row gap={4}>
+                          {[...Array(5)].map((_, i) => {
+                            const avgRating =
+                              review.review_category_ratings.reduce(
+                                (sum: number, r: CategoryRating) => sum + r.rating,
+                                0
+                              ) / review.review_category_ratings.length
+                            return (
+                              <Star
+                                key={randomUUID()}
+                                size={16}
+                                color={colors.amber[600]}
+                                fill={i < Math.floor(avgRating) ? colors.amber[600] : 'transparent'}
+                              />
+                            )
                           })}
-                        >
-                          {isPinned ? (
-                            <PinOff size={18} color={pal.accent} />
-                          ) : (
-                            <Pin size={18} color={canPinAction ? pal.accent : colors.text[theme].secondary} />
-                          )}
-                        </Pressable>
-                      ) : null}
-                    </Row>
-                  </Row>
-
-                  {/* Overall Rating */}
-                  {review.review_category_ratings && review.review_category_ratings.length > 0 && (
-                    <Row gap={4}>
-                      {[...Array(5)].map((_, i) => {
-                        const avgRating =
-                          review.review_category_ratings.reduce(
-                            (sum: number, r: CategoryRating) => sum + r.rating,
-                            0
-                          ) / review.review_category_ratings.length
-                        return (
-                          <Star
-                            key={randomUUID()}
-                            size={16}
-                            color={colors.amber[600]}
-                            fill={i < Math.floor(avgRating) ? colors.amber[600] : 'transparent'}
-                          />
-                        )
-                      })}
-                    </Row>
-                  )}
-
-                  {/* Comment */}
-                  {review.comment && <Text style={{ color: colors.text[theme].secondary }}>{review.comment}</Text>}
-
-                  {/* Recommendation */}
-                  {review.reaction !== null && (
-                    <Row gap={8} align="center">
-                      {review.reaction === 1 ? (
-                        <>
-                          <ThumbsUp size={16} color={colors.fg[theme].success} />
-                          <Text style={{ color: colors.fg[theme].success }}>Recommends this person</Text>
-                        </>
-                      ) : (
-                        <>
-                          <ThumbsDown size={16} color={colors.fg[theme].error} />
-                          <Text style={{ color: colors.fg[theme].error }}>Does not recommend</Text>
-                        </>
+                        </Row>
                       )}
-                    </Row>
-                  )}
-                </Stack>
-              </Card>
+
+                    {/* Comment */}
+                    {review.comment && (
+                      <Text style={{ color: colors.text[theme].secondary }}>{review.comment}</Text>
+                    )}
+
+                    {/* Recommendation */}
+                    {review.reaction !== null && (
+                      <Row gap={8} align="center">
+                        {review.reaction === 1 ? (
+                          <>
+                            <ThumbsUp size={16} color={colors.fg[theme].success} />
+                            <Text style={{ color: colors.fg[theme].success }}>
+                              Recommends this person
+                            </Text>
+                          </>
+                        ) : (
+                          <>
+                            <ThumbsDown size={16} color={colors.fg[theme].error} />
+                            <Text style={{ color: colors.fg[theme].error }}>
+                              Does not recommend
+                            </Text>
+                          </>
+                        )}
+                      </Row>
+                    )}
+                  </Stack>
+                </Card>
               )
             })}
 

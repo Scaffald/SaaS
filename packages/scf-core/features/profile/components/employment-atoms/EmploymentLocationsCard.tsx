@@ -47,8 +47,7 @@ export function EmploymentLocationsCard({
       if (lastSavedRef.current === serialized) return
       lastSavedRef.current = serialized
       onSave({
-        preferred_work_locations:
-          result.data.preferred_work_locations ?? [],
+        preferred_work_locations: result.data.preferred_work_locations ?? [],
       })
     },
     [onSave]

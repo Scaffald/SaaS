@@ -1,9 +1,11 @@
-import { ControlledAddressForm } from "@scf/core/forms";
+import { colors } from '@scaffald/ui/tokens'
+import { useThemeContext } from '@scaffald/ui'
+import { ControlledAddressForm } from '@scf/core/forms'
 import {
   useExperience,
   useExperienceSummary,
   useSaveExperienceMutationWithSync,
-} from "@scf/core/utils/profile-experience-sdk-hooks";
+} from '@scf/core/utils/profile-experience-sdk-hooks'
 import {
   Button,
   Checkbox,
@@ -13,21 +15,15 @@ import {
   ModalContent,
   ModalHeader,
   ResponsiveSelect,
-} from "@scaffald/ui";
-import { MonthYearPicker } from "./components/MonthYearPicker";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  AlertTriangle,
-  Check,
-  CheckCircle,
-  Plus,
-  X,
-} from "lucide-react-native";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Controller, type Resolver, useFieldArray, useForm, useWatch } from "react-hook-form";
-import { H4, Input, Spinner, Text, TextArea, Row, Stack } from "@scaffald/ui";
-import { Pressable } from "react-native";
-import { useUnsavedChangesPrompt } from "@scf/core/utils/platform";
+} from '@scaffald/ui'
+import { MonthYearPicker } from './components/MonthYearPicker'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { AlertTriangle, Check, CheckCircle, Plus, X } from 'lucide-react-native'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Controller, type Resolver, useFieldArray, useForm, useWatch } from 'react-hook-form'
+import { H4, Input, Spinner, Text, TextArea, Row, Stack } from '@scaffald/ui'
+import { Pressable } from 'react-native'
+import { useUnsavedChangesPrompt } from '@scf/core/utils/platform'
 import {
   CAREER_LEVEL_OPTIONS,
   createNewExperienceEntry,
@@ -35,63 +31,59 @@ import {
   type ExperienceProfileFormData,
   experienceProfileDefaults,
   experienceProfileSchema,
-} from "./config";
+} from './config'
 
 /**
  * Experience entry from API response
  * Based on experienceEntrySchema from the router
  */
 type ExperienceEntry = {
-  id?: string;
-  user_id?: string;
-  organization_id?: string | null;
-  job_title: string;
-  company_name: string;
-  employment_type?: string | null;
-  location?: string | object | null;
-  is_remote: boolean;
-  start_date?: string | null;
-  end_date?: string | null;
-  is_current: boolean;
-  description?: string | null;
-  created_at?: string;
-  updated_at?: string;
-};
-import { useExperienceEdit } from "./contexts/experience-edit-context";
-import { calculateTotalExperience } from "./utils/experience-duration";
-import { useAdaptiveProfileSync } from "./utils/profile-sync-store";
+  id?: string
+  user_id?: string
+  organization_id?: string | null
+  job_title: string
+  company_name: string
+  employment_type?: string | null
+  location?: string | object | null
+  is_remote: boolean
+  start_date?: string | null
+  end_date?: string | null
+  is_current: boolean
+  description?: string | null
+  created_at?: string
+  updated_at?: string
+}
+import { useExperienceEdit } from './contexts/experience-edit-context'
+import { calculateTotalExperience } from './utils/experience-duration'
+import { useAdaptiveProfileSync } from './utils/profile-sync-store'
 
-type ExperienceEntries = NonNullable<
-  ExperienceProfileFormData["experience_entries"]
->;
-
+type ExperienceEntries = NonNullable<ExperienceProfileFormData['experience_entries']>
 
 /**
  * Profile Experience Left Component
  * Form for managing work experience history
  */
 export function ProfileExperienceLeft() {
-  const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const originalDataRef = useRef<ExperienceProfileFormData | null>(null);
-  const syncStatus = useAdaptiveProfileSync(300);
-  const isSyncing = syncStatus === "syncing";
-  const { editingEntryId, cancelEditing } = useExperienceEdit();
+  const { theme } = useThemeContext()
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const originalDataRef = useRef<ExperienceProfileFormData | null>(null)
+  const syncStatus = useAdaptiveProfileSync(300)
+  const isSyncing = syncStatus === 'syncing'
+  const { editingEntryId, cancelEditing } = useExperienceEdit()
 
   // Queries
-  const experienceQuery = useExperience();
-  const experienceSummaryQuery = useExperienceSummary();
+  const experienceQuery = useExperience()
+  const experienceSummaryQuery = useExperienceSummary()
 
   // Mutations
-  const saveExperienceMutation = useSaveExperienceMutationWithSync();
-  const [saveState, setSaveState] = useState<"idle" | "saving" | "success">(
-    "idle"
-  );
+  const saveExperienceMutation = useSaveExperienceMutationWithSync()
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'success'>('idle')
   const [saveBanner, setSaveBanner] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
-  const bannerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const buttonTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    type: 'success' | 'error'
+    message: string
+  } | null>(null)
+  const bannerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const buttonTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const {
     control,
@@ -103,56 +95,55 @@ export function ProfileExperienceLeft() {
     formState: { errors, isDirty },
   } = useForm<ExperienceProfileFormData>({
     // SC-59: cast required for @hookform/resolvers v5 — see useFeedbackForm for context.
-    resolver: zodResolver(experienceProfileSchema) as unknown as Resolver<ExperienceProfileFormData>,
+    resolver: zodResolver(
+      experienceProfileSchema
+    ) as unknown as Resolver<ExperienceProfileFormData>,
     defaultValues: experienceProfileDefaults,
-    mode: "onChange",
-  });
+    mode: 'onChange',
+  })
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "experience_entries",
-  });
+    name: 'experience_entries',
+  })
 
   // Load data when queries succeed
   useEffect(() => {
     if (experienceQuery.data && experienceSummaryQuery.data) {
       const formData = {
         career_level: experienceSummaryQuery.data.career_level || undefined,
-        experience_entries: (experienceQuery.data as ExperienceEntry[]).map(
-          (exp) => {
-            // Handle location: prefer location_structured, fallback to location TEXT
-            // If location is string, keep as string for backward compatibility
-            // ControlledAddressForm will handle conversion to structured format on edit
-            const location =
-              (exp as ExperienceEntry & { location_structured?: unknown })
-                .location_structured ||
-              exp.location ||
-              undefined;
+        experience_entries: (experienceQuery.data as ExperienceEntry[]).map((exp) => {
+          // Handle location: prefer location_structured, fallback to location TEXT
+          // If location is string, keep as string for backward compatibility
+          // ControlledAddressForm will handle conversion to structured format on edit
+          const location =
+            (exp as ExperienceEntry & { location_structured?: unknown }).location_structured ||
+            exp.location ||
+            undefined
 
-            // If location is a string and we need structured format, we'll let ControlledAddressForm handle it
-            // For now, keep the raw location value (API already transforms it)
-            return {
-              id: exp.id,
-              organization_id: exp.organization_id || undefined,
-              job_title: exp.job_title,
-              company_name: exp.company_name,
-              employment_type: exp.employment_type || undefined,
-              location,
-              is_remote: exp.is_remote,
-              start_date: exp.start_date || undefined,
-              end_date: exp.end_date || undefined,
-              is_current: exp.is_current,
-              description: exp.description || undefined,
-            };
+          // If location is a string and we need structured format, we'll let ControlledAddressForm handle it
+          // For now, keep the raw location value (API already transforms it)
+          return {
+            id: exp.id,
+            organization_id: exp.organization_id || undefined,
+            job_title: exp.job_title,
+            company_name: exp.company_name,
+            employment_type: exp.employment_type || undefined,
+            location,
+            is_remote: exp.is_remote,
+            start_date: exp.start_date || undefined,
+            end_date: exp.end_date || undefined,
+            is_current: exp.is_current,
+            description: exp.description || undefined,
           }
-        ),
-      };
-      reset(formData as ExperienceProfileFormData);
-      originalDataRef.current = formData as ExperienceProfileFormData;
+        }),
+      }
+      reset(formData as ExperienceProfileFormData)
+      originalDataRef.current = formData as ExperienceProfileFormData
     }
-  }, [experienceQuery.data, experienceSummaryQuery.data, reset]);
+  }, [experienceQuery.data, experienceSummaryQuery.data, reset])
 
-  useUnsavedChangesPrompt(isDirty);
+  useUnsavedChangesPrompt(isDirty)
 
   // Handle edit mode - entries are already loaded in form from API
   // When editingEntryId is set, the entry should already exist in form fields
@@ -160,75 +151,72 @@ export function ProfileExperienceLeft() {
 
   const clearTimers = useCallback(() => {
     if (bannerTimeoutRef.current) {
-      clearTimeout(bannerTimeoutRef.current);
-      bannerTimeoutRef.current = null;
+      clearTimeout(bannerTimeoutRef.current)
+      bannerTimeoutRef.current = null
     }
     if (buttonTimeoutRef.current) {
-      clearTimeout(buttonTimeoutRef.current);
-      buttonTimeoutRef.current = null;
+      clearTimeout(buttonTimeoutRef.current)
+      buttonTimeoutRef.current = null
     }
-  }, []);
+  }, [])
 
   const showSuccessFeedback = useCallback(() => {
-    setSaveState("success");
-    setSaveBanner({ type: "success", message: "Changes saved successfully" });
+    setSaveState('success')
+    setSaveBanner({ type: 'success', message: 'Changes saved successfully' })
 
     if (bannerTimeoutRef.current) {
-      clearTimeout(bannerTimeoutRef.current);
+      clearTimeout(bannerTimeoutRef.current)
     }
     bannerTimeoutRef.current = setTimeout(() => {
-      setSaveBanner(null);
-      bannerTimeoutRef.current = null;
-    }, 3000);
+      setSaveBanner(null)
+      bannerTimeoutRef.current = null
+    }, 3000)
 
     if (buttonTimeoutRef.current) {
-      clearTimeout(buttonTimeoutRef.current);
+      clearTimeout(buttonTimeoutRef.current)
     }
     buttonTimeoutRef.current = setTimeout(() => {
-      setSaveState("idle");
-      buttonTimeoutRef.current = null;
-    }, 2000);
-  }, []);
+      setSaveState('idle')
+      buttonTimeoutRef.current = null
+    }, 2000)
+  }, [])
 
   useEffect(() => {
     return () => {
-      clearTimers();
-    };
-  }, [clearTimers]);
+      clearTimers()
+    }
+  }, [clearTimers])
 
   const onSubmit = async (data: ExperienceProfileFormData) => {
-    clearTimers();
-    setSaveBanner(null);
-    setSaveState("saving");
+    clearTimers()
+    setSaveBanner(null)
+    setSaveState('saving')
     try {
-      const experienceEntries = (data.experience_entries ??
-        []) as ExperienceEntries;
+      const experienceEntries = (data.experience_entries ?? []) as ExperienceEntries
 
       await saveExperienceMutation.mutateAsync({
         career_level: data.career_level ?? null,
         experience_entries: experienceEntries,
-      });
-      showSuccessFeedback();
+      })
+      showSuccessFeedback()
       // Clear edit mode after successful save
       if (editingEntryId) {
-        cancelEditing();
+        cancelEditing()
       }
     } catch (error) {
-      console.error("Error saving experience:", error);
-      setSaveState("idle");
+      console.error('Error saving experience:', error)
+      setSaveState('idle')
       setSaveBanner({
-        type: "error",
+        type: 'error',
         message:
-          error instanceof Error
-            ? error.message
-            : "Failed to save changes. Please try again.",
-      });
+          error instanceof Error ? error.message : 'Failed to save changes. Please try again.',
+      })
     }
-  };
+  }
 
   const addExperienceEntry = () => {
-    append(createNewExperienceEntry());
-  };
+    append(createNewExperienceEntry())
+  }
 
   // useWatch, not watch(): react-hook-form's `watch` is referentially stable, so
   // `useMemo(..., [watch])` computed once per mount and never again. The form is
@@ -236,11 +224,8 @@ export function ProfileExperienceLeft() {
   // against experienceProfileDefaults and reported "0 years 0 months" for the
   // life of the component — including for users with a full work history, and
   // it never moved when entries were added or edited (#590).
-  const watchedEntries = useWatch({ control, name: "experience_entries" });
-  const totalExperience = useMemo(
-    () => calculateTotalExperience(watchedEntries),
-    [watchedEntries]
-  );
+  const watchedEntries = useWatch({ control, name: 'experience_entries' })
+  const totalExperience = useMemo(() => calculateTotalExperience(watchedEntries), [watchedEntries])
 
   // Show loading state
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {
@@ -248,17 +233,17 @@ export function ProfileExperienceLeft() {
       <DashboardWidget>
         <Stack
           style={{
-            alignItems: "center",
-            justifyContent: "center",
+            alignItems: 'center',
+            justifyContent: 'center',
             padding: 32,
             gap: 16,
           }}
         >
           <Spinner variant="ios" size="lg" />
-          <Text style={{ color: "#414e62" }}>Loading experience data...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading experience data...</Text>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
   // Show error state
@@ -267,19 +252,19 @@ export function ProfileExperienceLeft() {
       <DashboardWidget>
         <Stack
           style={{
-            alignItems: "center",
-            justifyContent: "center",
+            alignItems: 'center',
+            justifyContent: 'center',
             padding: 32,
             gap: 16,
           }}
         >
-          <Text style={{ color: "#ef4444" }}>
+          <Text style={{ color: colors.error[theme === 'dark' ? 400 : 600] }}>
             Failed to load experience data
           </Text>
           <Button onPress={() => experienceQuery.refetch()}>Retry</Button>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
   return (
@@ -291,7 +276,7 @@ export function ProfileExperienceLeft() {
         <Row gap={12}>
           <Stack style={{ gap: 8, flex: 1 }}>
             <Text>Total Years Experience</Text>
-            <Text style={{ color: "#3b82f6" }}>
+            <Text style={{ color: colors.text[theme].emphasis }}>
               {totalExperience.years} years {totalExperience.months} months
             </Text>
           </Stack>
@@ -303,7 +288,7 @@ export function ProfileExperienceLeft() {
               control={control}
               render={({ field }) => (
                 <ResponsiveSelect
-                  value={field.value || ""}
+                  value={field.value || ''}
                   onValueChange={field.onChange}
                   placeholder="Select career level"
                   options={CAREER_LEVEL_OPTIONS.map((level) => ({
@@ -332,18 +317,13 @@ export function ProfileExperienceLeft() {
                 gap: 12,
                 padding: 8,
                 borderWidth: 1,
-                borderColor: "#e2e8f0",
+                borderColor: colors.border[theme].default,
                 borderRadius: 7,
               }}
             >
               <Row justify="space-between" align="center">
                 <Text>Position {index + 1}</Text>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onPress={() => remove(index)}
-                  iconStart={X}
-                >
+                <Button size="sm" variant="outline" onPress={() => remove(index)} iconStart={X}>
                   Remove
                 </Button>
               </Row>
@@ -361,16 +341,15 @@ export function ProfileExperienceLeft() {
                         value={field.value}
                         onChangeText={field.onChange}
                         style={{
-                          borderColor: errors.experience_entries?.[index]
-                            ?.job_title
-                            ? "#ef4444"
-                            : "#e2e8f0",
+                          borderColor: errors.experience_entries?.[index]?.job_title
+                            ? colors.error[theme === 'dark' ? 400 : 600]
+                            : colors.border[theme].default,
                         }}
                       />
                     )}
                   />
                   {errors.experience_entries?.[index]?.job_title && (
-                    <Text style={{ color: "#ef4444" }}>
+                    <Text style={{ color: colors.error[theme === 'dark' ? 400 : 600] }}>
                       {errors.experience_entries[index]?.job_title?.message}
                     </Text>
                   )}
@@ -387,16 +366,15 @@ export function ProfileExperienceLeft() {
                         value={field.value}
                         onChangeText={field.onChange}
                         style={{
-                          borderColor: errors.experience_entries?.[index]
-                            ?.company_name
-                            ? "#ef4444"
-                            : "#e2e8f0",
+                          borderColor: errors.experience_entries?.[index]?.company_name
+                            ? colors.error[theme === 'dark' ? 400 : 600]
+                            : colors.border[theme].default,
                         }}
                       />
                     )}
                   />
                   {errors.experience_entries?.[index]?.company_name && (
-                    <Text style={{ color: "#ef4444" }}>
+                    <Text style={{ color: colors.error[theme === 'dark' ? 400 : 600] }}>
                       {errors.experience_entries[index]?.company_name?.message}
                     </Text>
                   )}
@@ -412,7 +390,7 @@ export function ProfileExperienceLeft() {
                     control={control}
                     render={({ field }) => (
                       <ResponsiveSelect
-                        value={field.value || ""}
+                        value={field.value || ''}
                         onValueChange={field.onChange}
                         placeholder="Select type"
                         options={EMPLOYMENT_TYPE_OPTIONS.map((type) => ({
@@ -438,17 +416,15 @@ export function ProfileExperienceLeft() {
                     mode="hybrid"
                     provider="mapbox"
                     zoomLevel="city"
-                    error={
-                      errors.experience_entries?.[index]?.location?.message
-                    }
+                    error={errors.experience_entries?.[index]?.location?.message}
                   />
                   {watch(`experience_entries.${index}.is_remote`) && (
-                    <Text style={{ color: "#414e62" }}>
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       Enter company headquarters location
                     </Text>
                   )}
                   {errors.experience_entries?.[index]?.location && (
-                    <Text style={{ color: "#ef4444" }}>
+                    <Text style={{ color: colors.error[theme === 'dark' ? 400 : 600] }}>
                       {errors.experience_entries[index]?.location?.message}
                     </Text>
                   )}
@@ -460,7 +436,7 @@ export function ProfileExperienceLeft() {
                 name={`experience_entries.${index}.is_remote`}
                 control={control}
                 render={({ field }) => {
-                  const isRemote = Boolean(field.value);
+                  const isRemote = Boolean(field.value)
                   return (
                     <Row gap={8} align="center">
                       <Checkbox checked={isRemote} onChange={field.onChange} />
@@ -468,7 +444,7 @@ export function ProfileExperienceLeft() {
                         <Text>Remote Work</Text>
                       </Pressable>
                     </Row>
-                  );
+                  )
                 }}
               />
 
@@ -483,15 +459,10 @@ export function ProfileExperienceLeft() {
                         value={field.value ? new Date(field.value) : null}
                         onChange={(date) => {
                           // Store as YYYY-MM-DD format (first day of month)
-                          const dateStr = date
-                            ? date.toISOString().split("T")[0]
-                            : null;
-                          field.onChange(dateStr || undefined);
+                          const dateStr = date ? date.toISOString().split('T')[0] : null
+                          field.onChange(dateStr || undefined)
                         }}
-                        error={
-                          errors.experience_entries?.[index]?.start_date
-                            ?.message
-                        }
+                        error={errors.experience_entries?.[index]?.start_date?.message}
                         label="Start Date"
                       />
                     )}
@@ -507,17 +478,11 @@ export function ProfileExperienceLeft() {
                         value={field.value ? new Date(field.value) : null}
                         onChange={(date) => {
                           // Store as YYYY-MM-DD format (first day of month)
-                          const dateStr = date
-                            ? date.toISOString().split("T")[0]
-                            : null;
-                          field.onChange(dateStr || undefined);
+                          const dateStr = date ? date.toISOString().split('T')[0] : null
+                          field.onChange(dateStr || undefined)
                         }}
-                        disabled={watch(
-                          `experience_entries.${index}.is_current`
-                        )}
-                        error={
-                          errors.experience_entries?.[index]?.end_date?.message
-                        }
+                        disabled={watch(`experience_entries.${index}.is_current`)}
+                        error={errors.experience_entries?.[index]?.end_date?.message}
                         label="End Date"
                       />
                     )}
@@ -530,7 +495,7 @@ export function ProfileExperienceLeft() {
                 name={`experience_entries.${index}.is_current`}
                 control={control}
                 render={({ field }) => {
-                  const isCurrent = Boolean(field.value);
+                  const isCurrent = Boolean(field.value)
                   return (
                     <Row gap={8} align="center">
                       <Checkbox checked={isCurrent} onChange={field.onChange} />
@@ -538,7 +503,7 @@ export function ProfileExperienceLeft() {
                         <Text>I currently work here</Text>
                       </Pressable>
                     </Row>
-                  );
+                  )
                 }}
               />
 
@@ -551,7 +516,7 @@ export function ProfileExperienceLeft() {
                   render={({ field }) => (
                     <TextArea
                       placeholder="Describe your responsibilities and duties..."
-                      value={field.value || ""}
+                      value={field.value || ''}
                       onChangeText={field.onChange}
                       style={{ minHeight: 80 }}
                     />
@@ -562,8 +527,8 @@ export function ProfileExperienceLeft() {
           ))}
 
           {fields.length === 0 && (
-            <Stack style={{ padding: 16, alignItems: "center", gap: 8 }}>
-              <Text style={{ color: "#414e62" }}>
+            <Stack style={{ padding: 16, alignItems: 'center', gap: 8 }}>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 No work experience added yet
               </Text>
             </Stack>
@@ -579,21 +544,28 @@ export function ProfileExperienceLeft() {
               gap: 8,
               borderWidth: 1,
               borderColor:
-                saveBanner.type === "success" ? "#86efac" : "#fca5a5",
+                saveBanner.type === 'success'
+                  ? colors.border[theme].success
+                  : colors.border[theme].error,
               backgroundColor:
-                saveBanner.type === "success" ? "#f0fdf4" : "#fef2f2",
+                saveBanner.type === 'success'
+                  ? colors.success[theme === 'dark' ? 900 : 50]
+                  : colors.error[theme === 'dark' ? 900 : 50],
               borderRadius: 7,
             }}
           >
             <Row gap={8} align="center">
-              {saveBanner.type === "success" ? (
-                <CheckCircle size={18} color="#22c55e" />
+              {saveBanner.type === 'success' ? (
+                <CheckCircle size={18} color={colors.success[theme === 'dark' ? 400 : 700]} />
               ) : (
-                <AlertTriangle size={18} color="#ef4444" />
+                <AlertTriangle size={18} color={colors.error[theme === 'dark' ? 400 : 600]} />
               )}
               <Text
                 style={{
-                  color: saveBanner.type === "success" ? "#16a34a" : "#ef4444",
+                  color:
+                    saveBanner.type === 'success'
+                      ? colors.success[theme === 'dark' ? 400 : 700]
+                      : colors.error[theme === 'dark' ? 400 : 600],
                 }}
               >
                 {saveBanner.message}
@@ -610,12 +582,12 @@ export function ProfileExperienceLeft() {
               disabled={!isDirty && !editingEntryId}
               onPress={() => {
                 if (editingEntryId) {
-                  cancelEditing();
+                  cancelEditing()
                   if (originalDataRef.current) {
-                    reset(originalDataRef.current);
+                    reset(originalDataRef.current)
                   }
                 } else {
-                  setShowCancelDialog(true);
+                  setShowCancelDialog(true)
                 }
               }}
               style={{ opacity: !isDirty && !editingEntryId ? 0.5 : 1 }}
@@ -627,13 +599,13 @@ export function ProfileExperienceLeft() {
             variant="filled"
             color="primary"
             onPress={handleSubmit(onSubmit)}
-            disabled={!isDirty || saveState === "saving"}
-            style={{ opacity: !isDirty || saveState === "saving" ? 0.5 : 1 }}
+            disabled={!isDirty || saveState === 'saving'}
+            style={{ opacity: !isDirty || saveState === 'saving' ? 0.5 : 1 }}
           >
-            {saveState === "success" ? (
+            {saveState === 'success' ? (
               <Row gap={8} align="center">
-                <Check size={18} color="#22c55e" />
-                <Text style={{ color: "#22c55e" }}>Saved!</Text>
+                <Check size={18} color={colors.success[theme === 'dark' ? 400 : 700]} />
+                <Text style={{ color: colors.success[theme === 'dark' ? 400 : 700] }}>Saved!</Text>
               </Row>
             ) : isSyncing ? (
               <Row gap={8} align="center">
@@ -641,47 +613,39 @@ export function ProfileExperienceLeft() {
                 <Text>Saving...</Text>
               </Row>
             ) : editingEntryId ? (
-              "Update Experience"
+              'Update Experience'
             ) : (
-              "Save Changes"
+              'Save Changes'
             )}
           </Button>
         </Row>
 
         {/* Cancel Confirmation Dialog */}
-        <Modal
-          visible={showCancelDialog}
-          onClose={() => setShowCancelDialog(false)}
-        >
-          <ModalHeader
-            title="Discard Changes?"
-            onClose={() => setShowCancelDialog(false)}
-          />
+        <Modal visible={showCancelDialog} onClose={() => setShowCancelDialog(false)}>
+          <ModalHeader title="Discard Changes?" onClose={() => setShowCancelDialog(false)} />
           <ModalContent>
-            <Text>
-              You have unsaved changes. Are you sure you want to discard them?
-            </Text>
+            <Text>You have unsaved changes. Are you sure you want to discard them?</Text>
           </ModalContent>
           <ModalActions
             primaryAction={{
-              label: "Discard Changes",
+              label: 'Discard Changes',
               onPress: () => {
                 if (originalDataRef.current) {
-                  reset(originalDataRef.current);
-                  setShowCancelDialog(false);
+                  reset(originalDataRef.current)
+                  setShowCancelDialog(false)
                   if (editingEntryId) {
-                    cancelEditing();
+                    cancelEditing()
                   }
                 }
               },
             }}
             secondaryAction={{
-              label: "Keep Editing",
+              label: 'Keep Editing',
               onPress: () => setShowCancelDialog(false),
             }}
           />
         </Modal>
       </Stack>
     </DashboardWidget>
-  );
+  )
 }

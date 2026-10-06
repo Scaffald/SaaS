@@ -95,8 +95,8 @@ export function SharePublicProfileModal({
       toast.show({
         title: ok ? 'Copied' : 'Share unavailable',
         message: ok
-          ? 'This browser doesn\'t support the share sheet, so we copied the URL instead.'
-          : 'Couldn\'t share the URL. Please copy it manually.',
+          ? "This browser doesn't support the share sheet, so we copied the URL instead."
+          : "Couldn't share the URL. Please copy it manually.",
         variant: ok ? undefined : 'error',
       })
       return
@@ -108,7 +108,7 @@ export function SharePublicProfileModal({
       console.error('SharePublicProfileModal: native share failed', err)
       toast.show({
         title: 'Share failed',
-        message: 'Couldn\'t open the share sheet. Try copying the URL instead.',
+        message: "Couldn't open the share sheet. Try copying the URL instead.",
         variant: 'error',
       })
     }
@@ -133,8 +133,8 @@ export function SharePublicProfileModal({
         {!slug || !vanityUrl ? (
           <Stack gap={spacing[16]}>
             <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
-              You don't have a public profile URL yet. Claim a unique name in
-              Settings → Public profile, and then share it via QR code or link.
+              You don't have a public profile URL yet. Claim a unique name in Settings → Public
+              profile, and then share it via QR code or link.
             </Paragraph>
             <ModalActions
               primaryAction={{
@@ -151,8 +151,8 @@ export function SharePublicProfileModal({
         ) : (
           <Stack gap={spacing[20]}>
             <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
-              Show the QR code at trade events to let others scan your profile —
-              or copy the link and send it anywhere.
+              Show the QR code at trade events to let others scan your profile — or copy the link
+              and send it anywhere.
             </Paragraph>
 
             <View

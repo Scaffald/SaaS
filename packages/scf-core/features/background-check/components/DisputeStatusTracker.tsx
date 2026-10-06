@@ -49,15 +49,33 @@ const STATUS_METADATA: Record<
   },
 }
 
-const TONE_COLORS: Record<
-  DisputeStatusTone,
-  { background: string; border: string; text: string }
-> = {
-  info: { background: colors.info[50], border: colors.info[400], text: colors.info[700] },
-  warning: { background: colors.warning[50], border: colors.warning[400], text: colors.warning[700] },
-  success: { background: colors.success[50], border: colors.success[400], text: colors.success[700] },
-  danger: { background: colors.error[50], border: colors.error[400], text: colors.error[700] },
-  neutral: { background: colors.gray[100], border: colors.gray[300], text: colors.gray[700] },
+type ToneColors = { background: string; border: string; text: string }
+
+// One step per tone, read per theme: the light steps (50/400/700) sat the
+// tone's text at 2:1 on a dark page.
+const toneColors = (tone: DisputeStatusTone, theme: 'light' | 'dark'): ToneColors => {
+  const dark = theme === 'dark'
+  const ramp = (scale: Record<number, string>): ToneColors => ({
+    background: dark ? scale[900] : scale[50],
+    border: dark ? scale[700] : scale[400],
+    text: dark ? scale[300] : scale[700],
+  })
+  switch (tone) {
+    case 'info':
+      return ramp(colors.info)
+    case 'warning':
+      return ramp(colors.warning)
+    case 'success':
+      return ramp(colors.success)
+    case 'danger':
+      return ramp(colors.error)
+    default:
+      return {
+        background: colors.bg[theme].muted,
+        border: colors.border[theme].default,
+        text: colors.text[theme].secondary,
+      }
+  }
 }
 
 function getStatusMetadata(status: BackgroundCheckDispute['status']) {
@@ -123,7 +141,7 @@ export function DisputeStatusTracker({
   }
 
   const statusMeta = getStatusMetadata(latestDispute.status)
-  const toneColors = TONE_COLORS[statusMeta.tone]
+  const tone = toneColors(statusMeta.tone, t)
 
   return (
     <Stack gap={12}>
@@ -143,18 +161,18 @@ export function DisputeStatusTracker({
       <Stack
         gap={8}
         padding="sm"
-        backgroundColor={toneColors.background}
-        borderColor={toneColors.border}
+        backgroundColor={tone.background}
+        borderColor={tone.border}
         borderWidth={1}
         borderRadius={16}
       >
-        <Text color={toneColors.text}>{statusMeta.label}</Text>
-        <Text color={toneColors.text}>{statusMeta.description}</Text>
-        <Text color={toneColors.text}>
+        <Text color={tone.text}>{statusMeta.label}</Text>
+        <Text color={tone.text}>{statusMeta.description}</Text>
+        <Text color={tone.text}>
           Filed {formatDate(latestDispute.created_at)}
           {latestDispute.resolved_at ? ` • Resolved ${formatDate(latestDispute.resolved_at)}` : ''}
         </Text>
-        <Text color={toneColors.text}>Reason: {latestDispute.dispute_reason}</Text>
+        <Text color={tone.text}>Reason: {latestDispute.dispute_reason}</Text>
       </Stack>
 
       <Card
@@ -178,7 +196,7 @@ export function DisputeStatusTracker({
         <Stack gap={8}>
           {disputes.map((dispute) => {
             const meta = getStatusMetadata(dispute.status)
-            const toneColors = TONE_COLORS[meta.tone]
+            const tone = toneColors(meta.tone, t)
             return (
               <Stack
                 key={dispute.id}
@@ -192,7 +210,7 @@ export function DisputeStatusTracker({
               >
                 <Row gap={8} align="center" wrap>
                   <Text color={colors.text[t].secondary}>{meta.label}</Text>
-                  <Text color={toneColors.text}>
+                  <Text color={tone.text}>
                     {formatDate(dispute.created_at)}
                     {dispute.resolved_at ? ` • ${formatDate(dispute.resolved_at)}` : ''}
                   </Text>

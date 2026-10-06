@@ -152,9 +152,15 @@ export function IdVerificationContent() {
             giving organizations confidence that you are who you say you are.
           </Text>
           <Stack gap={4} marginTop={8}>
-            <Text style={{ color: colors.text[theme].secondary }}>• Badge displayed on your profile and worker cards</Text>
-            <Text style={{ color: colors.text[theme].secondary }}>• Valid for 6 months with automated reminders</Text>
-            <Text style={{ color: colors.text[theme].secondary }}>• Powered by Persona, the same provider used by banks</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              • Badge displayed on your profile and worker cards
+            </Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              • Valid for 6 months with automated reminders
+            </Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              • Powered by Persona, the same provider used by banks
+            </Text>
           </Stack>
         </Stack>
       </Card>
@@ -198,17 +204,31 @@ export function IdVerificationRight() {
             and selfie. Most verifications finish within a few minutes.
           </Text>
           <Stack gap={4}>
-            <Text style={{ color: colors.text[theme].secondary }}>1. Complete the Persona flow on web or mobile</Text>
-            <Text style={{ color: colors.text[theme].secondary }}>2. Persona confirms the authenticity of your ID</Text>
-            <Text style={{ color: colors.text[theme].secondary }}>3. Your badge updates instantly across the platform</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              1. Complete the Persona flow on web or mobile
+            </Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              2. Persona confirms the authenticity of your ID
+            </Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              3. Your badge updates instantly across the platform
+            </Text>
           </Stack>
         </Stack>
       </Card>
 
-      <Card variant="glass" padding="md" bordered style={{ backgroundColor: colors.info[50], borderColor: colors.border[theme].info }}>
+      <Card
+        variant="glass"
+        padding="md"
+        bordered
+        style={{
+          backgroundColor: colors.info[theme === 'dark' ? 900 : 50],
+          borderColor: colors.border[theme].info,
+        }}
+      >
         <Stack gap={8}>
-          <Text style={{ color: colors.info[700] }}>Need help?</Text>
-          <Text style={{ color: colors.info[600] }}>
+          <Text style={{ color: colors.info[theme === 'dark' ? 300 : 700] }}>Need help?</Text>
+          <Text style={{ color: colors.info[theme === 'dark' ? 300 : 600] }}>
             Email support@scaffald.com if you run into issues with Persona, need an invoice, or want
             to request a bulk verification plan for your organization.
           </Text>
@@ -240,7 +260,9 @@ function renderStatusCard(
       <Card variant="glass" padding="md" bordered>
         <Stack gap={8}>
           <IdVerificationBadge status={null} muted size="md" />
-          <Text style={{ color: colors.text[theme].secondary }}>Loading your verification badge…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Loading your verification badge…
+          </Text>
         </Stack>
       </Card>
     )
@@ -248,7 +270,12 @@ function renderStatusCard(
 
   if (queryReturn.isError) {
     return (
-      <Card variant="glass" padding="md" bordered style={{ backgroundColor: colors.error[50], borderColor: colors.border[theme].error }}>
+      <Card
+        variant="glass"
+        padding="md"
+        bordered
+        style={{ backgroundColor: colors.error[50], borderColor: colors.border[theme].error }}
+      >
         <Stack gap={8}>
           <Text style={{ color: colors.error[700] }}>Unable to load badge</Text>
           <Text style={{ color: colors.fg[theme].error }}>
@@ -334,7 +361,15 @@ function PricingSection({
 
   if (pricingOptions.length === 0) {
     return (
-      <Card variant="glass" padding="md" bordered style={{ backgroundColor: colors.bg[theme].subtle, borderColor: colors.border[theme].default }}>
+      <Card
+        variant="glass"
+        padding="md"
+        bordered
+        style={{
+          backgroundColor: colors.bg[theme].subtle,
+          borderColor: colors.border[theme].default,
+        }}
+      >
         <Stack gap={8}>
           <Text>Verification temporarily unavailable</Text>
           <Text style={{ color: colors.text[theme].secondary }}>
@@ -356,7 +391,10 @@ function PricingSection({
               key={plan.id}
               padding="md"
               bordered
-              style={{ backgroundColor: isActive ? colors.info[50] : undefined, borderColor: isActive ? colors.info[400] : colors.border[theme].default }}
+              style={{
+                backgroundColor: isActive ? colors.info[50] : undefined,
+                borderColor: isActive ? colors.info[400] : colors.border[theme].default,
+              }}
               onPress={() => onSelectPlan(plan.id)}
             >
               <Stack gap={8}>
@@ -364,7 +402,9 @@ function PricingSection({
                   <Text>{plan.name}</Text>
                   <Text>{formatCurrency(plan.priceCents)}</Text>
                 </Row>
-                {plan.description && <Text style={{ color: colors.text[theme].secondary }}>{plan.description}</Text>}
+                {plan.description && (
+                  <Text style={{ color: colors.text[theme].secondary }}>{plan.description}</Text>
+                )}
                 <Button
                   size="sm"
                   color={isActive ? 'primary' : undefined}
@@ -419,7 +459,12 @@ function PaymentSection({
         <Stack
           gap={8}
           padding="sm"
-          style={{ backgroundColor: colors.error[50], borderColor: colors.border[theme].error, borderWidth: 1, borderRadius: 7 }}
+          style={{
+            backgroundColor: colors.error[50],
+            borderColor: colors.border[theme].error,
+            borderWidth: 1,
+            borderRadius: 7,
+          }}
         >
           <Row gap={8} align="center">
             <AlertCircle size={18} color={colors.fg[theme].error} />

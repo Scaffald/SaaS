@@ -234,7 +234,9 @@ export function VanityUrlSection() {
       <Stack gap={16}>
         <Stack gap={8}>
           <H4>Vanity URL</H4>
-          <Text style={{ color: '#414e62' }}>Customize your public profile URL to make it easier to share</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Customize your public profile URL to make it easier to share
+          </Text>
         </Stack>
 
         {/* Current URL Display */}
@@ -262,9 +264,9 @@ export function VanityUrlSection() {
               >
                 <Text
                   style={{
-                    color: colors.primary[600],
+                    color: colors.text[theme].emphasis,
                     textDecorationLine: 'underline',
-                    opacity: (!!daysRemaining && daysRemaining > 0) ? 0.4 : 1,
+                    opacity: !!daysRemaining && daysRemaining > 0 ? 0.4 : 1,
                   }}
                 >
                   {daysRemaining && daysRemaining > 0 ? 'Change unavailable' : 'Edit'}
@@ -276,7 +278,7 @@ export function VanityUrlSection() {
           {isEditing ? (
             <Stack gap={8}>
               <Row gap={8} align="center">
-                <Text style={{ color: '#414e62' }}>/users/</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>/users/</Text>
                 <Input
                   style={{ flex: 1 }}
                   value={slugInput}
@@ -292,22 +294,30 @@ export function VanityUrlSection() {
               {slugInput && (
                 <Stack gap={4}>
                   {availabilityStatus.checking ? (
-                    <Text style={{ color: '#414e62' }}>Checking availability...</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      Checking availability...
+                    </Text>
                   ) : availabilityStatus.available === true ? (
                     <Row gap={8} align="center">
-                      <Check size={16} color="#16a34a" />
-                      <Text style={{ color: '#16a34a' }}>Available</Text>
+                      <Check size={16} color={colors.success[theme === 'dark' ? 400 : 700]} />
+                      <Text style={{ color: colors.success[theme === 'dark' ? 400 : 700] }}>
+                        Available
+                      </Text>
                     </Row>
                   ) : availabilityStatus.available === false ? (
                     <Stack gap={4}>
                       <Row gap={8} align="center">
-                        <AlertCircle size={16} color="#ef4444" />
-                        <Text style={{ color: '#ef4444' }}>Not available</Text>
+                        <AlertCircle size={16} color={colors.error[theme === 'dark' ? 400 : 600]} />
+                        <Text style={{ color: colors.error[theme === 'dark' ? 400 : 600] }}>
+                          Not available
+                        </Text>
                       </Row>
                       {availabilityStatus.suggestions &&
                         availabilityStatus.suggestions.length > 0 && (
                           <Stack gap={4} style={{ marginLeft: 16 }}>
-                            <Text style={{ color: '#414e62' }}>Suggestions:</Text>
+                            <Text style={{ color: colors.text[theme].secondary }}>
+                              Suggestions:
+                            </Text>
                             {availabilityStatus.suggestions.map((suggestion) => (
                               <Button
                                 key={suggestion}
@@ -324,11 +334,13 @@ export function VanityUrlSection() {
                         )}
                     </Stack>
                   ) : !isSlugValid(slugInput.toLowerCase().trim()) ? (
-                    <Text style={{ color: '#ef4444' }}>
+                    <Text style={{ color: colors.error[theme === 'dark' ? 400 : 600] }}>
                       Invalid format. Use 3-50 characters, alphanumeric and dashes only.
                     </Text>
                   ) : isReservedSlug(slugInput.toLowerCase().trim()) ? (
-                    <Text style={{ color: '#ef4444' }}>This vanity URL is reserved and cannot be used.</Text>
+                    <Text style={{ color: colors.error[theme === 'dark' ? 400 : 600] }}>
+                      This vanity URL is reserved and cannot be used.
+                    </Text>
                   ) : null}
                 </Stack>
               )}
@@ -339,7 +351,8 @@ export function VanityUrlSection() {
                   Cancel
                 </Button>
                 <Button
-                  variant="filled" color="primary"
+                  variant="filled"
+                  color="primary"
                   size="sm"
                   onPress={handleSave}
                   disabled={
@@ -369,12 +382,17 @@ export function VanityUrlSection() {
             gap={8}
             align="center"
             padding={8}
-            style={{ backgroundColor: '#fefce8', borderRadius: 7, borderWidth: 1, borderColor: '#fde047' }}
+            style={{
+              backgroundColor: colors.bg[theme].attention,
+              borderRadius: 7,
+              borderWidth: 1,
+              borderColor: colors.border[theme].attention,
+            }}
           >
-            <Clock size={16} color="#f97316" />
+            <Clock size={16} color={colors.text[theme].attention} />
             <Stack style={{ flex: 1 }} gap={4}>
               <Text>Vanity URL Change Cooldown</Text>
-              <Text style={{ color: '#414e62' }}>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 You can change your vanity URL again in {daysRemaining} day
                 {daysRemaining !== 1 ? 's' : ''} ({new Date(nextChangeAllowed).toLocaleDateString()}
                 )
@@ -404,10 +422,12 @@ export function VanityUrlSection() {
                     backgroundColor={colors.bg[theme].subtle}
                     borderRadius={8}
                   >
-                    <Text style={{ color: '#414e62', flex: 1 }}>
+                    <Text style={{ color: colors.text[theme].secondary, flex: 1 }}>
                       {entry.old_slug || '(initial)'} → {entry.new_slug}
                     </Text>
-                    <Text style={{ color: '#414e62' }}>{new Date(entry.changed_at).toLocaleDateString()}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      {new Date(entry.changed_at).toLocaleDateString()}
+                    </Text>
                   </Row>
                 ))}
             </Stack>
