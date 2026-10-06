@@ -657,12 +657,17 @@ app.get(
 
     const { id } = c.req.valid("param");
 
+    // background_checks has no `metadata` column (here or on production); the
+    // select named one and every detail request answered 500 (#1043). The
+    // response still carries `metadata`, defaulted below. `user_id` is selected
+    // because the email lookup keys on it: without it the subject's email was
+    // looked up for `undefined` and always came back null.
     const { data: checkRecord, error: checkError } = await supabaseAdmin
       .schema("core")
       .from("background_checks")
       .select(`
-      id, status, status_history, package_id, check_type_ids, provider_check_id,
-      summary, findings, component_statuses, metadata, created_at, updated_at, expires_at, estimated_completion_date,
+      id, user_id, status, status_history, package_id, check_type_ids, provider_check_id,
+      summary, findings, component_statuses, created_at, updated_at, expires_at, estimated_completion_date,
       user:users!background_checks_user_id_fkey(id, display_name, username, avatar_path),
       organization:organizations!background_checks_organization_id_fkey(id, name),
       package:background_check_packages(id, display_name, slug)
