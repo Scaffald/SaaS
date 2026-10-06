@@ -30,7 +30,54 @@ function adminClient() {
 // Schemas
 // ============================================================================
 
+/**
+ * Every organization the caller belongs to through a team, and whether they
+ * hold `team_admin` in ANY of that organization's teams.
+ *
+ * Every handler here used to read ONE membership row (`.limit(1).single()`, no
+ * order) and treat it as "your organization" and "your role". An admin who is
+ * also a plain member of another team in the org was refused depending on row
+ * order, and a member of two orgs got an arbitrary one (#1037). This reads all
+ * of them; callers decide per organization.
+ */
+async function callerOrgRoles(
+  // biome-ignore lint/suspicious/noExplicitAny: untyped Deno Supabase client (#477)
+  supabase: any,
+  userId: string,
+): Promise<Map<string, { admin: boolean }>> {
+  const { data, error } = await supabase
+    .schema("core")
+    .from("team_members")
+    .select("team:teams(organization_id), role:team_roles(key)")
+    .eq("user_id", userId);
+  if (error) throw error;
+  const roles = new Map<string, { admin: boolean }>();
+  for (const m of data ?? []) {
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
+    const org = (m.team as any)?.organization_id as string | undefined;
+    if (!org) continue;
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
+    const admin = (m.role as any)?.key === "team_admin";
+    roles.set(org, { admin: Boolean(roles.get(org)?.admin) || admin });
+  }
+  return roles;
+}
+
+/** The organization a key belongs to, or null if there is no such key. */
+async function keyOrganizationId(keyId: string): Promise<string | null> {
+  const { data } = await adminClient()
+    .schema("core")
+    .from("api_keys")
+    .select("organization_id")
+    .eq("id", keyId)
+    .maybeSingle();
+  return (data?.organization_id as string | undefined) ?? null;
+}
+
 const CreateApiKeySchema = z.object({
+  organization_id: z.string().uuid().optional().describe(
+    "Required only for a caller in more than one organization",
+  ),
   name: z.string().min(1).max(100).describe(
     "Human-readable name for the API key",
   ),
@@ -107,16 +154,22 @@ app.post("/", requireAuth, async (c) => {
       );
     }
 
-    // Get user's organization through team membership
-    const { data: membership, error: membershipError } = await supabase
-      .schema("core")
-      .from("team_members")
-      .select("team:teams(organization_id)")
-      .eq("user_id", user.id)
-      .limit(1)
-      .single();
-
-    if (membershipError || !membership || !membership.team) {
+    // Any member of the organization may create a key — the same rule as the
+    // table's insert policy. Which organization is never guessed (#1037).
+    const roles = await callerOrgRoles(supabase, user.id);
+    const orgIds = [...roles.keys()];
+    let organizationId: string;
+    if (input.organization_id) {
+      if (!roles.has(input.organization_id)) {
+        return c.json(
+          { error: "Forbidden", message: "You do not belong to that organization" },
+          403,
+        );
+      }
+      organizationId = input.organization_id;
+    } else if (orgIds.length === 1) {
+      organizationId = orgIds[0];
+    } else if (orgIds.length === 0) {
       return c.json(
         {
           error: "Forbidden",
@@ -124,18 +177,13 @@ app.post("/", requireAuth, async (c) => {
         },
         403,
       );
-    }
-
-    // biome-ignore lint/suspicious/noExplicitAny: Supabase query type inference limitation
-    const organizationId = (membership.team as any).organization_id;
-
-    if (!organizationId) {
+    } else {
       return c.json(
         {
-          error: "Forbidden",
-          message: "Invalid organization membership",
+          error: "Bad Request",
+          message: "You belong to more than one organization; pass organization_id",
         },
-        403,
+        400,
       );
     }
 
@@ -213,22 +261,14 @@ app.get("/", requireAuth, async (c) => {
     const apiKey = c.get("apiKey");
     const supabase = c.get("supabase");
 
-    let organizationId: string;
-
+    let organizationIds: string[];
     if (apiKey) {
       // API key authentication - use the key's organization
-      organizationId = apiKey.organizationId;
+      organizationIds = [apiKey.organizationId];
     } else if (user) {
-      // User authentication - get user's organization
-      const { data: membership } = await supabase
-        .schema("core")
-        .from("team_members")
-        .select("team:teams(organization_id)")
-        .eq("user_id", user.id)
-        .limit(1)
-        .single();
-
-      if (!membership?.team) {
+      // Every organization the caller belongs to, not one arbitrary row (#1037).
+      organizationIds = [...(await callerOrgRoles(supabase, user.id)).keys()];
+      if (organizationIds.length === 0) {
         return c.json(
           {
             error: "Forbidden",
@@ -237,9 +277,6 @@ app.get("/", requireAuth, async (c) => {
           403,
         );
       }
-
-      // biome-ignore lint/suspicious/noExplicitAny: Supabase query type inference limitation
-      organizationId = (membership.team as any).organization_id;
     } else {
       return c.json({ error: "Unauthorized" }, 401);
     }
@@ -251,7 +288,7 @@ app.get("/", requireAuth, async (c) => {
       .select(
         "id, name, key_prefix, scopes, rate_limit_tier, is_active, last_used_at, created_at, expires_at",
       )
-      .eq("organization_id", organizationId)
+      .in("organization_id", organizationIds)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -313,19 +350,10 @@ app.get("/:id", requireAuth, async (c) => {
     if (apiKey && apiKey.organizationId === key.organization_id) {
       hasAccess = true;
     } else if (user) {
-      const { data: membership } = await supabase
-        .schema("core")
-        .from("team_members")
-        .select("team:teams(organization_id)")
-        .eq("user_id", user.id)
-        .limit(1)
-        .single();
-
-      // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
-      const userOrgId = (membership?.team as any)?.organization_id;
-      if (userOrgId && userOrgId === key.organization_id) {
-        hasAccess = true;
-      }
+      // A member of the key's organization, through any team (#1037).
+      hasAccess = (await callerOrgRoles(supabase, user.id)).has(
+        key.organization_id,
+      );
     }
 
     if (!hasAccess) {
@@ -376,24 +404,23 @@ app.patch("/:id", requireAuth, async (c) => {
       );
     }
 
-    // Get user's organization + role via their team membership
-    const { data: membership } = await supabase
-      .schema("core")
-      .from("team_members")
-      .select("team:teams(organization_id), role:team_roles(key)")
-      .eq("user_id", user.id)
-      .limit(1)
-      .single();
-
-    // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
-    const organizationId = (membership?.team as any)?.organization_id;
-    if (!organizationId) {
-      return c.json({ error: "Forbidden" }, 403);
+    // Authorize against the KEY's organization: the caller must be a member
+    // there, and team_admin in at least one of its teams. Not one arbitrary
+    // membership row, which refused admins who were also members elsewhere
+    // in the org (#1037). Not a member of the key's org reads as not found.
+    const organizationId = await keyOrganizationId(keyId);
+    const roles = await callerOrgRoles(supabase, user.id);
+    if (!organizationId || !roles.has(organizationId)) {
+      return c.json(
+        {
+          error: "Not Found",
+          message:
+            "API key not found or you do not have permission to update it",
+        },
+        404,
+      );
     }
-
-    // Only org admins (team_admin role) can update keys
-    // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
-    if ((membership?.role as any)?.key !== "team_admin") {
+    if (!roles.get(organizationId)?.admin) {
       return c.json(
         {
           error: "Forbidden",
@@ -478,24 +505,23 @@ app.delete("/:id", requireAuth, async (c) => {
       );
     }
 
-    // Get user's organization + role via their team membership
-    const { data: membership } = await supabase
-      .schema("core")
-      .from("team_members")
-      .select("team:teams(organization_id), role:team_roles(key)")
-      .eq("user_id", user.id)
-      .limit(1)
-      .single();
-
-    // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
-    const organizationId = (membership?.team as any)?.organization_id;
-    if (!organizationId) {
-      return c.json({ error: "Forbidden" }, 403);
+    // Authorize against the KEY's organization: the caller must be a member
+    // there, and team_admin in at least one of its teams. Not one arbitrary
+    // membership row, which refused admins who were also members elsewhere
+    // in the org (#1037). Not a member of the key's org reads as not found.
+    const organizationId = await keyOrganizationId(keyId);
+    const roles = await callerOrgRoles(supabase, user.id);
+    if (!organizationId || !roles.has(organizationId)) {
+      return c.json(
+        {
+          error: "Not Found",
+          message:
+            "API key not found or you do not have permission to delete it",
+        },
+        404,
+      );
     }
-
-    // Only org admins (team_admin role) can delete keys
-    // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
-    if ((membership?.role as any)?.key !== "team_admin") {
+    if (!roles.get(organizationId)?.admin) {
       return c.json(
         {
           error: "Forbidden",
@@ -573,19 +599,10 @@ app.get("/:id/usage", requireAuth, async (c) => {
     if (apiKey && apiKey.organizationId === key.organization_id) {
       hasAccess = true;
     } else if (user) {
-      const { data: membership } = await supabase
-        .schema("core")
-        .from("team_members")
-        .select("team:teams(organization_id)")
-        .eq("user_id", user.id)
-        .limit(1)
-        .single();
-
-      // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
-      const userOrgId = (membership?.team as any)?.organization_id;
-      if (userOrgId && userOrgId === key.organization_id) {
-        hasAccess = true;
-      }
+      // A member of the key's organization, through any team (#1037).
+      hasAccess = (await callerOrgRoles(supabase, user.id)).has(
+        key.organization_id,
+      );
     }
 
     if (!hasAccess) {

@@ -534,16 +534,19 @@ Deno.test("PATCH /v1/api-keys/:id - returns 403 if not org admin", async () => {
     user_type: "job_seeker",
   });
 
-  // Update user to be in same org but as job seeker
+  // Move the user's (plain member) membership into the admin's team, so they
+  // are genuinely in the same organization. This used to update
+  // team_members.organization_id and .user_type, columns that do not exist:
+  // the update failed silently, the user stayed in their own org, and the
+  // test passed only because the route resolved one arbitrary membership
+  // (#1037). Assert the move took.
   const adminClient = createAdminClient();
-  await adminClient
+  const { error: moveError } = await adminClient
     .schema("core")
     .from("team_members")
-    .update({
-      organization_id: admin.organization.id,
-      user_type: "job_seeker",
-    })
+    .update({ team_id: admin.team.id })
     .eq("user_id", user.userId);
+  assertEquals(moveError, null, `moving the member failed: ${moveError?.message}`);
 
   const apiKey = await createTestApiKey({
     organization_id: admin.organization.id,
@@ -661,16 +664,19 @@ Deno.test("DELETE /v1/api-keys/:id - returns 403 if not org admin", async () => 
     user_type: "job_seeker",
   });
 
-  // Update user to be in same org as job seeker
+  // Move the user's (plain member) membership into the admin's team, so they
+  // are genuinely in the same organization. This used to update
+  // team_members.organization_id and .user_type, columns that do not exist:
+  // the update failed silently, the user stayed in their own org, and the
+  // test passed only because the route resolved one arbitrary membership
+  // (#1037). Assert the move took.
   const adminClient = createAdminClient();
-  await adminClient
+  const { error: moveError } = await adminClient
     .schema("core")
     .from("team_members")
-    .update({
-      organization_id: admin.organization.id,
-      user_type: "job_seeker",
-    })
+    .update({ team_id: admin.team.id })
     .eq("user_id", user.userId);
+  assertEquals(moveError, null, `moving the member failed: ${moveError?.message}`);
 
   const apiKey = await createTestApiKey({
     organization_id: admin.organization.id,
