@@ -11,6 +11,7 @@ import {
   authMiddleware,
   requireRole,
 } from "../middleware/auth.ts";
+import { emailsByUserId } from "../../_shared/user-emails.ts";
 
 const app = new Hono<ApiEnv>();
 app.use("*", authMiddleware);
@@ -467,61 +468,6 @@ app.patch(
 // ---------------------------------------------------------------------------
 // Admin checks, disputes, metrics, access log (for AdminBackgroundChecksPage)
 // ---------------------------------------------------------------------------
-
-/** Shape the email lookup needs. Kept loose to match the other API libs: this
- *  runs under Deno with an untyped Supabase client (see #477). */
-// deno-lint-ignore no-explicit-any
-type SupabaseLike = any;
-
-/**
- * Emails for a set of user ids, from `auth.users`.
- *
- * These routes used to select `email` directly off `core.users`, which has no
- * such column — email lives in `auth.users`. PostgREST reported it as
- * `column users_1.email does not exist` and every admin background-check
- * endpoint returned 500, so the admin screening queue could never load a row
- * (#635).
- *
- * Dropping the field would have been the smaller change, but an admin
- * reviewing a screening needs to be able to contact the subject, and
- * `AdminCheckWorker` in the SDK declares `email` — so the shape is preserved
- * and the value fetched from where it actually lives.
- *
- * One extra round trip per request rather than per row: ids are collected
- * first and looked up in a single `in` query. Requires the service-role
- * client; `auth.users` is not reachable through a request-scoped one.
- */
-async function emailsByUserId(
-  supabaseAdmin: SupabaseLike,
-  ids: Array<string | null | undefined>,
-): Promise<Map<string, string | null>> {
-  const unique = [...new Set(ids.filter((id): id is string => Boolean(id)))];
-  if (unique.length === 0) return new Map();
-
-  // The Admin Auth API, not a PostgREST query: the `auth` schema is not
-  // exposed through PostgREST, so `.schema("auth").from("users")` fails and
-  // every email comes back null — a quieter version of the same bug.
-  //
-  // `getUserById` per id rather than `listUsers`, which is the pattern in
-  // routes/auth.ts: that one pages through EVERY user in the project to find
-  // one address. Here the ids are already known and bounded by the page size,
-  // so targeted lookups are both cheaper and correct as the user table grows.
-  const entries = await Promise.all(
-    unique.map(async (id) => {
-      const { data, error } = await supabaseAdmin.auth.admin.getUserById(id);
-      if (error) {
-        // A missing email is a degraded row, not a failed request: the queue
-        // is still usable without it, and failing the whole call would
-        // reintroduce exactly the outage this fixes.
-        console.error(`Failed to resolve email for ${id}:`, error.message);
-        return [id, null] as const;
-      }
-      return [id, (data?.user?.email as string | undefined) ?? null] as const;
-    }),
-  );
-
-  return new Map(entries);
-}
 
 function mapWorker(
   rec: Record<string, unknown> | null,
