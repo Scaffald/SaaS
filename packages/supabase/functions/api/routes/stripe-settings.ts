@@ -36,11 +36,18 @@ const settingsSelect = [
 const app = new Hono<ApiEnv>();
 app.use("*", requireRole("office", "platform"));
 
-app.get("/", async (c) => {
-  const supabase = c.get("supabase");
-  if (!supabase) return c.json({ error: "Unauthorized" }, 401);
+// core.stripe_settings is granted to service_role only, and that is right for
+// a table holding payment configuration. Every read and write here used the
+// caller's client, so all of them answered `permission denied for table
+// stripe_settings` and the screen showed a blank, "not configured" form (#1018).
+// They run through supabaseAdmin, which requireRole above sets for office
+// callers — never through a widened grant.
 
-  const { data, error } = await supabase
+app.get("/", async (c) => {
+  const supabaseAdmin = c.get("supabaseAdmin");
+  if (!supabaseAdmin) return c.json({ error: "Unauthorized" }, 401);
+
+  const { data, error } = await supabaseAdmin
     .schema("core")
     .from("stripe_settings")
     .select(settingsSelect)
@@ -78,12 +85,12 @@ app.put(
     }),
   ),
   async (c) => {
-    const supabase = c.get("supabase");
+    const supabaseAdmin = c.get("supabaseAdmin");
     const user = c.get("user");
-    if (!supabase) return c.json({ error: "Unauthorized" }, 401);
+    if (!supabaseAdmin) return c.json({ error: "Unauthorized" }, 401);
 
     const { publishableKey } = c.req.valid("json");
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .schema("core")
       .from("stripe_settings")
       .update({
@@ -111,12 +118,12 @@ app.put(
     }),
   ),
   async (c) => {
-    const supabase = c.get("supabase");
+    const supabaseAdmin = c.get("supabaseAdmin");
     const user = c.get("user");
-    if (!supabase) return c.json({ error: "Unauthorized" }, 401);
+    if (!supabaseAdmin) return c.json({ error: "Unauthorized" }, 401);
 
     const { testMode } = c.req.valid("json");
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .schema("core")
       .from("stripe_settings")
       .update({
@@ -168,7 +175,7 @@ app.put(
       }, 500);
     }
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .schema("core")
       .from("stripe_settings")
       .update({
@@ -231,7 +238,7 @@ app.put(
       }, 500);
     }
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .schema("core")
       .from("stripe_settings")
       .update({
@@ -315,7 +322,7 @@ app.post("/test-connection", async (c) => {
       : String(networkError);
   }
 
-  await supabase
+  await supabaseAdmin
     .schema("core")
     .from("stripe_settings")
     .update({
