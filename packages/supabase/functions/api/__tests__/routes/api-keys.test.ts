@@ -546,7 +546,11 @@ Deno.test("PATCH /v1/api-keys/:id - returns 403 if not org admin", async () => {
     .from("team_members")
     .update({ team_id: admin.team.id })
     .eq("user_id", user.userId);
-  assertEquals(moveError, null, `moving the member failed: ${moveError?.message}`);
+  assertEquals(
+    moveError,
+    null,
+    `moving the member failed: ${moveError?.message}`,
+  );
 
   const apiKey = await createTestApiKey({
     organization_id: admin.organization.id,
@@ -676,7 +680,11 @@ Deno.test("DELETE /v1/api-keys/:id - returns 403 if not org admin", async () => 
     .from("team_members")
     .update({ team_id: admin.team.id })
     .eq("user_id", user.userId);
-  assertEquals(moveError, null, `moving the member failed: ${moveError?.message}`);
+  assertEquals(
+    moveError,
+    null,
+    `moving the member failed: ${moveError?.message}`,
+  );
 
   const apiKey = await createTestApiKey({
     organization_id: admin.organization.id,

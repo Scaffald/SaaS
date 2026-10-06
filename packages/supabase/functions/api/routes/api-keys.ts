@@ -162,7 +162,10 @@ app.post("/", requireAuth, async (c) => {
     if (input.organization_id) {
       if (!roles.has(input.organization_id)) {
         return c.json(
-          { error: "Forbidden", message: "You do not belong to that organization" },
+          {
+            error: "Forbidden",
+            message: "You do not belong to that organization",
+          },
           403,
         );
       }
@@ -181,7 +184,8 @@ app.post("/", requireAuth, async (c) => {
       return c.json(
         {
           error: "Bad Request",
-          message: "You belong to more than one organization; pass organization_id",
+          message:
+            "You belong to more than one organization; pass organization_id",
         },
         400,
       );
