@@ -21,11 +21,36 @@ import {
 
 /**
  * Benchmark Configuration
+ *
+ * Env-overridable so CI can run a smaller sample than a local investigation
+ * wants (#987). The defaults below took 389s against a local stack, and the
+ * `benchmark` job in api-tests.yml has ten minutes for checkout, install,
+ * `supabase start` AND this — so with the defaults it cannot finish, which is
+ * the remaining half of "the benchmark has never run".
+ *
+ * Note when reading the output: each Deno.bench *iteration* performs
+ * `measurementRuns` requests, so a reported time/iter of ~9s at the default
+ * 100 is ~90ms per request, not a nine-second response. The per-request
+ * averages are logged alongside.
  */
+function envInt(name: string, fallback: number): number {
+  const raw = Deno.env.get(name);
+  if (!raw) return fallback;
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
 const BENCHMARK_CONFIG = {
-  warmupRuns: 10, // Number of warmup requests before measurement
-  measurementRuns: 100, // Number of requests to measure
-  concurrent: 10, // Number of concurrent requests
+  warmupRuns: envInt("BENCH_WARMUP_RUNS", 10), // requests before measurement
+  measurementRuns: envInt("BENCH_MEASUREMENT_RUNS", 100), // requests measured
+  concurrent: envInt("BENCH_CONCURRENT", 10), // parallel requests
+  // Samples Deno.bench takes per benchmark. Without `n` deno keeps sampling
+  // until it is statistically confident, which is why cutting
+  // measurementRuns alone did not shorten the run — it just took more
+  // samples. Fixing `n` is what makes the total work predictable, and
+  // predictable is what CI needs.
+  iterations: envInt("BENCH_ITERATIONS", 10),
+  benchWarmup: envInt("BENCH_SAMPLE_WARMUP", 2),
 };
 
 /**
@@ -87,6 +112,8 @@ Deno.bench({
   name: "REST: GET /v1/jobs (paginated list)",
   group: "jobs-list",
   baseline: true,
+  n: BENCHMARK_CONFIG.iterations,
+  warmup: BENCHMARK_CONFIG.benchWarmup,
   async fn() {
     markTestStart();
 
@@ -125,6 +152,8 @@ Deno.bench({
   name: "REST: GET /v1/jobs/:id (single job)",
   group: "job-details",
   baseline: true,
+  n: BENCHMARK_CONFIG.iterations,
+  warmup: BENCHMARK_CONFIG.benchWarmup,
   async fn() {
     markTestStart();
 
@@ -162,6 +191,8 @@ Deno.bench({
   name: "REST: POST /v1/applications (create)",
   group: "application-create",
   baseline: true,
+  n: BENCHMARK_CONFIG.iterations,
+  warmup: BENCHMARK_CONFIG.benchWarmup,
   async fn() {
     markTestStart();
 
@@ -217,6 +248,8 @@ Deno.bench({
   name: "REST: Concurrent GET /v1/jobs (10 parallel)",
   group: "concurrency",
   baseline: true,
+  n: BENCHMARK_CONFIG.iterations,
+  warmup: BENCHMARK_CONFIG.benchWarmup,
   async fn() {
     markTestStart();
 
@@ -267,6 +300,8 @@ Deno.bench({
   name: "REST: GET /v1/jobs with multiple filters",
   group: "filtered-queries",
   baseline: true,
+  n: BENCHMARK_CONFIG.iterations,
+  warmup: BENCHMARK_CONFIG.benchWarmup,
   async fn() {
     markTestStart();
 
