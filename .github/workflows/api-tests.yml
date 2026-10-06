@@ -379,6 +379,10 @@ jobs:
           BENCH_MEASUREMENT_RUNS: '20'
           BENCH_ITERATIONS: '3'
           BENCH_SAMPLE_WARMUP: '1'
+          # deno bench colourises even when its stdout is a pipe, and this file
+          # is pasted verbatim into a PR comment — the first run of this fix
+          # posted figures wrapped in raw `^[[0m^[[38;5;245m` escapes.
+          NO_COLOR: '1'
         run: |
           deno bench --allow-all --config=functions/api/deno.json \
             functions/api/__tests__/benchmarks/rest-vs-trpc.bench.ts > benchmark-results.txt
