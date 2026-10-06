@@ -7,9 +7,18 @@
 import { Hono } from "hono";
 import { createClient } from "@supabase/supabase-js";
 import type Stripe from "stripe";
-import type { ApiEnv } from "../middleware/auth.ts";
+import { type ApiEnv, requireRole } from "../middleware/auth.ts";
 
 const paymentsRouter = new Hono<ApiEnv>();
+
+// Office tooling only. Every handler below reads or writes through the service
+// role, which bypasses RLS, and until this guard checked nothing but "signed
+// in": a worker in no organization read platform-wide payment analytics and
+// any organization's credits and payment method by id, and transactions were
+// shielded only by a broken embed (#1041, #1019). Every caller is an office
+// screen (features/office/payments/*, the office CMS organization form).
+// Default deny: a non-office path needs its own reviewed route.
+paymentsRouter.use("*", requireRole("office", "platform"));
 
 // Pinned deliberately: this integration is written against the 2025-11-17
 // response shapes. stripe@20.4.1 types `apiVersion` as `LatestApiVersion`
@@ -247,7 +256,7 @@ paymentsRouter.get("/transactions", async (c) => {
     .schema("core")
     .from("payment_transactions")
     .select(
-      "*,organization:organizations(id,name),user:profiles(id,display_name)",
+      "*,organization:organizations(id,name),user:users!payment_transactions_user_id_fkey(id,display_name)",
       { count: "exact" },
     )
     .order("created_at", { ascending: false })
@@ -310,7 +319,7 @@ paymentsRouter.get("/transactions/export", async (c) => {
     .schema("core")
     .from("payment_transactions")
     .select(
-      "*,organization:organizations(id,name),user:profiles(id,display_name)",
+      "*,organization:organizations(id,name),user:users!payment_transactions_user_id_fkey(id,display_name)",
     )
     .order("created_at", { ascending: false });
 
@@ -650,7 +659,7 @@ paymentsRouter.get("/receipts/:transactionId", async (c) => {
     .schema("core")
     .from("payment_transactions")
     .select(
-      "*,organization:organizations(id,name,address),user:profiles(id,display_name)",
+      "*,organization:organizations(id,name,address),user:users!payment_transactions_user_id_fkey(id,display_name)",
     )
     .eq("id", transactionId)
     .maybeSingle();
