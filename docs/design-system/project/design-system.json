@@ -1,0 +1,64 @@
+{
+  "v": 3,
+  "layout": "files",
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-06T08:03:50.443Z"
+  },
+  "title": "Scaffald",
+  "namespace": "Scaffald",
+  "libraries": [],
+  "sections": {},
+  "groups": [
+    "Logos"
+  ],
+  "assetGroups": {
+    "Logos": {
+      "name": "Logos",
+      "tile": "l",
+      "order": [
+        "scaffald-mark.svg",
+        "scaffald-wordmark.svg",
+        "scaffald-wordmark.png",
+        "scaffald-app-icon.png"
+      ],
+      "files": {
+        "scaffald-mark.svg": {
+          "name": "scaffald-mark.svg",
+          "blob": "b7cc3fbcbf044c3a6dcd7da56625da86",
+          "size": 475,
+          "type": "image/svg+xml"
+        },
+        "scaffald-wordmark.svg": {
+          "name": "scaffald-wordmark.svg",
+          "blob": "aa9ccf0a4941adb712d7cf29487941cc",
+          "size": 9103,
+          "type": "image/svg+xml"
+        },
+        "scaffald-wordmark.png": {
+          "name": "scaffald-wordmark.png",
+          "blob": "0a45ae5dc10da44c1ff8645e6cb095ee",
+          "size": 85202,
+          "type": "image/png"
+        },
+        "scaffald-app-icon.png": {
+          "name": "scaffald-app-icon.png",
+          "blob": "026c9fa3653ea1a1529c0658c3e250af",
+          "size": 96350,
+          "type": "image/png"
+        }
+      }
+    }
+  },
+  "blobs": {},
+  "docs": {
+    "readme": "project/README.md",
+    "sections": []
+  },
+  "lastChange": {
+    "by": "Clay",
+    "at": "2026-10-06T08:03:50.443Z",
+    "via": "GitHub · Scaffald/SaaS@9ef9b151c",
+    "note": "First sync from packages/ui tokens, fonts and ten core components (static previews)"
+  }
+}

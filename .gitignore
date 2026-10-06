@@ -137,3 +137,6 @@ infra/aws/dist/
 # The SCF prototype (Claude Design). Its home is Scaffald/Prototype; sync it
 # there, not here. Reference screenshots live in docs/plans/redesign/shots/.
 /redesign/
+
+# Design System artifact publish folder (docs/design-system/build.mjs)
+tmp-design-system/

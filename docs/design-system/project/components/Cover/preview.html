@@ -1,0 +1,48 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scaffald</title>
+<style>
+  html, body { margin:0; height:100%; }
+  body { background:var(--bg-default); color:var(--text-primary); font-family:var(--font-sans); overflow:hidden; }
+  .cover { position:relative; height:288px; overflow:hidden; }
+  .art { position:absolute; top:0; left:480px; width:480px; height:288px; overflow:hidden; }
+  .art svg { display:block; width:480px; height:288px; }
+  .brand { fill:var(--primary-600); }
+  .tint { fill:var(--bg-selected); }
+  .ink { fill:var(--text-primary); }
+  .amber { fill:var(--warning-700); }
+  .blk { rx:var(--radius-xs); }
+  .rule { stroke:var(--fg-emphasis); stroke-width:1; fill:none; }
+  .words { position:absolute; left:var(--space-24); bottom:var(--space-24); max-width:440px; }
+  .name { margin:0; font-family:var(--font-display); font-weight:600; font-size:96px; line-height:.9; letter-spacing:-0.01em; color:var(--text-primary); }
+  .tag { margin:var(--space-8) 0 0 var(--space-4); font-size:14px; line-height:22px; letter-spacing:-0.15px; color:var(--text-tertiary); }
+</style>
+</head>
+<body>
+<div class="cover">
+<div class="art" aria-hidden="true">
+<svg viewBox="0 0 480 288" width="480" height="288">
+<!--
+  blocks      primary-600 128×240 bled off the top (the one accent, largest) · bg-selected 128×160 (the tint that marks a selected row) · text-primary 176×176 bled off the right (ink in light, paper in dark) · warning-700 64×32 once, small, because amber only ever means "act on this" — ≈36% of 960×288
+  arrangement one tall teal slab with satellites, bottoms on one line space-16 above the edge, space-16 gutters — a scaffold bay: standards, ledgers, a deck
+  pattern     a FEW hairline rules, from "separate with hairlines and whitespace first" and the mark itself (a scaffold frame): three ledgers at a space-64 pitch and two standards in the gutters, border-width-thin in fg-emphasis, crossing the blocks
+  scales      sides in space-16 multiples (32 · 64 · 128 · 160 · 176 · 240); gutters space-16; rule pitch space-64; corners radius-xs (4), the near-square interface step 2
+-->
+<rect class="brand blk" x="16" y="-16" width="128" height="240" rx="4"/>
+<rect class="amber blk" x="16" y="240" width="64" height="32" rx="4"/>
+<rect class="tint blk" x="160" y="112" width="128" height="160" rx="4"/>
+<rect class="ink blk" x="304" y="96" width="192" height="176" rx="4"/>
+<path class="rule" d="M16 64.5H480M16 128.5H480M16 192.5H480"/>
+<path class="rule" d="M152.5 0V272M296.5 0V272"/>
+</svg>
+</div>
+<div class="words">
+<h1 class="name">Scaffald</h1>
+<p class="tag">Hiring for the construction trades.</p>
+</div>
+</div>
+</body>
+</html>
