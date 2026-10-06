@@ -58,7 +58,9 @@ export async function frameFacts(page) {
     const inScroller = (el) => {
       for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
         const ox = getComputedStyle(p).overflowX
-        if ((ox === 'auto' || ox === 'scroll') && p.scrollWidth > p.clientWidth + 1) return true
+        // Any horizontal scroller counts, however little it overflows: a tab
+        // strip 1px wider than a 390px phone is sub-pixel rounding, not a cut.
+        if (ox === 'auto' || ox === 'scroll') return true
       }
       return false
     }
@@ -67,7 +69,7 @@ export async function frameFacts(page) {
       if (el.children.length > 0 && !el.textContent?.trim()) continue
       const r = el.getBoundingClientRect()
       if (r.width === 0 || r.height === 0 || r.bottom < 0 || r.top > innerHeight) continue
-      if (r.right <= vw + 1 || r.left >= vw) continue
+      if (r.right <= vw + 2 || r.left >= vw) continue
       if (getComputedStyle(el).visibility === 'hidden' || inScroller(el)) continue
       // Report the innermost offender only; its ancestors are the same finding.
       if (clipped.some((c) => el.contains(c.el))) continue
