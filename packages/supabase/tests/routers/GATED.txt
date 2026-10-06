@@ -43,6 +43,7 @@ office-settings-rest.test.ts
 office.test.ts
 onet.test.ts
 organizations.test.ts
+payments-rest.test.ts
 payments-settlement.test.ts
 prerequisites.test.ts
 resume.test.ts
