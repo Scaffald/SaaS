@@ -19,6 +19,7 @@ import {
   ensureCanRequestForWorker,
   loadStripeClient,
 } from "../../_shared/id-verification-api.ts";
+import { emailsByUserId } from "../../_shared/user-emails.ts";
 
 const requestSchema = z.object({
   workerUserId: z.string().uuid(),
@@ -651,8 +652,8 @@ app.get(
       id, worker_user_id, initiated_by_user_id, initiated_by_org_id,
       payment_intent_id, price_cents, paid_at, badge_status, badge_expires_at,
       verification_level, verified_at, persona_status, created_at,
-      worker:users!id_verifications_worker_user_id_fkey(id, display_name, email, avatar_path),
-      initiator:users!id_verifications_initiated_by_user_id_fkey(id, display_name, email),
+      worker:users!id_verifications_worker_user_id_fkey(id, display_name, avatar_path),
+      initiator:users!id_verifications_initiated_by_user_id_fkey(id, display_name),
       organization:organizations!id_verifications_initiated_by_org_id_fkey(id, name)
     `,
       )
@@ -680,6 +681,17 @@ app.get(
     };
 
     const rows = (data ?? []) as RowRecord[];
+    // core.users has no email; it lives in auth.users. Embedding it failed the
+    // whole list with `column users_1.email does not exist` (#1020). Resolve
+    // the workers' emails for this page and put them where the row expects.
+    const workerEmails = await emailsByUserId(
+      supabaseAdmin,
+      rows.map((r) => r.worker_user_id as string | null | undefined),
+    );
+    for (const row of rows) {
+      const email = workerEmails.get(row.worker_user_id as string) ?? undefined;
+      if (row.worker && email) row.worker = { ...row.worker, email };
+    }
     const now = Date.now();
     type DerivedStatus = "active" | "expired" | "revoked";
 

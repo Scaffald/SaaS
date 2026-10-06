@@ -35,6 +35,7 @@ auth.test.ts
 ccpa.test.ts
 employers.test.ts
 feedback.test.ts
+id-verification-list-rest.test.ts
 legal-agreements-rest.test.ts
 map.test.ts
 office-communities-rest.test.ts
