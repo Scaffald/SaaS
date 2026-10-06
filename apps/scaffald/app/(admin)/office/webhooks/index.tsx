@@ -8,7 +8,7 @@ import { Link, useRouter } from "expo-router";
 import { Pressable, ScrollView } from "react-native";
 import { useWebhooks } from "@scf/core/utils/webhooks-sdk-hooks";
 import { OfficeLayout } from "@scf/core/components/layouts/OfficeLayout";
-import { Button, Card, Row, Stack, Text } from "@scaffald/ui";
+import { Button, Card, ErrorState, Row, Stack, Text } from "@scaffald/ui";
 import { ROUTES, buildPath } from "@scf/core/constants/routes";
 import type { Webhook } from "@scaffald/sdk/types/webhooks-management";
 
@@ -17,7 +17,7 @@ export default function WebhooksPage() {
   const [selectedWebhook, setSelectedWebhook] = useState<string | null>(null);
 
   // Fetch webhooks
-  const { data: webhooksData, isLoading } = useWebhooks();
+  const { data: webhooksData, isLoading, isError, error, refetch } = useWebhooks();
 
   const webhooks = webhooksData?.data ?? [];
 
@@ -63,6 +63,15 @@ export default function WebhooksPage() {
               <Stack padding="xl" align="center" justify="center">
                 <Text color="$gray11">Loading webhooks...</Text>
               </Stack>
+            ) : isError ? (
+              // A failed load is not "no webhooks" — the 500 behind #1016
+              // read as "Create your first webhook" for every office (#1021).
+              <ErrorState
+                title="Couldn’t load webhooks"
+                description="Your webhooks did not load. Nothing here does not mean you have none."
+                error={error as Error}
+                retry={() => refetch()}
+              />
             ) : webhooks.length === 0 ? (
               <Card padding="xl">
                 <Stack align="center" gap={16}>

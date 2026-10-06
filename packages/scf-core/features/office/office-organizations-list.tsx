@@ -110,6 +110,7 @@ export function OfficeOrganizationsList() {
   const {
     data: requestData,
     isLoading: isRequestsLoading,
+    isError: isRequestsError,
     isRefetching: isRequestsRefetching,
     refetch: refetchRequests,
   } = useOfficeOrganizationRequests({ status: 'pending', limit: 25 })
@@ -344,6 +345,17 @@ export function OfficeOrganizationsList() {
                 <Row justify="center" paddingVertical={16}>
                   <Spinner variant="ios" size="lg" />
                 </Row>
+              ) : isRequestsError ? (
+                // Not "no requests": the 500 behind #1017 said "Check back
+                // soon!" while real requests waited unreviewed (#1021).
+                <Stack gap={8}>
+                  <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                    Couldn’t load pending requests — there may be some waiting.
+                  </Text>
+                  <Button size="sm" variant="outline" onPress={() => refetchRequests()}>
+                    Retry
+                  </Button>
+                </Stack>
               ) : pendingRequests.length === 0 ? (
                 <Text style={{ color: colors.text[theme].secondary }}>
                   No pending organization requests. Check back soon!
