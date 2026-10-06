@@ -32,6 +32,7 @@
 
 auth-session-regression.test.ts
 auth.test.ts
+background-checks-admin-rest.test.ts
 ccpa.test.ts
 employers.test.ts
 feedback.test.ts
