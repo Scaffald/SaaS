@@ -45,10 +45,6 @@ type OrganizationRequestRow = {
   slug: string
   website: string | null
   notes: string | null
-  message?: string | null
-  personal_note?: string | null
-  viewed_at?: string | null
-  resent_count?: number | null
   status: 'pending' | 'approved' | 'rejected'
   metadata: Record<string, unknown>
   created_at: string
@@ -367,16 +363,6 @@ export function OfficeOrganizationsList() {
                           <Paragraph style={{ color: colors.text[theme].secondary }}>
                             Notes: {request.notes}
                           </Paragraph>
-                        ) : null}
-                        {request.message ? (
-                          <Paragraph style={{ color: colors.text[theme].secondary }}>
-                            Message: {request.message}
-                          </Paragraph>
-                        ) : null}
-                        {typeof request.resent_count === 'number' && request.resent_count > 0 ? (
-                          <Text style={{ color: colors.text[theme].secondary }}>
-                            Resent {request.resent_count} time(s)
-                          </Text>
                         ) : null}
                       </Stack>
                       <Row gap={8}>

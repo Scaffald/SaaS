@@ -105,8 +105,12 @@ app.get(
     let query = supabaseAdmin
       .schema("core")
       .from("organization_requests")
+      // Only organization_requests' own columns. This used to also select
+      // message, personal_note, viewed_at and resent_count, which belong to
+      // core.invites (migration 120) — every call answered 500 and the office
+      // saw "No pending organization requests" (#1017).
       .select(
-        "id, name, slug, website, notes, message, personal_note, viewed_at, resent_count, status, metadata, created_at, created_by_user_id, reviewed_at, reviewed_by_user_id, rejection_reason, organization_id",
+        "id, name, slug, website, notes, status, metadata, created_at, created_by_user_id, reviewed_at, reviewed_by_user_id, rejection_reason, organization_id",
       )
       .order("created_at", { ascending: true })
       .limit(limit);
