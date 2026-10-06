@@ -49,13 +49,13 @@ export function CommunityCard({
     <Pill
       label="Joined"
       bgColor={t === 'dark' ? colors.success[900] : colors.success[100]}
-      textColor={colors.success[600]}
+      textColor={t === 'dark' ? colors.success[300] : colors.success[600]}
     />
   ) : isVerified ? (
     <Pill
       label="Verified"
       bgColor={t === 'dark' ? colors.success[900] : colors.success[100]}
-      textColor={colors.success[600]}
+      textColor={t === 'dark' ? colors.success[300] : colors.success[600]}
     />
   ) : undefined
 

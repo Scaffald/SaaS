@@ -556,7 +556,7 @@ function MobileIdentityRow({
           <Text
             style={StyleSheet.flatten([
               styles.accountMode,
-              { color: colors.primary[600], fontWeight: '600' },
+              { color: colors.text[theme].emphasis, fontWeight: '600' },
             ])}
           >
             Edit profile

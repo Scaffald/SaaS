@@ -49,43 +49,52 @@ export function CommunityMembersPage({ slug }: Props) {
       ) : (
         <Stack gap={8}>
           {filtered.map((member) => (
-              <Row
-                key={member.id}
-                align="center"
-                gap={12}
-                style={{
-                  padding: 12,
-                  borderRadius: 7,
-                  borderWidth: 1,
-                  borderColor: colors.border[t].default,
-                }}
-              >
-                <Avatar
-                  src={member.avatar_url ?? undefined}
-                  initials={member.display_name?.[0] || '?'}
-                  size={32}
-                />
-                <Stack style={{ flex: 1 }} gap={2}>
-                  <Row align="center" gap={8}>
-                    <Text style={{ fontWeight: '600' }}>{member.display_name || 'Anonymous'}</Text>
-                    {member.is_verified && (
-                      <Stack
+            <Row
+              key={member.id}
+              align="center"
+              gap={12}
+              style={{
+                padding: 12,
+                borderRadius: 7,
+                borderWidth: 1,
+                borderColor: colors.border[t].default,
+              }}
+            >
+              <Avatar
+                src={member.avatar_url ?? undefined}
+                initials={member.display_name?.[0] || '?'}
+                size={32}
+              />
+              <Stack style={{ flex: 1 }} gap={2}>
+                <Row align="center" gap={8}>
+                  <Text style={{ fontWeight: '600' }}>{member.display_name || 'Anonymous'}</Text>
+                  {member.is_verified && (
+                    <Stack
+                      style={{
+                        paddingHorizontal: 6,
+                        paddingVertical: 1,
+                        borderRadius: 4,
+                        backgroundColor: t === 'dark' ? colors.success[900] : colors.success[100],
+                      }}
+                    >
+                      <Text
                         style={{
-                          paddingHorizontal: 6,
-                          paddingVertical: 1,
-                          borderRadius: 4,
-                          backgroundColor: t === 'dark' ? colors.success[900] : colors.success[100],
+                          fontSize: 11,
+                          fontWeight: '500',
+                          color: t === 'dark' ? colors.success[300] : colors.success[600],
                         }}
                       >
-                        <Text style={{ fontSize: 11, fontWeight: '500', color: colors.success[600] }}>Verified</Text>
-                      </Stack>
-                    )}
-                  </Row>
-                  {member.headline && <Text style={{ color: colors.text[t].secondary }}>{member.headline}</Text>}
-                </Stack>
-              </Row>
-            )
-          )}
+                        Verified
+                      </Text>
+                    </Stack>
+                  )}
+                </Row>
+                {member.headline && (
+                  <Text style={{ color: colors.text[t].secondary }}>{member.headline}</Text>
+                )}
+              </Stack>
+            </Row>
+          ))}
         </Stack>
       )}
     </Stack>

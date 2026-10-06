@@ -10,13 +10,7 @@ import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import {
-  jobPalette,
-  workerPalette,
-  textSmall,
-  MetricRow,
-  Pill,
-} from '@scf/core/components/ui'
+import { jobPalette, workerPalette, textSmall, MetricRow, Pill } from '@scf/core/components/ui'
 
 /**
  * Internal job type definition with all enhanced fields
@@ -153,7 +147,11 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   const jPal = jobPalette[t]
   const wPal = workerPalette[t]
 
-  const payRange = formatPayRange(job.pay_range_min_cents, job.pay_range_max_cents, job.pay_range_type)
+  const payRange = formatPayRange(
+    job.pay_range_min_cents,
+    job.pay_range_max_cents,
+    job.pay_range_type
+  )
   const employmentType = formatEmploymentType(job.employment_type)
   const remoteOption = formatRemoteOption(job.remote_option)
   const postedTime = formatRelativeTime(job.posted_at || job.created_at)
@@ -178,9 +176,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
 
   const handleCardPress = () => {
     if (hasInquiryLink && applicationId) {
-      router.push(
-        buildPath(ROUTES.JOBS.APPLICATIONS.INQUIRY, { applicationId })
-      )
+      router.push(buildPath(ROUTES.JOBS.APPLICATIONS.INQUIRY, { applicationId }))
       return
     }
     router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))
@@ -189,122 +185,135 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   return (
     <Card padding="md" variant="glass" glassMaterial="thin" testID="job-card">
       <View style={{ position: 'relative' }}>
-      <Pressable
-        onPress={handleCardPress}
-        accessibilityRole="button"
-        accessibilityLabel={`View ${job.title}`}
-      >
-      <Stack gap={12}>
-        {/* Header */}
-        <Stack gap={8}>
-          {/* paddingRight reserves space for the absolutely-positioned save button */}
-          <Row justify="space-between" align="center" style={{ paddingRight: 36 }}>
-            <Stack flex={1} gap={4}>
-              <Text style={{ fontWeight: '600', fontSize: 15 }}>{job.title}</Text>
-              {job.organization && (
-                <MetricRow icon={Building2} text={job.organization.name} theme={t} />
-              )}
+        <Pressable
+          onPress={handleCardPress}
+          accessibilityRole="button"
+          accessibilityLabel={`View ${job.title}`}
+        >
+          <Stack gap={12}>
+            {/* Header */}
+            <Stack gap={8}>
+              {/* paddingRight reserves space for the absolutely-positioned save button */}
+              <Row justify="space-between" align="center" style={{ paddingRight: 36 }}>
+                <Stack flex={1} gap={4}>
+                  <Text style={{ fontWeight: '600', fontSize: 15 }}>{job.title}</Text>
+                  {job.organization && (
+                    <MetricRow icon={Building2} text={job.organization.name} theme={t} />
+                  )}
+                </Stack>
+                <Row gap={8} align="center">
+                  {hasApplied && (
+                    <Pill
+                      label="Applied"
+                      bgColor={t === 'dark' ? colors.success[900] : colors.success[100]}
+                      textColor={t === 'dark' ? colors.success[300] : colors.success[600]}
+                    />
+                  )}
+                  {matchData?.score !== null && matchData?.score !== undefined && (
+                    <Pill
+                      label={`${Math.round(matchData.score)}% Match`}
+                      bgColor={
+                        matchData.score >= 80
+                          ? colors.success[t === 'dark' ? 900 : 100]
+                          : matchData.score >= 60
+                            ? colors.yellow[t === 'dark' ? 900 : 100]
+                            : colors.error[t === 'dark' ? 900 : 100]
+                      }
+                      textColor={
+                        matchData.score >= 80
+                          ? colors.success[t === 'dark' ? 300 : 600]
+                          : matchData.score >= 60
+                            ? colors.yellow[t === 'dark' ? 300 : 600]
+                            : colors.error[t === 'dark' ? 300 : 600]
+                      }
+                    />
+                  )}
+                </Row>
+              </Row>
+
+              {/* Job metadata chips */}
+              <Row gap={8} wrap>
+                {job.location && <MetricRow icon={MapPin} text={job.location} theme={t} />}
+                {employmentType && <MetricRow icon={Briefcase} text={employmentType} theme={t} />}
+                {remoteOption && (
+                  <Pill
+                    label={remoteOption}
+                    bgColor={colors.primary[50]}
+                    textColor={colors.primary[700]}
+                  />
+                )}
+              </Row>
             </Stack>
-            <Row gap={8} align="center">
-              {hasApplied && (
-                <Pill label="Applied" bgColor={colors.success[100]} textColor={colors.success[600]} />
-              )}
-              {matchData?.score !== null && matchData?.score !== undefined && (
-                <Pill
-                  label={`${Math.round(matchData.score)}% Match`}
-                  bgColor={
-                    matchData.score >= 80
-                      ? colors.success[100]
-                      : matchData.score >= 60
-                        ? colors.yellow[100]
-                        : colors.error[100]
-                  }
-                  textColor={
-                    matchData.score >= 80
-                      ? colors.success[600]
-                      : matchData.score >= 60
-                        ? colors.yellow[600]
-                        : colors.error[600]
-                  }
+
+            {/* Description preview */}
+            {descriptionText && (
+              <Text style={{ ...textSmall, color: colors.text[t].secondary }} numberOfLines={3}>
+                {descriptionText}
+              </Text>
+            )}
+
+            {/* Pay range and posted time */}
+            <Row justify="space-between" align="center" wrap gap={8}>
+              {payRange ? (
+                <MetricRow
+                  icon={DollarSign}
+                  text={payRange}
+                  color={t === 'dark' ? colors.success[300] : colors.success[500]}
+                  theme={t}
                 />
+              ) : (
+                <Stack />
               )}
+              {postedTime && <MetricRow icon={Clock} text={postedTime} theme={t} />}
             </Row>
-          </Row>
 
-          {/* Job metadata chips */}
-          <Row gap={8} wrap>
-            {job.location && <MetricRow icon={MapPin} text={job.location} theme={t} />}
-            {employmentType && <MetricRow icon={Briefcase} text={employmentType} theme={t} />}
-            {remoteOption && (
-              <Pill label={remoteOption} bgColor={colors.primary[50]} textColor={colors.primary[700]} />
+            {/* Certifications and Skills */}
+            {((job.certifications && job.certifications.length > 0) ||
+              (job.skills && job.skills.length > 0)) && (
+              <Row gap={6} wrap>
+                {job.certifications?.slice(0, 3).map((cert) => (
+                  <Pill
+                    key={cert.id}
+                    label={cert.name}
+                    bgColor={wPal.pillBg}
+                    textColor={wPal.pillText}
+                  />
+                ))}
+                {job.certifications && job.certifications.length > 3 && (
+                  <Pill
+                    label={`+${job.certifications.length - 3} more`}
+                    bgColor={colors.bg[t].muted}
+                    textColor={colors.text[t].tertiary}
+                  />
+                )}
+                {job.skills?.slice(0, 2).map((skill) => {
+                  const label =
+                    skill.name ??
+                    (skill.taxonomy ? `${skill.taxonomy.toUpperCase()} ${skill.id}` : skill.id)
+                  if (!label) return null
+                  return (
+                    <Pill
+                      key={skill.id}
+                      label={label}
+                      bgColor={jPal.pillBg}
+                      textColor={jPal.pillText}
+                    />
+                  )
+                })}
+                {job.skills && job.skills.length > 2 && (
+                  <Pill
+                    label={`+${job.skills.length - 2} more`}
+                    bgColor={colors.bg[t].muted}
+                    textColor={colors.text[t].tertiary}
+                  />
+                )}
+              </Row>
             )}
-          </Row>
-        </Stack>
-
-        {/* Description preview */}
-        {descriptionText && (
-          <Text style={{ ...textSmall, color: colors.text[t].secondary }} numberOfLines={3}>
-            {descriptionText}
-          </Text>
-        )}
-
-        {/* Pay range and posted time */}
-        <Row justify="space-between" align="center" wrap gap={8}>
-          {payRange ? (
-            <MetricRow icon={DollarSign} text={payRange} color={colors.success[500]} theme={t} />
-          ) : (
-            <Stack />
-          )}
-          {postedTime && <MetricRow icon={Clock} text={postedTime} theme={t} />}
-        </Row>
-
-        {/* Certifications and Skills */}
-        {((job.certifications && job.certifications.length > 0) ||
-          (job.skills && job.skills.length > 0)) && (
-          <Row gap={6} wrap>
-            {job.certifications?.slice(0, 3).map((cert) => (
-              <Pill
-                key={cert.id}
-                label={cert.name}
-                bgColor={wPal.pillBg}
-                textColor={wPal.pillText}
-              />
-            ))}
-            {job.certifications && job.certifications.length > 3 && (
-              <Pill
-                label={`+${job.certifications.length - 3} more`}
-                bgColor={colors.bg[t].muted}
-                textColor={colors.text[t].tertiary}
-              />
-            )}
-            {job.skills?.slice(0, 2).map((skill) => {
-              const label =
-                skill.name ??
-                (skill.taxonomy ? `${skill.taxonomy.toUpperCase()} ${skill.id}` : skill.id)
-              if (!label) return null
-              return (
-                <Pill
-                  key={skill.id}
-                  label={label}
-                  bgColor={jPal.pillBg}
-                  textColor={jPal.pillText}
-                />
-              )
-            })}
-            {job.skills && job.skills.length > 2 && (
-              <Pill
-                label={`+${job.skills.length - 2} more`}
-                bgColor={colors.bg[t].muted}
-                textColor={colors.text[t].tertiary}
-              />
-            )}
-          </Row>
-        )}
-      </Stack>
-      </Pressable>
-      <View style={{ position: 'absolute', top: 0, right: 0 }}>
-        <SaveJobButton jobId={job.id} size={18} />
-      </View>
+          </Stack>
+        </Pressable>
+        <View style={{ position: 'absolute', top: 0, right: 0 }}>
+          <SaveJobButton jobId={job.id} size={18} />
+        </View>
       </View>
     </Card>
   )

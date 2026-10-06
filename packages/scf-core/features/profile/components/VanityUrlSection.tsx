@@ -264,7 +264,7 @@ export function VanityUrlSection() {
               >
                 <Text
                   style={{
-                    color: colors.primary[600],
+                    color: colors.text[theme].emphasis,
                     textDecorationLine: 'underline',
                     opacity: !!daysRemaining && daysRemaining > 0 ? 0.4 : 1,
                   }}

@@ -1,7 +1,7 @@
 {
   "$schema": "./literal-baseline.md",
   "note": "Ceilings for literal styling in packages/scf-core/features, per directory per pattern. They may only come down. Enforced by scripts/lint/check-literal-ratchet.mjs (pnpm lint:literals); lower them with --update. Do not raise a number to make a build pass — reach for the token instead. The map from each literal value to its token is in .radium/scaffald-ui.md.",
-  "measuredAt": "2026-10-05",
+  "measuredAt": "2026-10-06",
   "root": "packages/scf-core/features",
   "patterns": {
     "borderRadius": "borderRadius: <n> and borderRadius={<n>} — use the borderRadius tokens (2 / 4 / 7 / 999)",
@@ -131,7 +131,7 @@
     "profile": {
       "borderRadius": 65,
       "fontSize": 15,
-      "hexColor": 111
+      "hexColor": 40
     },
     "profile-import": {
       "hexColor": 3
