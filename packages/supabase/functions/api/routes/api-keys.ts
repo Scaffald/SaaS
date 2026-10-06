@@ -64,7 +64,10 @@ async function callerOrgRoles(
 }
 
 /** The organization a key belongs to, or null if there is no such key. */
-async function keyOrganizationId(keyId: string): Promise<string | null> {
+async function keyOrganizationId(
+  keyId: string | undefined,
+): Promise<string | null> {
+  if (!keyId) return null;
   const { data } = await adminClient()
     .schema("core")
     .from("api_keys")
