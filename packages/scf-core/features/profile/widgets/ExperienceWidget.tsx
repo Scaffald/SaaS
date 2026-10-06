@@ -1,5 +1,5 @@
-import { ROUTES } from "@scf/core/constants/routes";
-import { useExperienceWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
+import { ROUTES } from '@scf/core/constants/routes'
+import { useExperienceWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import {
   Button,
   DashboardWidget,
@@ -14,18 +14,18 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from "@scaffald/ui";
-import { Briefcase } from "lucide-react-native";
-import { useRouter } from "expo-router";
-import { colors } from "@scaffald/ui/tokens";
-import { workerPalette } from "@scf/core/components/ui/styles";
-import { Pill } from "@scf/core/components/ui/CardPrimitives";
-import { formatDate } from "../utils/date-formatting";
-import type { ProfileWidgetProps } from "./types";
-import { useIsProfileOwner } from "./useIsProfileOwner";
-import type { ExperienceWidgetEntry } from "@scaffald/sdk";
+} from '@scaffald/ui'
+import { Briefcase } from 'lucide-react-native'
+import { useRouter } from 'expo-router'
+import { colors } from '@scaffald/ui/tokens'
+import { workerPalette } from '@scf/core/components/ui/styles'
+import { Pill } from '@scf/core/components/ui/CardPrimitives'
+import { formatDate } from '../utils/date-formatting'
+import type { ProfileWidgetProps } from './types'
+import { useIsProfileOwner } from './useIsProfileOwner'
+import type { ExperienceWidgetEntry } from '@scaffald/sdk'
 
-type UserExperience = ExperienceWidgetEntry;
+type UserExperience = ExperienceWidgetEntry
 
 /**
  * ExperienceWidget
@@ -38,19 +38,19 @@ type UserExperience = ExperienceWidgetEntry;
 export function ExperienceWidget({
   userId,
   showEdit = false,
-  variant = "full",
+  variant = 'full',
 }: ProfileWidgetProps) {
-  const router = useRouter();
-  const { theme } = useThemeContext();
-  const t = theme === "dark" ? "dark" : "light" as const;
-  const pal = workerPalette[t];
-  const isOwner = useIsProfileOwner(userId);
+  const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
+  const pal = workerPalette[t]
+  const isOwner = useIsProfileOwner(userId)
   const { data, isLoading, error, refetch, isFetching } = useExperienceWidget(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     }
-  );
+  )
 
   if (isLoading) {
     return (
@@ -65,7 +65,7 @@ export function ExperienceWidget({
           ))}
         </SkeletonGroup>
       </DashboardWidget>
-    );
+    )
   }
 
   if (error) {
@@ -79,7 +79,7 @@ export function ExperienceWidget({
             color="primary"
             size="sm"
             onPress={() => {
-              void refetch();
+              void refetch()
             }}
             disabled={isFetching}
           >
@@ -87,12 +87,12 @@ export function ExperienceWidget({
           </Button>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
-  const experiences = data || [];
-  if (experiences.length === 0 && !isOwner) return null;
-  const showCompact = variant === "compact";
+  const experiences = data || []
+  if (experiences.length === 0 && !isOwner) return null
+  const showCompact = variant === 'compact'
 
   return (
     <DashboardWidget>
@@ -105,9 +105,7 @@ export function ExperienceWidget({
               <Button
                 variant="outline"
                 size="sm"
-                onPress={() =>
-                  router.push(ROUTES.PROFILE.EXPERIENCE.path)
-                }
+                onPress={() => router.push(ROUTES.PROFILE.EXPERIENCE.path)}
               >
                 Edit
               </Button>
@@ -123,9 +121,8 @@ export function ExperienceWidget({
             action={
               showEdit
                 ? {
-                    label: "Add Experience",
-                    onPress: () =>
-                      router.push(ROUTES.PROFILE.EXPERIENCE.path),
+                    label: 'Add Experience',
+                    onPress: () => router.push(ROUTES.PROFILE.EXPERIENCE.path),
                   }
                 : undefined
             }
@@ -149,7 +146,7 @@ export function ExperienceWidget({
                     </Text>
                     <Text style={{ color: colors.text[theme].secondary }}>-</Text>
                     <Text style={{ color: colors.text[theme].secondary }}>
-                      {exp.is_current ? "Present" : formatDate(exp.end_date)}
+                      {exp.is_current ? 'Present' : formatDate(exp.end_date)}
                     </Text>
                     {exp.is_current && (
                       <Pill label="Current" bgColor={pal.pillBg} textColor={pal.pillText} />
@@ -183,9 +180,7 @@ export function ExperienceWidget({
                   )}
 
                   {/* Separator between items */}
-                  {index < experiences.length - 1 && (
-                    <Separator style={{ marginVertical: 8 }} />
-                  )}
+                  {index < experiences.length - 1 && <Separator style={{ marginVertical: 8 }} />}
                 </Stack>
               ))}
 
@@ -193,9 +188,7 @@ export function ExperienceWidget({
             {showCompact && experiences.length > 3 && (
               <Text
                 style={{ color: pal.accent }}
-                onPress={() =>
-                  router.push(ROUTES.PROFILE.EXPERIENCE.path)
-                }
+                onPress={() => router.push(ROUTES.PROFILE.EXPERIENCE.path)}
               >
                 View all {experiences.length} positions →
               </Text>
@@ -204,5 +197,5 @@ export function ExperienceWidget({
         )}
       </Stack>
     </DashboardWidget>
-  );
+  )
 }

@@ -62,10 +62,7 @@ export function ProfilePage({
   usePageTitle({
     title: () => {
       if (typeof pageTitle === 'function') {
-        return (
-          pageTitle() ??
-          (matchedRoute ? t(matchedRoute.titleKey) : t(ROUTES.PROFILE.titleKey))
-        )
+        return pageTitle() ?? (matchedRoute ? t(matchedRoute.titleKey) : t(ROUTES.PROFILE.titleKey))
       }
       if (typeof pageTitle === 'string') {
         return pageTitle

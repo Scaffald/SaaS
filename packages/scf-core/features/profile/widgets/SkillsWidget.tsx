@@ -1,14 +1,14 @@
-import { ROUTES } from "@scf/core/constants/routes";
-import { useSoftSkills } from "@scf/core/utils/profile-skills-sdk-hooks";
-import { useSkillsWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
+import { ROUTES } from '@scf/core/constants/routes'
+import { useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
+import { useSkillsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import {
   SoftSkillsCategoryTabs,
   type SoftSkillCategory,
-} from "../components/SoftSkillsCategoryTabs";
-import type { SoftSkill } from "../components/SoftSkillsCategoryTabs";
-import { SoftSkillsHistoryTimeline } from "../components/SoftSkillsHistoryTimeline";
-import { SoftSkillsProgressionChart } from "../components/SoftSkillsProgressionChart";
-import { SoftSkillsRadarGrid } from "@scf/core/components/ui";
+} from '../components/SoftSkillsCategoryTabs'
+import type { SoftSkill } from '../components/SoftSkillsCategoryTabs'
+import { SoftSkillsHistoryTimeline } from '../components/SoftSkillsHistoryTimeline'
+import { SoftSkillsProgressionChart } from '../components/SoftSkillsProgressionChart'
+import { SoftSkillsRadarGrid } from '@scf/core/components/ui'
 import {
   Button,
   DashboardWidget,
@@ -20,28 +20,28 @@ import {
   SkeletonGroup,
   Tabs,
   useThemeContext,
-} from "@scaffald/ui";
-import { CheckCircle } from "lucide-react-native";
-import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
-import { Separator, Text, Row, Stack } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
-import { workerPalette } from "@scf/core/components/ui/styles";
-import { getProficiencyLabel } from "../constants/proficiency-levels";
-import type { ProfileWidgetProps } from "./types";
-import { useIsProfileOwner } from "./useIsProfileOwner";
+} from '@scaffald/ui'
+import { CheckCircle } from 'lucide-react-native'
+import { useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Separator, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { workerPalette } from '@scf/core/components/ui/styles'
+import { getProficiencyLabel } from '../constants/proficiency-levels'
+import type { ProfileWidgetProps } from './types'
+import { useIsProfileOwner } from './useIsProfileOwner'
 
 // EnrichedUserSkill type from skill-enrichment.ts
 interface EnrichedUserSkill {
-  id: string;
-  taxonomy: "csi" | "onet";
-  name: string;
-  label: string;
-  displayCode: string | null;
-  proficiency: number;
-  yearsExperience: number | null;
-  verified: boolean;
-  metadata: Record<string, unknown> | null;
+  id: string
+  taxonomy: 'csi' | 'onet'
+  name: string
+  label: string
+  displayCode: string | null
+  proficiency: number
+  yearsExperience: number | null
+  verified: boolean
+  metadata: Record<string, unknown> | null
 }
 
 /**
@@ -52,25 +52,16 @@ interface EnrichedUserSkill {
  * @param showEdit - Show edit button for own profile
  * @param variant - Display variant (compact or full)
  */
-export function SkillsWidget({
-  userId,
-  showEdit = false,
-  variant = "full",
-}: ProfileWidgetProps) {
-  const router = useRouter();
-  const { theme } = useThemeContext();
-  const t = theme === "dark" ? "dark" : "light" as const;
-  const pal = workerPalette[t];
-  const isOwner = useIsProfileOwner(userId);
-  const [activeTab, setActiveTab] = useState<"technical" | "soft-skills">(
-    "technical"
-  );
-  const [activeCategory, setActiveCategory] =
-    useState<SoftSkillCategory>("reliability");
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [historyView, setHistoryView] = useState<"timeline" | "progression">(
-    "timeline"
-  );
+export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: ProfileWidgetProps) {
+  const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
+  const pal = workerPalette[t]
+  const isOwner = useIsProfileOwner(userId)
+  const [activeTab, setActiveTab] = useState<'technical' | 'soft-skills'>('technical')
+  const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
+  const [showHistoryModal, setShowHistoryModal] = useState(false)
+  const [historyView, setHistoryView] = useState<'timeline' | 'progression'>('timeline')
 
   // Fetch technical skills
   const {
@@ -81,7 +72,7 @@ export function SkillsWidget({
     isFetching,
   } = useSkillsWidget(userId ? { userId } : undefined, {
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  });
+  })
 
   // Fetch soft skills
   const {
@@ -89,16 +80,16 @@ export function SkillsWidget({
     isPending: isLoadingSoftSkills,
     error: softSkillsError,
   } = useSoftSkills(userId ? { userId } : undefined, {
-    enabled: !!userId && activeTab === "soft-skills",
+    enabled: !!userId && activeTab === 'soft-skills',
     staleTime: 5 * 60 * 1000,
-  });
+  })
 
   // Note: Peer comparison data would be fetched here if needed for individual skill displays
   // For now, we only show self-assessments in the skills widget
 
   // Prepare soft skills for display
   const softSkills = useMemo<SoftSkill[]>(() => {
-    if (!softSkillsData) return [];
+    if (!softSkillsData) return []
 
     return softSkillsData.skills.map((skill) => ({
       id: skill.id,
@@ -107,29 +98,27 @@ export function SkillsWidget({
       selfRating: skill.rating ?? 0,
       peerRating: undefined, // Individual peer ratings not available
       versionHistory: undefined, // Not needed for widget
-    }));
-  }, [softSkillsData]);
+    }))
+  }, [softSkillsData])
 
   // Category labels for display
   const _categoryLabels: Record<SoftSkillCategory, string> = {
-    reliability: "Reliability",
-    collaboration: "Collaboration",
-    professionalism: "Professionalism",
-    technical: "Technical",
-  };
+    reliability: 'Reliability',
+    collaboration: 'Collaboration',
+    professionalism: 'Professionalism',
+    technical: 'Technical',
+  }
 
   // Skills chart data (unused since SkillsChart is not available in @scaffald/ui)
   const _categoryChartData = useMemo(() => {
-    if (!softSkills || softSkills.length === 0) return null;
-    const categorySkills = softSkills.filter(
-      (skill) => skill.category === activeCategory
-    );
-    if (categorySkills.length === 0) return null;
+    if (!softSkills || softSkills.length === 0) return null
+    const categorySkills = softSkills.filter((skill) => skill.category === activeCategory)
+    if (categorySkills.length === 0) return null
     return categorySkills.map((skill) => ({
       label: skill.name,
       value: Math.round(skill.selfRating * 20),
-    }));
-  }, [softSkills, activeCategory]);
+    }))
+  }, [softSkills, activeCategory])
 
   if (isLoading) {
     return (
@@ -147,7 +136,7 @@ export function SkillsWidget({
           </SkeletonGroup>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
   if (error) {
@@ -161,7 +150,7 @@ export function SkillsWidget({
             color="primary"
             size="sm"
             onPress={() => {
-              void refetch();
+              void refetch()
             }}
             disabled={isFetching}
           >
@@ -169,37 +158,37 @@ export function SkillsWidget({
           </Button>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
   // useSkillsWidget returns SkillWidgetEntry[], which is this shape — no cast.
-  const skills: EnrichedUserSkill[] = data ?? [];
-  const showCompact = variant === "compact";
+  const skills: EnrichedUserSkill[] = data ?? []
+  const showCompact = variant === 'compact'
 
   // Group skills by taxonomy
   const groupedSkills = skills.reduce(
     (acc: Record<string, EnrichedUserSkill[]>, skill: EnrichedUserSkill) => {
-      const taxonomy = skill.taxonomy || "Other";
+      const taxonomy = skill.taxonomy || 'Other'
       if (!acc[taxonomy]) {
-        acc[taxonomy] = [];
+        acc[taxonomy] = []
       }
-      acc[taxonomy].push(skill);
-      return acc;
+      acc[taxonomy].push(skill)
+      return acc
     },
     {}
-  );
+  )
 
-  const taxonomyOrder = ["onet", "csi", "Other"];
+  const taxonomyOrder = ['onet', 'csi', 'Other']
   const sortedTaxonomies = Object.keys(groupedSkills).sort((a, b) => {
-    const aIndex = taxonomyOrder.indexOf(a);
-    const bIndex = taxonomyOrder.indexOf(b);
-    if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
-    if (aIndex === -1) return 1;
-    if (bIndex === -1) return -1;
-    return aIndex - bIndex;
-  });
+    const aIndex = taxonomyOrder.indexOf(a)
+    const bIndex = taxonomyOrder.indexOf(b)
+    if (aIndex === -1 && bIndex === -1) return a.localeCompare(b)
+    if (aIndex === -1) return 1
+    if (bIndex === -1) return -1
+    return aIndex - bIndex
+  })
 
-  const isLoadingSkills = isLoading && activeTab === "technical";
+  const isLoadingSkills = isLoading && activeTab === 'technical'
 
   return (
     <DashboardWidget>
@@ -213,7 +202,7 @@ export function SkillsWidget({
                 variant="outline"
                 size="sm"
                 onPress={() => {
-                  router.push(ROUTES.PROFILE.SKILLS.path);
+                  router.push(ROUTES.PROFILE.SKILLS.path)
                 }}
               >
                 Edit
@@ -225,9 +214,7 @@ export function SkillsWidget({
         {/* Tabs */}
         <Tabs
           value={activeTab}
-          onValueChange={(value) =>
-            setActiveTab(value as "technical" | "soft-skills")
-          }
+          onValueChange={(value) => setActiveTab(value as 'technical' | 'soft-skills')}
           type="line"
         >
           <Tabs.Item value="technical">
@@ -241,7 +228,7 @@ export function SkillsWidget({
         <Separator />
 
         {/* Technical Skills Tab Content */}
-        {activeTab === "technical" &&
+        {activeTab === 'technical' &&
           (isLoadingSkills ? (
             <SkeletonGroup direction="row" gap={8} animation="wave" style={{ flexWrap: 'wrap' }}>
               {[100, 80, 120, 90, 110].map((w, i) => (
@@ -252,16 +239,14 @@ export function SkillsWidget({
             <Stack gap={16} align="center" paddingVertical={32}>
               <Text style={{ color: colors.fg[theme].error }}>Failed to load skills</Text>
               <Text style={{ color: colors.text[theme].secondary }}>
-                {String(
-                  (error as unknown as Record<string, unknown>).message ?? ""
-                )}
+                {String((error as unknown as Record<string, unknown>).message ?? '')}
               </Text>
               <Button
                 variant="filled"
                 color="primary"
                 size="sm"
                 onPress={() => {
-                  void (refetch as unknown as () => Promise<unknown>)();
+                  void (refetch as unknown as () => Promise<unknown>)()
                 }}
                 disabled={isFetching}
               >
@@ -269,9 +254,7 @@ export function SkillsWidget({
               </Button>
             </Stack>
           ) : skills.length === 0 && !isOwner ? (
-            <Text style={{ color: colors.text[theme].secondary }}>
-              No technical skills listed.
-            </Text>
+            <Text style={{ color: colors.text[theme].secondary }}>No technical skills listed.</Text>
           ) : skills.length === 0 ? (
             <EmptyState
               title="No skills added yet"
@@ -279,86 +262,68 @@ export function SkillsWidget({
               action={
                 showEdit
                   ? {
-                      label: "Add Skills",
-                      onPress: () =>
-                        router.push(ROUTES.PROFILE.SKILLS.path),
+                      label: 'Add Skills',
+                      onPress: () => router.push(ROUTES.PROFILE.SKILLS.path),
                     }
                   : undefined
               }
             />
           ) : (
             <Stack gap={16}>
-              {sortedTaxonomies
-                .slice(0, showCompact ? 1 : undefined)
-                .map((taxonomy) => (
-                  <Stack key={taxonomy} gap={8}>
-                    {/* Taxonomy Header */}
-                    <Text
-                      style={{ color: colors.text[theme].secondary, textTransform: "uppercase" }}
-                    >
-                      {taxonomy === "onet"
-                        ? "O*NET"
-                        : taxonomy === "csi"
-                        ? "CSI"
-                        : taxonomy}
-                    </Text>
+              {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
+                <Stack key={taxonomy} gap={8}>
+                  {/* Taxonomy Header */}
+                  <Text style={{ color: colors.text[theme].secondary, textTransform: 'uppercase' }}>
+                    {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
+                  </Text>
 
-                    {/* Skills in this taxonomy */}
-                    <Row gap={8} wrap>
-                      {groupedSkills[taxonomy]
-                        .slice(0, showCompact ? 5 : undefined)
-                        .map((skill: EnrichedUserSkill) => (
-                          <Row
-                            key={skill.id}
-                            paddingHorizontal={12}
-                            paddingVertical={8}
-                            borderRadius={12}
-                            gap={8}
-                            align="center"
-                            style={{
-                              backgroundColor: pal.pillBg,
-                              borderWidth: 1,
-                              borderColor: skill.verified
-                                ? pal.accent
-                                : pal.selectedBorder,
-                            }}
-                          >
-                            {skill.verified && (
-                              <CheckCircle size={16} color={pal.pillText} />
+                  {/* Skills in this taxonomy */}
+                  <Row gap={8} wrap>
+                    {groupedSkills[taxonomy]
+                      .slice(0, showCompact ? 5 : undefined)
+                      .map((skill: EnrichedUserSkill) => (
+                        <Row
+                          key={skill.id}
+                          paddingHorizontal={12}
+                          paddingVertical={8}
+                          borderRadius={12}
+                          gap={8}
+                          align="center"
+                          style={{
+                            backgroundColor: pal.pillBg,
+                            borderWidth: 1,
+                            borderColor: skill.verified ? pal.accent : pal.selectedBorder,
+                          }}
+                        >
+                          {skill.verified && <CheckCircle size={16} color={pal.pillText} />}
+                          <Stack gap={2}>
+                            <Text style={{ color: pal.pillText }}>{skill.name}</Text>
+                            {!showCompact && (
+                              <Row gap={8}>
+                                {skill.proficiency > 0 && (
+                                  <Text style={{ color: pal.accent }}>
+                                    {getProficiencyLabel(skill.proficiency)}
+                                  </Text>
+                                )}
+                                {skill.yearsExperience !== null && skill.yearsExperience > 0 && (
+                                  <Text style={{ color: pal.accent }}>
+                                    • {skill.yearsExperience}y
+                                  </Text>
+                                )}
+                              </Row>
                             )}
-                            <Stack gap={2}>
-                              <Text style={{ color: pal.pillText }}>
-                                {skill.name}
-                              </Text>
-                              {!showCompact && (
-                                <Row gap={8}>
-                                  {skill.proficiency > 0 && (
-                                    <Text style={{ color: pal.accent }}>
-                                      {getProficiencyLabel(skill.proficiency)}
-                                    </Text>
-                                  )}
-                                  {skill.yearsExperience !== null &&
-                                    skill.yearsExperience > 0 && (
-                                      <Text style={{ color: pal.accent }}>
-                                        • {skill.yearsExperience}y
-                                      </Text>
-                                    )}
-                                </Row>
-                              )}
-                            </Stack>
-                          </Row>
-                        ))}
-                    </Row>
-                  </Stack>
-                ))}
+                          </Stack>
+                        </Row>
+                      ))}
+                  </Row>
+                </Stack>
+              ))}
 
               {/* Show More link for compact view */}
               {showCompact && skills.length > 5 && (
                 <Text
                   style={{ color: pal.accent }}
-                  onPress={() =>
-                    router.push(ROUTES.PROFILE.SKILLS.path)
-                  }
+                  onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}
                 >
                   View all {skills.length} skills →
                 </Text>
@@ -367,7 +332,7 @@ export function SkillsWidget({
           ))}
 
         {/* Soft Skills Tab Content */}
-        {activeTab === "soft-skills" &&
+        {activeTab === 'soft-skills' &&
           (isLoadingSoftSkills ? (
             <SkeletonGroup direction="row" gap={8} animation="wave" style={{ flexWrap: 'wrap' }}>
               {[100, 80, 120, 90, 110].map((w, i) => (
@@ -376,18 +341,14 @@ export function SkillsWidget({
             </SkeletonGroup>
           ) : softSkillsError ? (
             <Stack gap={16} align="center" paddingVertical={32}>
-              <Text style={{ color: colors.fg[theme].error }}>
-                Failed to load soft skills
-              </Text>
-              <Text style={{ color: colors.text[theme].secondary }}>
-                {softSkillsError.message}
-              </Text>
+              <Text style={{ color: colors.fg[theme].error }}>Failed to load soft skills</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{softSkillsError.message}</Text>
               <Button
                 variant="filled"
                 color="primary"
                 size="sm"
                 onPress={() => {
-                  router.push(ROUTES.PROFILE.SKILLS.path);
+                  router.push(ROUTES.PROFILE.SKILLS.path)
                 }}
               >
                 Complete Assessment
@@ -404,9 +365,8 @@ export function SkillsWidget({
               action={
                 showEdit
                   ? {
-                      label: "Start Assessment",
-                      onPress: () =>
-                        router.push(ROUTES.PROFILE.SKILLS.path),
+                      label: 'Start Assessment',
+                      onPress: () => router.push(ROUTES.PROFILE.SKILLS.path),
                     }
                   : undefined
               }
@@ -435,20 +395,14 @@ export function SkillsWidget({
               {/* Action Buttons */}
               {showEdit && (
                 <Row justify="flex-end" gap={8} paddingTop={8} wrap>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onPress={() => setShowHistoryModal(true)}
-                  >
+                  <Button variant="outline" size="sm" onPress={() => setShowHistoryModal(true)}>
                     View History
                   </Button>
                   <Button
                     variant="filled"
                     color="primary"
                     size="sm"
-                    onPress={() =>
-                      router.push(ROUTES.PROFILE.SKILLS.path)
-                    }
+                    onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}
                   >
                     Update Assessment
                   </Button>
@@ -469,25 +423,25 @@ export function SkillsWidget({
           {/* View Toggle */}
           <Row gap={8} justify="center">
             <Button
-              variant={historyView === "timeline" ? "filled" : "outline"}
-              color={historyView === "timeline" ? "primary" : undefined}
+              variant={historyView === 'timeline' ? 'filled' : 'outline'}
+              color={historyView === 'timeline' ? 'primary' : undefined}
               size="sm"
-              onPress={() => setHistoryView("timeline")}
+              onPress={() => setHistoryView('timeline')}
             >
               Timeline
             </Button>
             <Button
-              variant={historyView === "progression" ? "filled" : "outline"}
-              color={historyView === "progression" ? "primary" : undefined}
+              variant={historyView === 'progression' ? 'filled' : 'outline'}
+              color={historyView === 'progression' ? 'primary' : undefined}
               size="sm"
-              onPress={() => setHistoryView("progression")}
+              onPress={() => setHistoryView('progression')}
             >
               Progression
             </Button>
           </Row>
 
           {/* History Content */}
-          {historyView === "timeline" ? (
+          {historyView === 'timeline' ? (
             <SoftSkillsHistoryTimeline userId={userId} />
           ) : (
             <SoftSkillsProgressionChart userId={userId} />
@@ -495,5 +449,5 @@ export function SkillsWidget({
         </Stack>
       </ResponsiveModal>
     </DashboardWidget>
-  );
+  )
 }

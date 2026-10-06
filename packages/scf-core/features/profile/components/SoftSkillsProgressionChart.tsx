@@ -123,8 +123,12 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   if (error) {
     return (
       <Stack gap={8} padding="md">
-        <Text style={{ color: t === 'light' ? colors.error[700] : colors.error[300] }}>Error loading progression</Text>
-        <Text style={{ color: colors.text[t].secondary }}>{error.message || 'Failed to load progression data'}</Text>
+        <Text style={{ color: t === 'light' ? colors.error[700] : colors.error[300] }}>
+          Error loading progression
+        </Text>
+        <Text style={{ color: colors.text[t].secondary }}>
+          {error.message || 'Failed to load progression data'}
+        </Text>
       </Stack>
     )
   }
@@ -191,7 +195,9 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
       <Stack gap={16} padding="md">
         <Stack gap={8}>
           <Text style={{ color: colors.text[t].secondary }}>Skill Progression</Text>
-          <Text style={{ color: colors.text[t].secondary }}>Track how your soft skills have changed over time.</Text>
+          <Text style={{ color: colors.text[t].secondary }}>
+            Track how your soft skills have changed over time.
+          </Text>
         </Stack>
 
         {/* Summary Stats */}
@@ -208,8 +214,12 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
               borderColor: t === 'light' ? colors.green[300] : colors.green[700],
             }}
           >
-            <Text style={{ color: t === 'light' ? colors.green[600] : colors.green[400] }}>Improved</Text>
-            <Text style={{ color: t === 'light' ? colors.green[700] : colors.green[300] }}>{improvedSkills}</Text>
+            <Text style={{ color: t === 'light' ? colors.green[600] : colors.green[400] }}>
+              Improved
+            </Text>
+            <Text style={{ color: t === 'light' ? colors.green[700] : colors.green[300] }}>
+              {improvedSkills}
+            </Text>
           </Stack>
           <Stack
             gap={4}
@@ -223,8 +233,12 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
               borderColor: t === 'light' ? colors.error[300] : colors.error[700],
             }}
           >
-            <Text style={{ color: t === 'light' ? colors.error[600] : colors.error[400] }}>Declined</Text>
-            <Text style={{ color: t === 'light' ? colors.error[700] : colors.error[300] }}>{declinedSkills}</Text>
+            <Text style={{ color: t === 'light' ? colors.error[600] : colors.error[400] }}>
+              Declined
+            </Text>
+            <Text style={{ color: t === 'light' ? colors.error[700] : colors.error[300] }}>
+              {declinedSkills}
+            </Text>
           </Stack>
           <Stack
             gap={4}
@@ -249,7 +263,9 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
           return (
             <Stack key={category} gap={12}>
-              <Text style={{ color: colors.text[t].secondary }}>{categoryLabels[category as SoftSkillCategory]}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>
+                {categoryLabels[category as SoftSkillCategory]}
+              </Text>
               <Stack gap={8}>
                 {skills.map((skill) => (
                   <Stack
@@ -273,7 +289,9 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
                             </Text>
                           )}
                           {skill.currentRating !== null && (
-                            <Text style={{ color: colors.text[t].secondary }}>Current: {skill.currentRating.toFixed(1)}/5</Text>
+                            <Text style={{ color: colors.text[t].secondary }}>
+                              Current: {skill.currentRating.toFixed(1)}/5
+                            </Text>
                           )}
                         </Row>
                       </Stack>

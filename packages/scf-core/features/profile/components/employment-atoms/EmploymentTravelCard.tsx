@@ -32,15 +32,13 @@ export function EmploymentTravelCard({
     (payload: { open_to_travel?: boolean; travel_distance_miles?: number }) => {
       const next = {
         open_to_travel: payload.open_to_travel ?? openToTravel,
-        travel_distance_miles:
-          payload.travel_distance_miles ?? travelDistanceMiles ?? 25,
+        travel_distance_miles: payload.travel_distance_miles ?? travelDistanceMiles ?? 25,
       }
       const result = profileEmploymentInputSchema.safeParse(next)
       if (!result.success) return
       if (
         lastSavedRef.current.open_to_travel === result.data.open_to_travel &&
-        lastSavedRef.current.travel_distance_miles ===
-          (result.data.travel_distance_miles ?? 25)
+        lastSavedRef.current.travel_distance_miles === (result.data.travel_distance_miles ?? 25)
       ) {
         return
       }
@@ -60,7 +58,7 @@ export function EmploymentTravelCard({
     (checked: boolean) => {
       save({
         open_to_travel: checked,
-        travel_distance_miles: checked ? travelDistanceMiles ?? 25 : 25,
+        travel_distance_miles: checked ? (travelDistanceMiles ?? 25) : 25,
       })
     },
     [travelDistanceMiles, save]

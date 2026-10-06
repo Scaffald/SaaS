@@ -1,6 +1,16 @@
 import { PROFICIENCY_LEVELS, getProficiencyLevel } from '../../constants/proficiency-levels'
 import type { ParentSkill } from '../../types/profile-skills-types'
-import { Button, Card, CardHeader, Separator, Slider, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import {
+  Button,
+  Card,
+  CardHeader,
+  Separator,
+  Slider,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 interface SkillProficiencySelectorProps {
@@ -70,10 +80,16 @@ export function SkillProficiencySelector({
           <CardHeader>
             <Row justify="space-between" align="center">
               <Stack>
-                <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{currentLevel?.label}</Text>
-                <Text style={{ color: colors.text[theme].secondary }}>{currentLevel?.description}</Text>
+                <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>
+                  {currentLevel?.label}
+                </Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  {currentLevel?.description}
+                </Text>
               </Stack>
-              <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{proficiency}</Text>
+              <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>
+                {proficiency}
+              </Text>
             </Row>
           </CardHeader>
         </Card>

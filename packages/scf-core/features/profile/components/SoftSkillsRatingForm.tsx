@@ -3,7 +3,13 @@ import {
   useUpdateSoftSkillsMutation,
 } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { ROUTES } from '@scf/core/constants/routes'
-import { Heading, LoadingState, ResponsiveModal, SaveStatusIndicator, useThemeContext } from '@scaffald/ui'
+import {
+  Heading,
+  LoadingState,
+  ResponsiveModal,
+  SaveStatusIndicator,
+  useThemeContext,
+} from '@scaffald/ui'
 import { CheckCircle2 } from 'lucide-react-native'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
@@ -222,7 +228,9 @@ export const SoftSkillsRatingForm: FC = () => {
   if (error) {
     return (
       <Stack gap={16} align="center" paddingVertical={32}>
-        <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Failed to load assessment</Text>
+        <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+          Failed to load assessment
+        </Text>
         <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
         <Button variant="filled" color="primary" size="sm" onPress={() => void refetch()}>
           Retry
@@ -235,7 +243,9 @@ export const SoftSkillsRatingForm: FC = () => {
     return (
       <Stack gap={16} align="center" paddingVertical={32}>
         <Text style={{ color: colors.text[theme].secondary }}>No soft skills available</Text>
-        <Text style={{ color: colors.text[theme].secondary }}>Please contact support if this issue persists.</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Please contact support if this issue persists.
+        </Text>
       </Stack>
     )
   }
@@ -284,11 +294,20 @@ export const SoftSkillsRatingForm: FC = () => {
             }
 
             return (
-              <Card key={skill.id} bordered padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+              <Card
+                key={skill.id}
+                bordered
+                padding="md"
+                style={{ backgroundColor: colors.bg[theme].default }}
+              >
                 <Stack gap={12}>
                   <Stack gap={4}>
                     <Text style={{ color: colors.text[theme].secondary }}>{skill.name}</Text>
-                    {skill.description && <Text style={{ color: colors.text[theme].secondary }}>{skill.description}</Text>}
+                    {skill.description && (
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        {skill.description}
+                      </Text>
+                    )}
                   </Stack>
 
                   <Controller
@@ -319,10 +338,20 @@ export const SoftSkillsRatingForm: FC = () => {
                                 key={level.value}
                                 flex={1}
                                 minWidth={64}
-                                style={{ alignItems: 'center', opacity: sliderValue === level.value ? 1 : 0.6 }}
+                                style={{
+                                  alignItems: 'center',
+                                  opacity: sliderValue === level.value ? 1 : 0.6,
+                                }}
                               >
-                                <Text style={{ color: colors.text[theme].secondary }}>{level.value}</Text>
-                                <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
+                                <Text style={{ color: colors.text[theme].secondary }}>
+                                  {level.value}
+                                </Text>
+                                <Text
+                                  style={{
+                                    color: colors.text[theme].secondary,
+                                    textAlign: 'center',
+                                  }}
+                                >
                                   {level.label}
                                 </Text>
                               </Stack>
@@ -344,7 +373,8 @@ export const SoftSkillsRatingForm: FC = () => {
       {/* Submit Button */}
       <Row justify="flex-end" paddingTop={8}>
         <Button
-          variant="filled" color="primary"
+          variant="filled"
+          color="primary"
           size="md"
           onPress={handleSubmit(onSubmit)}
           disabled={!allSkillsRated || updateMutation.isPending}
@@ -391,7 +421,8 @@ export const SoftSkillsRatingForm: FC = () => {
               View Profile
             </Button>
             <Button
-              variant="filled" color="primary"
+              variant="filled"
+              color="primary"
               onPress={() => {
                 setShowSuccessModal(false)
                 router.push(ROUTES.WORKERS.MAP.path)

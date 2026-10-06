@@ -137,7 +137,7 @@ const AppDarkTheme = {
 }
 
 const InnerProvider = ({ children }: { children: ReactNode }) => {
-  const { resolvedTheme } = useThemeSetting()
+  const { resolvedTheme, current } = useThemeSetting()
 
   // Platform-specific theme application
   useEffect(() => {
@@ -149,15 +149,20 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
         document.documentElement.style.backgroundColor = bg
         document.body.style.backgroundColor = bg
       }
-    } else {
-      // Native: ensure we set color scheme as soon as possible
-      if (resolvedTheme !== Appearance.getColorScheme()) {
-        if (resolvedTheme === 'light' || resolvedTheme === 'dark') {
-          Appearance.setColorScheme(resolvedTheme)
-        }
-      }
+    } else if (current === 'system') {
+      // Follow the OS: clear any override this process set earlier. The
+      // override is per-process and survives a JS reload, so a forced
+      // 'light' from a previous preference pinned `useColorScheme()` to
+      // light for the rest of the session — the OS could go dark and the
+      // app would never hear about it (#840, seen on the simulator).
+      // 'unspecified' is RN's spelling of "no override" (UIUserInterfaceStyleUnspecified).
+      if (Appearance.getColorScheme() !== 'unspecified') Appearance.setColorScheme('unspecified')
+    } else if (resolvedTheme === 'light' || resolvedTheme === 'dark') {
+      // An explicit preference: pin the native scheme so system surfaces —
+      // alerts, the keyboard, the share sheet — match the app.
+      if (resolvedTheme !== Appearance.getColorScheme()) Appearance.setColorScheme(resolvedTheme)
     }
-  }, [resolvedTheme])
+  }, [resolvedTheme, current])
 
   const navTheme = resolvedTheme === 'dark' ? AppDarkTheme : AppLightTheme
 

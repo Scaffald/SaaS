@@ -156,9 +156,8 @@ export function RequestReviewModal({ visible, onClose }: RequestReviewModalProps
 
         <Stack gap={spacing[20]}>
           <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
-            Generate a one-link request you can share with a foreman, instructor,
-            client, or former employer. Whoever opens it can submit a review
-            without creating a Scaffald account.
+            Generate a one-link request you can share with a foreman, instructor, client, or former
+            employer. Whoever opens it can submit a review without creating a Scaffald account.
           </Paragraph>
 
           {/* Label + Generate */}
@@ -189,9 +188,7 @@ export function RequestReviewModal({ visible, onClose }: RequestReviewModalProps
           {latestLink && (
             <Stack gap={spacing[10]}>
               <Text size="sm" style={{ color: colors.text[theme].secondary }}>
-                {createLink.isSuccess
-                  ? 'New link ready — share it now'
-                  : 'Most recent link'}
+                {createLink.isSuccess ? 'New link ready — share it now' : 'Most recent link'}
               </Text>
               <View
                 style={{
@@ -272,11 +269,7 @@ export function RequestReviewModal({ visible, onClose }: RequestReviewModalProps
                   }}
                 >
                   <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
-                    <Text
-                      size="sm"
-                      style={{ color: colors.text[theme].primary }}
-                      numberOfLines={1}
-                    >
+                    <Text size="sm" style={{ color: colors.text[theme].primary }} numberOfLines={1}>
                       {link.label ?? 'Untitled link'}
                     </Text>
                     <Text

@@ -1,11 +1,19 @@
-import { ROUTES } from "@scf/core/constants/routes";
-import { usePreferencesWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
-import { Button, DashboardWidget, DashboardWidgetHeader, Skeleton, SkeletonForm, SkeletonGroup, useThemeContext } from "@scaffald/ui";
-import { useRouter } from "expo-router";
-import { Text, Row, Stack } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
-import { workerPalette } from "@scf/core/components/ui/styles";
-import { Pill } from "@scf/core/components/ui/CardPrimitives";
+import { ROUTES } from '@scf/core/constants/routes'
+import { usePreferencesWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
+import {
+  Button,
+  DashboardWidget,
+  DashboardWidgetHeader,
+  Skeleton,
+  SkeletonForm,
+  SkeletonGroup,
+  useThemeContext,
+} from '@scaffald/ui'
+import { useRouter } from 'expo-router'
+import { Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { workerPalette } from '@scf/core/components/ui/styles'
+import { Pill } from '@scf/core/components/ui/CardPrimitives'
 
 /**
  * PreferencesWidget
@@ -14,18 +22,14 @@ import { Pill } from "@scf/core/components/ui/CardPrimitives";
  *
  * @param showEdit - Show edit button for own profile
  */
-export function PreferencesWidget({
-  showEdit = false,
-}: {
-  showEdit?: boolean;
-}) {
-  const { theme } = useThemeContext();
-  const t = theme === "dark" ? "dark" : "light" as const;
-  const pal = workerPalette[t];
-  const router = useRouter();
+export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
+  const pal = workerPalette[t]
+  const router = useRouter()
   const { data, isLoading, error } = usePreferencesWidget({
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  });
+  })
 
   if (isLoading) {
     return (
@@ -35,7 +39,7 @@ export function PreferencesWidget({
           <SkeletonForm fields={4} />
         </SkeletonGroup>
       </DashboardWidget>
-    );
+    )
   }
 
   if (error) {
@@ -46,7 +50,7 @@ export function PreferencesWidget({
           <Text color={colors.text[theme].secondary}>{error.message}</Text>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
   if (!data) {
@@ -56,20 +60,20 @@ export function PreferencesWidget({
           <Text color={colors.text[theme].secondary}>No preferences data available</Text>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
   // Helper to format arrays
   const formatArray = (arr: string[] | null | undefined): string => {
-    if (!arr || arr.length === 0) return "Not specified";
-    return arr.join(", ");
-  };
+    if (!arr || arr.length === 0) return 'Not specified'
+    return arr.join(', ')
+  }
 
   // Helper to format currency
   const formatCurrency = (cents: number | null | undefined): string => {
-    if (!cents) return "Not specified";
-    return `$${(cents / 100).toFixed(2)}/hr`;
-  };
+    if (!cents) return 'Not specified'
+    return `$${(cents / 100).toFixed(2)}/hr`
+  }
 
   return (
     <DashboardWidget>
@@ -82,9 +86,7 @@ export function PreferencesWidget({
               <Button
                 variant="outline"
                 size="sm"
-                onPress={() =>
-                  router.push(ROUTES.PROFILE.EMPLOYMENT.path)
-                }
+                onPress={() => router.push(ROUTES.PROFILE.EMPLOYMENT.path)}
               >
                 Edit
               </Button>
@@ -94,21 +96,21 @@ export function PreferencesWidget({
 
         <Stack gap={16}>
           {/* Availability */}
-          {data.availability && typeof data.availability === "string" && (
+          {data.availability && typeof data.availability === 'string' && (
             <Stack gap={8}>
               <Text>Availability</Text>
-              <Text color={colors.text[theme].secondary} style={{ textTransform: "capitalize" }}>
-                {data.availability.replace("_", " ")}
+              <Text color={colors.text[theme].secondary} style={{ textTransform: 'capitalize' }}>
+                {data.availability.replace('_', ' ')}
               </Text>
             </Stack>
           )}
 
           {/* Career Level */}
-          {data.career_level && typeof data.career_level === "string" && (
+          {data.career_level && typeof data.career_level === 'string' && (
             <Stack gap={8}>
               <Text>Career Level</Text>
-              <Text color={colors.text[theme].secondary} style={{ textTransform: "capitalize" }}>
-                {data.career_level.replace("_", " ")}
+              <Text color={colors.text[theme].secondary} style={{ textTransform: 'capitalize' }}>
+                {data.career_level.replace('_', ' ')}
               </Text>
             </Stack>
           )}
@@ -131,7 +133,12 @@ export function PreferencesWidget({
                 <Text>Preferred Locations</Text>
                 <Row gap={8} wrap>
                   {data.preferred_work_locations.map((location: string) => (
-                    <Pill key={location} label={location} bgColor={pal.pillBg} textColor={pal.pillText} />
+                    <Pill
+                      key={location}
+                      label={location}
+                      bgColor={pal.pillBg}
+                      textColor={pal.pillText}
+                    />
                   ))}
                 </Row>
               </Stack>
@@ -143,9 +150,7 @@ export function PreferencesWidget({
               <Text>Travel</Text>
               <Row gap={8} align="center">
                 <Text color={colors.text[theme].secondary}>
-                  {data.open_to_travel
-                    ? "Willing to travel"
-                    : "Not willing to travel"}
+                  {data.open_to_travel ? 'Willing to travel' : 'Not willing to travel'}
                 </Text>
                 {data.travel_distance_miles && (
                   <Text color={colors.text[theme].secondary}>
@@ -172,27 +177,19 @@ export function PreferencesWidget({
                 {data.us_resident !== null && (
                   <Text
                     color={
-                      data.us_resident
-                        ? colors.text[theme].secondary
-                        : colors.text[theme].tertiary
+                      data.us_resident ? colors.text[theme].secondary : colors.text[theme].tertiary
                     }
                   >
-                    {data.us_resident
-                      ? "✓ US Resident"
-                      : "US Resident: Not provided"}
+                    {data.us_resident ? '✓ US Resident' : 'US Resident: Not provided'}
                   </Text>
                 )}
                 {data.us_passport !== null && (
                   <Text
                     color={
-                      data.us_passport
-                        ? colors.text[theme].secondary
-                        : colors.text[theme].tertiary
+                      data.us_passport ? colors.text[theme].secondary : colors.text[theme].tertiary
                     }
                   >
-                    {data.us_passport
-                      ? "✓ US Passport"
-                      : "US Passport: Not provided"}
+                    {data.us_passport ? '✓ US Passport' : 'US Passport: Not provided'}
                   </Text>
                 )}
                 {data.authorized_countries &&
@@ -214,7 +211,12 @@ export function PreferencesWidget({
                 <Text>Driver's Licenses</Text>
                 <Row gap={8} wrap>
                   {data.drivers_license_classes.map((license: string) => (
-                    <Pill key={license} label={`Class ${license}`} bgColor={pal.pillBg} textColor={pal.pillText} />
+                    <Pill
+                      key={license}
+                      label={`Class ${license}`}
+                      bgColor={pal.pillBg}
+                      textColor={pal.pillText}
+                    />
                   ))}
                 </Row>
               </Stack>
@@ -227,23 +229,22 @@ export function PreferencesWidget({
               <Stack gap={4}>
                 {data.veteran !== null && (
                   <Text color={colors.text[theme].secondary}>
-                    {data.veteran ? "Veteran" : "Not a veteran"}
+                    {data.veteran ? 'Veteran' : 'Not a veteran'}
                   </Text>
                 )}
-                {data.military_status &&
-                  typeof data.military_status === "string" && (
-                    <Text
-                      color={colors.text[theme].secondary}
-                      style={{ textTransform: "capitalize" }}
-                    >
-                      Status: {data.military_status.replace("_", " ")}
-                    </Text>
-                  )}
+                {data.military_status && typeof data.military_status === 'string' && (
+                  <Text
+                    color={colors.text[theme].secondary}
+                    style={{ textTransform: 'capitalize' }}
+                  >
+                    Status: {data.military_status.replace('_', ' ')}
+                  </Text>
+                )}
               </Stack>
             </Stack>
           )}
         </Stack>
       </Stack>
     </DashboardWidget>
-  );
+  )
 }

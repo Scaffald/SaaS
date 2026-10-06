@@ -6,23 +6,23 @@ import {
   EmploymentMilitaryCard,
   EmploymentResidencyCard,
   EmploymentTravelCard,
-} from "@scf/core/features/profile/components/employment-atoms";
-import type { UpdateEmploymentParams } from "@scaffald/sdk";
+} from '@scf/core/features/profile/components/employment-atoms'
+import type { UpdateEmploymentParams } from '@scaffald/sdk'
 import {
   useOfficeUserEmployment,
   useOfficeUpdateUserEmploymentMutation,
-} from "@scf/core/utils/office-users-sdk-hooks";
+} from '@scf/core/utils/office-users-sdk-hooks'
 import {
   useEmployment,
   useEmploymentUpdateMutationWithSync,
-} from "@scf/core/utils/profile-employment-sdk-hooks";
-import { DashboardWidget, Spinner, Stack, Text } from "@scaffald/ui";
-import { useToast } from "@scaffald/ui";
+} from '@scf/core/utils/profile-employment-sdk-hooks'
+import { DashboardWidget, Spinner, Stack, Text } from '@scaffald/ui'
+import { useToast } from '@scaffald/ui'
 
 interface EmploymentSectionProps {
-  userId?: string;
-  mode?: "user" | "admin";
-  readOnly?: boolean;
+  userId?: string
+  mode?: 'user' | 'admin'
+  readOnly?: boolean
 }
 
 /**
@@ -31,63 +31,57 @@ interface EmploymentSectionProps {
  */
 export function EmploymentSection({
   userId,
-  mode = "user",
+  mode = 'user',
   readOnly = false,
 }: EmploymentSectionProps) {
-  const toast = useToast();
-  const isAdmin = mode === 'admin' && Boolean(userId);
+  const toast = useToast()
+  const isAdmin = mode === 'admin' && Boolean(userId)
 
-  const profileQuery = useEmployment({ enabled: !isAdmin });
-  const officeQuery = useOfficeUserEmployment(userId, { enabled: isAdmin });
+  const profileQuery = useEmployment({ enabled: !isAdmin })
+  const officeQuery = useOfficeUserEmployment(userId, { enabled: isAdmin })
 
-  const employmentData = isAdmin ? officeQuery.data : profileQuery.data;
-  const isLoadingEmployment = isAdmin
-    ? officeQuery.isLoading
-    : profileQuery.isLoading;
-  const refetch = isAdmin ? officeQuery.refetch : profileQuery.refetch;
+  const employmentData = isAdmin ? officeQuery.data : profileQuery.data
+  const isLoadingEmployment = isAdmin ? officeQuery.isLoading : profileQuery.isLoading
+  const refetch = isAdmin ? officeQuery.refetch : profileQuery.refetch
 
   const profileMutation = useEmploymentUpdateMutationWithSync({
     onSuccess: () => {
       toast.show({
-        title: "Employment Updated",
-        message:
-          "Your employment preferences have been saved successfully!",
-      });
+        title: 'Employment Updated',
+        message: 'Your employment preferences have been saved successfully!',
+      })
     },
-  });
+  })
 
   const officeMutation = useOfficeUpdateUserEmploymentMutation({
     onSuccess: () => {
       toast.show({
-        title: "Employment Updated",
-        message: "Employment preferences have been saved successfully!",
-      });
-      void refetch();
+        title: 'Employment Updated',
+        message: 'Employment preferences have been saved successfully!',
+      })
+      void refetch()
     },
     onError: (error: unknown) => {
-      console.error("Error saving employment:", error);
+      console.error('Error saving employment:', error)
       toast.show({
-        title: "Error",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to save employment preferences.",
-        variant: "error",
-      });
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Failed to save employment preferences.',
+        variant: 'error',
+      })
     },
-  });
+  })
 
-  const updateMutation = isAdmin ? officeMutation : profileMutation;
-  const isSaving = updateMutation.isPending;
+  const updateMutation = isAdmin ? officeMutation : profileMutation
+  const isSaving = updateMutation.isPending
 
   const onSave = (payload: UpdateEmploymentParams) => {
-    if (readOnly) return;
+    if (readOnly) return
     if (isAdmin && userId) {
-      officeMutation.mutate({ userId, data: payload });
+      officeMutation.mutate({ userId, data: payload })
     } else {
-      profileMutation.mutate(payload);
+      profileMutation.mutate(payload)
     }
-  };
+  }
 
   if (isLoadingEmployment) {
     return (
@@ -97,7 +91,7 @@ export function EmploymentSection({
           <Text>Loading employment preferences...</Text>
         </Stack>
       </DashboardWidget>
-    );
+    )
   }
 
   const data = employmentData ?? {
@@ -116,7 +110,7 @@ export function EmploymentSection({
     Array.isArray(data.preferred_work_locations) &&
     data.preferred_work_locations.every((x): x is string => typeof x === 'string')
       ? data.preferred_work_locations
-      : [];
+      : []
 
   return (
     <DashboardWidget>
@@ -124,13 +118,13 @@ export function EmploymentSection({
         {isSaving && (
           <Stack
             style={{
-              flexDirection: "row",
-              alignItems: "center",
+              flexDirection: 'row',
+              alignItems: 'center',
               gap: 8,
             }}
           >
             <Spinner variant="ios" size="sm" />
-            <Text size="sm" style={{ color: "#637083" }}>
+            <Text size="sm" style={{ color: '#637083' }}>
               Saving...
             </Text>
           </Stack>
@@ -181,5 +175,5 @@ export function EmploymentSection({
         />
       </Stack>
     </DashboardWidget>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import { ProfileSectionIntro } from "@scf/core/features/profile/components";
-import { Stack } from "@scaffald/ui";
+import { ProfileSectionIntro } from '@scf/core/features/profile/components'
+import { Stack } from '@scaffald/ui'
 
 /**
  * Profile Employment Right Component
@@ -13,5 +13,5 @@ export function ProfileEmploymentRight() {
         description="Update your employment preferences including location, travel willingness, availability, and compensation."
       />
     </Stack>
-  );
+  )
 }

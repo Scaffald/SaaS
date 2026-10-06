@@ -1,8 +1,8 @@
-import { useToast } from "@scaffald/ui";
-import { useRequestWorkerDeletionMutation } from "@scf/core/utils/account-deletion-sdk-hooks";
-import { useSessionContext } from "@scf/core/utils/supabase/useSessionContext";
-import { AlertTriangle, Trash2 } from "lucide-react-native";
-import { useState } from "react";
+import { useToast } from '@scaffald/ui'
+import { useRequestWorkerDeletionMutation } from '@scf/core/utils/account-deletion-sdk-hooks'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
+import { AlertTriangle, Trash2 } from 'lucide-react-native'
+import { useState } from 'react'
 import {
   Button,
   Card,
@@ -15,82 +15,79 @@ import {
   TextArea,
   Row,
   Stack,
-} from "@scaffald/ui";
+} from '@scaffald/ui'
 
 export function AccountDeletionPanel() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [reason, setReason] = useState("");
-  const [confirmText, setConfirmText] = useState("");
-  const toast = useToast();
-  const { signOut } = useSessionContext();
+  const [isOpen, setIsOpen] = useState(false)
+  const [reason, setReason] = useState('')
+  const [confirmText, setConfirmText] = useState('')
+  const toast = useToast()
+  const { signOut } = useSessionContext()
 
   const deletionMutation = useRequestWorkerDeletionMutation({
     onSuccess: () => {
       toast.show({
-        title: "Account deletion requested",
+        title: 'Account deletion requested',
         message:
           "Your data is being deleted. You'll be signed out now; deletion completes within 30 days.",
         duration: 5000,
-      });
-      setIsOpen(false);
-      setReason("");
-      setConfirmText("");
+      })
+      setIsOpen(false)
+      setReason('')
+      setConfirmText('')
       // Apple Guideline 5.1.1(v): the in-app flow must end with the user
       // signed out — they should not have to take further action to leave
       // the session that no longer maps to a backing account.
-      void signOut();
+      void signOut()
     },
     onError: (error: { message?: string }) => {
       toast.show({
-        title: "Deletion request failed",
-        message:
-          error.message ||
-          "Failed to submit deletion request. Please try again.",
-        variant: "error",
-      });
+        title: 'Deletion request failed',
+        message: error.message || 'Failed to submit deletion request. Please try again.',
+        variant: 'error',
+      })
     },
-  });
+  })
 
   const handleDelete = () => {
-    if (confirmText !== "DELETE") {
+    if (confirmText !== 'DELETE') {
       toast.show({
-        title: "Confirmation required",
+        title: 'Confirmation required',
         message: 'Please type "DELETE" to confirm account deletion.',
-        variant: "error",
-      });
-      return;
+        variant: 'error',
+      })
+      return
     }
 
     deletionMutation.mutate({
       reason: reason || undefined,
-    });
-  };
+    })
+  }
 
   return (
     <Card
       variant="outlined"
       padding="md"
-      style={{ borderColor: "#fca5a5", backgroundColor: "#fef2f2" }}
+      style={{ borderColor: '#fca5a5', backgroundColor: '#fef2f2' }}
     >
       <Stack gap={12}>
         <Row align="center" gap={8}>
           <AlertTriangle color="#ef4444" size={20} />
-          <Text style={{ color: "#ef4444" }}>Delete Account</Text>
+          <Text style={{ color: '#ef4444' }}>Delete Account</Text>
         </Row>
 
-        <Text style={{ color: "#414e62" }}>
-          Permanently delete your account and all associated data. This action
-          cannot be undone.
+        <Text style={{ color: '#414e62' }}>
+          Permanently delete your account and all associated data. This action cannot be undone.
         </Text>
 
-        <Text style={{ color: "#414e62" }}>
-          • All payment data will be anonymized • Your profile will be removed •
-          You will lose access to all organizations and teams
+        <Text style={{ color: '#414e62' }}>
+          • All payment data will be anonymized • Your profile will be removed • You will lose
+          access to all organizations and teams
         </Text>
 
         <Button
           variant="outline"
-          style={{ borderColor: "#f87171" }}
+          style={{ borderColor: '#f87171' }}
           color="error"
           iconStart={Trash2}
           onPress={() => setIsOpen(true)}
@@ -99,15 +96,12 @@ export function AccountDeletionPanel() {
         </Button>
 
         <Modal visible={isOpen} onClose={() => setIsOpen(false)} width={500}>
-          <ModalHeader
-            title="Delete Your Account?"
-            onClose={() => setIsOpen(false)}
-          />
+          <ModalHeader title="Delete Your Account?" onClose={() => setIsOpen(false)} />
           <ModalContent>
             <Stack gap={16}>
-              <Text style={{ color: "#414e62" }}>
-                This action cannot be undone. All your data will be permanently
-                deleted or anonymized.
+              <Text style={{ color: '#414e62' }}>
+                This action cannot be undone. All your data will be permanently deleted or
+                anonymized.
               </Text>
 
               <Stack gap={8}>
@@ -127,8 +121,7 @@ export function AccountDeletionPanel() {
                   onChangeText={setConfirmText}
                   placeholder="DELETE"
                   style={{
-                    borderColor:
-                      confirmText === "DELETE" ? "#86efac" : "#f87171",
+                    borderColor: confirmText === 'DELETE' ? '#86efac' : '#f87171',
                   }}
                 />
               </Stack>
@@ -137,25 +130,23 @@ export function AccountDeletionPanel() {
           <ModalActions
             orientation="right"
             secondaryAction={{
-              label: "Cancel",
+              label: 'Cancel',
               onPress: () => {
-                setIsOpen(false);
-                setConfirmText("");
-                setReason("");
+                setIsOpen(false)
+                setConfirmText('')
+                setReason('')
               },
               disabled: deletionMutation.isPending,
             }}
             primaryAction={{
-              label: deletionMutation.isPending
-                ? "Deleting..."
-                : "Delete Account",
+              label: deletionMutation.isPending ? 'Deleting...' : 'Delete Account',
               onPress: handleDelete,
-              disabled: confirmText !== "DELETE" || deletionMutation.isPending,
-              color: "error",
+              disabled: confirmText !== 'DELETE' || deletionMutation.isPending,
+              color: 'error',
             }}
           />
         </Modal>
       </Stack>
     </Card>
-  );
+  )
 }

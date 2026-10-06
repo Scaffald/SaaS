@@ -1,7 +1,17 @@
 import { X } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Pressable } from 'react-native'
-import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import {
+  Button,
+  Card,
+  Input,
+  ScrollView,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { workerPalette } from '@scf/core/components/ui/styles'
 import type { ParentSkill } from '../../types/profile-skills-types'
@@ -156,7 +166,15 @@ export function SimpleSkillAutocomplete({
         <Card
           bordered
           elevate
-          style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, maxHeight: 300, zIndex: 2000 }}
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: 4,
+            maxHeight: 300,
+            zIndex: 2000,
+          }}
         >
           <ScrollView>
             <Stack>
@@ -174,19 +192,23 @@ export function SimpleSkillAutocomplete({
                     <Pressable
                       key={skill.id}
                       onPress={() => handleSelect(skill)}
-                      style={{ opacity: isExisting ? 0.6 : 1, borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
+                      style={{
+                        opacity: isExisting ? 0.6 : 1,
+                        borderBottomWidth: 1,
+                        borderBottomColor: colors.border[t].default,
+                      }}
                     >
-                    <Stack
-                      padding="sm"
-                    >
-                      <Row justify="space-between" align="center">
-                        <Stack flex={1}>
-                          <Text>{skill.name}</Text>
-                          {skill.code && <Text style={{ color: colors.text[t].secondary }}>{skill.code}</Text>}
-                        </Stack>
-                        {isExisting && <Text style={{ color: pal.accent }}>Added</Text>}
-                      </Row>
-                    </Stack>
+                      <Stack padding="sm">
+                        <Row justify="space-between" align="center">
+                          <Stack flex={1}>
+                            <Text>{skill.name}</Text>
+                            {skill.code && (
+                              <Text style={{ color: colors.text[t].secondary }}>{skill.code}</Text>
+                            )}
+                          </Stack>
+                          {isExisting && <Text style={{ color: pal.accent }}>Added</Text>}
+                        </Row>
+                      </Stack>
                     </Pressable>
                   )
                 })

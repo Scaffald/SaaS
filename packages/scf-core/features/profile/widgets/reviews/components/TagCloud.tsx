@@ -31,7 +31,14 @@ export function TagCloud({ title, tags, variant, maxTags = 20 }: TagCloudProps) 
     return 1 + normalized * 2 // Range: 1-3
   }
 
-  const bgColor = variant === 'strength' ? (t === 'light' ? colors.success[100] : colors.success[900]) : (t === 'light' ? colors.error[100] : colors.error[900])
+  const bgColor =
+    variant === 'strength'
+      ? t === 'light'
+        ? colors.success[100]
+        : colors.success[900]
+      : t === 'light'
+        ? colors.error[100]
+        : colors.error[900]
   const textColor = variant === 'strength' ? colors.success[500] : colors.error[500]
 
   return (

@@ -288,7 +288,7 @@ function NotificationsRow({
   onPress: () => void
 }) {
   const label = count > 0 ? `Notifications, ${count} unread` : 'Notifications'
-  const fg = active ? colors.primary[600] : colors.text[theme].secondary
+  const fg = active ? colors.text[theme].emphasis : colors.text[theme].secondary
   return (
     <Pressable
       onPress={onPress}

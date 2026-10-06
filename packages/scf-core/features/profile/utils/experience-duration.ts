@@ -31,8 +31,7 @@ export function calculateTotalExperience(
     const start = new Date(entry.start_date)
     if (Number.isNaN(start.getTime())) continue
 
-    const usesNow =
-      entry.is_current || !entry.end_date || typeof entry.end_date !== 'string'
+    const usesNow = entry.is_current || !entry.end_date || typeof entry.end_date !== 'string'
     const end = usesNow ? now : new Date(entry.end_date as string)
     if (Number.isNaN(end.getTime())) continue
 
