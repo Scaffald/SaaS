@@ -48,5 +48,6 @@ prerequisites.test.ts
 resume.test.ts
 reviews.test.ts
 schema-regression.test.ts
+webhooks-rest.test.ts
 work-logs-rest.test.ts
 workers.test.ts
