@@ -13,6 +13,7 @@ import {
 import {
   Button,
   Card,
+  ErrorState,
   Input,
   Paragraph,
   Spinner,
@@ -40,7 +41,7 @@ export function StripeSettingsPage() {
   const toast = useToast()
   const queryClient = useQueryClient()
 
-  const { data, isLoading } = useStripeSettings({ refetchOnWindowFocus: false })
+  const { data, isLoading, isError, error, refetch } = useStripeSettings({ refetchOnWindowFocus: false })
 
   const updatePublishableKey = useUpdatePublishableKeyMutation({
     onSuccess: async () => {
@@ -157,6 +158,20 @@ export function StripeSettingsPage() {
         <Spinner variant="ios" size="lg" />
         <Text>Loading Stripe settings…</Text>
       </Stack>
+    )
+  }
+
+  // Without this the form rendered from `undefined` settings and announced
+  // "API secret not configured" whatever was stored — exactly what the 500
+  // behind #1018 looked like (#1021).
+  if (isError) {
+    return (
+      <ErrorState
+        title="Couldn’t load Stripe settings"
+        description="The stored configuration could not be read, so nothing below would be accurate."
+        error={error as Error}
+        retry={() => refetch()}
+      />
     )
   }
 

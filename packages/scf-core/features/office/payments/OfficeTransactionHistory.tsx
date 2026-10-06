@@ -10,7 +10,7 @@ import { Download, FileText, RefreshCw } from "lucide-react-native";
 import type { ColumnDef } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
-import { Button, Card, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { Button, Card, ErrorState, Spinner, Text, Row, Stack } from "@scaffald/ui";
 import { TransactionReceiptModal } from "./TransactionReceiptModal";
 import { colors } from "@scaffald/ui/tokens";
 import { useScreenRhythm } from '@scf/core/constants/layout'
@@ -254,6 +254,15 @@ export function OfficeTransactionHistory() {
             Loading transactions…
           </Text>
         </Stack>
+      ) : transactionsQuery.isError ? (
+        // A failed load is not "no transactions": the 500 behind #1019 read as
+        // "No transactions found." for every office user (#1021).
+        <ErrorState
+          title="Couldn’t load transactions"
+          description="The transaction history did not load. Nothing here means there are none."
+          error={transactionsQuery.error as Error}
+          retry={() => transactionsQuery.refetch()}
+        />
       ) : (
         <Card
           borderWidth={1}

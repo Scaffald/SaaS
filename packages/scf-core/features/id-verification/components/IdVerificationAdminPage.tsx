@@ -110,6 +110,9 @@ export function IdVerificationAdminPage({
     expired: 0,
     revoked: 0,
   }
+  // Until the list has actually loaded, a count is unknown, not zero: a failed
+  // load used to read "Active badges 0 … Total verifications 0" (#1021).
+  const count = (n: number): number | string => (listQuery.data ? n : '—')
 
   const columns = useMemo<ColumnDef<IdVerificationListItem, unknown>[]>(() => {
     return [
@@ -225,22 +228,22 @@ export function IdVerificationAdminPage({
           {[
             {
               label: 'Active badges',
-              value: summary.active,
+              value: count(summary.active),
               color: colors.success[800],
             },
             {
               label: 'Expired badges',
-              value: summary.expired,
+              value: count(summary.expired),
               color: colors.warning[800],
             },
             {
               label: 'Revoked badges',
-              value: summary.revoked,
+              value: count(summary.revoked),
               color: colors.error[700],
             },
             {
               label: 'Total verifications',
-              value: summary.total,
+              value: count(summary.total),
               color: colors.gray[900],
             },
           ].map((item) => (
@@ -332,6 +335,15 @@ export function IdVerificationAdminPage({
           listQuery.isLoading
             ? 'Loading ID verifications…'
             : 'No ID verifications found for this filter.'
+        }
+        loadError={
+          listQuery.isError
+            ? {
+                error: listQuery.error,
+                retry: () => listQuery.refetch(),
+                title: 'Couldn’t load ID verifications',
+              }
+            : undefined
         }
         itemType="verification"
         pageSize={25}

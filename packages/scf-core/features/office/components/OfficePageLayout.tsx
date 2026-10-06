@@ -1,5 +1,6 @@
 import {
   Button,
+  ErrorState,
   ScreenHeader,
   ListToolbar,
   Spinner,
@@ -59,6 +60,11 @@ interface OfficePageLayoutProps<TData> {
   itemType?: string
   pageSize?: number
   emptyMessage?: string
+  /**
+   * The list failed to load. Renders an error with Retry where the table would
+   * be, so a failure never reads as `emptyMessage` (#1021).
+   */
+  loadError?: { error: unknown; retry: () => void; title?: string }
   hideCreateButton?: boolean
   columnVisibility?: VisibilityState
   onColumnVisibilityChange?: (updater: Updater<VisibilityState>) => void
@@ -99,6 +105,7 @@ export function OfficePageLayout<TData>({
   itemType: _itemType = 'item',
   pageSize = 50,
   emptyMessage = 'No data found',
+  loadError,
   hideCreateButton = false,
   columnVisibility,
   onColumnVisibilityChange: _onColumnVisibilityChange,
@@ -157,7 +164,7 @@ export function OfficePageLayout<TData>({
         onClearAll={onClearFilters}
         // The count is unknown while loading — "0 users" over a spinner
         // asserts an empty list before anything is known (#623).
-        resultCount={isLoading ? undefined : data.length}
+        resultCount={isLoading || loadError ? undefined : data.length}
         resultNoun={resultNoun}
         resultNounPlural={resultNounPlural}
         actions={toolbarActions}
@@ -166,6 +173,14 @@ export function OfficePageLayout<TData>({
 
       {children}
 
+      {loadError ? (
+        <ErrorState
+          title={loadError.title ?? 'Couldn’t load this list'}
+          description="It did not load — an empty list here would not mean there is nothing."
+          error={loadError.error instanceof Error ? loadError.error : undefined}
+          retry={loadError.retry}
+        />
+      ) : (
       <Table
         columns={columnsFromTanStack(columns as ColumnDef<Record<string, unknown>, unknown>[])}
         data={data as Array<Record<string, unknown> & { id?: string }>}
@@ -187,6 +202,7 @@ export function OfficePageLayout<TData>({
             : undefined
         }
       />
+      )}
 
       {afterContent}
     </Stack>
