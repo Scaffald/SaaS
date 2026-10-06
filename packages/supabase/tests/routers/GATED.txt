@@ -30,6 +30,7 @@
 # the test that caught core.payment_transactions having a set_updated_at
 # trigger and no updated_at column (migration 361).
 
+api-keys-org-authz-rest.test.ts
 auth-session-regression.test.ts
 auth.test.ts
 background-checks-admin-rest.test.ts
