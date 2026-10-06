@@ -8,22 +8,33 @@
  * where the page landed, whether it scrolls sideways on a phone, where its
  * title sits, and whether the console complained.
  *
- * Local only. Needs `pnpm supa start`, the `api` function served, and a dev
+ * Local only. Needs `pnpm supa start` (which serves the `api` function) and a dev
  * server (see .claude/launch.json).
  *
  *   SWEEP_BASE_URL=http://localhost:8081 \
  *   SWEEP_EMAIL=zach@unicorn.love SWEEP_PASSWORD=password123 \
- *   node scripts/audit/sweep-routes.mjs
+ *   node scripts/audit/sweep-routes.mjs --scheme both
  *
- * Optional: SWEEP_ONLY=/office,/profile (prefix filter), SWEEP_OUT=<dir>.
- * Writes PNGs plus sweep.json and sweep.md to the output directory.
+ * Optional: SWEEP_ONLY=/office,/profile (prefix filter), SWEEP_OUT=<dir>,
+ * SWEEP_MODES=worker (skip employer mode — for an account with no org),
+ * --scheme light|dark|both (default light).
+ * Writes PNGs plus sweep.json and sweep.md to the output directory, and exits
+ * 1 if any capture rendered a theme other than the one asked for.
  */
 
 import { readdirSync, statSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { chromium } from 'playwright'
 import { createClient } from '@supabase/supabase-js'
-import { EXIT_INFRA, isServerGone, requireServer } from './lib/dev-server.mjs'
+import { EXIT_INFRA, finish, isServerGone, requireServer } from './lib/dev-server.mjs'
+import {
+  COOKIE_CONSENT_KEY,
+  cookieConsentValue,
+  frameFacts,
+  luminance,
+  parseSchemes,
+  waitForAppReady,
+} from './lib/app-ready.mjs'
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
 const ANON = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
@@ -31,6 +42,8 @@ const BASE = process.env.SWEEP_BASE_URL || 'http://localhost:8081'
 const OUT = process.env.SWEEP_OUT || 'docs/plans/redesign/shots-current'
 const ONLY = (process.env.SWEEP_ONLY || '').split(',').filter(Boolean)
 const EMPLOYER_ORG = process.env.SWEEP_ORG_SLUG || 'unicorn'
+const SCHEMES = parseSchemes()
+const MODES = (process.env.SWEEP_MODES || 'worker,employer').split(',').filter(Boolean)
 
 if (!ANON) {
   console.error('EXPO_PUBLIC_SUPABASE_ANON_KEY is required (see .env)')
@@ -65,13 +78,18 @@ function walk(dir) {
   }
   return out
 }
-const routes = [...new Set(
-  walk(APP_DIR).map((file) => {
-    let r = '/' + relative(APP_DIR, file).replace(/\.tsx$/, '')
-    r = r.replace(/\/\([^)]+\)/g, '').replace(/\/index$/, '')
-    return r === '' ? '/' : r
-  }),
-)]
+const toRoute = (file) => {
+  let r = '/' + relative(APP_DIR, file).replace(/\.tsx$/, '')
+  r = r.replace(/\/\([^)]+\)/g, '').replace(/\/index$/, '')
+  return r === '' ? '/' : r
+}
+const files = walk(APP_DIR)
+// The `(public)` group renders light whatever the reader's theme
+// (LIGHT_ONLY_GROUP in packages/scf-core/provider/theme/dark-mode-flag.ts), so
+// a dark pass expects light there and dark everywhere else.
+const LIGHT_ONLY = new Set(files.filter((f) => f.includes('/(public)/')).map(toRoute))
+const expectedTheme = (route, scheme) => (LIGHT_ONLY.has(route) ? 'light' : scheme)
+const routes = [...new Set(files.map(toRoute))]
   .filter((r) => !SKIP.some((re) => re.test(r)))
   .filter((r) => ONLY.length === 0 || ONLY.some((p) => r.startsWith(p)))
   .sort()
@@ -103,25 +121,30 @@ mkdirSync(OUT, { recursive: true })
 const browser = await chromium.launch()
 const results = []
 
-for (const [w, h, tag] of [
-  [1440, 900, 'desktop'],
-  [390, 844, 'mobile'],
-]) {
-  for (const mode of ['worker', 'employer']) {
-    const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 2 })
+const MATRIX = SCHEMES.flatMap((scheme) => [
+  [1440, 900, `desktop-${scheme}`, scheme],
+  [390, 844, `mobile-${scheme}`, scheme],
+])
+
+for (const [w, h, tag, scheme] of MATRIX) {
+  for (const mode of MODES) {
+    // Both halves of the theme: `colorScheme` for the OS preference and the
+    // app's own stored preference, which outranks it. Either alone can render
+    // the other theme and still be labelled with this one.
+    const ctx = await browser.newContext({
+      viewport: { width: w, height: h },
+      deviceScaleFactor: 2,
+      colorScheme: scheme,
+    })
     await ctx.addInitScript(
-      ([key, session, m, slug]) => {
+      ([key, session, m, slug, theme, consentKey, consent]) => {
         window.localStorage.setItem(key, session)
-        window.localStorage.setItem('@preferred_theme', 'light')
+        window.localStorage.setItem('@preferred_theme', theme)
         window.localStorage.setItem('@scaffald:app_mode', m)
         if (m === 'employer') window.localStorage.setItem('@scaffald:app_mode_org_slug', slug)
-        // The cookie banner is a real screen element but not one under review.
-        window.localStorage.setItem(
-          'scf-cookie-consent',
-          JSON.stringify({ version: '1', updatedAt: new Date().toISOString(), selections: { essential: true, analytics: false, marketing: false } }),
-        )
+        window.localStorage.setItem(consentKey, consent)
       },
-      [storageKey, JSON.stringify(data.session), mode, EMPLOYER_ORG],
+      [storageKey, JSON.stringify(data.session), mode, EMPLOYER_ORG, scheme, COOKIE_CONSENT_KEY, cookieConsentValue()],
     )
     const page = await ctx.newPage()
     const consoleErrors = []
@@ -140,29 +163,29 @@ for (const [w, h, tag] of [
       const before = consoleErrors.length
       const slug = route === '/' ? 'home' : route.slice(1).replace(/\//g, '--')
       const file = `${OUT}/${tag}--${mode}--${slug}.png`
-      const row = { tag, mode, route, file: relative(OUT, file) }
+      const expected = expectedTheme(route, scheme)
+      const row = { tag, scheme, expected, mode, route, file: relative(OUT, file) }
       try {
         await page.goto(BASE + route, { waitUntil: 'networkidle', timeout: 180000 })
-        await page.waitForTimeout(1500)
-        const facts = await page.evaluate(() => {
-          // Strip Expo's dev overlay (a sibling of #root) so it cannot cover the app.
+        const ready = await waitForAppReady(page)
+        // Strip Expo's dev overlay (a sibling of #root) so it cannot cover the app.
+        await page.evaluate(() => {
           for (const el of [...document.body.children]) if (el.id !== 'root') el.remove()
-          const doc = document.documentElement
-          const heading = document.querySelector('h1, [aria-level="1"], h2, [aria-level="2"], [role="heading"]')
-          const rect = heading ? heading.getBoundingClientRect() : null
-          return {
-            landed: location.pathname,
-            hScroll: doc.scrollWidth > doc.clientWidth + 1,
-            scrollWidth: doc.scrollWidth,
-            textLen: document.body.innerText.length,
-            title: heading ? heading.textContent.trim().slice(0, 60) : null,
-            titleX: rect ? Math.round(rect.x) : null,
-            titleY: rect ? Math.round(rect.y) : null,
-          }
         })
+        const facts = await frameFacts(page)
         await page.waitForTimeout(300)
         await page.screenshot({ path: file, fullPage: false })
-        Object.assign(row, facts, { errors: consoleErrors.slice(before) })
+        // Light ground on a dark capture (or the reverse): the stamp said one
+        // thing and the tree painted another. Transparent grounds are skipped.
+        const lum = luminance(facts.bodyBg)
+        const groundMismatch = lum !== null && (expected === 'dark' ? lum > 0.4 : lum < 0.2)
+        const errors = consoleErrors.slice(before)
+        // The server can die after `goto` resolves: the page half-loads, the
+        // theme never stamps, and the capture reads as a theme failure. Not
+        // ready plus an unreachable-server error is the dead server, not the app.
+        const unreachable = errors.find((e) => isServerGone(e))
+        if (!ready && unreachable) throw new Error(unreachable)
+        Object.assign(row, facts, { ready, groundMismatch, errors })
       } catch (e) {
         // A dead dev server is not a finding about this route. Metro OOMs
         // partway through a long run (#680), and the first version of this
@@ -192,6 +215,10 @@ for (const [w, h, tag] of [
         row.failed ? 'FAILED' : null,
         row.landed && row.landed !== route ? `→ ${row.landed}` : null,
         row.hScroll ? 'H-SCROLL' : null,
+        row.clipped?.length ? `CLIPPED(${row.clipped.length})` : null,
+        row.renderedTheme && row.renderedTheme !== expected ? `THEME=${row.renderedTheme}` : null,
+        row.groundMismatch ? `GROUND ${row.bodyBg}` : null,
+        row.ready === false ? 'NOT-READY' : null,
         row.textLen != null && row.textLen < 200 ? 'THIN' : null,
         row.errors?.length ? `${row.errors.length} console err` : null,
       ].filter(Boolean)
@@ -208,14 +235,28 @@ const md = [
   '',
   `${results.length} captures across ${routes.length} routes. Base ${BASE}.`,
   '',
-  '| Route | Mode | Width | Landed | Title (x,y) | H-scroll | Console errors |',
-  '|---|---|---|---|---|---|---|',
+  '| Route | Mode | Capture | Landed | Title (x,y) | H-scroll | Clipped | Theme | Console errors |',
+  '|---|---|---|---|---|---|---|---|---|',
   ...results.map(
     (r) =>
       `| \`${r.route}\` | ${r.mode} | ${r.tag} | ${r.failed ? 'FAILED' : r.landed === r.route ? '' : r.landed} | ${
         r.title ? `${r.title} (${r.titleX},${r.titleY})` : '—'
-      } | ${r.hScroll ? 'yes' : ''} | ${r.errors?.length || ''} |`,
+      } | ${r.hScroll ? 'yes' : ''} | ${r.clipped?.map((c) => c.text).join('; ') || ''} | ${
+        r.renderedTheme === r.expected && !r.groundMismatch ? '' : `${r.renderedTheme ?? ''} ${r.groundMismatch ? r.bodyBg : ''}`
+      } | ${r.errors?.length || ''} |`,
   ),
 ]
 writeFileSync(join(OUT, 'sweep.md'), md.join('\n') + '\n')
 console.log(`\nwrote ${results.length} captures, sweep.json and sweep.md to ${OUT}`)
+
+// A capture labelled dark that rendered light manufactures confidence in the
+// half of the palette least looked at, so it fails the run rather than warning.
+// Public routes are expected light on both passes (see LIGHT_ONLY above).
+const wrongTheme = results.filter((r) => r.renderedTheme && r.renderedTheme !== r.expected)
+if (wrongTheme.length > 0) {
+  console.log('\n--- THEME ASSERTION FAILED ---')
+  for (const r of wrongTheme) console.log(`  ${r.tag} ${r.mode} ${r.route}: rendered ${r.renderedTheme}`)
+}
+// `finish` re-checks the server before reporting failure, so a death after the
+// last capture still exits INFRA rather than 1.
+await finish(BASE, wrongTheme.length > 0)

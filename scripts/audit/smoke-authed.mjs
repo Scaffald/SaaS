@@ -16,7 +16,7 @@
  *
  * Prerequisites:
  *   pnpm supa start
- *   pnpm supa functions serve api
+ *   (the `api` edge function is served by the stack itself — no serve step)
  *   a dev server (see .claude/launch.json)
  *
  * Usage:
@@ -31,6 +31,7 @@
 import { chromium } from 'playwright'
 import { createClient } from '@supabase/supabase-js'
 import { requireServer } from './lib/dev-server.mjs'
+import { COOKIE_CONSENT_KEY, cookieConsentValue, parseSchemes, waitForAppReady } from './lib/app-ready.mjs'
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
 const ANON = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
@@ -105,14 +106,7 @@ const results = []
 //   scaffald-ui-theme   themeStorage.ts (packages/ui) — nothing reads it
 //   @preferred_theme    UniversalThemeProvider via kvStorage — the app's
 // --scheme light | dark | both   (default: light)
-const schemeArg = (process.argv.find((a) => a.startsWith('--scheme=')) ?? '').split('=')[1]
-  ?? (process.argv.includes('--scheme') ? process.argv[process.argv.indexOf('--scheme') + 1] : null)
-  ?? 'light'
-if (!['light', 'dark', 'both'].includes(schemeArg)) {
-  console.error(`Unknown --scheme ${schemeArg}. Use light, dark or both.`)
-  process.exit(2)
-}
-const SCHEMES = schemeArg === 'both' ? ['light', 'dark'] : [schemeArg]
+const SCHEMES = parseSchemes()
 
 const MATRIX = SCHEMES.flatMap((scheme) => [
   [1440, 900, `desktop-${scheme}`, scheme],
@@ -132,14 +126,17 @@ for (const [w, h, tag, scheme] of MATRIX) {
   // Playwright's `colorScheme` alone renders light and a "dark" pass that
   // only sets it is silently testing light twice.
   await ctx.addInitScript(
-    ([key, session, theme]) => {
+    ([key, session, theme, consentKey, consent]) => {
       window.localStorage.setItem(key, session)
+      // The cookie banner is not under review, and at 390px it covers the
+      // bottom fifth of every capture.
+      window.localStorage.setItem(consentKey, consent)
       // The app's key, set explicitly rather than relying on
       // prefers-color-scheme: a stored preference beats the system setting, so
       // `colorScheme` alone is not enough to guarantee which theme renders.
       window.localStorage.setItem('@preferred_theme', theme)
     },
-    [storageKey, JSON.stringify(data.session), scheme],
+    [storageKey, JSON.stringify(data.session), scheme, COOKIE_CONSENT_KEY, cookieConsentValue()],
   )
 
   const page = await ctx.newPage()
@@ -161,17 +158,9 @@ for (const [w, h, tag, scheme] of MATRIX) {
       // overlay on one route and a half-themed frame on another (#967), while
       // the data-theme assertion below — read AFTER the screenshots — still said
       // "dark". So: wait for the stamp and for the overlay to go, then settle.
-      await page
-        .waitForFunction(
-          () =>
-            document.documentElement.getAttribute('data-theme') !== null &&
-            !/\bLoading\.\.\./.test(document.body.innerText),
-          { timeout: 45000 },
-        )
-        .catch(() => {
-          console.log(`  ↳ ${tag} ${name}: theme not stamped or overlay still up after 45s — capturing anyway`)
-        })
-      await page.waitForTimeout(2500)
+      if (!(await waitForAppReady(page, { settle: 2500 }))) {
+        console.log(`  ↳ ${tag} ${name}: theme not stamped or overlay still up after 45s — capturing anyway`)
+      }
       // Dismiss Expo's dev-only error overlay so it does not cover the UI.
       // It is a dev-server artifact, not part of the app.
       const overlayInfo = await page.evaluate(() => {
@@ -309,10 +298,11 @@ if (wrongTheme.length > 0 || unsetTheme.length > 0) {
     console.log(`  ${r.tag}/${r.name}: <html data-theme> was never stamped`)
   }
   console.log(
-    '\n  A dark pass renders dark only when the dev server was STARTED with\n' +
-      '  EXPO_PUBLIC_DARK_MODE=1 (Expo inlines it at build time) and Metro\n' +
-      "  rebuilt — `rm -rf \"$TMPDIR/metro-cache\"` if you switched the flag on a\n" +
-      '  server that had already bundled. See provider/theme/dark-mode-flag.ts.',
+    '\n  Dark has shipped (#999) — there is no flag to set. The theme comes from\n' +
+      "  the '@preferred_theme' key this script seeds, then the OS scheme. A\n" +
+      '  wrong theme here is a real bug or a stale bundle: wipe\n' +
+      '  "$TMPDIR/metro-cache" if the ui submodule moved under a running server,\n' +
+      '  then see packages/scf-core/provider/theme/dark-mode-flag.ts.',
   )
   process.exit(1)
 }
