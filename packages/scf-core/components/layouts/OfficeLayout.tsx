@@ -5,7 +5,7 @@ import { getChildRoutes } from '@scf/core/utils/navigation/routeHierarchy'
 import { usePathname } from '@scf/core/utils/usePathname'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
-import { Grid, Row, Stack } from '@scaffald/ui'
+import { Grid, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { StackProps } from '@scaffald/ui'
 import { Breadcrumb, type BreadcrumbItemData, Tabs } from '@scaffald/ui'
@@ -85,9 +85,15 @@ export const OfficeLayout = ({
   // than a listener per component (.radium/scaffald-ui.md), and the same
   // breakpoint as every other layout — Office used to collapse to one column
   // at 800px while the rest of the app did so somewhere else.
-  const { gutter: contentPadding, verticalPadding, sectionGap, columnGap, rowGap } =
-    useScreenRhythm()
+  const {
+    gutter: contentPadding,
+    verticalPadding,
+    sectionGap,
+    columnGap,
+    rowGap,
+  } = useScreenRhythm()
   const { t } = useTranslation()
+  const { theme } = useThemeContext()
 
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({
@@ -186,7 +192,13 @@ export const OfficeLayout = ({
   }
 
   return (
-    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      // The office ground was `colors.gray[50]`, a light-only literal in a
+      // module-level sheet — the one piece of this screen that could never go
+      // dark (#970).
+      style={[styles.scroll, { backgroundColor: colors.bg[theme].subtle }]}
+      showsVerticalScrollIndicator={false}
+    >
       <Stack gap={sectionGap} paddingTop={verticalPadding} paddingBottom={verticalPadding}>
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
@@ -220,8 +232,16 @@ export const OfficeLayout = ({
             gap={columnGap}
             rowGap={rowGap}
           >
-            {hasLeftContent ? <Stack {...(contentProps ?? {})} {...(leftContainerProps ?? {})}>{leftContent}</Stack> : null}
-            {hasRightContent ? <Stack {...(contentProps ?? {})} {...(rightContainerProps ?? {})}>{rightContent}</Stack> : null}
+            {hasLeftContent ? (
+              <Stack {...(contentProps ?? {})} {...(leftContainerProps ?? {})}>
+                {leftContent}
+              </Stack>
+            ) : null}
+            {hasRightContent ? (
+              <Stack {...(contentProps ?? {})} {...(rightContainerProps ?? {})}>
+                {rightContent}
+              </Stack>
+            ) : null}
           </Grid>
         </Stack>
       </Stack>
@@ -230,5 +250,5 @@ export const OfficeLayout = ({
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: colors.gray[50] },
+  scroll: { flex: 1 },
 })

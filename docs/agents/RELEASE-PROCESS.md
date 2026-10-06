@@ -174,6 +174,11 @@ device or simulator with the exact build you are about to submit.
       render. Every build from `app-v1.0.1` to `app-v1.17.1` shipped a black
       map — a Mapbox Standard style on a v10 SDK answers 200 and paints nothing
       (#765) — and no automated check noticed for six months.
+- [ ] Open **Home and the Workers map in dark appearance** (Appearance in the
+      account menu, or the OS setting with Appearance on System) and confirm
+      the shell, the tab strip and the map tiles all render dark — dark ships
+      since #840, and the first dark run showed a light shell under a dark
+      ground that no light-mode check could see (#970).
 - [ ] Open **Office → Workers → Storage Analytics** on an iPad and confirm the
       table reads as cards with column labels (#768).
 - [ ] Confirm the first screen carries **no cookie sheet** (#764).

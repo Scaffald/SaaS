@@ -1,38 +1,16 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { isDarkModeEnabled, isLightOnlySurface, resolveThemePreference } from '../dark-mode-flag'
 
 /**
  * The gate, tested without React.
  *
  * Dark mode was hard-off for five months because of one line in
- * `useThemeSetting` that no test covered. Both halves of what replaced it are
- * exercised here: the flag read, and the preference resolution.
+ * `useThemeSetting` that no test covered. The gate that replaced it is open
+ * now (#840); the preference resolution it fed is what matters here.
  */
 describe('isDarkModeEnabled', () => {
-  const original = process.env.EXPO_PUBLIC_DARK_MODE
-
-  afterEach(() => {
-    if (original === undefined) delete process.env.EXPO_PUBLIC_DARK_MODE
-    else process.env.EXPO_PUBLIC_DARK_MODE = original
-  })
-
-  it('is off when the flag is unset — the production default', () => {
-    delete process.env.EXPO_PUBLIC_DARK_MODE
-    expect(isDarkModeEnabled()).toBe(false)
-  })
-
-  it('is on for exactly "1"', () => {
-    process.env.EXPO_PUBLIC_DARK_MODE = '1'
+  it('is on — dark ships (#840); the env flag that gated #833 is gone', () => {
     expect(isDarkModeEnabled()).toBe(true)
-  })
-
-  it('is off for other truthy-looking values', () => {
-    // Deliberately strict. A flag that accepts 'true', 'yes' and '0' invites
-    // "I set it and nothing happened" — one spelling, documented in one place.
-    for (const value of ['true', 'TRUE', 'yes', 'on', '0', '', ' 1']) {
-      process.env.EXPO_PUBLIC_DARK_MODE = value
-      expect(isDarkModeEnabled(), `value ${JSON.stringify(value)}`).toBe(false)
-    }
   })
 })
 
@@ -77,17 +55,9 @@ describe('resolveThemePreference', () => {
     })
   })
 
-  it('reads the live flag when the third argument is omitted', () => {
-    const original = process.env.EXPO_PUBLIC_DARK_MODE
-    try {
-      delete process.env.EXPO_PUBLIC_DARK_MODE
-      expect(resolveThemePreference('dark', 'dark')).toBe('light')
-      process.env.EXPO_PUBLIC_DARK_MODE = '1'
-      expect(resolveThemePreference('dark', 'dark')).toBe('dark')
-    } finally {
-      if (original === undefined) delete process.env.EXPO_PUBLIC_DARK_MODE
-      else process.env.EXPO_PUBLIC_DARK_MODE = original
-    }
+  it('resolves dark with no third argument — the gate is open by default', () => {
+    expect(resolveThemePreference('dark', 'dark')).toBe('dark')
+    expect(resolveThemePreference('system', 'dark')).toBe('dark')
   })
 })
 

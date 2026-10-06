@@ -15,6 +15,7 @@ import { Separator, Stack, Text } from '@scaffald/ui'
 import { ScrollView } from 'react-native'
 
 import { SettingsNotificationsSection } from '@scf/core/features/notifications/SettingsNotificationsSection'
+import { AppearanceSettingsSection } from '@scf/core/features/appearance/AppearanceSettingsSection'
 
 const sectionGap = 40
 
@@ -39,6 +40,10 @@ export default function SettingsPage() {
               </Text>
               <VanityUrlSection />
             </Stack>
+
+            <Separator />
+
+            <AppearanceSettingsSection />
 
             <Separator />
 

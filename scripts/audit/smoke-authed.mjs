@@ -87,7 +87,8 @@ const results = []
 // short-circuited all of it, and three earlier attempts at a dark pass
 // produced LIGHT screenshots labelled "dark".
 //
-// #833 restored the resolution behind `EXPO_PUBLIC_DARK_MODE=1`. That flag is
+// #833 restored the resolution behind `EXPO_PUBLIC_DARK_MODE=1`; #840 removed
+// the flag — dark ships. The note below is history: the flag was
 // inlined by Expo at BUILD time, so the dev server has to be *started* with it:
 //
 //   EXPO_PUBLIC_DARK_MODE=1 pnpm web

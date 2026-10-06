@@ -35,14 +35,35 @@ const setStoredTheme = (theme: ThemeName) => {
   })
 }
 
-// Platform-specific system theme detection
-const getSystemTheme = (): 'light' | 'dark' => {
-  if (Platform.OS === 'web') {
-    if (typeof window === 'undefined') return 'light'
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  }
-  const colorScheme = useColorScheme()
-  return colorScheme === 'dark' ? 'dark' : 'light'
+/**
+ * The OS colour scheme, read in a way the server can agree with.
+ *
+ * Reading `matchMedia` during render gave a dark-OS visitor a first client
+ * render that disagreed with the server's (which can only ever say light).
+ * React recovered from the hydration mismatch by regenerating the tree, and
+ * the regenerated tree came out LIGHT — while InnerProvider's effect, running
+ * on the client's value, stamped `<html data-theme="dark">` and painted the
+ * body dark. That is the half-dark page of #970: a dark ground under a light
+ * shell, and names in `text.dark.primary` (white) on light rows the moment
+ * anything mounted late enough to read the real value.
+ *
+ * So on web the scheme starts as the server's `light` and moves to the real
+ * value in an effect, after hydration, the same way the stored preference
+ * already did — and that path was the one that worked (OS light, stored
+ * dark). It also follows the OS live. Native keeps `useColorScheme`.
+ */
+const useSystemTheme = (): 'light' | 'dark' => {
+  const native = useColorScheme()
+  const [web, setWeb] = useState<'light' | 'dark'>('light')
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined' || !window.matchMedia) return
+    const query = window.matchMedia('(prefers-color-scheme: dark)')
+    const apply = () => setWeb(query.matches ? 'dark' : 'light')
+    apply()
+    query.addEventListener('change', apply)
+    return () => query.removeEventListener('change', apply)
+  }, [])
+  return Platform.OS === 'web' ? web : native === 'dark' ? 'dark' : 'light'
 }
 
 // Start early theme loading
@@ -54,7 +75,7 @@ loadThemePromise.then((val) => {
 
 export const UniversalThemeProvider = ({ children }: { children: ReactNode }) => {
   const [current, setCurrent] = useState<ThemeName | null>(null)
-  const systemTheme = Platform.OS === 'web' ? getSystemTheme() : useColorScheme() || 'light'
+  const systemTheme = useSystemTheme()
 
   useIsomorphicLayoutEffect(() => {
     async function main() {
@@ -163,10 +184,8 @@ export const useThemeSetting = () => {
     throw new Error('useThemeSetting should be used within the context provider.')
   }
 
-  // Dark resolution is restored, gated on EXPO_PUBLIC_DARK_MODE=1 (#833 part 1).
-  // Without the flag this returns 'light' for every preference, so production
-  // behaves exactly as it did while the old hardcoded cast was here. See
-  // ./dark-mode-flag.ts for why it is an env flag and not `__DEV__`.
+  // Dark resolution goes through `resolveThemePreference` (see
+  // ./dark-mode-flag.ts for the history of the gate it used to sit behind).
   //
   // Forced light on the anonymous surface (#953). Both readers of this hook —
   // ThemeBridge, which drives @scaffald/ui's provider, and InnerProvider, which
