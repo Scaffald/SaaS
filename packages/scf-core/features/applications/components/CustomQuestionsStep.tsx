@@ -159,7 +159,11 @@ export function CustomQuestionsStep({
     }
 
     // Text length validation (only for text input questions)
-    if ((question.type === 'short_text' || question.type === 'long_text') && typeof answer === 'string' && answer.length > 0) {
+    if (
+      (question.type === 'short_text' || question.type === 'long_text') &&
+      typeof answer === 'string' &&
+      answer.length > 0
+    ) {
       const minLength = getMinLength(question)
       const maxLength = getMaxLength(question)
 
@@ -238,19 +242,24 @@ export function CustomQuestionsStep({
           borderRadius={16}
           gap={8}
           style={{
-            backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
-            borderColor: theme === "light" ? colors.error[300] : colors.error[700],
+            backgroundColor: theme === 'light' ? colors.error[50] : colors.error[900],
+            borderColor: theme === 'light' ? colors.error[300] : colors.error[700],
             borderWidth: 1,
           }}
         >
-          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Please complete the following:</Text>
+          <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+            Please complete the following:
+          </Text>
           <Stack gap={4}>
             {Object.entries(errors)
               .filter(([, error]) => error !== undefined)
               .map(([questionId, error]) => {
                 const question = questions.find((q) => q.id === questionId)
                 return (
-                  <Text key={questionId} style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+                  <Text
+                    key={questionId}
+                    style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+                  >
                     • {question?.question || 'Question'}: {error}
                   </Text>
                 )
@@ -266,7 +275,12 @@ export function CustomQuestionsStep({
             <Label>
               {index + 1}. {question.question}
               {question.required && (
-                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300], marginLeft: 4 }}>
+                <Text
+                  style={{
+                    color: theme === 'light' ? colors.error[700] : colors.error[300],
+                    marginLeft: 4,
+                  }}
+                >
                   *
                 </Text>
               )}
@@ -289,7 +303,9 @@ export function CustomQuestionsStep({
                   placeholder="Type your answer here..."
                   style={{
                     borderColor: errors[question.id]
-                      ? theme === "light" ? colors.error[300] : colors.error[700]
+                      ? theme === 'light'
+                        ? colors.error[300]
+                        : colors.error[700]
                       : colors.border[theme].default,
                   }}
                   editable={!isSubmitting}
@@ -300,7 +316,9 @@ export function CustomQuestionsStep({
                     style={{
                       color:
                         getCharacterCount(question.id) > getMaxLength(question)
-                          ? theme === "light" ? colors.error[700] : colors.error[300]
+                          ? theme === 'light'
+                            ? colors.error[700]
+                            : colors.error[300]
                           : colors.text[theme].secondary,
                     }}
                   >
@@ -329,7 +347,9 @@ export function CustomQuestionsStep({
                   style={{
                     minHeight: 120,
                     borderColor: errors[question.id]
-                      ? theme === "light" ? colors.error[300] : colors.error[700]
+                      ? theme === 'light'
+                        ? colors.error[300]
+                        : colors.error[700]
                       : colors.border[theme].default,
                   }}
                   editable={!isSubmitting}
@@ -340,7 +360,9 @@ export function CustomQuestionsStep({
                     style={{
                       color:
                         getCharacterCount(question.id) > getMaxLength(question)
-                          ? theme === "light" ? colors.error[700] : colors.error[300]
+                          ? theme === 'light'
+                            ? colors.error[700]
+                            : colors.error[300]
                           : colors.text[theme].secondary,
                     }}
                   >
@@ -361,53 +383,53 @@ export function CustomQuestionsStep({
                     }
                     disabled={isSubmitting}
                   >
-                  <Row
-                    gap={12}
-                    align="center"
-                    padding="sm"
-                    borderRadius={16}
-                    style={{
-                      borderWidth: 1,
-                      borderColor:
-                        getAnswer(question.id) === option
-                          ? theme === "light" ? colors.blue[300] : colors.blue[700]
-                          : errors[question.id]
-                            ? theme === "light" ? colors.error[300] : colors.error[700]
-                            : colors.border[theme].default,
-                      backgroundColor:
-                        getAnswer(question.id) === option
-                          ? theme === "light" ? colors.blue[50] : colors.blue[900]
-                          : colors.bg[theme].default,
-                    }}
-                  >
-                    <Stack
-                      width={20}
-                      height={20}
-                      borderRadius={12}
+                    <Row
+                      gap={12}
+                      align="center"
+                      padding="sm"
+                      borderRadius={16}
                       style={{
-                        borderWidth: 2,
+                        borderWidth: 1,
                         borderColor:
                           getAnswer(question.id) === option
-                            ? theme === "light" ? colors.blue[300] : colors.blue[700]
-                            : colors.border[theme].default,
-                        backgroundColor: colors.bg[theme].default,
+                            ? colors.text[theme].emphasis
+                            : errors[question.id]
+                              ? theme === 'light'
+                                ? colors.error[300]
+                                : colors.error[700]
+                              : colors.border[theme].default,
+                        backgroundColor:
+                          getAnswer(question.id) === option
+                            ? colors.bg[theme].selected
+                            : colors.bg[theme].default,
                       }}
-                      justify="center"
-                      align="center"
                     >
-                      {getAnswer(question.id) === option && (
-                        <Stack
-                          width={12}
-                          height={12}
-                          borderRadius={12}
-                          style={{ backgroundColor: theme === "light" ? colors.blue[500] : colors.blue[400] }}
-                        />
-                      )}
-                    </Stack>
-                    <Text style={{ color: colors.text[theme].secondary, flex: 1 }}>
-                      {option}
-                    </Text>
-                  </Row>
+                      <Stack
+                        width={20}
+                        height={20}
+                        borderRadius={12}
+                        style={{
+                          borderWidth: 2,
+                          borderColor:
+                            getAnswer(question.id) === option
+                              ? colors.text[theme].emphasis
+                              : colors.border[theme].default,
+                          backgroundColor: colors.bg[theme].default,
+                        }}
+                        justify="center"
+                        align="center"
+                      >
+                        {getAnswer(question.id) === option && (
+                          <Stack
+                            width={12}
+                            height={12}
+                            borderRadius={12}
+                            style={{ backgroundColor: colors.fg[theme].active }}
+                          />
+                        )}
+                      </Stack>
+                      <Text style={{ color: colors.text[theme].secondary, flex: 1 }}>{option}</Text>
+                    </Row>
                   </Pressable>
                 ))}
               </Stack>
@@ -431,45 +453,47 @@ export function CustomQuestionsStep({
                       }}
                       disabled={isSubmitting}
                     >
-                    <Row
-                      gap={12}
-                      align="center"
-                      padding="sm"
-                      borderRadius={16}
-                      style={{
-                        borderWidth: 1,
-                        borderColor: isSelected
-                          ? theme === "light" ? colors.blue[300] : colors.blue[700]
-                          : errors[question.id]
-                            ? theme === "light" ? colors.error[300] : colors.error[700]
-                            : colors.border[theme].default,
-                        backgroundColor: isSelected
-                          ? theme === "light" ? colors.blue[50] : colors.blue[900]
-                          : colors.bg[theme].default,
-                      }}
-                    >
-                      <Stack
-                        width={20}
-                        height={20}
-                        borderRadius={8}
+                      <Row
+                        gap={12}
+                        align="center"
+                        padding="sm"
+                        borderRadius={16}
                         style={{
-                          borderWidth: 2,
+                          borderWidth: 1,
                           borderColor: isSelected
-                            ? theme === "light" ? colors.blue[300] : colors.blue[700]
-                            : colors.border[theme].default,
+                            ? colors.border[theme].active
+                            : errors[question.id]
+                              ? theme === 'light'
+                                ? colors.error[300]
+                                : colors.error[700]
+                              : colors.border[theme].default,
                           backgroundColor: isSelected
-                            ? theme === "light" ? colors.blue[500] : colors.blue[400]
+                            ? colors.bg[theme].selected
                             : colors.bg[theme].default,
                         }}
-                        justify="center"
-                        align="center"
                       >
-                        {isSelected && <Text style={{ color: colors.white }}>✓</Text>}
-                      </Stack>
-                      <Text style={{ color: colors.text[theme].secondary, flex: 1 }}>
-                        {option}
-                      </Text>
-                    </Row>
+                        <Stack
+                          width={20}
+                          height={20}
+                          borderRadius={8}
+                          style={{
+                            borderWidth: 2,
+                            borderColor: isSelected
+                              ? colors.border[theme].active
+                              : colors.border[theme].default,
+                            backgroundColor: isSelected
+                              ? colors.fg[theme].active
+                              : colors.bg[theme].default,
+                          }}
+                          justify="center"
+                          align="center"
+                        >
+                          {isSelected && <Text style={{ color: colors.white }}>✓</Text>}
+                        </Stack>
+                        <Text style={{ color: colors.text[theme].secondary, flex: 1 }}>
+                          {option}
+                        </Text>
+                      </Row>
                     </Pressable>
                   )
                 })}
@@ -496,7 +520,9 @@ export function CustomQuestionsStep({
 
             {/* Error Message */}
             {errors[question.id] && (
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors[question.id]}</Text>
+              <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                {errors[question.id]}
+              </Text>
             )}
           </Stack>
         ))}

@@ -51,7 +51,7 @@ export function NarrativeView({
           backgroundColor={colors.bg[t].selected}
           borderRadius={16}
           borderWidth={1}
-          borderColor={t === 'dark' ? colors.blue[700] : colors.blue[300]}
+          borderColor={colors.border[t].active}
         >
           <Text color={colors.text[t].emphasis}>Your Personality Profile</Text>
           <Text color={colors.text[t].emphasis} style={{ lineHeight: 20 }}>
@@ -68,7 +68,7 @@ export function NarrativeView({
           backgroundColor={colors.bg[t].selected}
           borderRadius={16}
           borderWidth={1}
-          borderColor={t === 'dark' ? colors.blue[700] : colors.blue[300]}
+          borderColor={colors.border[t].active}
           accessibilityLiveRegion="polite"
         >
           <Text color={colors.text[t].emphasis}>Partial Results</Text>

@@ -13,13 +13,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { Text, Row, Stack } from '@scaffald/ui'
 import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
-import {
-  jobPalette,
-  textSmall,
-  textCaption,
-  MetricRow,
-  Pill,
-} from '@scf/core/components/ui'
+import { jobPalette, textSmall, textCaption, MetricRow, Pill } from '@scf/core/components/ui'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type Job = JobListOutput['jobs'][number]
@@ -39,24 +33,24 @@ const getStatusColors = (status: string, theme: 'light' | 'dark') => {
       border: colors.border[theme].subtle,
     },
     open: {
-      backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
-      text: theme === "light" ? colors.green[700] : colors.green[300],
-      border: theme === "light" ? colors.green[300] : colors.green[700],
+      backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
+      text: theme === 'light' ? colors.green[700] : colors.green[300],
+      border: theme === 'light' ? colors.green[300] : colors.green[700],
     },
     paused: {
-      backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900],
-      text: theme === "light" ? colors.yellow[700] : colors.yellow[300],
-      border: theme === "light" ? colors.yellow[300] : colors.yellow[700],
+      backgroundColor: theme === 'light' ? colors.yellow[50] : colors.yellow[900],
+      text: theme === 'light' ? colors.yellow[700] : colors.yellow[300],
+      border: theme === 'light' ? colors.yellow[300] : colors.yellow[700],
     },
     closed: {
-      backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
-      text: theme === "light" ? colors.error[700] : colors.error[300],
-      border: theme === "light" ? colors.error[300] : colors.error[700],
+      backgroundColor: theme === 'light' ? colors.error[50] : colors.error[900],
+      text: theme === 'light' ? colors.error[700] : colors.error[300],
+      border: theme === 'light' ? colors.error[300] : colors.error[700],
     },
     reviewing: {
-      backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
-      text: theme === "light" ? colors.blue[700] : colors.blue[300],
-      border: theme === "light" ? colors.blue[300] : colors.blue[700],
+      backgroundColor: colors.bg[theme].selected,
+      text: colors.text[theme].emphasis,
+      border: colors.border[theme].active,
     },
   }
   return STATUS_COLORS[status] || STATUS_COLORS.draft
@@ -110,10 +104,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
         <Row justify="space-between" align="flex-start" gap={12}>
           <Stack gap={8} flex={1}>
             <Row align="center" gap={8} wrap>
-              <Briefcase
-                size={18}
-                color={isSelected ? pal.accent : colors.text[theme].tertiary}
-              />
+              <Briefcase size={18} color={isSelected ? pal.accent : colors.text[theme].tertiary} />
               <Text
                 style={{
                   flex: 1,
@@ -145,9 +136,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
               value={applicationCount.toString()}
             />
           )}
-          {teamName && (
-            <MetricItem icon={<Briefcase size={16} />} label="Team" value={teamName} />
-          )}
+          {teamName && <MetricItem icon={<Briefcase size={16} />} label="Team" value={teamName} />}
           {postedDate && (
             <MetricItem icon={<Calendar size={16} />} label="Posted" value={postedDate} />
           )}
@@ -210,7 +199,9 @@ function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; va
     >
       {icon}
       <Stack gap={0}>
-        <Text style={{ ...textCaption, color: colors.text[theme].tertiary, textTransform: 'uppercase' }}>
+        <Text
+          style={{ ...textCaption, color: colors.text[theme].tertiary, textTransform: 'uppercase' }}
+        >
           {label}
         </Text>
         <Text style={{ ...textSmall, color: colors.text[theme].secondary }}>{value}</Text>

@@ -20,12 +20,12 @@
       "hexColor": 1
     },
     "api-keys": {
-      "accentRamp": 21,
+      "accentRamp": 19,
       "borderRadius": 15,
       "hexColor": 1
     },
     "applications": {
-      "accentRamp": 72,
+      "accentRamp": 2,
       "borderRadius": 31,
       "fontSize": 22,
       "hexColor": 1
@@ -39,7 +39,7 @@
       "hexColor": 4
     },
     "background-check": {
-      "accentRamp": 12,
+      "accentRamp": 4,
       "borderRadius": 49,
       "fontSize": 2
     },
@@ -74,7 +74,7 @@
       "hexColor": 2
     },
     "discover": {
-      "accentRamp": 10,
+      "accentRamp": 6,
       "borderRadius": 53,
       "fontSize": 40,
       "hexColor": 33
@@ -95,7 +95,7 @@
       "borderRadius": 33
     },
     "ipip-assessment": {
-      "accentRamp": 13,
+      "accentRamp": 9,
       "borderRadius": 21,
       "fontSize": 9
     },
@@ -122,26 +122,24 @@
       "fontSize": 17
     },
     "oauth": {
-      "accentRamp": 2,
       "borderRadius": 3
     },
     "occupation-assessment": {
       "fontSize": 8
     },
     "office": {
-      "accentRamp": 94
+      "accentRamp": 14
     },
     "organizations": {
       "borderRadius": 1
     },
     "personality-assessment": {
-      "accentRamp": 16,
       "borderRadius": 11,
       "fontSize": 1,
       "hexColor": 10
     },
     "privacy": {
-      "accentRamp": 10,
+      "accentRamp": 6,
       "borderRadius": 39,
       "fontSize": 15,
       "hexColor": 1
@@ -184,11 +182,10 @@
       "hexColor": 4
     },
     "user-profile": {
-      "accentRamp": 34,
+      "accentRamp": 16,
       "borderRadius": 23
     },
     "work-logs": {
-      "accentRamp": 10,
       "borderRadius": 33
     }
   }

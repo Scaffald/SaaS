@@ -240,31 +240,31 @@ export function ApplicationProcessSection({
                   style={{ backgroundColor: colors.bg[theme].subtle }}
                 >
                   <Stack gap={8}>
-                  <Row justify="space-between" align="center">
-                    <Stack flex={1} gap={4}>
-                      <Text>{question.label}</Text>
-                      <Row gap={8}>
-                        <Text style={{ color: colors.text[theme].secondary }}>
-                          Type: {question.type}
-                        </Text>
-                        {question.unit && (
+                    <Row justify="space-between" align="center">
+                      <Stack flex={1} gap={4}>
+                        <Text>{question.label}</Text>
+                        <Row gap={8}>
                           <Text style={{ color: colors.text[theme].secondary }}>
-                            Unit: {question.unit}
+                            Type: {question.type}
                           </Text>
-                        )}
-                        {question.required && (
-                          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Required</Text>
-                        )}
-                      </Row>
-                    </Stack>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      iconStart={X}
-                      onPress={() => handleRemoveQuestion(index)}
-                      aria-label="Remove question"
-                    />
-                  </Row>
+                          {question.unit && (
+                            <Text style={{ color: colors.text[theme].secondary }}>
+                              Unit: {question.unit}
+                            </Text>
+                          )}
+                          {question.required && (
+                            <Text style={{ color: colors.text[theme].emphasis }}>Required</Text>
+                          )}
+                        </Row>
+                      </Stack>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        iconStart={X}
+                        onPress={() => handleRemoveQuestion(index)}
+                        aria-label="Remove question"
+                      />
+                    </Row>
                   </Stack>
                 </Card>
               ))}

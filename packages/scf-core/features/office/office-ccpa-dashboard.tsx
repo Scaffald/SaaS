@@ -9,7 +9,7 @@
  * - Generate compliance reports
  */
 
-import { useState } from "react";
+import { useState } from 'react'
 import {
   Button,
   MetricBlock,
@@ -20,116 +20,116 @@ import {
   Stack,
   Text,
   useThemeContext,
-} from "@scaffald/ui";
-import { reloadPage } from "@scf/core/utils/platform";
+} from '@scaffald/ui'
+import { reloadPage } from '@scf/core/utils/platform'
 import {
   useCCPAComplianceMetrics,
   useCCPAAdminRequests,
   useCCPAProcessRequestMutation,
-} from "@scf/core/utils/ccpa-sdk-hooks";
-import { borderRadius, colors } from '@scaffald/ui/tokens';
+} from '@scf/core/utils/ccpa-sdk-hooks'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 /**
  * Request status type for admin view
  */
 type AdminRequestStatus =
-  | "pending"
-  | "processing"
-  | "completed"
-  | "failed"
-  | "cancelled"
-  | "appealed";
+  | 'pending'
+  | 'processing'
+  | 'completed'
+  | 'failed'
+  | 'cancelled'
+  | 'appealed'
 
 /**
  * CCPA request type for admin view
  */
 interface AdminCCPARequest {
-  id: string;
-  user_id: string;
-  user_email: string;
-  user_name: string;
-  type: "export" | "deletion" | "correction" | "opt_out" | "opt_in";
-  status: AdminRequestStatus;
-  created_at: string;
-  updated_at: string;
-  completed_at?: string;
-  assigned_to?: string;
-  priority: "low" | "medium" | "high" | "urgent";
-  notes?: string;
-  days_elapsed: number;
-  is_overdue: boolean;
+  id: string
+  user_id: string
+  user_email: string
+  user_name: string
+  type: 'export' | 'deletion' | 'correction' | 'opt_out' | 'opt_in'
+  status: AdminRequestStatus
+  created_at: string
+  updated_at: string
+  completed_at?: string
+  assigned_to?: string
+  priority: 'low' | 'medium' | 'high' | 'urgent'
+  notes?: string
+  days_elapsed: number
+  is_overdue: boolean
 }
 
 /**
  * Status badge colors
  */
 const getStatusColors = (
-  theme: "light" | "dark"
+  theme: 'light' | 'dark'
 ): Record<AdminRequestStatus, { bg: string; text: string }> => ({
   pending: {
-    bg: theme === "light" ? colors.yellow[50] : colors.yellow[900],
-    text: theme === "light" ? colors.yellow[700] : colors.yellow[300],
+    bg: theme === 'light' ? colors.yellow[50] : colors.yellow[900],
+    text: theme === 'light' ? colors.yellow[700] : colors.yellow[300],
   },
   processing: {
-    bg: theme === "light" ? colors.blue[50] : colors.blue[900],
-    text: theme === "light" ? colors.blue[700] : colors.blue[300],
+    bg: colors.bg[theme].selected,
+    text: colors.text[theme].emphasis,
   },
   completed: {
-    bg: theme === "light" ? colors.green[50] : colors.green[900],
-    text: theme === "light" ? colors.green[700] : colors.green[300],
+    bg: theme === 'light' ? colors.green[50] : colors.green[900],
+    text: theme === 'light' ? colors.green[700] : colors.green[300],
   },
   failed: {
-    bg: theme === "light" ? colors.error[50] : colors.error[900],
-    text: theme === "light" ? colors.error[700] : colors.error[300],
+    bg: theme === 'light' ? colors.error[50] : colors.error[900],
+    text: theme === 'light' ? colors.error[700] : colors.error[300],
   },
   cancelled: { bg: colors.bg[theme].muted, text: colors.text[theme].secondary },
   appealed: {
-    bg: theme === "light" ? colors.yellow[50] : colors.yellow[900],
-    text: theme === "light" ? colors.yellow[700] : colors.yellow[300],
+    bg: theme === 'light' ? colors.yellow[50] : colors.yellow[900],
+    text: theme === 'light' ? colors.yellow[700] : colors.yellow[300],
   },
-});
+})
 
 /**
  * Priority badge colors
  */
 const getPriorityColors = (
-  theme: "light" | "dark"
+  theme: 'light' | 'dark'
 ): Record<string, { bg: string; text: string }> => ({
   low: { bg: colors.bg[theme].muted, text: colors.text[theme].secondary },
   medium: {
-    bg: theme === "light" ? colors.yellow[50] : colors.yellow[900],
-    text: theme === "light" ? colors.yellow[700] : colors.yellow[300],
+    bg: theme === 'light' ? colors.yellow[50] : colors.yellow[900],
+    text: theme === 'light' ? colors.yellow[700] : colors.yellow[300],
   },
   high: {
-    bg: theme === "light" ? colors.yellow[50] : colors.yellow[900],
-    text: theme === "light" ? colors.yellow[700] : colors.yellow[300],
+    bg: theme === 'light' ? colors.yellow[50] : colors.yellow[900],
+    text: theme === 'light' ? colors.yellow[700] : colors.yellow[300],
   },
   urgent: {
-    bg: theme === "light" ? colors.error[50] : colors.error[900],
-    text: theme === "light" ? colors.error[700] : colors.error[300],
+    bg: theme === 'light' ? colors.error[50] : colors.error[900],
+    text: theme === 'light' ? colors.error[700] : colors.error[300],
   },
-});
+})
 
 /**
  * Format date string
  */
 function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
 /**
  * Status badge component
  */
 function StatusBadge({ status }: { status: AdminRequestStatus }) {
-  const { theme } = useThemeContext();
-  const statusColors = getStatusColors(theme)[status];
+  const { theme } = useThemeContext()
+  const statusColors = getStatusColors(theme)[status]
   return (
     <Row
       backgroundColor={statusColors.bg}
@@ -137,20 +137,18 @@ function StatusBadge({ status }: { status: AdminRequestStatus }) {
       paddingVertical={4}
       borderRadius={borderRadius.l}
     >
-      <Text style={{ color: statusColors.text, textTransform: "capitalize" }}>
-        {status}
-      </Text>
+      <Text style={{ color: statusColors.text, textTransform: 'capitalize' }}>{status}</Text>
     </Row>
-  );
+  )
 }
 
 /**
  * Priority badge component
  */
 function PriorityBadge({ priority }: { priority: string }) {
-  const { theme } = useThemeContext();
-  const priorityColors = getPriorityColors(theme);
-  const selectedColors = priorityColors[priority] || priorityColors.low;
+  const { theme } = useThemeContext()
+  const priorityColors = getPriorityColors(theme)
+  const selectedColors = priorityColors[priority] || priorityColors.low
   return (
     <Row
       backgroundColor={selectedColors.bg}
@@ -158,11 +156,9 @@ function PriorityBadge({ priority }: { priority: string }) {
       paddingVertical={4}
       borderRadius={borderRadius.l}
     >
-      <Text style={{ color: selectedColors.text, textTransform: "capitalize" }}>
-        {priority}
-      </Text>
+      <Text style={{ color: selectedColors.text, textTransform: 'capitalize' }}>{priority}</Text>
     </Row>
-  );
+  )
 }
 
 /**
@@ -177,18 +173,18 @@ function RequestRow({
   onProcess,
   onView,
 }: {
-  request: AdminCCPARequest;
-  onAssign?: (id: string) => void;
-  onProcess?: (id: string) => void;
-  onView?: (id: string) => void;
+  request: AdminCCPARequest
+  onAssign?: (id: string) => void
+  onProcess?: (id: string) => void
+  onView?: (id: string) => void
 }) {
-  const { theme } = useThemeContext();
+  const { theme } = useThemeContext()
   return (
     <Row
       padding="sm"
       style={{
         backgroundColor: request.is_overdue
-          ? theme === "light"
+          ? theme === 'light'
             ? colors.error[50]
             : colors.error[900]
           : colors.bg[theme].subtle,
@@ -197,7 +193,7 @@ function RequestRow({
       borderWidth={1}
       borderColor={
         request.is_overdue
-          ? theme === "light"
+          ? theme === 'light'
             ? colors.error[300]
             : colors.error[700]
           : colors.border[theme].default
@@ -216,17 +212,13 @@ function RequestRow({
       <Stack flex={1} minWidth={140}>
         <Text style={{ color: colors.text[theme].secondary }}>User</Text>
         <Text>{request.user_name}</Text>
-        <Text style={{ color: colors.text[theme].secondary }}>
-          {request.user_email}
-        </Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{request.user_email}</Text>
       </Stack>
 
       {/* Type */}
       <Stack minWidth={100}>
         <Text style={{ color: colors.text[theme].secondary }}>Type</Text>
-        <Text style={{ textTransform: "capitalize" }}>
-          {request.type.replace("_", " ")}
-        </Text>
+        <Text style={{ textTransform: 'capitalize' }}>{request.type.replace('_', ' ')}</Text>
       </Stack>
 
       {/* Status */}
@@ -247,18 +239,18 @@ function RequestRow({
         <Text
           color={
             request.is_overdue
-              ? theme === "light"
+              ? theme === 'light'
                 ? colors.error[700]
                 : colors.error[300]
               : request.days_elapsed > 30
-              ? theme === "light"
-                ? colors.yellow[700]
-                : colors.yellow[300]
-              : colors.text[theme].primary
+                ? theme === 'light'
+                  ? colors.yellow[700]
+                  : colors.yellow[300]
+                : colors.text[theme].primary
           }
         >
           {request.days_elapsed}
-          {request.is_overdue && " (OVERDUE)"}
+          {request.is_overdue && ' (OVERDUE)'}
         </Text>
       </Stack>
 
@@ -270,30 +262,22 @@ function RequestRow({
 
       {/* Actions */}
       <Row gap={8} minWidth={200} justify="flex-end">
-        <Button
-          size="sm"
-          variant="outline"
-          onPress={() => onView?.(request.id)}
-        >
+        <Button size="sm" variant="outline" onPress={() => onView?.(request.id)}>
           View
         </Button>
-        {request.status === "pending" && (
-          <Button
-            size="sm"
-            variant="outline"
-            onPress={() => onAssign?.(request.id)}
-          >
+        {request.status === 'pending' && (
+          <Button size="sm" variant="outline" onPress={() => onAssign?.(request.id)}>
             Assign
           </Button>
         )}
-        {(request.status === "pending" || request.status === "processing") && (
+        {(request.status === 'pending' || request.status === 'processing') && (
           <Button size="sm" onPress={() => onProcess?.(request.id)}>
             Process
           </Button>
         )}
       </Row>
     </Row>
-  );
+  )
 }
 
 /**
@@ -307,94 +291,85 @@ function FilterBar({
   onTypeChange,
   onPriorityChange,
 }: {
-  statusFilter: string;
-  typeFilter: string;
-  priorityFilter: string;
-  onStatusChange: (status: string) => void;
-  onTypeChange: (type: string) => void;
-  onPriorityChange: (priority: string) => void;
+  statusFilter: string
+  typeFilter: string
+  priorityFilter: string
+  onStatusChange: (status: string) => void
+  onTypeChange: (type: string) => void
+  onPriorityChange: (priority: string) => void
 }) {
-  const { theme } = useThemeContext();
+  const { theme } = useThemeContext()
   return (
     <Row gap={12} wrap align="center">
       <Stack gap={4}>
         <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
         <Row gap={8}>
-          {["all", "pending", "processing", "completed", "failed"].map(
-            (status) => (
-              <Button
-                key={status}
-                size="sm"
-                variant={statusFilter === status ? undefined : "outline"}
-                onPress={() => onStatusChange(status)}
-              >
-                {status === "all"
-                  ? "All"
-                  : status.charAt(0).toUpperCase() + status.slice(1)}
-              </Button>
-            )
-          )}
+          {['all', 'pending', 'processing', 'completed', 'failed'].map((status) => (
+            <Button
+              key={status}
+              size="sm"
+              variant={statusFilter === status ? undefined : 'outline'}
+              onPress={() => onStatusChange(status)}
+            >
+              {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
+            </Button>
+          ))}
         </Row>
       </Stack>
 
       <Stack gap={4}>
         <Text style={{ color: colors.text[theme].secondary }}>Type</Text>
         <Row gap={8}>
-          {["all", "export", "deletion", "correction", "opt_out"].map(
-            (type) => (
-              <Button
-                key={type}
-                size="sm"
-                variant={typeFilter === type ? undefined : "outline"}
-                onPress={() => onTypeChange(type)}
-              >
-                {type === "all"
-                  ? "All"
-                  : type.replace("_", " ").charAt(0).toUpperCase() +
-                    type.replace("_", " ").slice(1)}
-              </Button>
-            )
-          )}
+          {['all', 'export', 'deletion', 'correction', 'opt_out'].map((type) => (
+            <Button
+              key={type}
+              size="sm"
+              variant={typeFilter === type ? undefined : 'outline'}
+              onPress={() => onTypeChange(type)}
+            >
+              {type === 'all'
+                ? 'All'
+                : type.replace('_', ' ').charAt(0).toUpperCase() + type.replace('_', ' ').slice(1)}
+            </Button>
+          ))}
         </Row>
       </Stack>
 
       <Stack gap={4}>
         <Text style={{ color: colors.text[theme].secondary }}>Priority</Text>
         <Row gap={8}>
-          {["all", "urgent", "high", "medium", "low"].map((priority) => (
+          {['all', 'urgent', 'high', 'medium', 'low'].map((priority) => (
             <Button
               key={priority}
               size="sm"
-              variant={priorityFilter === priority ? undefined : "outline"}
+              variant={priorityFilter === priority ? undefined : 'outline'}
               onPress={() => onPriorityChange(priority)}
             >
-              {priority === "all"
-                ? "All"
-                : priority.charAt(0).toUpperCase() + priority.slice(1)}
+              {priority === 'all' ? 'All' : priority.charAt(0).toUpperCase() + priority.slice(1)}
             </Button>
           ))}
         </Row>
       </Stack>
     </Row>
-  );
+  )
 }
 
 /**
  * CCPA Admin Dashboard Component
  */
 export function CCPAAdminDashboard() {
-  const { theme } = useThemeContext();
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [typeFilter, setTypeFilter] = useState("all");
-  const [priorityFilter, setPriorityFilter] = useState("all");
-  const [_selectedRequest, setSelectedRequest] = useState<string | null>(null);
+  const { theme } = useThemeContext()
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [typeFilter, setTypeFilter] = useState('all')
+  const [priorityFilter, setPriorityFilter] = useState('all')
+  const [_selectedRequest, setSelectedRequest] = useState<string | null>(null)
 
   // Fetch compliance metrics
   const {
     data: metrics,
     isLoading: isLoadingMetrics,
     error: metricsError,
-  } = useCCPAComplianceMetrics();
+  } = useCCPAComplianceMetrics()
 
   // Fetch all CCPA requests
   const {
@@ -403,28 +378,28 @@ export function CCPAAdminDashboard() {
     error: requestsError,
     refetch: refetchRequests,
   } = useCCPAAdminRequests({
-    status: statusFilter === "all" ? undefined : statusFilter,
-    type: typeFilter === "all" ? undefined : typeFilter,
-    priority: priorityFilter === "all" ? undefined : priorityFilter,
+    status: statusFilter === 'all' ? undefined : statusFilter,
+    type: typeFilter === 'all' ? undefined : typeFilter,
+    priority: priorityFilter === 'all' ? undefined : priorityFilter,
     limit: 50,
-  });
+  })
 
   // Process request mutation
   const processRequest = useCCPAProcessRequestMutation({
     onSuccess: () => {
-      refetchRequests();
+      refetchRequests()
     },
-  });
+  })
 
-  const isLoading = isLoadingMetrics || isLoadingRequests;
-  const hasError = metricsError || requestsError;
+  const isLoading = isLoadingMetrics || isLoadingRequests
+  const hasError = metricsError || requestsError
 
   if (hasError) {
     return (
       <Stack padding="md" gap={16} align="center" justify="center" flex={1}>
         <Text
           style={{
-            color: theme === "light" ? colors.error[700] : colors.error[300],
+            color: theme === 'light' ? colors.error[700] : colors.error[300],
           }}
         >
           Error Loading CCPA Dashboard
@@ -432,7 +407,7 @@ export function CCPAAdminDashboard() {
         <Text
           style={{
             color: colors.text[theme].secondary,
-            textAlign: "center" as const,
+            textAlign: 'center' as const,
           }}
         >
           {metricsError?.message || requestsError?.message}
@@ -441,21 +416,21 @@ export function CCPAAdminDashboard() {
           Retry
         </Button>
       </Stack>
-    );
+    )
   }
 
   const handleViewRequest = (id: string) => {
-    setSelectedRequest(id);
+    setSelectedRequest(id)
     // Open detail modal or navigate to detail page
-  };
+  }
 
   const handleAssignRequest = (_id: string) => {
     // Open assignment modal
-  };
+  }
 
   const handleProcessRequest = (id: string) => {
-    processRequest.mutate(id);
-  };
+    processRequest.mutate(id)
+  }
 
   return (
     <ScrollView>
@@ -464,8 +439,7 @@ export function CCPAAdminDashboard() {
         <Stack gap={8}>
           <Text>CCPA Compliance Dashboard</Text>
           <Text style={{ color: colors.text[theme].secondary }}>
-            Manage CCPA requests, monitor compliance metrics, and ensure
-            regulatory compliance.
+            Manage CCPA requests, monitor compliance metrics, and ensure regulatory compliance.
           </Text>
         </Stack>
 
@@ -520,25 +494,21 @@ export function CCPAAdminDashboard() {
           <Row
             padding="md"
             style={{
-              backgroundColor:
-                theme === "light" ? colors.error[50] : colors.error[900],
+              backgroundColor: theme === 'light' ? colors.error[50] : colors.error[900],
             }}
             borderRadius={borderRadius.l}
             borderWidth={1}
-            borderColor={
-              theme === "light" ? colors.error[300] : colors.error[700]
-            }
+            borderColor={theme === 'light' ? colors.error[300] : colors.error[700]}
             gap={8}
             align="center"
           >
             <Text
               style={{
-                color:
-                  theme === "light" ? colors.error[700] : colors.error[300],
+                color: theme === 'light' ? colors.error[700] : colors.error[300],
               }}
             >
-              ATTENTION: {metrics?.overdue_count} request(s) have exceeded the
-              45-day CCPA deadline. Immediate action required.
+              ATTENTION: {metrics?.overdue_count} request(s) have exceeded the 45-day CCPA deadline.
+              Immediate action required.
             </Text>
           </Row>
         )}
@@ -623,8 +593,7 @@ export function CCPAAdminDashboard() {
                 height={8}
                 borderRadius={borderRadius.max}
                 style={{
-                  backgroundColor:
-                    theme === "light" ? colors.blue[700] : colors.blue[300],
+                  backgroundColor: colors.text[theme].emphasis,
                 }}
               />
               <Text style={{ color: colors.text[theme].secondary }}>
@@ -637,13 +606,11 @@ export function CCPAAdminDashboard() {
                 height={8}
                 borderRadius={borderRadius.max}
                 style={{
-                  backgroundColor:
-                    theme === "light" ? colors.yellow[700] : colors.yellow[300],
+                  backgroundColor: theme === 'light' ? colors.yellow[700] : colors.yellow[300],
                 }}
               />
               <Text style={{ color: colors.text[theme].secondary }}>
-                <Text>45 days</Text> - Complete request (with possible 45-day
-                extension)
+                <Text>45 days</Text> - Complete request (with possible 45-day extension)
               </Text>
             </Row>
             <Row gap={8} align="center">
@@ -652,8 +619,7 @@ export function CCPAAdminDashboard() {
                 height={8}
                 borderRadius={borderRadius.max}
                 style={{
-                  backgroundColor:
-                    theme === "light" ? colors.green[700] : colors.green[300],
+                  backgroundColor: theme === 'light' ? colors.green[700] : colors.green[300],
                 }}
               />
               <Text style={{ color: colors.text[theme].secondary }}>
@@ -666,8 +632,7 @@ export function CCPAAdminDashboard() {
                 height={8}
                 borderRadius={borderRadius.max}
                 style={{
-                  backgroundColor:
-                    theme === "light" ? colors.error[700] : colors.error[300],
+                  backgroundColor: theme === 'light' ? colors.error[700] : colors.error[300],
                 }}
               />
               <Text style={{ color: colors.text[theme].secondary }}>
@@ -678,7 +643,7 @@ export function CCPAAdminDashboard() {
         </Stack>
       </Stack>
     </ScrollView>
-  );
+  )
 }
 
-export default CCPAAdminDashboard;
+export default CCPAAdminDashboard

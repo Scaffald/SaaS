@@ -54,22 +54,22 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
       {/* Unread comments badge */}
       {unreadComments > 0 && (
         <Row
-          style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+          style={{ backgroundColor: colors.bg[theme].selected }}
           paddingHorizontal={8}
           paddingVertical={4}
           borderRadius={borderRadius.l}
           align="center"
           gap={4}
         >
-          <MessageSquare size={16} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
-          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{unreadComments}</Text>
+          <MessageSquare size={16} color={colors.text[theme].emphasis} />
+          <Text style={{ color: colors.text[theme].emphasis }}>{unreadComments}</Text>
         </Row>
       )}
 
       {/* All accepted badge */}
       {allAccepted && (
         <Row
-          style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
+          style={{ backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900] }}
           paddingHorizontal={8}
           paddingVertical={4}
           borderRadius={borderRadius.l}
@@ -96,12 +96,14 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
       {/* Completed sections badge */}
       {acceptedSections > 0 && !allAccepted && (
         <Stack
-          style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
+          style={{ backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900] }}
           paddingHorizontal={8}
           paddingVertical={4}
           borderRadius={borderRadius.l}
         >
-          <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{acceptedSections} Completed</Text>
+          <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>
+            {acceptedSections} Completed
+          </Text>
         </Stack>
       )}
 
@@ -120,12 +122,12 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
       {/* Progress indicator */}
       {!allAccepted && (
         <Stack
-          style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+          style={{ backgroundColor: colors.bg[theme].selected }}
           paddingHorizontal={8}
           paddingVertical={4}
           borderRadius={borderRadius.l}
         >
-          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
+          <Text style={{ color: colors.text[theme].emphasis }}>
             {acceptedSections}/{totalSections}
           </Text>
         </Stack>

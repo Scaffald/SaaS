@@ -131,7 +131,7 @@ export function SiteBoundaryDrawer({
               padding="md"
               style={{
                 backgroundColor: colors.bg[t].selected,
-                borderColor: t === 'dark' ? colors.blue[700] : colors.blue[300],
+                borderColor: colors.border[t].active,
                 borderWidth: 1,
               }}
             >

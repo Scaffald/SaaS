@@ -29,9 +29,7 @@ export const RadiusSlider = ({
     <Stack gap={8} flex={1}>
       <Row justify="space-between" align="center">
         <Text style={{ color: colors.text[theme].secondary }}>Search Radius</Text>
-        <Text style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}>
-          {formatRadius(value)}
-        </Text>
+        <Text style={{ color: colors.text[theme].emphasis }}>{formatRadius(value)}</Text>
       </Row>
 
       <Slider
@@ -46,11 +44,11 @@ export const RadiusSlider = ({
           backgroundColor: 'var(--color-3)',
           borderRadius: 7,
         }}
-        trackStyle={{ backgroundColor: colors.bg[theme === 'light' ? 'light' : 'dark'].selected }}
+        trackStyle={{ backgroundColor: colors.bg[theme].selected }}
         handleStyle={{
-          backgroundColor: colors.bg[theme === 'light' ? 'light' : 'dark'].selected,
+          backgroundColor: colors.bg[theme].selected,
           borderWidth: 2,
-          borderColor: theme === 'light' ? colors.blue[300] : colors.blue[700],
+          borderColor: colors.border[theme].active,
           borderRadius: 10,
           width: 20,
           height: 20,

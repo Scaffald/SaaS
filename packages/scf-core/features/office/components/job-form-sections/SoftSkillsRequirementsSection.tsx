@@ -135,7 +135,7 @@ export function SoftSkillsRequirementsSection({
           Candidates will see how well their soft skills match your requirements.
         </Text>
         {selectedCount > 0 && (
-          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
+          <Text style={{ color: colors.text[theme].emphasis }}>
             {selectedCount} {selectedCount === 1 ? 'skill' : 'skills'} selected
           </Text>
         )}
@@ -199,17 +199,22 @@ export function SoftSkillsRequirementsSection({
         <Stack
           gap={8}
           padding="sm"
-          style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+          style={{ backgroundColor: colors.bg[theme].selected }}
           borderRadius={borderRadius.l}
           borderWidth={1}
-          borderColor={theme === "light" ? colors.blue[300] : colors.blue[700]}
+          borderColor={colors.border[theme].active}
         >
-          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
+          <Text style={{ color: colors.text[theme].emphasis }}>
             Preview: How candidates will see this
           </Text>
           <Stack gap={4}>
             {Array.from(selectedSkills.entries()).map(([skillId, importance]) => {
-              type SoftSkill = { id?: string; name?: string; category?: string; [key: string]: unknown }
+              type SoftSkill = {
+                id?: string
+                name?: string
+                category?: string
+                [key: string]: unknown
+              }
               const skillsArray = Object.values(softSkillsData) as unknown as SoftSkill[][]
               const skill = skillsArray.flat().find((s) => s.id === skillId)
               if (!skill) return null
@@ -217,7 +222,7 @@ export function SoftSkillsRequirementsSection({
               const importanceLabel =
                 IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]
               return (
-                <Text key={skillId} style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
+                <Text key={skillId} style={{ color: colors.text[theme].emphasis }}>
                   • {skill.name} ({importanceLabel} - {importance}/5)
                 </Text>
               )

@@ -5,7 +5,14 @@ import {
   useDeleteOfficeOrganizationMutation,
   useReviewOrganizationRequestMutation,
 } from '@scf/core/utils/office-organizations-sdk-hooks'
-import { DashboardWidget, Modal, ModalHeader, ModalContent, ModalActions, useThemeContext } from '@scaffald/ui'
+import {
+  DashboardWidget,
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalActions,
+  useThemeContext,
+} from '@scaffald/ui'
 import { Check, Loader2, RefreshCw, X as XIcon } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
@@ -260,7 +267,9 @@ export function OfficeOrganizationsList() {
               autoFocus
             />
             {rejectError ? (
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{rejectError}</Text>
+              <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                {rejectError}
+              </Text>
             ) : null}
           </Stack>
         </ModalContent>
@@ -281,7 +290,7 @@ export function OfficeOrganizationsList() {
       </Modal>
 
       <OfficePageLayout
-      resultNoun="organization"
+        resultNoun="organization"
         wrapWithOfficeLayout
         showBreadcrumb
         title="Organizations"
@@ -322,13 +331,17 @@ export function OfficeOrganizationsList() {
                 </Stack>
                 <Stack gap={4}>
                   <Text style={{ color: colors.text[theme].secondary }}>Approved</Text>
-                  <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
+                  <Text
+                    style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}
+                  >
                     {moderationCounts.approved}
                   </Text>
                 </Stack>
                 <Stack gap={4}>
                   <Text style={{ color: colors.text[theme].secondary }}>Rejected</Text>
-                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+                  <Text
+                    style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+                  >
                     {moderationCounts.rejected}
                   </Text>
                 </Stack>
@@ -345,7 +358,9 @@ export function OfficeOrganizationsList() {
                 // Not "no requests": the 500 behind #1017 said "Check back
                 // soon!" while real requests waited unreviewed (#1021).
                 <Stack gap={8}>
-                  <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                  <Text
+                    style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+                  >
                     Couldn’t load pending requests — there may be some waiting.
                   </Text>
                   <Button size="sm" variant="outline" onPress={() => refetchRequests()}>
@@ -366,7 +381,9 @@ export function OfficeOrganizationsList() {
                           Vanity URL: {request.slug}
                         </Text>
                         {request.website ? (
-                          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{request.website}</Text>
+                          <Text style={{ color: colors.text[theme].emphasis }}>
+                            {request.website}
+                          </Text>
                         ) : null}
                         <Text style={{ color: colors.text[theme].secondary }}>
                           Submitted {new Date(request.created_at).toLocaleString()}

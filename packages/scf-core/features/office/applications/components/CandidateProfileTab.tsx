@@ -41,7 +41,9 @@ export const CandidateProfileTab = ({
         <Text style={{ marginBottom: 12 }}>Contact Information</Text>
         {isContactLocked ? (
           <Stack gap={8}>
-            <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>Contact details locked</Text>
+            <Text style={{ color: theme === 'light' ? colors.yellow[700] : colors.yellow[300] }}>
+              Contact details locked
+            </Text>
             <Text style={{ color: colors.text[theme].secondary }}>{lockedMessage}</Text>
           </Stack>
         ) : (
@@ -78,11 +80,15 @@ export const CandidateProfileTab = ({
                 style={{
                   backgroundColor:
                     skill.proficiency === 'expert'
-                      ? theme === "light" ? colors.green[50] : colors.green[900]
+                      ? theme === 'light'
+                        ? colors.green[50]
+                        : colors.green[900]
                       : skill.proficiency === 'advanced'
-                        ? theme === "light" ? colors.blue[50] : colors.blue[900]
+                        ? colors.bg[theme].selected
                         : skill.proficiency === 'intermediate'
-                          ? theme === "light" ? colors.yellow[50] : colors.yellow[900]
+                          ? theme === 'light'
+                            ? colors.yellow[50]
+                            : colors.yellow[900]
                           : colors.bg[theme].muted,
                 }}
                 paddingHorizontal={12}
@@ -93,11 +99,15 @@ export const CandidateProfileTab = ({
                   style={{
                     color:
                       skill.proficiency === 'expert'
-                        ? theme === "light" ? colors.green[700] : colors.green[300]
+                        ? theme === 'light'
+                          ? colors.green[700]
+                          : colors.green[300]
                         : skill.proficiency === 'advanced'
-                          ? theme === "light" ? colors.blue[700] : colors.blue[300]
+                          ? colors.text[theme].emphasis
                           : skill.proficiency === 'intermediate'
-                            ? theme === "light" ? colors.yellow[700] : colors.yellow[300]
+                            ? theme === 'light'
+                              ? colors.yellow[700]
+                              : colors.yellow[300]
                             : colors.text[theme].tertiary,
                     textTransform: 'capitalize',
                   }}
@@ -125,7 +135,9 @@ export const CandidateProfileTab = ({
               <Row gap={8}>
                 {cert.state && <Text style={{ opacity: 0.7 }}>State: {cert.state}</Text>}
                 {cert.issueDate && (
-                  <Text style={{ opacity: 0.7 }}>Issued: {new Date(cert.issueDate).toLocaleDateString()}</Text>
+                  <Text style={{ opacity: 0.7 }}>
+                    Issued: {new Date(cert.issueDate).toLocaleDateString()}
+                  </Text>
                 )}
               </Row>
             </Stack>
