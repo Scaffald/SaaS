@@ -100,6 +100,9 @@ if [ -n "$HITS" ]; then
   ERRORS=$((ERRORS + 1))
 else
   echo -e "${GREEN}OK${NC}"
+fi
+echo ""
+
 # 8. Light-only palette references in ui components (#1027). A line that names
 #    colors.{bg,text,icon,border,fg}.light.* without a .dark. counterpart
 #    renders light in dark mode (InputAddon's white prefix box was one). Theme
