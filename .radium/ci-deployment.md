@@ -207,6 +207,30 @@ Execution order:
 
 **Note:** Always use `pnpm exec nx run-many` in CI, not just `nx run-many` (nx may not be in PATH).
 
+## Which repo checks gate where (#941)
+
+| Check | Pre-commit | `pnpm prepush` | CI (`ci.yml`, lint job) | Can it fail? |
+|---|---|---|---|---|
+| `lint:literals` (style ceilings, #819) | — | yes | yes, own step | yes |
+| `lint:routes` (routes are constants) | staged files | — | yes, own step (whole tree) | yes, since #1030 |
+| `lint:migrations` (numbering, `search_path`) | — | yes | yes, own step | yes |
+| `lint:overrides` (override vs catalog) | yes | yes | yes, own step | yes |
+| `lint:sorted-keys` | staged files | — | **no** | **no**: always exits 0, advisory only |
+| `radium:check` | — | — | no | informational |
+
+Rules for adding one:
+
+- **Prove it red before wiring it in.** Plant a violation and watch it fail,
+  then remove it and watch it pass. Two of our checks could not fail at all:
+  `lint:routes` exited 0 on an empty stage (#1030), and the edge-function type
+  check was `continue-on-error` (#921). Both rotted behind green ticks.
+- **One named step per check**, so the checks list says which rule broke.
+- `lint:sorted-keys` stays out of CI until it can fail. Making it gate means a
+  baseline or a one-off sort of the repo, which is a separate decision.
+- A migration-number collision between two open branches is caught only by
+  the second PR's run, because the PR run checks the merge ref, and only
+  once the first has merged. Re-run a stale PR's CI before merging it.
+
 ## Reading a red check
 
 Judge a red check by its `conclusion`, not its colour or duration. Two

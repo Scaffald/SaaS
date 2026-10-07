@@ -121,13 +121,35 @@ jobs:
         with:
           main-branch-name: main
 
-      # Literal fontSize/borderRadius/hex ceilings per feature directory (#819).
-      # Its own step rather than inside `pnpm check`, which runs only
-      # locales:validate + nx lint + typecheck — the `pnpm lint` tail of custom
-      # checks (routes, sorted-keys, overrides, migrations) is not in CI at all,
-      # and this one is seconds, so it runs before the slow job and fails fast.
+      # The repo's own checks, each its own named step so a failure names the
+      # rule (#941). `pnpm check` runs only locales:validate + nx lint +
+      # typecheck; these used to run in prepush alone, which SKIP_PREPUSH or a
+      # push without the stamp skips entirely. Each is seconds, so they run
+      # before the slow step and fail fast. Every one was proved red on a
+      # planted violation before it was wired in: a check that cannot fail the
+      # build is not a check (#921, #1030).
+      #
+      # Not here: `lint:sorted-keys`. It is advisory by design and always exits
+      # 0, so as a step it could never fail. See .radium/ci-deployment.md.
+
+      # Literal fontSize/borderRadius/hex/accent-ramp ceilings per directory (#819).
       - name: Literal styling ratchet
         run: pnpm lint:literals
+
+      # Routes are constants. Scans every tracked file when nothing is staged,
+      # which is always true in CI (#1030).
+      - name: Hardcoded route strings
+        run: pnpm lint:routes
+
+      # Duplicate migration numbers and functions missing `search_path` (#468).
+      # The PR run checks the merge ref, so a number already taken on main
+      # collides here rather than after merge.
+      - name: Migration numbering and search_path
+        run: pnpm lint:migrations
+
+      # A pnpm override that contradicts the catalog entry (#453, #501, #511).
+      - name: Overrides agree with the catalog
+        run: pnpm lint:overrides
 
       # `pnpm check` = locales:validate + lint (run-many) + typecheck (run-many).
       - name: Check
