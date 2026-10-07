@@ -32,8 +32,8 @@ type DashboardPageProps = Omit<DashboardLayoutProps, 'breadcrumbItems'> & {
  * each screen remembering to pass a flag, so the list is reviewable.
  */
 const SCREENS_WITHOUT_SHARED_HEADER = new Set<string>([
-  // The dashboard opens with the profile hero, which carries the name.
-  ROUTES.DASHBOARD.path,
+  // Empty since home took the shared header (#1033): it opened with a profile
+  // hero carrying the name, and now opens with a greeting instead.
 ])
 
 const ALL_ROUTES = flattenRoutes()

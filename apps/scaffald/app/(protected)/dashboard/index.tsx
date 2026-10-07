@@ -1,13 +1,5 @@
-import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
-import { DashboardIndexLeft } from '@scf/core/features/dashboard/dashboard-index-left'
-import { DashboardIndexRight } from '@scf/core/features/dashboard/dashboard-index-right'
+import { DashboardHomePage } from '@scf/core/features/dashboard/DashboardHomePage'
 
 export default function Screen() {
-  return (
-    <DashboardPage
-      showBreadcrumb={false}
-      leftContent={<DashboardIndexLeft />}
-      rightContent={<DashboardIndexRight />}
-    />
-  )
+  return <DashboardHomePage />
 }

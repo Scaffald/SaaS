@@ -16,7 +16,7 @@
     "analytics": {
       "accentRamp": 7,
       "borderRadius": 6,
-      "fontSize": 42,
+      "fontSize": 34,
       "hexColor": 1
     },
     "api-keys": {
@@ -56,7 +56,7 @@
     "communities": {
       "accentRamp": 4,
       "borderRadius": 30,
-      "fontSize": 53,
+      "fontSize": 52,
       "hexColor": 8
     },
     "connections": {
@@ -65,7 +65,7 @@
     },
     "dashboard": {
       "accentRamp": 7,
-      "borderRadius": 36,
+      "borderRadius": 33,
       "fontSize": 33,
       "hexColor": 1
     },
