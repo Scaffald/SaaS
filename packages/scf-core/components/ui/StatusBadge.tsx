@@ -16,16 +16,22 @@ interface StatusBadgeProps {
   children: ReactNode
 }
 
-const variantColors: Record<BadgeVariant, { bg: string; text: string }> = {
-  default: { bg: `${colors.gray[500]}18`, text: colors.gray[600] },
-  success: { bg: `${colors.success[500]}18`, text: colors.success[600] },
-  warning: { bg: `${colors.warning[500]}18`, text: colors.warning[600] },
-  error: { bg: `${colors.error[500]}18`, text: colors.error[600] },
+/**
+ * Theme-aware tints. These were fixed 600-weight ramps on an 18-alpha wash of
+ * the 500, which read in light mode and all but vanished on the dark ground:
+ * the default variant was gray-600 text on near-black (#1035).
+ */
+function variantColors(variant: BadgeVariant, t: 'light' | 'dark') {
+  if (variant === 'default') {
+    return { bg: colors.bg[t].muted, text: colors.text[t].secondary }
+  }
+  const fg = colors.fg[t][variant === 'error' ? 'error' : variant]
+  return { bg: `${fg}1F`, text: fg }
 }
 
 export function StatusBadge({ variant = 'default', children }: StatusBadgeProps) {
-  const { theme: _theme } = useThemeContext()
-  const style = variantColors[variant]
+  const { theme } = useThemeContext()
+  const style = variantColors(variant, theme === 'dark' ? 'dark' : 'light')
 
   return (
     <Stack

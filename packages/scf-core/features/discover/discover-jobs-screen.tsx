@@ -1,13 +1,19 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Pressable } from 'react-native'
 import {
+  Button,
   ListToolbar,
+  RangeSlider,
+  Row,
   SegmentedControl,
   Stack,
   Text,
   useResponsive,
   useThemeContext,
 } from '@scaffald/ui'
+import { useFilterOptions } from '@scf/core/utils/jobs-sdk-hooks'
+import { useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { colors } from '@scaffald/ui/tokens'
 import { Check } from 'lucide-react-native'
 import { useDebounce } from '@scf/core/utils/useDebounce'
@@ -16,11 +22,51 @@ import { useToolbarFilters } from '@scf/core/components/toolbarFilters'
 import { JobsBottomToolbar } from './components/JobsBottomToolbar'
 import type { JobSortBy, JobSource } from './components/JobsBottomToolbar'
 import { DiscoverJobsLeft, type DiscoverJobsInitialData } from './discover-jobs-left'
-import { DiscoverJobsRight } from './discover-jobs-right'
 
 /** Sort options, as parallel arrays because SegmentedControl works by index. */
 const SORT_VALUES = ['relevance', 'match_score'] as const
 const SORT_LABELS = ['Relevance', 'Best Match']
+
+const VIEW_VALUES = ['list', 'cards'] as const
+const VIEW_LABELS = ['List', 'Cards']
+
+function summarize(selected: string[]): string | undefined {
+  if (selected.length === 0) return undefined
+  return selected.length === 1 ? selected[0] : `${selected.length} selected`
+}
+
+/** A wrap of toggle buttons for a multi-select filter section. */
+function ToggleList({
+  options,
+  selected,
+  onChange,
+}: {
+  options: string[]
+  selected: string[]
+  onChange: (next: string[]) => void
+}) {
+  return (
+    <Row gap={8} wrap>
+      {options.map((option) => {
+        const on = selected.includes(option)
+        return (
+          <Button
+            key={option}
+            size="sm"
+            variant="outline"
+            color={on ? 'primary' : 'gray'}
+            accessibilityState={{ selected: on }}
+            onPress={() =>
+              onChange(on ? selected.filter((value) => value !== option) : [...selected, option])
+            }
+          >
+            {option}
+          </Button>
+        )
+      })}
+    </Row>
+  )
+}
 
 /**
  * Discover Jobs Screen Component
@@ -51,6 +97,19 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
   const { isMobile } = useResponsive()
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
+  const [view, setView] = useState<'list' | 'cards'>('list')
+
+  const { data: filterData } = useFilterOptions()
+  const industries: string[] = filterData?.industries ?? []
+  const jobTypes: string[] = filterData?.jobTypes ?? []
+  // Per-user, so an anonymous visitor on the public /jobs listing would get a
+  // guaranteed 401; the filter it unlocks is meaningless without a session.
+  const { session } = useSessionContext()
+  const { data: softSkillsData } = useSoftSkills(undefined, {
+    staleTime: 5 * 60 * 1000,
+    enabled: !!session?.access_token,
+  })
+  const hasSoftSkillsAssessment = (softSkillsData?.skills.length ?? 0) > 0
 
   const handleReset = () => {
     setSearchQuery('')
@@ -134,21 +193,77 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
       popoverContent: sourcePopoverContent,
     })
 
-    if (selectedJobTypes.length > 0) {
+    // Industry, job type and the soft-skills threshold lived in a right-hand
+    // rail of their own: a second "Filters" panel beside the toolbar's
+    // "Filters & sort", so the screen had two places to filter (#1035).
+    // They are sections of the one flyout now; the rail is gone.
+    if (industries.length > 0) {
+      pills.push({
+        id: 'industry',
+        label: 'Industry',
+        value: summarize(selectedIndustries),
+        isActive: selectedIndustries.length > 0,
+        onPress: () => {},
+        popoverContent: (
+          <ToggleList
+            options={industries}
+            selected={selectedIndustries}
+            onChange={setSelectedIndustries}
+          />
+        ),
+      })
+    }
+
+    if (jobTypes.length > 0) {
       pills.push({
         id: 'jobType',
-        label: 'Job Type',
-        value:
-          selectedJobTypes.length === 1
-            ? selectedJobTypes[0]
-            : `${selectedJobTypes.length} selected`,
-        isActive: true,
+        label: 'Job type',
+        value: summarize(selectedJobTypes),
+        isActive: selectedJobTypes.length > 0,
         onPress: () => {},
+        popoverContent: (
+          <ToggleList options={jobTypes} selected={selectedJobTypes} onChange={setSelectedJobTypes} />
+        ),
+      })
+    }
+
+    // Only meaningful with an assessment on file, and only for Scaffald jobs.
+    if (hasSoftSkillsAssessment && jobSource !== 'external') {
+      pills.push({
+        id: 'softSkills',
+        label: 'Soft-skills match',
+        value: minSoftSkillsMatch ? `${minSoftSkillsMatch}%+` : undefined,
+        isActive: minSoftSkillsMatch !== null && minSoftSkillsMatch > 0,
+        onPress: () => setMinSoftSkillsMatch(null),
+        popoverContent: (
+          <Stack gap={8}>
+            <Text style={{ color: colors.text[t].secondary }}>
+              Only jobs whose soft-skills match is at least this score.
+            </Text>
+            <RangeSlider
+              value={minSoftSkillsMatch ?? 0}
+              onValueChange={(value: number) => setMinSoftSkillsMatch(value > 0 ? value : null)}
+              min={0}
+              max={100}
+              step={5}
+            />
+          </Stack>
+        ),
       })
     }
 
     return pills
-  }, [jobSource, selectedJobTypes, sourcePopoverContent])
+  }, [
+    jobSource,
+    selectedJobTypes,
+    selectedIndustries,
+    industries,
+    jobTypes,
+    hasSoftSkillsAssessment,
+    minSoftSkillsMatch,
+    sourcePopoverContent,
+    t,
+  ])
 
   // Header — desktop+ only.
   //
@@ -198,6 +313,16 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
       onClearAll={hasFilters ? handleReset : undefined}
       resultCount={resultCount}
       resultNoun="job"
+      actions={
+        <SegmentedControl
+          segments={VIEW_LABELS}
+          selectedIndex={VIEW_VALUES.indexOf(view)}
+          onSelectionChange={(index) => setView(VIEW_VALUES[index] ?? 'list')}
+          // The toolbar's action cell is sized by the row; without a floor
+          // the second segment truncated to "Ca…".
+          style={{ minWidth: 150 }}
+        />
+      }
     />
   )
 
@@ -224,6 +349,7 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
     left: (
       <DiscoverJobsLeft
           onResultCount={setResultCount}
+        view={isMobile ? 'list' : view}
         initialJobs={initialJobs}
         searchQuery={debouncedSearch}
         selectedIndustries={selectedIndustries}
@@ -233,17 +359,8 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
         sortBy={sortBy}
       />
     ),
-    right: (
-      <DiscoverJobsRight
-        searchQuery={searchQuery}
-        onClearSearch={() => setSearchQuery('')}
-        onIndustriesChange={setSelectedIndustries}
-        onJobTypesChange={setSelectedJobTypes}
-        jobSource={jobSource}
-        minSoftSkillsMatch={minSoftSkillsMatch}
-        onMinSoftSkillsMatchChange={setMinSoftSkillsMatch}
-      />
-    ),
+    // No rail: its filters are sections of the toolbar flyout (#1035).
+    right: null,
     footer,
   }
 }
