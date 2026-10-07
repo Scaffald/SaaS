@@ -100,6 +100,27 @@ if [ -n "$HITS" ]; then
   ERRORS=$((ERRORS + 1))
 else
   echo -e "${GREEN}OK${NC}"
+# 8. Light-only palette references in ui components (#1027). A line that names
+#    colors.{bg,text,icon,border,fg}.light.* without a .dark. counterpart
+#    renders light in dark mode (InputAddon's white prefix box was one). Theme
+#    branches — `isLight ? colors.text.light.x : colors.text.dark.x` — are fine
+#    and not counted. This is a ceiling: it may only come down. Lower it when
+#    you fix some; never raise it.
+LIGHT_ONLY_CEILING=97
+echo -n "Checking light-only palette refs in packages/ui... "
+LIGHT_ONLY=$(grep -rnE 'colors\.(bg|text|icon|border|fg)\.light\.' packages/ui/src/components --include="*.ts" --include="*.tsx" 2>/dev/null \
+  | grep -vE '(stories|__tests__|\.test\.)' \
+  | grep -vE 'colors\.(bg|text|icon|border|fg)\.dark\.' || true)
+LIGHT_ONLY_COUNT=$(printf '%s' "$LIGHT_ONLY" | grep -c . || true)
+if [ "$LIGHT_ONLY_COUNT" -gt "$LIGHT_ONLY_CEILING" ]; then
+  echo -e "${RED}FAIL${NC} ($LIGHT_ONLY_COUNT > $LIGHT_ONLY_CEILING)"
+  echo "  New light-only palette reference(s) — read the theme (colors.*[theme]) instead:"
+  echo "$LIGHT_ONLY" | tail -10 | sed 's/^/    /'
+  ERRORS=$((ERRORS + 1))
+elif [ "$LIGHT_ONLY_COUNT" -lt "$LIGHT_ONLY_CEILING" ]; then
+  echo -e "${YELLOW}OK${NC} ($LIGHT_ONLY_COUNT, below the ceiling of $LIGHT_ONLY_CEILING — lower LIGHT_ONLY_CEILING)"
+else
+  echo -e "${GREEN}OK${NC} ($LIGHT_ONLY_COUNT)"
 fi
 echo ""
 
