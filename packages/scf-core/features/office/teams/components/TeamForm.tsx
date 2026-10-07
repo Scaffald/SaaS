@@ -396,7 +396,6 @@ export function TeamForm({
         control={control}
         render={({ field }) => (
           <Stack gap={8}>
-            <Label>Visibility</Label>
             <ResponsiveSelect
               value={field.value}
               onValueChange={field.onChange}
@@ -427,7 +426,6 @@ export function TeamForm({
         control={control}
         render={({ field }) => (
           <Stack gap={8}>
-            <Label>Invitation Policy</Label>
             <ResponsiveSelect
               value={field.value}
               onValueChange={field.onChange}
@@ -486,7 +484,6 @@ export function TeamForm({
         control={control}
         render={({ field }) => (
           <Stack gap={8}>
-            <Label>Default Role</Label>
             <ResponsiveSelect
               value={field.value ?? ""}
               onValueChange={(value) => {

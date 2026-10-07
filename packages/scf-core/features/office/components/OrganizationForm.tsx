@@ -402,7 +402,6 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         control={control}
         render={({ field }) => (
           <Stack gap={8}>
-            <Text>Visibility</Text>
             <ResponsiveSelect
               value={field.value}
               onValueChange={field.onChange}

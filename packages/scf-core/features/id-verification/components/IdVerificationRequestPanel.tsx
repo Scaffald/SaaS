@@ -14,7 +14,7 @@ import { useToast } from '@scaffald/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@scaffald/ui'
-import { Button, Input, Label, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, Input, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -182,7 +182,6 @@ export function IdVerificationRequestPanel({
       </Stack>
 
       <Stack gap={8}>
-        <Label htmlFor="idv-organization">Organization</Label>
         <ResponsiveSelect
           value={organizationId ?? '__none__'}
           onValueChange={handleOrganizationChange}
@@ -204,9 +203,12 @@ export function IdVerificationRequestPanel({
       </Stack>
 
       <Stack gap={8}>
-        <Label htmlFor="idv-worker">Worker</Label>
+        {/* One "Worker" label, heading the pair: the search narrows the select
+            beneath it. The select used to carry its own label as well, under
+            a stray <Label> above the search — "Worker" twice (#1026). */}
         <Input
           id="idv-worker-search"
+          label="Worker"
           placeholder="Search workers by name or email…"
           value={workerSearch}
           onChangeText={setWorkerSearch}
@@ -216,7 +218,7 @@ export function IdVerificationRequestPanel({
           value={selectedWorkerId ?? ''}
           onValueChange={(value) => setSelectedWorkerId(value)}
           placeholder={selectedWorkerId ? undefined : workerPlaceholder}
-          label="Worker"
+          sheetTitle="Worker"
           options={
             workers.length === 0
               ? [{ value: '__empty__', label: 'No workers found', disabled: true }]
@@ -232,7 +234,6 @@ export function IdVerificationRequestPanel({
       </Stack>
 
       <Stack gap={8}>
-        <Label htmlFor="idv-pricing">Verification plan</Label>
         <ResponsiveSelect
           value={selectedPricingId ?? ''}
           onValueChange={(value) => setSelectedPricingId(value)}

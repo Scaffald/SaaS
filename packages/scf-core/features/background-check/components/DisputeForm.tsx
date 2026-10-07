@@ -107,7 +107,6 @@ export function DisputeForm({
             name="reason"
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <Stack gap={4}>
-                <Label htmlFor="dispute-reason">What needs review?</Label>
                 <ResponsiveSelect
                   value={value || ''}
                   onValueChange={onChange}

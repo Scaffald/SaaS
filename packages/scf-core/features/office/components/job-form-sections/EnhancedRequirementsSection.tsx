@@ -93,7 +93,6 @@ export function EnhancedRequirementsSection({
 
       {/* Minimum Education Level */}
       <Stack gap={8}>
-        <Label>Minimum education level</Label>
         <ResponsiveSelect
           value={localState.minimum_education_level || ''}
           onValueChange={(value) => handleChange('minimum_education_level', value || undefined)}

@@ -156,7 +156,6 @@ export function AdminDisputeResolutionDialog({
 
                 <Stack gap={12}>
                   <Stack gap={4}>
-                    <Label htmlFor="dispute-resolution-status">Resolution</Label>
                     <ResponsiveSelect
                       value={resolutionStatus}
                       onValueChange={(value) =>
