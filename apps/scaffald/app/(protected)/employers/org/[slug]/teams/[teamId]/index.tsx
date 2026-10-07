@@ -1,3 +1,4 @@
+import { colors } from '@scaffald/ui/tokens'
 import { RouteBuilder } from '@scf/core/constants/routes'
 import { ROUTES } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
@@ -15,7 +16,7 @@ import type { Team, TeamMember } from '@scaffald/sdk'
 import { AlertTriangle, RefreshCw, UserPlus } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 
 type TeamRecord = Team
 type TeamMemberRecord = TeamMember
@@ -218,11 +219,12 @@ function ErrorCard({
   actionLabel: string
   onAction: () => void
 }) {
+  const { theme } = useThemeContext()
   return (
     <Card padding="md">
       <Stack gap={12}>
         <Row gap={8} align="center">
-          <AlertTriangle size={20} color="$yellow10" />
+          <AlertTriangle size={20} color={colors.text[theme].attention} />
           <Text>{title}</Text>
         </Row>
         <Text color="gray">{message}</Text>

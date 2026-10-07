@@ -1,3 +1,4 @@
+import { colors } from '@scaffald/ui/tokens'
 import { buildPath, ROUTES } from "@scf/core/constants/routes";
 import { useAuth } from "@scf/core/provider/auth/useAuth";
 import { useRespondToTeamInvitationWithToken } from "@scaffald/sdk/react";
@@ -9,7 +10,7 @@ import {
 } from "lucide-react-native";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Button, Card, Spinner, Text, Stack } from "@scaffald/ui";
+import { Button, Card, Spinner, Text, Stack, useThemeContext } from "@scaffald/ui";
 
 type InvitationAction = "accept" | "decline";
 
@@ -127,7 +128,7 @@ export default function AcceptTeamInvitationScreen() {
     if (status === "success") {
       return (
         <Stack gap={16} align="center">
-          <CheckCircle size={48} color="$green9" />
+          <CheckCircle size={48} color={colors.success[500]} />
           <Stack gap={8} align="center">
             <Text>You&apos;re in!</Text>
             <Text color="gray">
@@ -145,7 +146,7 @@ export default function AcceptTeamInvitationScreen() {
     if (status === "declined") {
       return (
         <Stack gap={16} align="center">
-          <XCircle size={48} color="$red9" />
+          <XCircle size={48} color={colors.error[500]} />
           <Stack gap={8} align="center">
             <Text>Invitation declined</Text>
             <Text color="gray">
@@ -215,9 +216,10 @@ export default function AcceptTeamInvitationScreen() {
 }
 
 function ErrorState({ title, message }: { title: string; message: string }) {
+  const { theme } = useThemeContext()
   return (
     <Stack gap={12} align="center">
-      <AlertTriangle size={48} color="$yellow9" />
+      <AlertTriangle size={48} color={colors.text[theme].attention} />
       <Stack gap={8} align="center">
         <Text>{title}</Text>
         <Text color="gray">{message}</Text>

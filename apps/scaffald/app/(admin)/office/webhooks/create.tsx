@@ -112,7 +112,7 @@ export default function CreateWebhookPage() {
               <Card padding="lg">
                 <Stack gap={20} align="center">
                   <Text>⚠️ Save Your Webhook Secret</Text>
-                  <Text color="$gray11" style={{ maxWidth: 400 }}>
+                  <Text color="secondary" style={{ maxWidth: 400 }}>
                     This is the only time you will see this secret. Store it
                     securely.
                   </Text>
@@ -186,7 +186,7 @@ export default function CreateWebhookPage() {
                     autoCapitalize="none"
                     autoCorrect={false}
                   />
-                  <Text color="$gray10">
+                  <Text color="tertiary">
                     Must be a valid HTTPS URL. Your endpoint will receive POST
                     requests.
                   </Text>
@@ -209,7 +209,7 @@ export default function CreateWebhookPage() {
             <Card padding="lg">
               <Stack gap={20}>
                 <Text>Event Subscriptions *</Text>
-                <Text color="$gray11">
+                <Text color="secondary">
                   Select the events you want to receive notifications for
                 </Text>
 
@@ -217,7 +217,7 @@ export default function CreateWebhookPage() {
                   {Object.entries(eventsByCategory).map(
                     ([category, events]) => (
                       <Stack key={category} gap={12}>
-                        <Text color="$gray11" style={{ letterSpacing: 0.5 }}>
+                        <Text color="secondary" style={{ letterSpacing: 0.5 }}>
                           {category}
                         </Text>
                         <Stack gap={8}>
@@ -245,7 +245,7 @@ export default function CreateWebhookPage() {
                                   <Text style={{ fontFamily: "monospace" }}>
                                     {event.value}
                                   </Text>
-                                  <Text color="$gray11">{event.label}</Text>
+                                  <Text color="secondary">{event.label}</Text>
                                 </Stack>
                               </Row>
                             </Pressable>
@@ -256,7 +256,7 @@ export default function CreateWebhookPage() {
                   )}
                 </Stack>
 
-                <Text color="$gray10">
+                <Text color="tertiary">
                   {selectedEvents.size} event
                   {selectedEvents.size !== 1 ? "s" : ""} selected
                 </Text>
@@ -268,19 +268,19 @@ export default function CreateWebhookPage() {
               <Stack gap={8}>
                 <Text>Configuration Details</Text>
                 <Row justify="space-between">
-                  <Text color="$gray11">Max Retries:</Text>
+                  <Text color="secondary">Max Retries:</Text>
                   <Text>3 attempts</Text>
                 </Row>
                 <Row justify="space-between">
-                  <Text color="$gray11">Retry Backoff:</Text>
+                  <Text color="secondary">Retry Backoff:</Text>
                   <Text>1min, 5min, 15min</Text>
                 </Row>
                 <Row justify="space-between">
-                  <Text color="$gray11">Timeout:</Text>
+                  <Text color="secondary">Timeout:</Text>
                   <Text>10 seconds</Text>
                 </Row>
                 <Row justify="space-between">
-                  <Text color="$gray11">Signature:</Text>
+                  <Text color="secondary">Signature:</Text>
                   <Text>HMAC-SHA256</Text>
                 </Row>
               </Stack>
