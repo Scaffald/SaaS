@@ -1,5 +1,5 @@
 import { ShieldAlert, ShieldCheck, ShieldQuestion, ShieldX } from 'lucide-react-native'
-import { Text, Row } from '@scaffald/ui'
+import { Text, Row, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 type BadgeStatus = 'active' | 'expired' | 'revoked' | null | undefined
@@ -11,43 +11,36 @@ type IdVerificationBadgeProps = {
   muted?: boolean
 }
 
-type BadgeVisual = {
-  label: string
-  icon: typeof ShieldCheck
-  color: string
-  background: string
-  border: string
+type Tone = 'success' | 'warning' | 'error' | 'neutral'
+
+const STATUS_COPY: Record<
+  'active' | 'expired' | 'revoked' | 'unknown',
+  { label: string; icon: typeof ShieldCheck; tone: Tone }
+> = {
+  active: { label: 'ID Verified', icon: ShieldCheck, tone: 'success' },
+  expired: { label: 'ID badge expired', icon: ShieldAlert, tone: 'warning' },
+  revoked: { label: 'ID badge revoked', icon: ShieldX, tone: 'error' },
+  unknown: { label: 'ID badge unavailable', icon: ShieldQuestion, tone: 'neutral' },
 }
 
-const STATUS_COPY: Record<'active' | 'expired' | 'revoked' | 'unknown', BadgeVisual> = {
-  active: {
-    label: 'ID Verified',
-    icon: ShieldCheck,
-    color: colors.success[700],
-    background: colors.success[100],
-    border: colors.success[300],
-  },
-  expired: {
-    label: 'ID badge expired',
-    icon: ShieldAlert,
-    color: colors.warning[700],
-    background: colors.warning[100],
-    border: colors.warning[300],
-  },
-  revoked: {
-    label: 'ID badge revoked',
-    icon: ShieldX,
-    color: colors.error[600],
-    background: colors.error[100],
-    border: colors.error[300],
-  },
-  unknown: {
-    label: 'ID badge unavailable',
-    icon: ShieldQuestion,
-    color: colors.gray[600],
-    background: colors.gray[100],
-    border: colors.gray[200],
-  },
+/**
+ * Colours from the theme. These were fixed 100/300/700 ramps, so every badge
+ * was a pale block on the dark ground; "ID badge unavailable" was a white one
+ * (#1034). A status tone is its semantic foreground on a faint tint of it.
+ */
+function toneColors(tone: Tone, t: 'light' | 'dark') {
+  if (tone === 'neutral') {
+    return {
+      color: colors.text[t].secondary,
+      background: colors.bg[t].subtle,
+      border: colors.border[t].default,
+    }
+  }
+  return {
+    color: colors.fg[t][tone],
+    background: `${colors.fg[t][tone]}1A`,
+    border: colors.border[t][tone],
+  }
 }
 
 function formatDate(value?: string | null): string | null {
@@ -68,13 +61,12 @@ export function IdVerificationBadge({
   const normalizedStatus: 'active' | 'expired' | 'revoked' | 'unknown' =
     status === 'active' || status === 'expired' || status === 'revoked' ? status : 'unknown'
 
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const copy = STATUS_COPY[normalizedStatus]
   const Icon = copy.icon
   const expiresText = normalizedStatus === 'active' ? formatDate(badgeExpiresAt) : null
-  const mutedBackground = colors.gray[50]
-  const mutedBorder = colors.gray[200]
-  const mutedColor = colors.gray[600]
-  const mutedSubtext = colors.gray[500]
+  const tone = toneColors(muted ? 'neutral' : copy.tone, t)
 
   return (
     <Row
@@ -83,13 +75,13 @@ export function IdVerificationBadge({
       paddingHorizontal={size === 'sm' ? 8 : 12}
       paddingVertical={size === 'sm' ? 4 : 8}
       style={{ borderRadius: 7 }}
-      backgroundColor={muted ? mutedBackground : copy.background}
+      backgroundColor={tone.background}
       borderWidth={1}
-      borderColor={muted ? mutedBorder : copy.border}
+      borderColor={tone.border}
     >
-      <Icon size={size === 'sm' ? 14 : 16} color={muted ? mutedColor : copy.color} />
-      <Text style={{ color: muted ? mutedColor : copy.color }}>{copy.label}</Text>
-      {expiresText && <Text style={{ color: muted ? mutedSubtext : copy.color }}>· exp {expiresText}</Text>}
+      <Icon size={size === 'sm' ? 14 : 16} color={tone.color} />
+      <Text style={{ color: tone.color }}>{copy.label}</Text>
+      {expiresText && <Text style={{ color: tone.color }}>· exp {expiresText}</Text>}
     </Row>
   )
 }

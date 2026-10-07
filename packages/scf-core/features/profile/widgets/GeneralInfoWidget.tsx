@@ -11,6 +11,7 @@ import {
   Avatar,
   Button,
   DashboardWidget,
+  H3,
   ResponsiveModal,
   Skeleton,
   SkeletonAvatar,
@@ -20,6 +21,7 @@ import {
   Text,
   Row,
   Stack,
+  useResponsive,
   useThemeContext,
 } from '@scaffald/ui'
 import { MessageSquarePlus } from 'lucide-react-native'
@@ -55,6 +57,7 @@ export function GeneralInfoWidget({
 }: GeneralInfoWidgetProps) {
   const [showReviewModal, setShowReviewModal] = useState(false)
   const { theme } = useThemeContext()
+  const { isMobile } = useResponsive()
   const t = theme === 'dark' ? 'dark' : ('light' as const)
   const pal = workerPalette[t]
   const { user: currentUser } = useUser()
@@ -141,6 +144,24 @@ export function GeneralInfoWidget({
   // caller didn't pass isOwnProfile (e.g. the profile overview passes only userId).
   const isSelf = isOwnProfile || (!!currentUser?.id && currentUser.id === userId)
 
+  // Trade · location · years, the prototype's facts line. Location is private
+  // data, so it appears only where privateData does (the owner's own view).
+  const yearsValue =
+    typeof data.calculatedYearsOfExperience === 'number'
+      ? data.calculatedYearsOfExperience
+      : data.years_of_experience
+  const years =
+    typeof yearsValue === 'number' && !Number.isNaN(yearsValue) && yearsValue > 0
+      ? Number.isInteger(yearsValue)
+        ? yearsValue
+        : Number(yearsValue.toFixed(1))
+      : null
+  const facts = [
+    data.industries?.name,
+    data.privateData?.location,
+    years !== null ? `${years} ${years === 1 ? 'year' : 'years'} in the trade` : null,
+  ].filter((fact): fact is string => !!fact)
+
   // Only show "Add Review" button if viewing someone else's profile
   const canLeaveReview = showButtons && !isSelf
 
@@ -160,10 +181,50 @@ export function GeneralInfoWidget({
     <>
       <DashboardWidget>
         <Stack gap={12}>
-          {/* Header with Action Buttons */}
-          {(showButtons || (showEdit && data.slug)) && (
-            <Row justify="flex-end" align="center" marginBottom={8}>
-              <Row gap={8} wrap justify="flex-end">
+          {/* One identity block (#1034): avatar beside name, headline, a
+              facts line and the badges, with the actions on the same row —
+              the prototype's shape. It was a centred avatar alone in a card,
+              actions floating above it, and "Professional Details" further
+              down repeating the years and the industry as loose label/value
+              pairs; those two facts are on the facts line now. */}
+          {/* Side by side from tablet up; stacked on a phone, where a wrapping
+              row squeezed the name column to a few characters a line. */}
+          <Stack gap={16} style={{ flexDirection: isMobile ? 'column' : 'row', alignItems: 'flex-start' }}>
+            <Avatar
+              size={64}
+              src={getAvatarUrl(data.avatar_path) || data.avatar_url || ''}
+              // slice(0, 2) rendered "MA" for "Marcus Rivera" — use the shared
+              // helper so every surface shows first+last initials (#384).
+              initials={displayName ? getInitials(displayName) : undefined}
+            />
+
+            <Stack gap={6} style={isMobile ? undefined : { flex: 1, minWidth: 0 }}>
+              <H3 style={{ color: colors.text[theme].primary }}>{displayName}</H3>
+              {data.headline ? (
+                <Text style={{ color: colors.text[theme].secondary }}>{data.headline}</Text>
+              ) : null}
+              {facts.length > 0 ? (
+                <Text style={{ color: colors.text[theme].primary }}>{facts.join(' · ')}</Text>
+              ) : null}
+              {badge || data.open_to_work ? (
+                <Row gap={8} align="center" wrap>
+                  {badge && (
+                    <IdVerificationBadge
+                      status={badge.badge_status as 'active' | 'expired' | 'revoked' | null}
+                      badgeExpiresAt={badge.badge_expires_at ?? undefined}
+                      size="sm"
+                      muted={false}
+                    />
+                  )}
+                  {data.open_to_work && (
+                    <Pill label="Open to Work" bgColor={pal.pillBg} textColor={pal.pillText} />
+                  )}
+                </Row>
+              ) : null}
+            </Stack>
+
+            {showButtons || (showEdit && data.slug) ? (
+              <Row gap={8} wrap>
                 {showEdit && data.slug ? (
                   <Button
                     size="sm"
@@ -189,49 +250,13 @@ export function GeneralInfoWidget({
                   </Button>
                 )}
               </Row>
-            </Row>
-          )}
-
-          {/* Avatar & Name Section */}
-          <Stack gap={12} align="center">
-            <Avatar
-              size={40}
-              src={getAvatarUrl(data.avatar_path) || data.avatar_url || ''}
-              // slice(0, 2) rendered "MA" for "Marcus Rivera" — use the shared
-              // helper so every surface shows first+last initials (#384).
-              initials={displayName ? getInitials(displayName) : undefined}
-            />
-
-            <Stack gap={4} align="center">
-              <Text>{displayName}</Text>
-              {data.headline && (
-                <Stack align="center" maxWidth="100%">
-                  <Text style={{ color: colors.text[theme].secondary }}>{data.headline}</Text>
-                </Stack>
-              )}
-              {data.username && (
-                <Text style={{ color: colors.text[theme].secondary }}>@{data.username}</Text>
-              )}
-              {badge && (
-                <IdVerificationBadge
-                  status={badge.badge_status as 'active' | 'expired' | 'revoked' | null}
-                  badgeExpiresAt={badge.badge_expires_at ?? undefined}
-                  size="sm"
-                  muted={false}
-                />
-              )}
-            </Stack>
-
-            {/* Status Badges */}
-            {data.open_to_work && (
-              <Pill label="Open to Work" bgColor={pal.pillBg} textColor={pal.pillText} />
-            )}
+            ) : null}
           </Stack>
 
           {/* About Section */}
           {data.about && variant === 'full' && (
             <Stack gap={8}>
-              <Text>About</Text>
+              <H3 style={{ color: colors.text[theme].primary }}>About</H3>
               <Text style={{ color: colors.text[theme].secondary, lineHeight: 20 }}>
                 {data.about}
               </Text>
@@ -241,7 +266,7 @@ export function GeneralInfoWidget({
           {/* Contact Information (Private - only for own profile) */}
           {showPrivateInfo && data.privateData && variant === 'full' && (
             <Stack gap={12}>
-              <Text>Contact Information</Text>
+              <H3 style={{ color: colors.text[theme].primary }}>Contact information</H3>
 
               {data.privateData.email && (
                 <Stack gap={4}>
@@ -266,43 +291,6 @@ export function GeneralInfoWidget({
             </Stack>
           )}
 
-          {/* Professional Details */}
-          {variant === 'full' && (
-            <Stack gap={12}>
-              <Text>Professional Details</Text>
-
-              <Row gap={16} wrap>
-                {(() => {
-                  const yearsValue =
-                    typeof data.calculatedYearsOfExperience === 'number'
-                      ? data.calculatedYearsOfExperience
-                      : data.years_of_experience
-                  const formattedYears =
-                    typeof yearsValue === 'number' && !Number.isNaN(yearsValue)
-                      ? yearsValue % 1 !== 0
-                        ? yearsValue.toFixed(1)
-                        : yearsValue
-                      : null
-                  if (formattedYears === null) return null
-                  return (
-                    <Stack gap={4} flex={1} minWidth={120}>
-                      <Text style={{ color: colors.text[theme].secondary }}>Experience</Text>
-                      <Text>
-                        {formattedYears} {Number(formattedYears) === 1 ? 'year' : 'years'}
-                      </Text>
-                    </Stack>
-                  )
-                })()}
-
-                {data.industries && (
-                  <Stack gap={4} flex={1} minWidth={120}>
-                    <Text style={{ color: colors.text[theme].secondary }}>Industry</Text>
-                    <Text>{data.industries.name}</Text>
-                  </Stack>
-                )}
-              </Row>
-            </Stack>
-          )}
         </Stack>
       </DashboardWidget>
 
