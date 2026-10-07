@@ -1,7 +1,6 @@
 import { usePendingConnections } from '@scf/core/utils/engagement-sdk-hooks'
 import { useMemo, useState } from 'react'
-import { Tabs, Text, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { Tabs, Stack, } from '@scaffald/ui'
 import { ConnectionsList } from './components/ConnectionsList'
 import { FollowersList } from './components/FollowersList'
 import { FollowingList } from './components/FollowingList'
@@ -10,8 +9,6 @@ import { PendingRequestsList } from './components/PendingRequestsList'
 type TabValue = 'connections' | 'followers' | 'following' | 'pending'
 
 export function ConnectionsManagementPage() {
-  const { theme } = useThemeContext()
-  const t = theme === 'dark' ? 'dark' : 'light'
   const [activeTab, setActiveTab] = useState<TabValue>('connections')
 
   // Fetch pending requests count for badge
@@ -24,12 +21,7 @@ export function ConnectionsManagementPage() {
 
   return (
     <Stack gap={16}>
-      <Stack gap={4}>
-        <Text>Connections</Text>
-        <Text style={{ color: colors.text[t].secondary }}>
-          Manage your professional connections, followers, and pending requests.
-        </Text>
-      </Stack>
+      {/* No title here: the shared header above already says "Connections" (#1025). */}
 
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)} type="line">
         <Tabs.Item value="connections">

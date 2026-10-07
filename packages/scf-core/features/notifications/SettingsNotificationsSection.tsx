@@ -172,7 +172,16 @@ function mapNotification(apiNotification: ApiNotification): NotificationItem {
   }
 }
 
-export function SettingsNotificationsSection() {
+export function SettingsNotificationsSection({
+  showHeading = true,
+}: {
+  /**
+   * The section's own "Notifications" heading. Right where this is one section
+   * of /dashboard/settings; off on /dashboard/notifications/settings, whose
+   * shared header already titles the screen (#1025).
+   */
+  showHeading?: boolean
+} = {}) {
   const router = useRouter()
   const { theme } = useThemeContext()
   const queryClient = useQueryClient()
@@ -456,7 +465,7 @@ export function SettingsNotificationsSection() {
 
   return (
     <Stack gap={24}>
-      {/* Page header */}
+      {showHeading && (
       <Stack gap={2}>
         <Text style={{ fontSize: 22, fontWeight: '700', color: colors.text[theme].primary }}>
           Notifications
@@ -465,6 +474,7 @@ export function SettingsNotificationsSection() {
           Stay up to date with applications, opportunities, and platform updates.
         </Text>
       </Stack>
+      )}
 
       {/* Preferences card */}
       <Card variant="outlined" radius="lg" padding="lg">

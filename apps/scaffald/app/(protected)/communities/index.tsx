@@ -5,6 +5,7 @@ import { CommunitiesRightColumn } from '@scf/core/features/communities'
 export default function CommunitiesIndexPage() {
   return (
     <DashboardPage
+      screenTip="Join trade communities to share work, get feedback, and build your reputation."
       leftContent={<CommunitiesHubPage />}
       showBreadcrumb={false}
       rightContent={<CommunitiesRightColumn />}

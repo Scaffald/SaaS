@@ -381,19 +381,9 @@ export default function NewsPage() {
     openExternalLink(article.link, { inApp: true });
   };
 
-  // Page header — shown in left column above the featured panel
-  const pageHeader = (
-    <Row align="center" justify="space-between" style={{ marginBottom: 24 }}>
-      <Stack gap={2}>
-        <Text
-          style={{ fontSize: 22, fontWeight: "700", color: colors.text[theme].primary }}
-        >
-          News
-        </Text>
-        <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
-          Curated construction headlines
-        </Text>
-      </Stack>
+  // The screen's actions, in the shared ScreenHeader. This used to be a second
+  // "News" title row inside the content, under the shared header (#1025).
+  const screenActions = (
       <Row gap={8}>
         <Button
           size="sm"
@@ -408,7 +398,6 @@ export default function NewsPage() {
           Back
         </Button>
       </Row>
-    </Row>
   );
 
   // States
@@ -417,7 +406,7 @@ export default function NewsPage() {
   if (isSpinning || isError || (!isLoading && !isError && items.length === 0)) {
     const leftContent = (
       <Stack gap={0}>
-        {pageHeader}
+        
         {isSpinning ? (
           <Stack align="center" gap={12} style={{ paddingVertical: 64 }}>
             <Spinner size="lg" color="primary" />
@@ -452,6 +441,8 @@ export default function NewsPage() {
       <DashboardPage
         showBreadcrumb={false}
         pageTitle="News"
+        screenTip="Curated construction headlines."
+        screenActions={screenActions}
         leftContent={leftContent}
       />
     );
@@ -460,7 +451,7 @@ export default function NewsPage() {
   // Two-column layout: featured reader (left) + feed (right)
   const leftContent = (
     <Stack gap={0}>
-      {pageHeader}
+      
       {selectedItem ? (
         <FeaturedPanel
           key={selectedItem.id}
@@ -503,6 +494,8 @@ export default function NewsPage() {
     <DashboardPage
       showBreadcrumb={false}
       pageTitle="News"
+      screenTip="Curated construction headlines."
+      screenActions={screenActions}
       leftContent={leftContent}
       rightContent={rightContent}
     />

@@ -22,10 +22,7 @@ export function BookmarksPage() {
 
   return (
     <Stack gap={16}>
-      <Stack gap={4}>
-        <Text style={{ fontSize: 20, fontWeight: '600' }}>Bookmarks</Text>
-        <Text style={{ color: colors.text[t].secondary }}>Posts you've saved for later.</Text>
-      </Stack>
+      {/* No title here: the shared header above already says "Bookmarks" (#1025). */}
 
       {isLoading ? (
         <Stack align="center" style={{ paddingVertical: 40 }}>

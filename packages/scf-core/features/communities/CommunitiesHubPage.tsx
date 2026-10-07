@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { ListToolbar, SegmentedControl, Stack, Tabs, Text, useResponsive, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { ListToolbar, SegmentedControl, Stack, Tabs, useResponsive, } from '@scaffald/ui'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import type { FilterPillConfig } from '@scf/core/components/toolbarFilters'
 import { AllCommunitiesList } from './components/AllCommunitiesList'
@@ -23,9 +22,7 @@ const SORT_LABEL_MAP: Record<CommunitySortBy, string> = {
 }
 
 export function CommunitiesHubPage() {
-  const { theme } = useThemeContext()
   const { isMobile } = useResponsive()
-  const t = theme === 'dark' ? 'dark' : 'light'
   const [activeTab, setActiveTab] = useState<TabValue>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<CommunitySortBy>('most_active')
@@ -90,12 +87,7 @@ export function CommunitiesHubPage() {
 
   return (
     <Stack gap={16}>
-      <Stack gap={4}>
-        <Text>Communities</Text>
-        <Text style={{ color: colors.text[t].secondary }}>
-          Join trade communities to share work, get feedback, and build your reputation.
-        </Text>
-      </Stack>
+      {/* No title here: the shared header above already says "Communities" (#1025). */}
 
       {/* Desktop: the one search row — search, Filters & sort, count right.
           Sort moved into the flyout: it was the last screen keeping a
