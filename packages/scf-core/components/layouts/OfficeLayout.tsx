@@ -207,7 +207,9 @@ export const OfficeLayout = ({
           </Row>
         )}
 
-        {/* Secondary Tabs - sub-section tabs for CMS/ATS (Workers, Jobs, etc.) */}
+        {/* Secondary Tabs - sub-section tabs for CMS/ATS (Workers, Jobs, etc.).
+            One scrolling strip: below Tabs' wrap breakpoint the five ATS tabs
+            wrapped over three rows at 390 (#1032). */}
         {secondaryTabItems.length > 0 && (
           <Row paddingHorizontal={contentPadding}>
             <Tabs
@@ -215,6 +217,7 @@ export const OfficeLayout = ({
               onValueChange={handleTabChange}
               type="default"
               orientation="horizontal"
+              scrollable
             >
               {secondaryTabItems.map((item: TabItem) => (
                 <Tabs.Item key={item.key} value={item.key}>

@@ -646,8 +646,8 @@ export function CalendarSchedulingScreen() {
           }
         />
 
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} type="line">
+        {/* Tabs — one scrolling row, not two wrapped ones at 390 (#1032) */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} type="line" scrollable>
           <Tabs.Item value="connections">
             <Tabs.Trigger>Calendar Connections</Tabs.Trigger>
             <Tabs.Content>
