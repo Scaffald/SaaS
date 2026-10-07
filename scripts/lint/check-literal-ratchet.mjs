@@ -79,9 +79,19 @@ const PATTERNS = {
     regex: /\bfontSize\s*[:=]\s*\{?\s*\d+(?:\.\d+)?/g,
     hint: 'fontSize or fontScale from @scaffald/ui tokens — the scale is 11 · 12.5 · 14 · 17 · 22 · 30, display 42',
   },
-  hexColor: {
+    hexColor: {
     regex: /['"]#[0-9a-fA-F]{3,8}['"]/g,
     hint: 'colors.* from @scaffald/ui tokens, with the [theme] dimension',
+  },
+  // Raw indices into ramps that are not part of the palette's semantic roles
+  // (#1028). Blue and purple have no place in a teal/amber UI; picking
+  // `theme === 'light' ? colors.blue[50] : colors.blue[900]` by hand is how the
+  // personality test ended up with a navy card in dark mode. Status ramps
+  // (green, yellow, red) are not counted here — they map to success / warning /
+  // error and are a separate question.
+  accentRamp: {
+    regex: /\bcolors\.(?:blue|purple|indigo|violet|pink)\[\d+\]/g,
+    hint: 'a semantic token — colors.text[theme].emphasis, colors.fg[theme].active, colors.bg[theme].emphasis — not a raw blue/purple ramp',
   },
 }
 

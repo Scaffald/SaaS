@@ -1,27 +1,31 @@
 {
   "$schema": "./literal-baseline.md",
   "note": "Ceilings for literal styling in packages/scf-core/features, per directory per pattern. They may only come down. Enforced by scripts/lint/check-literal-ratchet.mjs (pnpm lint:literals); lower them with --update. Do not raise a number to make a build pass — reach for the token instead. The map from each literal value to its token is in .radium/scaffald-ui.md.",
-  "measuredAt": "2026-10-06",
+  "measuredAt": "2026-10-07",
   "root": "packages/scf-core/features",
   "patterns": {
     "borderRadius": "borderRadius: <n> and borderRadius={<n>} — use the borderRadius tokens (2 / 4 / 7 / 999)",
     "fontSize": "fontSize: <n> and fontSize={<n>} — use the fontSize or fontScale tokens (11 / 12.5 / 14 / 17 / 22 / 30, display 42)",
-    "hexColor": "'#rgb' and \"#rrggbb\" — use colors.*[theme] tokens"
+    "hexColor": "'#rgb' and \"#rrggbb\" — use colors.*[theme] tokens",
+    "accentRamp": "colors.blue[n] / purple / indigo / violet / pink — use semantic tokens (text.emphasis, fg.active, bg.emphasis); these ramps are not in the palette (#1028)"
   },
   "pinned": {
     "marketing/theme.ts": "A deliberate marketing palette, darker and higher-contrast than the product UI, ported from the retired Next.js site. The file documents why it is not in @scaffald/ui tokens. Its WCAG notes are the reason to keep the values literal and commented."
   },
   "ceilings": {
     "analytics": {
+      "accentRamp": 7,
       "borderRadius": 6,
       "fontSize": 42,
       "hexColor": 1
     },
     "api-keys": {
+      "accentRamp": 33,
       "borderRadius": 15,
       "hexColor": 1
     },
     "applications": {
+      "accentRamp": 72,
       "borderRadius": 31,
       "fontSize": 22,
       "hexColor": 1
@@ -35,18 +39,22 @@
       "hexColor": 4
     },
     "background-check": {
+      "accentRamp": 30,
       "borderRadius": 49,
       "fontSize": 2
     },
     "career-assessment": {
+      "accentRamp": 6,
       "borderRadius": 3,
       "hexColor": 6
     },
     "career-explorer": {
+      "accentRamp": 4,
       "borderRadius": 4,
       "fontSize": 22
     },
     "communities": {
+      "accentRamp": 4,
       "borderRadius": 30,
       "fontSize": 53,
       "hexColor": 8
@@ -56,6 +64,7 @@
       "fontSize": 6
     },
     "dashboard": {
+      "accentRamp": 7,
       "borderRadius": 36,
       "fontSize": 33,
       "hexColor": 1
@@ -66,6 +75,7 @@
       "hexColor": 2
     },
     "discover": {
+      "accentRamp": 38,
       "borderRadius": 55,
       "fontSize": 41,
       "hexColor": 33
@@ -82,9 +92,11 @@
       "borderRadius": 7
     },
     "inquiries": {
+      "accentRamp": 24,
       "borderRadius": 33
     },
     "ipip-assessment": {
+      "accentRamp": 37,
       "borderRadius": 21,
       "fontSize": 9
     },
@@ -102,33 +114,42 @@
       "fontSize": 8
     },
     "news": {
+      "accentRamp": 4,
       "borderRadius": 3,
       "fontSize": 6
     },
     "notifications": {
+      "accentRamp": 1,
       "borderRadius": 6,
       "fontSize": 17
     },
     "oauth": {
+      "accentRamp": 12,
       "borderRadius": 3
     },
     "occupation-assessment": {
       "fontSize": 8
     },
+    "office": {
+      "accentRamp": 104
+    },
     "organizations": {
       "borderRadius": 1
     },
     "personality-assessment": {
+      "accentRamp": 16,
       "borderRadius": 11,
       "fontSize": 1,
       "hexColor": 10
     },
     "privacy": {
+      "accentRamp": 12,
       "borderRadius": 39,
       "fontSize": 15,
       "hexColor": 1
     },
     "profile": {
+      "accentRamp": 6,
       "borderRadius": 65,
       "fontSize": 15,
       "hexColor": 40
@@ -141,6 +162,7 @@
       "hexColor": 32
     },
     "resume": {
+      "accentRamp": 22,
       "borderRadius": 15
     },
     "reviews": {
@@ -155,6 +177,7 @@
       "fontSize": 2
     },
     "skills-analytics": {
+      "accentRamp": 8,
       "borderRadius": 9,
       "fontSize": 35
     },
@@ -163,9 +186,11 @@
       "hexColor": 4
     },
     "user-profile": {
+      "accentRamp": 62,
       "borderRadius": 23
     },
     "work-logs": {
+      "accentRamp": 10,
       "borderRadius": 33
     }
   }

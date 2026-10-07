@@ -39,7 +39,8 @@ export function IPIPTestStep({
   onDomainComplete,
   isLoading = false,
 }: IPIPTestStepProps) {
-  const { theme } = useThemeContext()
+    const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const allQuestions = getQuestions()
   const choices = getChoices()
   const [currentIndex, setCurrentIndex] = useState(initialCurrentIndex)
@@ -167,27 +168,29 @@ export function IPIPTestStep({
 
   return (
     <Stack gap={24} width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
-      {/* Domain Header */}
+      {/* Domain Header — the palette's selected surface and teal accent. It
+          picked colors.blue by hand per theme: pale blue in light, navy in
+          dark, in a teal/amber UI (#1028). */}
       {currentDomain && (
         <Row
           gap={8}
           padding="md"
           style={{
-            backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+            backgroundColor: colors.bg[t].selected,
             borderRadius: 7,
             borderWidth: 1,
-            borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
+            borderColor: colors.border[t].active,
           }}
           justify="space-between"
           align="center"
         >
           <Stack gap={4}>
-            <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{DOMAIN_NAMES[currentDomain]}</Text>
-            <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
+            <Text style={{ color: colors.text[t].emphasis }}>{DOMAIN_NAMES[currentDomain]}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>
               Question {questionIndexInDomain + 1} of {QUESTIONS_PER_DOMAIN} in this domain
             </Text>
           </Stack>
-          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{domainProgress}%</Text>
+          <Text style={{ color: colors.text[t].emphasis }}>{domainProgress}%</Text>
         </Row>
       )}
 
