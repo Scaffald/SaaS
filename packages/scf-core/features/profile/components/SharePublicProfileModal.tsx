@@ -15,7 +15,7 @@
  * /dashboard/settings where VanityUrlSection lives.
  */
 
-import { ROUTES } from '@scf/core/constants/routes'
+import { ROUTES, RouteBuilder } from '@scf/core/constants/routes'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
 import {
   getPublicProfileDisplayUrl,
@@ -117,7 +117,7 @@ export function SharePublicProfileModal({
   const handleOpenProfile = useCallback(() => {
     if (!slug) return
     onClose()
-    router.push(`/users/${slug}` as never)
+    router.push(RouteBuilder.publicProfile(slug) as never)
   }, [slug, onClose, router])
 
   const handleClaimSlug = useCallback(() => {

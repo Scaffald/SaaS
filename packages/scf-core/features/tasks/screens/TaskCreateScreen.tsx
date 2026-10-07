@@ -36,21 +36,25 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import type { TaskPriority, TaskStatus } from '@scaffald/sdk'
 
-import {
-  useCreateTaskMutation,
-  usePunchlists,
-} from '@scf/core/utils/tasks-sdk-hooks'
+import { useCreateTaskMutation, usePunchlists } from '@scf/core/utils/tasks-sdk-hooks'
 import { useWorkLogProjectOptions } from '@scf/core/utils/work-logs-sdk-hooks'
+import { RouteBuilder } from '@scf/core/constants/routes'
 
 type Theme = 'light' | 'dark'
 
 const STATUSES: TaskStatus[] = ['todo', 'in_progress', 'done', 'cancelled']
 const STATUS_LABELS: Record<TaskStatus, string> = {
-  todo: 'To do', in_progress: 'In progress', done: 'Done', cancelled: 'Cancelled',
+  todo: 'To do',
+  in_progress: 'In progress',
+  done: 'Done',
+  cancelled: 'Cancelled',
 }
 const PRIORITIES: TaskPriority[] = ['low', 'medium', 'high', 'urgent']
 const PRIORITY_LABELS: Record<TaskPriority, string> = {
-  low: 'Low', medium: 'Medium', high: 'High', urgent: 'Urgent',
+  low: 'Low',
+  medium: 'Medium',
+  high: 'High',
+  urgent: 'Urgent',
 }
 
 interface TaskCreateScreenProps {
@@ -75,25 +79,24 @@ export function TaskCreateScreen({ organizationId, orgSlug }: TaskCreateScreenPr
 
   const punchlistsQuery = usePunchlists(
     organizationId ? { organizationId, status: 'active' } : undefined,
-    { enabled: !!organizationId },
+    { enabled: !!organizationId }
   )
-  const projectsQuery = useWorkLogProjectOptions(
-    organizationId ? { organizationId } : undefined,
-    { enabled: !!organizationId },
-  )
+  const projectsQuery = useWorkLogProjectOptions(organizationId ? { organizationId } : undefined, {
+    enabled: !!organizationId,
+  })
 
   const createMutation = useCreateTaskMutation({
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
       if (orgSlug) {
-        router.replace(`/employers/org/${orgSlug}/tasks/${task.id}`)
+        router.replace(RouteBuilder.orgTaskDetail(orgSlug, String(task.id)) as never)
       }
     },
   })
 
   const canSubmit = useMemo(
     () => !!organizationId && title.trim().length > 0 && !createMutation.isPending,
-    [organizationId, title, createMutation.isPending],
+    [organizationId, title, createMutation.isPending]
   )
 
   const handleSubmit = () => {
@@ -112,7 +115,7 @@ export function TaskCreateScreen({ organizationId, orgSlug }: TaskCreateScreenPr
   }
 
   const handleCancel = () => {
-    if (orgSlug) router.replace(`/employers/org/${orgSlug}/tasks`)
+    if (orgSlug) router.replace(RouteBuilder.orgTasks(orgSlug) as never)
   }
 
   if (!organizationId) {
@@ -129,12 +132,7 @@ export function TaskCreateScreen({ organizationId, orgSlug }: TaskCreateScreenPr
       <Stack padding={16} gap={16}>
         {orgSlug ? (
           <Row align="center" gap={8}>
-            <Button
-              variant="text"
-              size="sm"
-              onPress={handleCancel}
-              aria-label="Back to tasks"
-            >
+            <Button variant="text" size="sm" onPress={handleCancel} aria-label="Back to tasks">
               <ArrowLeft size={16} color={colors.icon[theme].muted} />
             </Button>
             <Caption color="tertiary">Back to Tasks</Caption>
@@ -145,12 +143,7 @@ export function TaskCreateScreen({ organizationId, orgSlug }: TaskCreateScreenPr
 
         <Stack gap={8}>
           <Caption color="tertiary">Title</Caption>
-          <Input
-            value={title}
-            onChangeText={setTitle}
-            placeholder="What needs doing?"
-            autoFocus
-          />
+          <Input value={title} onChangeText={setTitle} placeholder="What needs doing?" autoFocus />
         </Stack>
 
         <Stack gap={8}>
@@ -231,22 +224,22 @@ export function TaskCreateScreen({ organizationId, orgSlug }: TaskCreateScreenPr
         </Row>
 
         {createMutation.error ? (
-          <Caption color="error">
-            Create failed: {String(createMutation.error.message)}
-          </Caption>
+          <Caption color="error">Create failed: {String(createMutation.error.message)}</Caption>
         ) : null}
 
         <Paragraph color="tertiary">
-          A new task lands as <b>To do</b> by default. After creating, you'll
-          jump to its detail page where you can refine status, assignee, and
-          links to logs.
+          A new task lands as <b>To do</b> by default. After creating, you'll jump to its detail
+          page where you can refine status, assignee, and links to logs.
         </Paragraph>
       </Stack>
     </ScrollView>
   )
 }
 
-interface PickerItem { id: string; label: string }
+interface PickerItem {
+  id: string
+  label: string
+}
 
 interface PickerSectionProps {
   label: string
@@ -257,7 +250,14 @@ interface PickerSectionProps {
   emptyHint: string
 }
 
-function PickerSection({ label, items, isLoading, value, onChange, emptyHint }: PickerSectionProps) {
+function PickerSection({
+  label,
+  items,
+  isLoading,
+  value,
+  onChange,
+  emptyHint,
+}: PickerSectionProps) {
   return (
     <Stack gap={8}>
       <Caption color="tertiary">{label}</Caption>
@@ -267,7 +267,9 @@ function PickerSection({ label, items, isLoading, value, onChange, emptyHint }: 
         <Caption color="tertiary">{emptyHint}</Caption>
       ) : (
         <Row gap={6} wrap>
-          <PickerChip selected={value === null} onPress={() => onChange(null)}>None</PickerChip>
+          <PickerChip selected={value === null} onPress={() => onChange(null)}>
+            None
+          </PickerChip>
           {items.map((item) => (
             <PickerChip
               key={item.id}
@@ -284,8 +286,14 @@ function PickerSection({ label, items, isLoading, value, onChange, emptyHint }: 
 }
 
 function PickerChip({
-  selected, onPress, children,
-}: { selected: boolean; onPress: () => void; children: React.ReactNode }) {
+  selected,
+  onPress,
+  children,
+}: {
+  selected: boolean
+  onPress: () => void
+  children: React.ReactNode
+}) {
   return (
     <Card>
       <CardContent>

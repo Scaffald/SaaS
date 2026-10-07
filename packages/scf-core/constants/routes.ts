@@ -246,6 +246,24 @@ const ROUTES_CONFIG = {
             exact: true,
           },
         },
+        TASKS: {
+          path: '/employers/org/:slug/tasks',
+          titleKey: 'routes.org.tasks',
+          protected: true,
+          exact: false,
+          CREATE: {
+            path: '/employers/org/:slug/tasks/create',
+            titleKey: 'routes.org.taskCreate',
+            protected: true,
+            exact: true,
+          },
+          DETAIL: {
+            path: '/employers/org/:slug/tasks/:taskId',
+            titleKey: 'routes.org.taskDetail',
+            protected: true,
+            exact: true,
+          },
+        },
       },
     },
     TEAMS: {
@@ -507,6 +525,12 @@ const ROUTES_CONFIG = {
       INQUIRY: {
         path: '/jobs/applications/:applicationId/inquiry',
         titleKey: 'routes.dashboard.applications.inquiry',
+        protected: true,
+        exact: true,
+      },
+      MESSAGES: {
+        path: '/jobs/applications/:applicationId/messages',
+        titleKey: 'routes.dashboard.applications.messages',
         protected: true,
         exact: true,
       },
@@ -1835,4 +1859,10 @@ export const RouteBuilder = {
   orgLogsCreate: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.LOGS.CREATE, { slug }),
   orgLogDetail: (slug: string, workLogId: string) =>
     buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.LOGS.DETAIL, { slug, workLogId }),
+  orgTasks: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.TASKS, { slug }),
+  orgTaskCreate: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.TASKS.CREATE, { slug }),
+  orgTaskDetail: (slug: string, taskId: string) =>
+    buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.TASKS.DETAIL, { slug, taskId }),
+  applicationMessages: (applicationId: string) =>
+    buildPath(ROUTES.JOBS.APPLICATIONS.MESSAGES, { applicationId }),
 } as const

@@ -40,6 +40,7 @@ import {
   useUpdateTaskMutation,
 } from '@scf/core/utils/tasks-sdk-hooks'
 import { useWorkLogs } from '@scf/core/utils/work-logs-sdk-hooks'
+import { RouteBuilder } from '@scf/core/constants/routes'
 
 type Theme = 'light' | 'dark'
 
@@ -63,10 +64,15 @@ function formatDateTime(iso: string | null | undefined): string {
   if (!iso) return '—'
   try {
     return new Date(iso).toLocaleString(undefined, {
-      month: 'short', day: 'numeric', year: 'numeric',
-      hour: 'numeric', minute: '2-digit',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
     })
-  } catch { return iso }
+  } catch {
+    return iso
+  }
 }
 
 interface TaskDetailScreenProps {
@@ -128,7 +134,7 @@ export function TaskDetailScreen({ taskId, orgSlug }: TaskDetailScreenProps) {
   const deleteMutation = useDeleteTaskMutation({
     onSuccess: () => {
       invalidate()
-      if (orgSlug) router.replace(`/employers/org/${orgSlug}/tasks`)
+      if (orgSlug) router.replace(RouteBuilder.orgTasks(orgSlug) as never)
     },
   })
 
@@ -210,11 +216,12 @@ export function TaskDetailScreen({ taskId, orgSlug }: TaskDetailScreenProps) {
     return (
       <Stack padding={16} gap={12}>
         <Heading level={3}>Task not found</Heading>
-        <Paragraph color="tertiary">
-          {String(taskQuery.error.message ?? taskQuery.error)}
-        </Paragraph>
+        <Paragraph color="tertiary">{String(taskQuery.error.message ?? taskQuery.error)}</Paragraph>
         {orgSlug ? (
-          <Button variant="outline" onPress={() => router.replace(`/employers/org/${orgSlug}/tasks`)}>
+          <Button
+            variant="outline"
+            onPress={() => router.replace(RouteBuilder.orgTasks(orgSlug) as never)}
+          >
             Back to Tasks
           </Button>
         ) : null}
@@ -230,7 +237,7 @@ export function TaskDetailScreen({ taskId, orgSlug }: TaskDetailScreenProps) {
             <Button
               variant="text"
               size="sm"
-              onPress={() => router.replace(`/employers/org/${orgSlug}/tasks`)}
+              onPress={() => router.replace(RouteBuilder.orgTasks(orgSlug) as never)}
               aria-label="Back to tasks"
             >
               <ArrowLeft size={16} color={colors.icon[theme].muted} />
@@ -282,7 +289,11 @@ export function TaskDetailScreen({ taskId, orgSlug }: TaskDetailScreenProps) {
           <Box flex={1} minWidth={180}>
             <Stack gap={8}>
               <Caption color="tertiary">Team slug</Caption>
-              <Input value={teamSlug} onChangeText={setTeamSlug} placeholder="frontend / backend / design / infra" />
+              <Input
+                value={teamSlug}
+                onChangeText={setTeamSlug}
+                placeholder="frontend / backend / design / infra"
+              />
             </Stack>
           </Box>
         </Row>
@@ -372,11 +383,7 @@ export function TaskDetailScreen({ taskId, orgSlug }: TaskDetailScreenProps) {
             Cancel
           </Button>
           <Box flex={1} />
-          <Button
-            variant="outline"
-            onPress={handleDelete}
-            disabled={deleteMutation.isPending}
-          >
+          <Button variant="outline" onPress={handleDelete} disabled={deleteMutation.isPending}>
             <Row align="center" gap={6}>
               <Trash2 size={14} color={colors.icon[theme].error} />
               <Caption color="error">{deleteMutation.isPending ? 'Deleting…' : 'Delete'}</Caption>

@@ -7,12 +7,13 @@
 
 import { Row, Stack, Text } from '@scaffald/ui'
 import { fontSize } from '@scaffald/ui/tokens'
-import { Link } from 'expo-router'
+import { type Href, Link } from 'expo-router'
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { LegalLayout, openEmail, renderTextWithEmails } from '../components/LegalLayout'
 import { MarketingHeading } from '../components/MarketingHeading'
 import { brand } from '../theme'
+import { ROUTES } from '@scf/core/constants/routes'
 
 const SUPPORT_EMAIL = 'support@scaffald.com'
 
@@ -161,7 +162,7 @@ export function SupportScreen() {
       >
         <Text size="sm" color={brand.muted} style={{ lineHeight: 22 }}>
           For information about how we handle your data, see our{' '}
-          <Link href="/privacy" asChild>
+          <Link href={ROUTES.LEGAL.PRIVACY.path as Href} asChild>
             <Text size="sm" color={brand.teal}>
               Privacy Policy
             </Text>

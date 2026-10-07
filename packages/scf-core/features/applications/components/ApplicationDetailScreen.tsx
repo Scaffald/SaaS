@@ -1,5 +1,5 @@
 import type { Application } from '@scaffald/sdk/resources/applications'
-import { ROUTES } from '@scf/core/constants/routes'
+import { ROUTES, RouteBuilder } from '@scf/core/constants/routes'
 import {
   useApplication,
   useApplicationActivity,
@@ -91,13 +91,18 @@ export function ApplicationDetailScreen({ applicationId }: ApplicationDetailScre
 
   const { data: applicationData, isLoading } = useApplication(applicationId)
   // The SDK retrieve() returns the raw API response { data: Application }
-  const application = (applicationData as { data?: Application } | undefined)?.data ?? applicationData ?? null
+  const application =
+    (applicationData as { data?: Application } | undefined)?.data ?? applicationData ?? null
   const { data: activityResponse } = useApplicationActivity(applicationId)
   const { data: messagesResponse } = useApplicationMessages(applicationId)
 
   const withdrawMutation = useWithdrawApplicationMutation({
     onSuccess: () => {
-      toast.show({ title: 'Application withdrawn', message: 'Your application has been withdrawn.', variant: 'success' })
+      toast.show({
+        title: 'Application withdrawn',
+        message: 'Your application has been withdrawn.',
+        variant: 'success',
+      })
       setShowWithdrawConfirm(false)
       queryClient.invalidateQueries({ queryKey: ['applications'] })
     },
@@ -180,9 +185,7 @@ export function ApplicationDetailScreen({ applicationId }: ApplicationDetailScre
             size="sm"
             variant="outline"
             iconStart={MessageSquare}
-            onPress={() =>
-              router.push(`/jobs/applications/${applicationId}/messages` as never)
-            }
+            onPress={() => router.push(RouteBuilder.applicationMessages(applicationId) as never)}
           >
             Messages
           </Button>
@@ -215,9 +218,7 @@ export function ApplicationDetailScreen({ applicationId }: ApplicationDetailScre
         {/* Job Summary */}
         {job && (
           <DashboardWidget gap={12}>
-            <Text
-              style={{ color: colors.text[theme].primary, fontSize: 15, fontWeight: '600' }}
-            >
+            <Text style={{ color: colors.text[theme].primary, fontSize: 15, fontWeight: '600' }}>
               Job Details
             </Text>
             <Row gap={16} wrap>
@@ -260,9 +261,7 @@ export function ApplicationDetailScreen({ applicationId }: ApplicationDetailScre
         {/* Screening Answers */}
         {Object.keys(screening).length > 0 && (
           <DashboardWidget gap={12}>
-            <Text
-              style={{ color: colors.text[theme].primary, fontSize: 15, fontWeight: '600' }}
-            >
+            <Text style={{ color: colors.text[theme].primary, fontSize: 15, fontWeight: '600' }}>
               Your Screening Answers
             </Text>
             <Stack gap={8}>
@@ -302,9 +301,7 @@ export function ApplicationDetailScreen({ applicationId }: ApplicationDetailScre
         {/* Messages */}
         {messages.length > 0 && (
           <DashboardWidget gap={12}>
-            <Text
-              style={{ color: colors.text[theme].primary, fontSize: 15, fontWeight: '600' }}
-            >
+            <Text style={{ color: colors.text[theme].primary, fontSize: 15, fontWeight: '600' }}>
               Messages ({messages.length})
             </Text>
             <Stack gap={12}>
@@ -373,20 +370,14 @@ export function ApplicationDetailScreen({ applicationId }: ApplicationDetailScre
           />
           <ModalContent>
             <Row gap={12} justify="flex-end">
-              <Button
-                size="md"
-                variant="outline"
-                onPress={() => setShowWithdrawConfirm(false)}
-              >
+              <Button size="md" variant="outline" onPress={() => setShowWithdrawConfirm(false)}>
                 Cancel
               </Button>
               <Button
                 size="md"
                 color="error"
                 disabled={withdrawMutation.isPending}
-                onPress={() =>
-                  withdrawMutation.mutate({ id: applicationId })
-                }
+                onPress={() => withdrawMutation.mutate({ id: applicationId })}
               >
                 {withdrawMutation.isPending ? 'Withdrawing...' : 'Withdraw'}
               </Button>

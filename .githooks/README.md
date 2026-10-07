@@ -60,7 +60,7 @@ If you forget step 2, the hook fails with a reminder to run `pnpm prepush`.
 ## Optimizations
 
 - Pre-commit uses one `nx affected -t lint,typecheck` instead of separate lint + typecheck (faster, avoids graph lock)
-- Custom lint scripts (`lint:routes`, `lint:sorted-keys`) only check staged files, not the entire repo
+- Custom lint scripts (`lint:routes`, `lint:sorted-keys`) check only staged files when something is staged. `lint:routes` scans every tracked file when nothing is staged, or always with `--all` (#1030). Before #1030 it exited 0 on an empty stage, so it never checked anything outside a commit.
 - `pnpm prepush` runs build + test in parallel with `NX_PARALLEL=5`
 - NX caching means repeated runs are near-instant when nothing changed
 - Pre-push hook is stamp-only — no SSH timeout risk

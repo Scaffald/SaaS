@@ -82,7 +82,7 @@ export function MarketingNav({ onNavigate, sectionBasePath = '' }: MarketingNavP
           height: 64,
         }}
       >
-        <MarketingLink href="/" accessibilityLabel="Scaffald home">
+        <MarketingLink href={ROUTES.HOME.path} accessibilityLabel="Scaffald home">
           <Text size="xl" weight="bold" color="#ffffff">
             Scaffald
           </Text>

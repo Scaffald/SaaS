@@ -41,7 +41,12 @@ const PATTERNS = [
 
 const violations = []
 
-// Check if we're in a git context and should only check staged files
+// `--all` (CI) always scans the whole tree. Otherwise, with files staged (the
+// pre-commit hook) only those are checked; with nothing staged — a manual run,
+// or any clean checkout — the whole tree is. This used to exit 0 on an empty
+// stage, so the full scan never ran anywhere and 21 literals piled up (#1030).
+const ALL = process.argv.includes('--all')
+
 function getStagedFiles() {
   try {
     const output = execSync('git diff --cached --name-only --diff-filter=ACM', {
@@ -55,7 +60,28 @@ function getStagedFiles() {
         .map((file) => path.join(ROOT, file))
     )
   } catch {
-    return null // Not in git context or no staged files
+    return null // Not in git context
+  }
+}
+
+// Tracked files only: a directory walk from the main checkout also descends
+// into .claude/worktrees/* (other sessions' whole checkouts) and untracked
+// prototypes. Submodules (packages/ui, packages/sdk) are not listed — they
+// have their own repos.
+function getTrackedFiles() {
+  try {
+    const output = execSync('git ls-files -z', {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+      maxBuffer: 64 * 1024 * 1024,
+    })
+    return output
+      .split('\0')
+      .filter(Boolean)
+      .filter((file) => !file.split('/').some((part) => IGNORE_DIRS.has(part)))
+      .map((file) => path.join(ROOT, file))
+  } catch {
+    return null
   }
 }
 
@@ -106,20 +132,23 @@ async function checkFile(filePath) {
 }
 
 ;(async () => {
-  // Fast path: when staged files are available, check only those directly (skip tree walk)
-  if (stagedFiles !== null) {
-    if (stagedFiles.size === 0) {
-      console.log('✅ No staged files to check for hardcoded routes.')
-      process.exit(0)
-    }
-    for (const filePath of stagedFiles) {
+  const staged = ALL ? null : stagedFiles
+  if (staged !== null && staged.size > 0) {
+    for (const filePath of staged) {
       const ext = path.extname(filePath)
       if (!EXTENSIONS.has(ext) || ALLOWLIST.has(filePath)) continue
       await checkFile(filePath)
     }
   } else {
-    // Fallback: full directory walk (CI or manual runs)
-    await walk(ROOT)
+    const tracked = getTrackedFiles()
+    if (tracked === null) {
+      await walk(ROOT)
+    } else {
+      for (const filePath of tracked) {
+        if (!EXTENSIONS.has(path.extname(filePath)) || ALLOWLIST.has(filePath)) continue
+        await checkFile(filePath)
+      }
+    }
   }
 
   if (violations.length > 0) {

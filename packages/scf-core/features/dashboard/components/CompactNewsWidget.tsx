@@ -5,6 +5,7 @@ import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { Image, Pressable, View } from 'react-native'
 import { openExternalLink } from '@scf/core/utils/platform'
+import { ROUTES } from '@scf/core/constants/routes'
 
 function NewsItem({
   item,
@@ -119,7 +120,7 @@ export function CompactNewsWidget() {
       <Row justify="space-between" align="center" gap={12} wrap>
         <H3 style={{ color: colors.text[theme].primary, flex: 1, minWidth: 0 }}>News</H3>
         <Pressable
-          onPress={() => router.push('/dashboard/news')}
+          onPress={() => router.push(ROUTES.DASHBOARD.NEWS.path as never)}
           hitSlop={8}
           style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
         >
