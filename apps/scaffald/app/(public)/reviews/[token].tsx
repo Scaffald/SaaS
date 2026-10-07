@@ -43,6 +43,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useState } from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { ROUTES, RouteBuilder } from '@scf/core/constants/routes'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -211,7 +212,7 @@ export default function PublicReviewSubmissionRoute() {
     }
     const email = reviewerEmail.trim()
     if (email && !EMAIL_REGEX.test(email)) {
-      setFormError('That email address doesn\'t look right.')
+      setFormError("That email address doesn't look right.")
       return
     }
 
@@ -252,7 +253,7 @@ export default function PublicReviewSubmissionRoute() {
             {error?.message ??
               'The link may have been revoked, used up, or expired. Please reach out to the person who shared it with you.'}
           </Paragraph>
-          <Button variant="outline" onPress={() => router.replace('/')}>
+          <Button variant="outline" onPress={() => router.replace(ROUTES.HOME.path as never)}>
             Back to Scaffald
           </Button>
         </Stack>
@@ -268,13 +269,7 @@ export default function PublicReviewSubmissionRoute() {
     return (
       <SafeAreaView style={screenBg} edges={['top', 'bottom', 'left', 'right']}>
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          <Stack
-            flex={1}
-            align="center"
-            justify="center"
-            padding={spacing[20]}
-            gap={spacing[16]}
-          >
+          <Stack flex={1} align="center" justify="center" padding={spacing[20]} gap={spacing[16]}>
             <CheckCircle2 size={48} color={colors.success[500]} />
             <H3 style={{ color: colors.text[themeKey].primary, textAlign: 'center' }}>
               Thanks for vouching for {displayName}
@@ -283,14 +278,14 @@ export default function PublicReviewSubmissionRoute() {
               size="sm"
               style={{ color: colors.text[themeKey].secondary, textAlign: 'center' }}
             >
-              Your review will appear on {displayName}'s profile shortly. Thanks for
-              taking a minute to help them build credibility on Scaffald.
+              Your review will appear on {displayName}'s profile shortly. Thanks for taking a minute
+              to help them build credibility on Scaffald.
             </Paragraph>
             {submittedSlug && (
               <Button
                 variant="outline"
                 iconStart={ExternalLink}
-                onPress={() => router.push(`/users/${submittedSlug}` as never)}
+                onPress={() => router.push(RouteBuilder.publicProfile(submittedSlug) as never)}
               >
                 View {displayName}'s profile
               </Button>
@@ -323,9 +318,8 @@ export default function PublicReviewSubmissionRoute() {
               <Stack gap={spacing[6]}>
                 <H5 style={{ color: colors.text[themeKey].primary }}>About you</H5>
                 <Paragraph size="xs" style={{ color: colors.text[themeKey].tertiary }}>
-                  No account needed. We share your name and relationship with
-                  {' '}{displayName} on their public profile. Your email (if you
-                  provide it) stays private.
+                  No account needed. We share your name and relationship with {displayName} on their
+                  public profile. Your email (if you provide it) stays private.
                 </Paragraph>
               </Stack>
 
@@ -414,11 +408,7 @@ export default function PublicReviewSubmissionRoute() {
           </Card>
 
           {formError && (
-            <Paragraph
-              size="sm"
-              accessibilityRole="alert"
-              style={{ color: colors.error[600] }}
-            >
+            <Paragraph size="sm" accessibilityRole="alert" style={{ color: colors.error[600] }}>
               {formError}
             </Paragraph>
           )}
@@ -436,8 +426,8 @@ export default function PublicReviewSubmissionRoute() {
             size="xs"
             style={{ color: colors.text[themeKey].tertiary, textAlign: 'center' }}
           >
-            By submitting, you confirm this review reflects your honest opinion
-            and is based on a real working relationship.
+            By submitting, you confirm this review reflects your honest opinion and is based on a
+            real working relationship.
           </Paragraph>
         </Stack>
       </ScrollView>

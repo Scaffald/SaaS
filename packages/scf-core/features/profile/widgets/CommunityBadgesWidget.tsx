@@ -19,6 +19,7 @@ import { Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useCommunityBadges } from '../../communities/hooks/useCommunityBadges'
 import type { ProfileWidgetProps } from './types'
+import { RouteBuilder } from '@scf/core/constants/routes'
 
 export function CommunityBadgesWidget({ userId }: ProfileWidgetProps) {
   const { theme } = useThemeContext()
@@ -52,7 +53,7 @@ export function CommunityBadgesWidget({ userId }: ProfileWidgetProps) {
               key={badge.community_id}
               accessibilityRole="link"
               accessibilityLabel={`View ${badge.name} community`}
-              onPress={() => router.push(`/communities/${badge.slug}` as never)}
+              onPress={() => router.push(RouteBuilder.communityDetail(badge.slug) as never)}
               hitSlop={6}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.7 : 1,

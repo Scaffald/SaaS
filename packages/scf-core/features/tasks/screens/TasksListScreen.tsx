@@ -39,6 +39,7 @@ import {
   useUpdateTaskMutation,
 } from '@scf/core/utils/tasks-sdk-hooks'
 import type { Punchlist, Task, TaskPriority, TaskStatus } from '@scaffald/sdk'
+import { RouteBuilder } from '@scf/core/constants/routes'
 
 type StatusFilter = 'all' | TaskStatus
 type Theme = 'light' | 'dark'
@@ -61,21 +62,29 @@ const PRIORITY_LABELS: Record<TaskPriority, string> = {
 
 function priorityBg(p: TaskPriority): string {
   switch (p) {
-    case 'urgent': return colors.error[100]
-    case 'high':   return colors.warning[100]
-    case 'medium': return colors.info[100]
+    case 'urgent':
+      return colors.error[100]
+    case 'high':
+      return colors.warning[100]
+    case 'medium':
+      return colors.info[100]
     case 'low':
-    default:       return colors.gray[100]
+    default:
+      return colors.gray[100]
   }
 }
 
 function statusBg(s: TaskStatus, theme: Theme): string {
   switch (s) {
-    case 'done':         return colors.success[100]
-    case 'in_progress':  return colors.info[100]
-    case 'cancelled':    return colors.bg[theme].muted
+    case 'done':
+      return colors.success[100]
+    case 'in_progress':
+      return colors.info[100]
+    case 'cancelled':
+      return colors.bg[theme].muted
     case 'todo':
-    default:             return colors.bg[theme].subtle
+    default:
+      return colors.bg[theme].subtle
   }
 }
 
@@ -103,10 +112,9 @@ export function TasksListScreen({ organizationId, orgSlug }: TasksListScreenProp
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [search, setSearch] = useState('')
 
-  const punchlistsQuery = usePunchlists(
-    organizationId ? { organizationId } : undefined,
-    { enabled: !!organizationId },
-  )
+  const punchlistsQuery = usePunchlists(organizationId ? { organizationId } : undefined, {
+    enabled: !!organizationId,
+  })
 
   const tasksParams = useMemo(() => {
     if (!organizationId) return undefined
@@ -137,7 +145,7 @@ export function TasksListScreen({ organizationId, orgSlug }: TasksListScreenProp
         completeMutation.mutate({ taskId: task.id })
       }
     },
-    [completeMutation, updateMutation],
+    [completeMutation, updateMutation]
   )
 
   const grouped = useMemo(() => {
@@ -187,7 +195,7 @@ export function TasksListScreen({ organizationId, orgSlug }: TasksListScreenProp
           {orgSlug ? (
             <Button
               variant="filled"
-              onPress={() => router.push(`/employers/org/${orgSlug}/tasks/create`)}
+              onPress={() => router.push(RouteBuilder.orgTaskCreate(orgSlug) as never)}
             >
               <Row align="center" gap={6}>
                 <Plus size={14} color="#ffffff" />
@@ -244,7 +252,7 @@ export function TasksListScreen({ organizationId, orgSlug }: TasksListScreenProp
             {orgSlug && statusFilter === 'all' && !search && (
               <Button
                 variant="filled"
-                onPress={() => router.push(`/employers/org/${orgSlug}/tasks/create`)}
+                onPress={() => router.push(RouteBuilder.orgTaskCreate(orgSlug) as never)}
               >
                 <Row align="center" gap={6}>
                   <Plus size={14} color="#ffffff" />
@@ -258,9 +266,7 @@ export function TasksListScreen({ organizationId, orgSlug }: TasksListScreenProp
             {grouped.map(({ punchlist, tasks }) => (
               <Stack key={punchlist?.id ?? 'no-punchlist'} gap={8}>
                 <Row align="baseline" gap={8}>
-                  <Heading level={4}>
-                    {punchlist ? punchlist.name : 'No punchlist'}
-                  </Heading>
+                  <Heading level={4}>{punchlist ? punchlist.name : 'No punchlist'}</Heading>
                   <Caption color="tertiary">
                     {tasks.length} · {punchlist?.status ?? '—'}
                   </Caption>
@@ -278,11 +284,15 @@ export function TasksListScreen({ organizationId, orgSlug }: TasksListScreenProp
                       onToggle={() => toggleStatus(t)}
                       onOpen={
                         orgSlug
-                          ? () => router.push(`/employers/org/${orgSlug}/tasks/${t.id}`)
+                          ? () =>
+                              router.push(
+                                RouteBuilder.orgTaskDetail(orgSlug, String(t.id)) as never
+                              )
                           : undefined
                       }
                       isToggling={
-                        (completeMutation.isPending && completeMutation.variables?.taskId === t.id) ||
+                        (completeMutation.isPending &&
+                          completeMutation.variables?.taskId === t.id) ||
                         (updateMutation.isPending && updateMutation.variables?.taskId === t.id)
                       }
                     />
@@ -362,12 +372,8 @@ function TaskCard({ task, theme, onToggle, onOpen, isToggling }: TaskCardProps) 
               >
                 <Caption>{PRIORITY_LABELS[task.priority]}</Caption>
               </Box>
-              {task.team_slug ? (
-                <Caption color="tertiary">· {task.team_slug}</Caption>
-              ) : null}
-              {due ? (
-                <Caption color="tertiary">· due {due}</Caption>
-              ) : null}
+              {task.team_slug ? <Caption color="tertiary">· {task.team_slug}</Caption> : null}
+              {due ? <Caption color="tertiary">· due {due}</Caption> : null}
             </Row>
           </Stack>
         </Row>

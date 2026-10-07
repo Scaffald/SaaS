@@ -1,8 +1,5 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import {
-  useCommunities,
-  usePublishedFeed,
-} from '@scf/core/utils/communities-sdk-hooks'
+import { ROUTES, RouteBuilder } from '@scf/core/constants/routes'
+import { useCommunities, usePublishedFeed } from '@scf/core/utils/communities-sdk-hooks'
 import {
   Button,
   DashboardWidget,
@@ -84,9 +81,7 @@ export function CommunityActivityWidget({ maxItems = 5 }: { maxItems?: number })
               key={post.id}
               onPress={() => {
                 if (community?.slug) {
-                  router.push(
-                    `/communities/${community.slug}/post/${post.id}` as never
-                  )
+                  router.push(RouteBuilder.communityPostDetail(community.slug, post.id) as never)
                 }
               }}
             >
@@ -120,10 +115,7 @@ export function CommunityActivityWidget({ maxItems = 5 }: { maxItems?: number })
                       {post.comment_count ?? 0}
                     </Text>
                   </Row>
-                  <Text
-                    size="sm"
-                    style={{ color: colors.text[t].tertiary, marginLeft: 'auto' }}
-                  >
+                  <Text size="sm" style={{ color: colors.text[t].tertiary, marginLeft: 'auto' }}>
                     {new Date(post.created_at).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',

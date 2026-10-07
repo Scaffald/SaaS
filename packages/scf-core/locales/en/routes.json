@@ -33,6 +33,7 @@
     "applications": {
       "detail": "Application Details",
       "inquiry": "Inquiry",
+      "messages": "Messages",
       "title": "Applications"
     },
     "assessments": {
@@ -241,6 +242,9 @@
     "detail": "Organization",
     "invitations": "Invitations",
     "logs": "Logs",
+    "taskCreate": "New Task",
+    "taskDetail": "Task",
+    "tasks": "Tasks",
     "title": "My Organizations"
   },
   "publicProfile": "Public Profile",

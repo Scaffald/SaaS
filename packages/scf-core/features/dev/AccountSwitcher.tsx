@@ -7,15 +7,31 @@ import { useRouter } from 'expo-router'
 import { useState, useCallback } from 'react'
 import { Platform, Pressable, View, Text, ScrollView } from 'react-native'
 import { reloadPage } from '@scf/core/utils/platform'
+import { ROUTES } from '@scf/core/constants/routes'
 
 const DEMO_ACCOUNTS = [
   { label: 'Clay (Admin)', email: 'clay@unicorn.love', role: 'Platform Admin', seeded: true },
   { label: 'Zach Servideo', email: 'zach@unicorn.love', role: 'Platform Admin', seeded: true },
   { label: 'Luke Bloxham', email: 'bloxhambuilding@gmail.com', role: 'Worker', seeded: true },
-  { label: 'Brian Carter', email: 'brian.carter@wizardconstruction.com', role: 'Employer', seeded: true },
+  {
+    label: 'Brian Carter',
+    email: 'brian.carter@wizardconstruction.com',
+    role: 'Employer',
+    seeded: true,
+  },
   { label: 'Marcus Rivera', email: 'marcus.rivera@example.test', role: 'Plumber', seeded: true },
-  { label: 'Jake Hendricks', email: 'jake.hendricks@example.test', role: 'Electrician', seeded: true },
-  { label: 'Carlos Gutierrez', email: 'carlos.gutierrez@example.test', role: 'Carpenter', seeded: true },
+  {
+    label: 'Jake Hendricks',
+    email: 'jake.hendricks@example.test',
+    role: 'Electrician',
+    seeded: true,
+  },
+  {
+    label: 'Carlos Gutierrez',
+    email: 'carlos.gutierrez@example.test',
+    role: 'Carpenter',
+    seeded: true,
+  },
 ] as const
 
 const DEMO_PASSWORD = 'password123'
@@ -54,7 +70,7 @@ export function AccountSwitcher() {
         // Replace navigation, then force a reload on web so providers
         // re-read the new auth session cleanly. Native re-uses the existing
         // provider tree.
-        router.replace('/')
+        router.replace(ROUTES.HOME.path as never)
         reloadPage()
       } catch (e) {
         console.error('Account switch error:', e)
