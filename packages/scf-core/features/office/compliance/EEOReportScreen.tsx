@@ -11,9 +11,9 @@ import { useState, useMemo } from 'react'
 import { ScrollView, Pressable } from 'react-native'
 import { useEEOReport } from '@scf/core/utils/compliance-sdk-hooks'
 import {
+  ScreenHeader,
   Button,
   Card,
-  H2,
   MetricBlock,
   MetricRow,
   Row,
@@ -24,13 +24,10 @@ import {
 } from '@scaffald/ui'
 import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import {
-  BarChart3,
   Download,
-  FileText,
   Info,
   PieChart,
   ShieldCheck,
-  Users,
 } from 'lucide-react-native'
 
 // ============================================================================
@@ -246,6 +243,24 @@ export function EEOReportScreen() {
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={24} style={{ paddingBottom: 40 }}>
+        {/* ScreenHeader, first: the hand-rolled title row could not wrap, so
+            at 390 the title and subtitle ran off the edge and the export
+            button left the screen; it also sat below the coverage banner
+            (#1022). */}
+        <ScreenHeader
+          kicker="Compliance"
+          title="EEO/OFCCP reports"
+          tip="Equal Employment Opportunity and OFCCP applicant-flow reporting, by quarter."
+          actions={
+            // The figures are real now, but there is still no export
+            // implementation — this button never had an onPress. Leaving it
+            // enabled would produce a control that silently does nothing on a
+            // screen whose whole purpose is producing a filing.
+            <Button variant="outline" size="sm" iconStart={Download} disabled>
+              Export coming soon
+            </Button>
+          }
+        />
         {reportQuery.isError && (
           <Card variant="glass" padding="md">
             <Text style={{ color: colors.fg[theme].error }}>
@@ -288,22 +303,7 @@ export function EEOReportScreen() {
           </Card>
         )}
 
-        {/* Header */}
-        <Row justify="space-between" align="center">
-          <Stack gap={4}>
-            <H2>EEO/OFCCP Compliance Reports</H2>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              Equal Employment Opportunity and OFCCP applicant flow reporting
-            </Text>
-          </Stack>
-          {/* The figures are real now, but there is still no export
-              implementation — this button never had an onPress. Leaving it
-              enabled would produce a control that silently does nothing on a
-              screen whose whole purpose is producing a filing. */}
-          <Button variant="outline" size="sm" iconStart={Download} disabled>
-            Export coming soon
-          </Button>
-        </Row>
+        
 
         {/* Compliance Status Banner */}
         {/* Period Selector */}

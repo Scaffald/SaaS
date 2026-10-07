@@ -9,6 +9,7 @@
 
 import { useState } from 'react'
 import {
+  ScreenHeader,
   Button,
   Card,
   DashboardWidget,
@@ -241,20 +242,16 @@ export function BackgroundCheckProvidersScreen() {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <Stack gap={16}>
-        {/* Header */}
-        <Row justify="space-between" align="center">
-          <Stack gap={2}>
-            <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.xl, fontWeight: '700' }}>
-              Background Check Providers
-            </Text>
-            <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.md }}>
-              Manage provider integrations and check configurations
-            </Text>
-          </Stack>
-          <StatusBadge variant={connectedCount > 0 ? 'success' : 'default'}>
-            {connectedCount} connected
-          </StatusBadge>
-        </Row>
+        <ScreenHeader
+          kicker="Integrations"
+          title="Background check providers"
+          tip="Provider integrations and the check packages they offer."
+          actions={
+            <StatusBadge variant={connectedCount > 0 ? 'success' : 'default'}>
+              {connectedCount} connected
+            </StatusBadge>
+          }
+        />
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} type="line">

@@ -10,6 +10,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import {
+  ScreenHeader,
   Button,
   Card,
   DashboardWidget,
@@ -629,25 +630,21 @@ export function CalendarSchedulingScreen() {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <Stack gap={16}>
-        {/* Header */}
-        <Row justify="space-between" align="center">
-          <Stack gap={2}>
-            <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.xl, fontWeight: '700' }}>
-              Interview Scheduling
-            </Text>
-            <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.md }}>
-              Manage calendars, availability, and interview scheduling
-            </Text>
-          </Stack>
-          <Button
-            size="sm"
-            variant="filled"
-            iconStart={Plus}
-            onPress={() => setShowAddSlotModal(true)}
-          >
-            Propose Time
-          </Button>
-        </Row>
+        <ScreenHeader
+          kicker="Screening"
+          title="Interview scheduling"
+          tip="Calendars, availability and interview slots."
+          actions={
+            <Button
+              size="sm"
+              variant="filled"
+              iconStart={Plus}
+              onPress={() => setShowAddSlotModal(true)}
+            >
+              Propose Time
+            </Button>
+          }
+        />
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} type="line">

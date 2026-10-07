@@ -40,21 +40,7 @@ export default function OrgTeamsIndexPage() {
 
   const mainContent = (
     <Stack gap={16}>
-      <Row justify="space-between" align="center">
-        <Stack gap={4}>
-          <Text>Teams</Text>
-          <Text color="gray">
-            {org?.organizationName
-              ? `Teams in ${org.organizationName}. Open a team to collaborate.`
-              : 'View teams in this organization.'}
-          </Text>
-        </Stack>
-        {slug && (
-          <Button variant="outline" size="md" onPress={() => router.push(RouteBuilder.orgInvitations())}>
-            Manage invitations
-          </Button>
-        )}
-      </Row>
+      
 
       {isLoading || isRefetching ? (
         <Stack align="center" justify="center" gap={8}>
@@ -126,6 +112,20 @@ export default function OrgTeamsIndexPage() {
       pageTitle={org?.organizationName ? `Teams · ${org.organizationName}` : 'Teams'}
       leftContent={mainContent}
       rightContent={null}
+      // The tip and action live in the shared ScreenHeader, not a second
+      // "Teams" title row inside the content (#1022, #1025).
+      screenTip={
+        org?.organizationName
+          ? `Teams in ${org.organizationName}. Open a team to collaborate.`
+          : 'The teams in this organization.'
+      }
+      screenActions={
+        slug ? (
+          <Button variant="outline" size="md" onPress={() => router.push(RouteBuilder.orgInvitations())}>
+            Manage invitations
+          </Button>
+        ) : undefined
+      }
     />
   )
 }

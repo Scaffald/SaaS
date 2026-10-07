@@ -15,7 +15,7 @@ import {
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-import { Button, H2, Toggle, Text, Row, Stack } from "@scaffald/ui";
+import { Button, ScreenHeader, Toggle, Text, Row, Stack } from "@scaffald/ui";
 import type { OfficeJob } from "@scaffald/sdk";
 import { JobsKanbanBoard } from "./components/JobsKanbanBoard";
 import { OfficePageLayout } from "./components/OfficePageLayout";
@@ -343,13 +343,11 @@ export function OfficeJobsList({
           <Stack flex={1} style={{ backgroundColor: colors.bg[theme].default }}>
             {showHeader && (
               <Stack padding="md" paddingBottom={12} gap={12}>
-                <Row justify="space-between" align="center">
-                  <Stack flex={1} minWidth={0}>
-                    <H2>Jobs</H2>
-                    <Text style={{ color: colors.text[theme].secondary }}>
-                      {filteredAndSortedJobs.length} total jobs
-                    </Text>
-                  </Stack>
+                <ScreenHeader
+                  kicker="Content"
+                  title="Jobs"
+                  tip={`${filteredAndSortedJobs.length} total jobs`}
+                  actions={
                   <Row gap={8}>
                     <Button
                       size="sm"
@@ -370,7 +368,8 @@ export function OfficeJobsList({
                       Create Job
                     </Button>
                   </Row>
-                </Row>
+                  }
+                />
                 <Row gap={8} align="center" wrap>
                   {filtersAccessory}
                 </Row>

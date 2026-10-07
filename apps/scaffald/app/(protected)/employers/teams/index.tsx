@@ -17,21 +17,7 @@ export default function DashboardTeamsIndexPage() {
 
   const mainContent = (
     <Stack gap={16}>
-      <Row justify="space-between" align="center">
-        <Stack gap={4}>
-          <Text>Teams</Text>
-          <Text color="gray">
-            View the teams you collaborate with and access shared hiring workspaces.
-          </Text>
-        </Stack>
-        <Button
-          variant="outline"
-          size="md"
-          onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
-        >
-          Manage invitations
-        </Button>
-      </Row>
+      
 
       {isLoading || isRefetching ? (
         <Stack align="center" justify="center" gap={8}>
@@ -112,5 +98,24 @@ export default function DashboardTeamsIndexPage() {
     </Stack>
   )
 
-  return <DashboardPage leftContent={mainContent} showBreadcrumb={false} rightContent={null} />
+  // The tip and the action live in the shared ScreenHeader. This screen used to
+  // open with its own "Teams" title row under it — the title twice, and a row
+  // that could not wrap at 390 (#1022, #1025).
+  return (
+    <DashboardPage
+      leftContent={mainContent}
+      showBreadcrumb={false}
+      rightContent={null}
+      screenTip="The teams you collaborate with, and their shared hiring workspaces."
+      screenActions={
+        <Button
+          variant="outline"
+          size="md"
+          onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
+        >
+          Manage invitations
+        </Button>
+      }
+    />
+  )
 }
