@@ -38,6 +38,8 @@ import { useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 
+const QUIET_HOURS_FIELD_WIDTH = 104
+
 type NotificationItem = {
   id: string
   type: string
@@ -128,10 +130,8 @@ function formatRelativeTime(dateString: string): string {
   const diffHours = Math.floor(diffMinutes / 60)
   const diffDays = Math.floor(diffHours / 24)
   if (diffSeconds < 60) return 'Just now'
-  if (diffMinutes < 60)
-    return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'} ago`
-  if (diffHours < 24)
-    return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`
+  if (diffMinutes < 60) return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'} ago`
+  if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`
   if (diffDays === 1) return 'Yesterday'
   if (diffDays < 7) return `${diffDays} days ago`
   if (diffDays < 30) {
@@ -153,9 +153,7 @@ function formatDate(value: string | null | undefined) {
 
 function mapNotification(apiNotification: ApiNotification): NotificationItem {
   return {
-    channels: Array.isArray(apiNotification.routed_channels)
-      ? apiNotification.routed_channels
-      : [],
+    channels: Array.isArray(apiNotification.routed_channels) ? apiNotification.routed_channels : [],
     createdAt: apiNotification.created_at,
     ctaLabel: apiNotification.cta_label ?? undefined,
     ctaUrl: apiNotification.cta_url ?? undefined,
@@ -163,7 +161,7 @@ function mapNotification(apiNotification: ApiNotification): NotificationItem {
     preview:
       typeof apiNotification.body?.preview === 'string'
         ? apiNotification.body.preview
-        : apiNotification.preview ?? apiNotification.message ?? '',
+        : (apiNotification.preview ?? apiNotification.message ?? ''),
     read: apiNotification.read ?? false,
     severity: apiNotification.severity ?? 'info',
     title: apiNotification.title,
@@ -247,9 +245,7 @@ export function SettingsNotificationsSection({
 
   const notifications: NotificationItem[] = useMemo(
     () =>
-      (
-        (notificationsQuery.data as { pages?: unknown[] } | undefined)?.pages ?? []
-      )
+      ((notificationsQuery.data as { pages?: unknown[] } | undefined)?.pages ?? [])
         .flatMap((page) => {
           const p = page as { items?: ApiNotification[] | null } | null | undefined
           return p?.items ?? []
@@ -466,14 +462,14 @@ export function SettingsNotificationsSection({
   return (
     <Stack gap={24}>
       {showHeading && (
-      <Stack gap={2}>
-        <Text style={{ fontSize: 22, fontWeight: '700', color: colors.text[theme].primary }}>
-          Notifications
-        </Text>
-        <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
-          Stay up to date with applications, opportunities, and platform updates.
-        </Text>
-      </Stack>
+        <Stack gap={2}>
+          <Text style={{ fontSize: 22, fontWeight: '700', color: colors.text[theme].primary }}>
+            Notifications
+          </Text>
+          <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
+            Stay up to date with applications, opportunities, and platform updates.
+          </Text>
+        </Stack>
       )}
 
       {/* Preferences card */}
@@ -531,7 +527,10 @@ export function SettingsNotificationsSection({
                     onPress={() =>
                       setPreferences((prev) => ({
                         ...prev,
-                        channelEnabled: { ...prev.channelEnabled, [key]: !prev.channelEnabled[key] },
+                        channelEnabled: {
+                          ...prev.channelEnabled,
+                          [key]: !prev.channelEnabled[key],
+                        },
                       }))
                     }
                   >
@@ -560,34 +559,42 @@ export function SettingsNotificationsSection({
               <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
                 We'll queue non-critical alerts during these hours.
               </Text>
+              {/* Fixed-width time fields: Input fills its parent, so in a Row
+                  the start field took the whole card and pushed "to", the end
+                  field and Clear past its edge (#1029). Five characters of
+                  HH:MM need no more than this, and all four fit at 390. */}
               <Row gap={8} align="center">
-                <Input
-                  placeholder="22:00"
-                  value={preferences.quietHours?.start ?? ''}
-                  onChangeText={(text) =>
-                    setPreferences((prev) => ({
-                      ...prev,
-                      quietHours: {
-                        end: prev.quietHours?.end ?? '',
-                        start: text,
-                      },
-                    }))
-                  }
-                />
+                <Stack style={{ width: QUIET_HOURS_FIELD_WIDTH }}>
+                  <Input
+                    placeholder="22:00"
+                    value={preferences.quietHours?.start ?? ''}
+                    onChangeText={(text) =>
+                      setPreferences((prev) => ({
+                        ...prev,
+                        quietHours: {
+                          end: prev.quietHours?.end ?? '',
+                          start: text,
+                        },
+                      }))
+                    }
+                  />
+                </Stack>
                 <Text style={{ color: colors.text[theme].tertiary }}>to</Text>
-                <Input
-                  placeholder="07:00"
-                  value={preferences.quietHours?.end ?? ''}
-                  onChangeText={(text) =>
-                    setPreferences((prev) => ({
-                      ...prev,
-                      quietHours: {
-                        end: text,
-                        start: prev.quietHours?.start ?? '',
-                      },
-                    }))
-                  }
-                />
+                <Stack style={{ width: QUIET_HOURS_FIELD_WIDTH }}>
+                  <Input
+                    placeholder="07:00"
+                    value={preferences.quietHours?.end ?? ''}
+                    onChangeText={(text) =>
+                      setPreferences((prev) => ({
+                        ...prev,
+                        quietHours: {
+                          end: text,
+                          start: prev.quietHours?.start ?? '',
+                        },
+                      }))
+                    }
+                  />
+                </Stack>
                 <Button
                   size="sm"
                   variant="outline"
@@ -663,22 +670,39 @@ export function SettingsNotificationsSection({
                     backgroundColor: colors.bg[theme].muted,
                   }}
                 >
-                  <Text style={{ flex: 1, fontWeight: '600', fontSize: 12, color: colors.text[theme].secondary }}>
+                  <Text
+                    style={{
+                      flex: 1,
+                      fontWeight: '600',
+                      fontSize: 12,
+                      color: colors.text[theme].secondary,
+                    }}
+                  >
                     Token
                   </Text>
-                  <Text style={{ width: 80, fontWeight: '600', fontSize: 12, color: colors.text[theme].secondary }}>
+                  <Text
+                    style={{
+                      width: 80,
+                      fontWeight: '600',
+                      fontSize: 12,
+                      color: colors.text[theme].secondary,
+                    }}
+                  >
                     Platform
                   </Text>
-                  <Text style={{ width: 120, fontWeight: '600', fontSize: 12, color: colors.text[theme].secondary }}>
+                  <Text
+                    style={{
+                      width: 120,
+                      fontWeight: '600',
+                      fontSize: 12,
+                      color: colors.text[theme].secondary,
+                    }}
+                  >
                     Last seen
                   </Text>
                 </Row>
                 {deviceRows.map((device) => (
-                  <Row
-                    key={device.id}
-                    gap={8}
-                    style={{ padding: 8, borderRadius: 7 }}
-                  >
+                  <Row key={device.id} gap={8} style={{ padding: 8, borderRadius: 7 }}>
                     <Text
                       style={{ flex: 1, fontSize: 12, color: colors.text[theme].tertiary }}
                       numberOfLines={1}
@@ -702,20 +726,16 @@ export function SettingsNotificationsSection({
       </Card>
 
       {/* Notification list with tabs */}
-      <Tabs
-        value={activeTab}
-        onValueChange={handleTabChange}
-        type="line"
-      >
+      <Tabs value={activeTab} onValueChange={handleTabChange} type="line">
         {FILTERS.map((tab) => (
           <Tabs.Item key={tab} value={tab}>
             <Tabs.Trigger>
               {tab}
-              {tab === 'Unread' && unreadCount > 0 && ` (${unreadCount > 99 ? '99+' : unreadCount})`}
+              {tab === 'Unread' &&
+                unreadCount > 0 &&
+                ` (${unreadCount > 99 ? '99+' : unreadCount})`}
             </Tabs.Trigger>
-            <Tabs.Content>
-              {renderNotificationList()}
-            </Tabs.Content>
+            <Tabs.Content>{renderNotificationList()}</Tabs.Content>
           </Tabs.Item>
         ))}
       </Tabs>
