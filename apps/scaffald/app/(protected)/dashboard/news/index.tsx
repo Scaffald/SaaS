@@ -1,36 +1,35 @@
-import { DashboardPage } from "@scf/core/features/dashboard/DashboardPage";
-import type { NewsItem } from "@scf/core/features/news";
-import { useAggregatedNews } from "@scf/core/features/news/hooks/useNewsFeed";
-import { useNewsIndustryResolution } from "@scf/core/features/news/hooks/useNewsIndustryResolution";
-import { AlertCircle, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react-native";
-import { Button, Row, Spinner, Stack, Text } from "@scaffald/ui";
-import { openExternalLink } from "@scf/core/utils/platform";
-import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
-import { Image, Pressable, StyleSheet, View, type TextStyle, type ViewStyle } from "react-native";
-import { colors } from "@scaffald/ui/tokens";
-import { useThemeContext } from "@scaffald/ui";
+import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
+import type { NewsItem } from '@scf/core/features/news'
+import { useAggregatedNews } from '@scf/core/features/news/hooks/useNewsFeed'
+import { useNewsIndustryResolution } from '@scf/core/features/news/hooks/useNewsIndustryResolution'
+import { AlertCircle, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react-native'
+import { Button, Row, Spinner, Stack, Text } from '@scaffald/ui'
+import { openExternalLink } from '@scf/core/utils/platform'
+import { useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Image, Pressable, StyleSheet, View, type TextStyle, type ViewStyle } from 'react-native'
+import { colors } from '@scaffald/ui/tokens'
+import { useThemeContext } from '@scaffald/ui'
 
-const FULL_PAGE_ITEM_COUNT = 40;
+const FULL_PAGE_ITEM_COUNT = 40
 
 const formatTimeAgo = (date: Date) => {
-  const diffMs = Date.now() - date.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffHours < 1) return "Just now";
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays === 1) return "1 day ago";
-  if (diffDays < 7) return `${diffDays} days ago`;
-  return date.toLocaleDateString();
-};
+  const diffMs = Date.now() - date.getTime()
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+  const diffDays = Math.floor(diffHours / 24)
+  if (diffHours < 1) return 'Just now'
+  if (diffHours < 24) return `${diffHours}h ago`
+  if (diffDays === 1) return '1 day ago'
+  if (diffDays < 7) return `${diffDays} days ago`
+  return date.toLocaleDateString()
+}
 
-const capitalise = (v?: string | null) =>
-  v ? v.charAt(0).toUpperCase() + v.slice(1) : "";
+const capitalise = (v?: string | null) => (v ? v.charAt(0).toUpperCase() + v.slice(1) : '')
 
-type ArticleItem = NewsItem & { source?: string | null; category?: string | null };
+type ArticleItem = NewsItem & { source?: string | null; category?: string | null }
 
 function toDate(d: Date | string): Date {
-  return d instanceof Date ? d : new Date(d as string);
+  return d instanceof Date ? d : new Date(d as string)
 }
 
 // ── Featured article panel (left column) ──────────────────────────────────────
@@ -42,17 +41,17 @@ function FeaturedPanel({
   onNext,
   onOpen,
 }: {
-  item: ArticleItem;
-  index: number;
-  total: number;
-  onPrev: () => void;
-  onNext: () => void;
-  onOpen: () => void;
+  item: ArticleItem
+  index: number
+  total: number
+  onPrev: () => void
+  onNext: () => void
+  onOpen: () => void
 }) {
-  const { theme } = useThemeContext();
-  const [imgError, setImgError] = useState(false);
-  const pubDate = toDate(item.pubDate);
-  const hasImage = !!item.image && !imgError;
+  const { theme } = useThemeContext()
+  const [imgError, setImgError] = useState(false)
+  const pubDate = toDate(item.pubDate)
+  const hasImage = !!item.image && !imgError
 
   return (
     <Stack gap={0} style={{ flex: 1 }}>
@@ -78,10 +77,17 @@ function FeaturedPanel({
         <View
           style={[
             styles.categoryPill,
-            { backgroundColor: colors.bg[theme].muted, alignSelf: "flex-start" },
+            { backgroundColor: colors.bg[theme].muted, alignSelf: 'flex-start' },
           ]}
         >
-          <Text style={StyleSheet.flatten([styles.categoryPillText, { color: colors.text[theme].secondary }]) as TextStyle}>
+          <Text
+            style={
+              StyleSheet.flatten([
+                styles.categoryPillText,
+                { color: colors.text[theme].secondary },
+              ]) as TextStyle
+            }
+          >
             {capitalise(item.category)}
           </Text>
         </View>
@@ -90,7 +96,12 @@ function FeaturedPanel({
       {/* Content */}
       <Stack gap={12} style={styles.featuredContent}>
         <Text
-          style={StyleSheet.flatten([styles.featuredTitle, { color: colors.text[theme].primary }]) as TextStyle}
+          style={
+            StyleSheet.flatten([
+              styles.featuredTitle,
+              { color: colors.text[theme].primary },
+            ]) as TextStyle
+          }
         >
           {item.title}
         </Text>
@@ -99,7 +110,12 @@ function FeaturedPanel({
           <>
             <View style={{ height: 1, backgroundColor: colors.border[theme].default }} />
             <Text
-              style={StyleSheet.flatten([styles.featuredDescription, { color: colors.text[theme].secondary }]) as TextStyle}
+              style={
+                StyleSheet.flatten([
+                  styles.featuredDescription,
+                  { color: colors.text[theme].secondary },
+                ]) as TextStyle
+              }
             >
               {item.description}
             </Text>
@@ -108,18 +124,37 @@ function FeaturedPanel({
 
         {/* Meta */}
         <Row gap={8} align="center" wrap>
-          <Text style={StyleSheet.flatten([styles.metaText, { color: colors.text[theme].tertiary }]) as TextStyle}>
+          <Text
+            style={
+              StyleSheet.flatten([
+                styles.metaText,
+                { color: colors.text[theme].tertiary },
+              ]) as TextStyle
+            }
+          >
             {formatTimeAgo(pubDate)}
           </Text>
           {item.readTime ? (
-            <Text style={StyleSheet.flatten([styles.metaText, { color: colors.text[theme].tertiary }]) as TextStyle}>
+            <Text
+              style={
+                StyleSheet.flatten([
+                  styles.metaText,
+                  { color: colors.text[theme].tertiary },
+                ]) as TextStyle
+              }
+            >
               · {item.readTime}
             </Text>
           ) : null}
           {item.source ? (
             <Text
               numberOfLines={1}
-              style={StyleSheet.flatten([styles.metaText, { color: colors.text[theme].tertiary }]) as TextStyle}
+              style={
+                StyleSheet.flatten([
+                  styles.metaText,
+                  { color: colors.text[theme].tertiary },
+                ]) as TextStyle
+              }
             >
               · {item.source}
             </Text>
@@ -142,12 +177,26 @@ function FeaturedPanel({
             ]}
           >
             <ChevronLeft size={18} color={colors.text[theme].secondary} />
-            <Text style={StyleSheet.flatten([styles.pageBtnText, { color: colors.text[theme].secondary }]) as TextStyle}>
+            <Text
+              style={
+                StyleSheet.flatten([
+                  styles.pageBtnText,
+                  { color: colors.text[theme].secondary },
+                ]) as TextStyle
+              }
+            >
               Prev
             </Text>
           </Pressable>
 
-          <Text style={StyleSheet.flatten([styles.pageCount, { color: colors.text[theme].tertiary }]) as TextStyle}>
+          <Text
+            style={
+              StyleSheet.flatten([
+                styles.pageCount,
+                { color: colors.text[theme].tertiary },
+              ]) as TextStyle
+            }
+          >
             {index + 1} of {total}
           </Text>
 
@@ -159,7 +208,14 @@ function FeaturedPanel({
               { opacity: index === total - 1 ? 0.3 : pressed ? 0.6 : 1 },
             ]}
           >
-            <Text style={StyleSheet.flatten([styles.pageBtnText, { color: colors.text[theme].secondary }]) as TextStyle}>
+            <Text
+              style={
+                StyleSheet.flatten([
+                  styles.pageBtnText,
+                  { color: colors.text[theme].secondary },
+                ]) as TextStyle
+              }
+            >
               Next
             </Text>
             <ChevronRight size={18} color={colors.text[theme].secondary} />
@@ -167,7 +223,7 @@ function FeaturedPanel({
         </Row>
       </Stack>
     </Stack>
-  );
+  )
 }
 
 // ── Feed row (right column) ────────────────────────────────────────────────────
@@ -177,15 +233,15 @@ function FeedRow({
   divider,
   onPress,
 }: {
-  item: ArticleItem;
-  selected: boolean;
-  divider: boolean;
-  onPress: () => void;
+  item: ArticleItem
+  selected: boolean
+  divider: boolean
+  onPress: () => void
 }) {
-  const { theme } = useThemeContext();
-  const [imgError, setImgError] = useState(false);
-  const pubDate = toDate(item.pubDate);
-  const hasImage = !!item.image && !imgError;
+  const { theme } = useThemeContext()
+  const [imgError, setImgError] = useState(false)
+  const pubDate = toDate(item.pubDate)
+  const hasImage = !!item.image && !imgError
 
   return (
     <View>
@@ -201,16 +257,19 @@ function FeedRow({
         <Row
           gap={12}
           align="flex-start"
-          style={StyleSheet.flatten([
-            styles.feedRow,
-            selected ? {
-              backgroundColor:
-                theme === "dark" ? colors.bg[theme].subtle : colors.blue[50],
-              borderRadius: 8,
-              paddingHorizontal: 8,
-              marginHorizontal: -8,
-            } : undefined,
-          ]) as ViewStyle}
+          style={
+            StyleSheet.flatten([
+              styles.feedRow,
+              selected
+                ? {
+                    backgroundColor: theme === 'dark' ? colors.bg[theme].subtle : colors.blue[50],
+                    borderRadius: 8,
+                    paddingHorizontal: 8,
+                    marginHorizontal: -8,
+                  }
+                : undefined,
+            ]) as ViewStyle
+          }
         >
           {hasImage ? (
             <Image
@@ -221,32 +280,49 @@ function FeedRow({
             />
           ) : (
             <View
-              style={StyleSheet.flatten([styles.feedThumb, { backgroundColor: colors.bg[theme].muted }]) as ViewStyle}
+              style={
+                StyleSheet.flatten([
+                  styles.feedThumb,
+                  { backgroundColor: colors.bg[theme].muted },
+                ]) as ViewStyle
+              }
             />
           )}
           <View style={{ flex: 1, gap: 3 }}>
             <Text
               numberOfLines={2}
-              style={StyleSheet.flatten([
-                styles.feedTitle,
-                {
-                  color: selected
-                    ? theme === "dark"
-                      ? colors.blue[300]
-                      : colors.blue[700]
-                    : colors.text[theme].primary,
-                  fontWeight: selected ? "600" : "500",
-                },
-              ]) as TextStyle}
+              style={
+                StyleSheet.flatten([
+                  styles.feedTitle,
+                  {
+                    color: selected ? colors.text[theme].emphasis : colors.text[theme].primary,
+                    fontWeight: selected ? '600' : '500',
+                  },
+                ]) as TextStyle
+              }
             >
               {item.title}
             </Text>
             <Row gap={6} align="center">
-              <Text style={StyleSheet.flatten([styles.metaText, { color: colors.text[theme].tertiary }]) as TextStyle}>
+              <Text
+                style={
+                  StyleSheet.flatten([
+                    styles.metaText,
+                    { color: colors.text[theme].tertiary },
+                  ]) as TextStyle
+                }
+              >
                 {formatTimeAgo(pubDate)}
               </Text>
               {item.category ? (
-                <Text style={StyleSheet.flatten([styles.metaText, { color: colors.text[theme].tertiary }]) as TextStyle}>
+                <Text
+                  style={
+                    StyleSheet.flatten([
+                      styles.metaText,
+                      { color: colors.text[theme].tertiary },
+                    ]) as TextStyle
+                  }
+                >
                   · {capitalise(item.category)}
                 </Text>
               ) : null}
@@ -255,7 +331,7 @@ function FeedRow({
         </Row>
       </Pressable>
     </View>
-  );
+  )
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
@@ -263,26 +339,26 @@ const styles = StyleSheet.create({
   featuredImageWrap: {
     height: 260,
     borderRadius: 12,
-    overflow: "hidden",
+    overflow: 'hidden',
     marginBottom: 20,
   },
   imageOverlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   imageCategoryWrap: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 16,
     left: 16,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: 'rgba(255,255,255,0.2)',
     borderRadius: 6,
   },
   imageCategoryText: {
     fontSize: 10,
-    fontWeight: "700",
-    color: "#fff",
+    fontWeight: '700',
+    color: '#fff',
     letterSpacing: 0.8,
   },
   featuredContent: {
@@ -290,7 +366,7 @@ const styles = StyleSheet.create({
   },
   featuredTitle: {
     fontSize: 22,
-    fontWeight: "700",
+    fontWeight: '700',
     lineHeight: 30,
   },
   featuredDescription: {
@@ -301,8 +377,8 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   pageBtn: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 4,
     paddingVertical: 6,
     paddingHorizontal: 4,
@@ -333,24 +409,23 @@ const styles = StyleSheet.create({
   },
   categoryPillText: {
     fontSize: 11,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   metaText: {
     fontSize: 12,
   },
-});
+})
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function NewsPage() {
-  const router = useRouter();
-  const { theme } = useThemeContext();
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const router = useRouter()
+  const { theme } = useThemeContext()
+  const [selectedIndex, setSelectedIndex] = useState(0)
 
-  const { effectiveIndustryId, isResolving: isResolvingIndustry } =
-    useNewsIndustryResolution({
-      industrySlug: "construction",
-      useUserIndustry: false,
-    });
+  const { effectiveIndustryId, isResolving: isResolvingIndustry } = useNewsIndustryResolution({
+    industrySlug: 'construction',
+    useUserIndustry: false,
+  })
 
   const {
     data: newsItems = [],
@@ -359,69 +434,66 @@ export default function NewsPage() {
     error,
     refetch,
   } = useAggregatedNews({
-    industryId: effectiveIndustryId ?? "",
+    industryId: effectiveIndustryId ?? '',
     maxTotalItems: FULL_PAGE_ITEM_COUNT,
     enabled: !!effectiveIndustryId,
-  });
+  })
 
   const items = useMemo(() => {
-    const raw = newsItems as unknown as ArticleItem[];
-    const seen = new Set<string>();
+    const raw = newsItems as unknown as ArticleItem[]
+    const seen = new Set<string>()
     return raw.filter((item) => {
-      const key = item.link || item.id;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-  }, [newsItems]);
+      const key = item.link || item.id
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+  }, [newsItems])
 
-  const selectedItem = items[selectedIndex] ?? null;
+  const selectedItem = items[selectedIndex] ?? null
 
   const handleOpenArticle = (article: { link: string }) => {
-    openExternalLink(article.link, { inApp: true });
-  };
+    openExternalLink(article.link, { inApp: true })
+  }
 
   // The screen's actions, in the shared ScreenHeader. This used to be a second
   // "News" title row inside the content, under the shared header (#1025).
   const screenActions = (
-      <Row gap={8}>
-        <Button
-          size="sm"
-          variant="outline"
-          iconStart={RefreshCw}
-          onPress={() => void refetch()}
-          disabled={isLoading}
-        >
-          Refresh
-        </Button>
-        <Button size="sm" variant="outline" onPress={() => router.back()}>
-          Back
-        </Button>
-      </Row>
-  );
+    <Row gap={8}>
+      <Button
+        size="sm"
+        variant="outline"
+        iconStart={RefreshCw}
+        onPress={() => void refetch()}
+        disabled={isLoading}
+      >
+        Refresh
+      </Button>
+      <Button size="sm" variant="outline" onPress={() => router.back()}>
+        Back
+      </Button>
+    </Row>
+  )
 
   // States
-  const isSpinning = isResolvingIndustry || (isLoading && items.length === 0);
+  const isSpinning = isResolvingIndustry || (isLoading && items.length === 0)
 
   if (isSpinning || isError || (!isLoading && !isError && items.length === 0)) {
     const leftContent = (
       <Stack gap={0}>
-        
         {isSpinning ? (
           <Stack align="center" gap={12} style={{ paddingVertical: 64 }}>
             <Spinner size="lg" color="primary" />
-            <Text style={{ color: colors.text[theme].secondary }}>
-              Loading latest news…
-            </Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Loading latest news…</Text>
           </Stack>
         ) : isError ? (
           <Stack align="center" gap={12} style={{ paddingVertical: 64 }}>
             <AlertCircle size={32} color={colors.error[500]} />
-            <Text style={{ color: colors.text[theme].primary, textAlign: "center" }}>
+            <Text style={{ color: colors.text[theme].primary, textAlign: 'center' }}>
               Unable to load news at the moment.
             </Text>
-            <Text style={{ color: colors.text[theme].secondary, textAlign: "center" }}>
-              {error?.message || "Please check your connection and try again."}
+            <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
+              {error?.message || 'Please check your connection and try again.'}
             </Text>
             <Button variant="filled" color="primary" size="sm" onPress={() => void refetch()}>
               Retry
@@ -435,7 +507,7 @@ export default function NewsPage() {
           </Stack>
         )}
       </Stack>
-    );
+    )
 
     return (
       <DashboardPage
@@ -445,13 +517,12 @@ export default function NewsPage() {
         screenActions={screenActions}
         leftContent={leftContent}
       />
-    );
+    )
   }
 
   // Two-column layout: featured reader (left) + feed (right)
   const leftContent = (
     <Stack gap={0}>
-      
       {selectedItem ? (
         <FeaturedPanel
           key={selectedItem.id}
@@ -464,12 +535,12 @@ export default function NewsPage() {
         />
       ) : null}
     </Stack>
-  );
+  )
 
   const rightContent = (
     <Stack gap={0}>
       <Row align="center" justify="space-between" style={{ marginBottom: 12 }}>
-        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text[theme].primary }}>
+        <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text[theme].primary }}>
           All Stories
         </Text>
         <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>
@@ -488,7 +559,7 @@ export default function NewsPage() {
         ))}
       </Stack>
     </Stack>
-  );
+  )
 
   return (
     <DashboardPage
@@ -499,5 +570,5 @@ export default function NewsPage() {
       leftContent={leftContent}
       rightContent={rightContent}
     />
-  );
+  )
 }
