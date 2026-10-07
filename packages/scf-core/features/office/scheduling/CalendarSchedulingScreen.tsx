@@ -20,9 +20,9 @@ import {
   ModalHeader,
   ModalContent,
   ModalActions,
+  EmptyState,
   Separator,
   Text,
-  Toggle,
   Row,
   Stack,
   Tabs,
@@ -30,11 +30,9 @@ import {
 } from '@scaffald/ui'
 import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import {
-  Calendar,
-  Clock,
+  CalendarDays,
   Link2,
   Plus,
-  RefreshCw,
   Video,
   Phone,
   MapPin,
@@ -42,7 +40,6 @@ import {
 } from 'lucide-react-native'
 import { Platform, Pressable, ScrollView } from 'react-native'
 import { StatusBadge } from '@scf/core/components/ui'
-import { SampleDataNotice } from '@scf/core/features/office/components/SampleDataNotice'
 import {
   useCreateInterviewSlotMutation,
   useCreateSchedulingLinkMutation,
@@ -54,23 +51,6 @@ import { useEmployerApplications } from '@scf/core/utils/applications-sdk-hooks'
 // ============================================================================
 // Types
 // ============================================================================
-
-interface CalendarConnection {
-  id: string
-  provider: 'google' | 'outlook' | 'apple'
-  is_active: boolean
-  sync_enabled: boolean
-  last_synced_at: string | null
-}
-
-interface AvailabilityWindow {
-  id: string
-  day_of_week: number
-  start_time: string
-  end_time: string
-  timezone: string
-  is_active: boolean
-}
 
 interface InterviewSlot {
   id: string
@@ -92,84 +72,6 @@ interface SchedulingLink {
   max_bookings: number
 }
 
-// ============================================================================
-// Mock Data
-// ============================================================================
-
-/**
- * Calendar connections and availability windows are still sample data.
- *
- * Interview slots and self-scheduling links are now real: they read and write
- * `/v1/employer/scheduling`, added in Scaffald/SaaS#561. The flag narrowed
- * rather than disappeared, because the two remaining panels are not a missing
- * CRUD endpoint — `core.calendar_connections` stores
- * `access_token_encrypted` / `refresh_token_encrypted` /
- * `provider_account_id` for Google and Outlook, which is an OAuth integration.
- * Availability windows feed slot *generation*, which does not exist yet
- * either.
- *
- * So the notice moved onto the Calendar Connections tab instead of the whole
- * screen, and those two write paths stay disabled rather than silently
- * discarding input. Deleting this constant is the last step of the calendar
- * integration, not of #540.
- */
-const CALENDAR_USES_SAMPLE_DATA: boolean = true
-
-const MOCK_CONNECTIONS: CalendarConnection[] = [
-  {
-    id: '1',
-    provider: 'google',
-    is_active: true,
-    sync_enabled: true,
-    last_synced_at: '2026-03-10T12:00:00Z',
-  },
-]
-
-const MOCK_AVAILABILITY: AvailabilityWindow[] = [
-  {
-    id: '1',
-    day_of_week: 1,
-    start_time: '09:00',
-    end_time: '12:00',
-    timezone: 'America/New_York',
-    is_active: true,
-  },
-  {
-    id: '2',
-    day_of_week: 1,
-    start_time: '13:00',
-    end_time: '17:00',
-    timezone: 'America/New_York',
-    is_active: true,
-  },
-  {
-    id: '3',
-    day_of_week: 2,
-    start_time: '09:00',
-    end_time: '17:00',
-    timezone: 'America/New_York',
-    is_active: true,
-  },
-  {
-    id: '4',
-    day_of_week: 3,
-    start_time: '09:00',
-    end_time: '17:00',
-    timezone: 'America/New_York',
-    is_active: true,
-  },
-  {
-    id: '5',
-    day_of_week: 4,
-    start_time: '09:00',
-    end_time: '12:00',
-    timezone: 'America/New_York',
-    is_active: true,
-  },
-]
-
-const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-
 /**
  * Public URL a candidate uses to redeem a scheduling link.
  *
@@ -188,89 +90,6 @@ function schedulingUrl(token: string): string {
 // ============================================================================
 // Sub-Components
 // ============================================================================
-
-function ProviderLogo({ provider: _provider }: { provider: string }) {
-  const { theme } = useThemeContext()
-  return (
-    <Stack
-      style={{
-        width: 36,
-        height: 36,
-        borderRadius: borderRadius.l,
-        backgroundColor: colors.bg[theme].subtle,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Calendar size={18} color={colors.icon[theme].default} />
-    </Stack>
-  )
-}
-
-function ConnectionCard({ connection }: { connection: CalendarConnection }) {
-  const { theme } = useThemeContext()
-  const providerNames: Record<string, string> = {
-    google: 'Google Calendar',
-    outlook: 'Outlook',
-    apple: 'Apple Calendar',
-  }
-
-  return (
-    <Row
-      gap={12}
-      align="center"
-      padding="md"
-      style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: borderRadius.l }}
-    >
-      <ProviderLogo provider={connection.provider} />
-      <Stack style={{ flex: 1 }} gap={2}>
-        <Text style={{ color: colors.text[theme].primary, fontWeight: '600' }}>
-          {providerNames[connection.provider]}
-        </Text>
-        <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>
-          {connection.last_synced_at
-            ? `Last synced ${new Date(connection.last_synced_at).toLocaleString()}`
-            : 'Not synced'}
-        </Text>
-      </Stack>
-      <StatusBadge variant={connection.is_active ? 'success' : 'default'}>
-        {connection.is_active ? 'Connected' : 'Disconnected'}
-      </StatusBadge>
-      <Button size="sm" variant="outline" iconStart={RefreshCw} onPress={() => {}}>
-        Sync
-      </Button>
-    </Row>
-  )
-}
-
-function AvailabilityRow({ window: avail }: { window: AvailabilityWindow }) {
-  const { theme } = useThemeContext()
-
-  return (
-    <Row
-      gap={12}
-      align="center"
-      padding="sm"
-      style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: borderRadius.l }}
-    >
-      <Stack style={{ width: 40, alignItems: 'center' }}>
-        <Text style={{ color: colors.text[theme].primary, fontWeight: '600', fontSize: fontSize.sm }}>
-          {DAY_NAMES[avail.day_of_week]}
-        </Text>
-      </Stack>
-      <Row gap={4} align="center" style={{ flex: 1 }}>
-        <Clock size={14} color={colors.icon[theme].subtle} />
-        <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.sm }}>
-          {avail.start_time} – {avail.end_time}
-        </Text>
-      </Row>
-      <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
-        {avail.timezone.replace('America/', '')}
-      </Text>
-      <Toggle checked={avail.is_active} onChange={() => {}} />
-    </Row>
-  )
-}
 
 function SlotStatusBadge({ status }: { status: InterviewSlot['status'] }) {
   const variantMap: Record<string, 'default' | 'success' | 'warning' | 'error'> = {
@@ -413,7 +232,7 @@ function ApplicationPicker({
 
 export function CalendarSchedulingScreen() {
   const { theme } = useThemeContext()
-  const [activeTab, setActiveTab] = useState('connections')
+  const [activeTab, setActiveTab] = useState('interviews')
   const [showAddSlotModal, setShowAddSlotModal] = useState(false)
   const [showCreateLinkModal, setShowCreateLinkModal] = useState(false)
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null)
@@ -633,7 +452,7 @@ export function CalendarSchedulingScreen() {
         <ScreenHeader
           kicker="Screening"
           title="Interview scheduling"
-          tip="Calendars, availability and interview slots."
+          tip="Interview slots, and links candidates use to book them."
           actions={
             <Button
               size="sm"
@@ -651,69 +470,19 @@ export function CalendarSchedulingScreen() {
           <Tabs.Item value="connections">
             <Tabs.Trigger>Calendar Connections</Tabs.Trigger>
             <Tabs.Content>
-              <Stack gap={16} style={{ paddingTop: 16 }}>
-                {CALENDAR_USES_SAMPLE_DATA && (
-                  <SampleDataNotice
-                    title="Sample data — no calendar is connected"
-                    description="These calendars and availability windows are placeholders. Connecting Google or Outlook needs an OAuth integration that does not exist yet, so nothing here is saved. Interview slots and scheduling links, on the other tabs, are real."
-                  />
-                )}
-
-                {/* Connected Calendars */}
-                <DashboardWidget>
-                  <DashboardWidgetHeader title="Connected Calendars" />
-                  <Stack gap={8}>
-                    {MOCK_CONNECTIONS.map((conn) => (
-                      <ConnectionCard key={conn.id} connection={conn} />
-                    ))}
-                  </Stack>
-                  <Separator />
-                  <Row gap={8}>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      iconStart={Plus}
-                      disabled={CALENDAR_USES_SAMPLE_DATA}
-                      onPress={() => {}}
-                    >
-                      Connect Google
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      iconStart={Plus}
-                      disabled={CALENDAR_USES_SAMPLE_DATA}
-                      onPress={() => {}}
-                    >
-                      Connect Outlook
-                    </Button>
-                  </Row>
-                </DashboardWidget>
-
-                {/* Availability */}
-                <DashboardWidget>
-                  <DashboardWidgetHeader title="Availability Windows" />
-                  <Text
-                    style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm, marginBottom: 8 }}
-                  >
-                    Define when you're available for interviews
-                  </Text>
-                  <Stack gap={6}>
-                    {MOCK_AVAILABILITY.map((avail) => (
-                      <AvailabilityRow key={avail.id} window={avail} />
-                    ))}
-                  </Stack>
-                  <Separator />
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    iconStart={Plus}
-                    disabled={CALENDAR_USES_SAMPLE_DATA}
-                    onPress={() => {}}
-                  >
-                    Add Availability
-                  </Button>
-                </DashboardWidget>
+              {/* No calendar can be connected yet: Google and Outlook need an
+                  OAuth integration that does not exist, and availability
+                  windows feed slot generation, which does not exist either.
+                  This tab showed a sample Google connection and sample
+                  windows behind a "Sample data" notice; per #1024 (Clay,
+                  2026-10-07: remove the dummy data) it says so instead. */}
+              <Stack style={{ paddingTop: 16 }}>
+                <EmptyState
+                  icon={CalendarDays}
+                  title="No calendar connected"
+                  description="Connecting Google Calendar or Outlook isn't available yet. Interview slots and self-scheduling links, on the other tabs, work without one."
+                  action={{ label: 'Go to interview slots', onPress: () => setActiveTab('interviews') }}
+                />
               </Stack>
             </Tabs.Content>
           </Tabs.Item>
