@@ -103,17 +103,31 @@ else
 fi
 echo ""
 
-# 8. Light-only palette references in ui components (#1027). A line that names
-#    colors.{bg,text,icon,border,fg}.light.* without a .dark. counterpart
-#    renders light in dark mode (InputAddon's white prefix box was one). Theme
-#    branches — `isLight ? colors.text.light.x : colors.text.dark.x` — are fine
-#    and not counted. This is a ceiling: it may only come down. Lower it when
-#    you fix some; never raise it.
-LIGHT_ONLY_CEILING=97
+# 8. Light-only palette references in ui components (#1027). A reference to
+#    colors.{bg,text,icon,border,fg}.light.* renders light in dark mode (the
+#    InputAddon white box, SkeletonCard's white card) unless a .dark.
+#    counterpart sits beside it. Theme branches are fine and not counted, on
+#    one line (`isLight ? colors.text.light.x : colors.text.dark.x`) or, since
+#    the count first overstated the problem by about half, across the three
+#    lines on either side of a multi-line ternary. This is a ceiling: it may
+#    only come down. Lower it when you fix some; never raise it.
+LIGHT_ONLY_CEILING=49
 echo -n "Checking light-only palette refs in packages/ui... "
-LIGHT_ONLY=$(grep -rnE 'colors\.(bg|text|icon|border|fg)\.light\.' packages/ui/src/components --include="*.ts" --include="*.tsx" 2>/dev/null \
-  | grep -vE '(stories|__tests__|\.test\.)' \
-  | grep -vE 'colors\.(bg|text|icon|border|fg)\.dark\.' || true)
+LIGHT_ONLY=$(node -e '
+const { readFileSync } = require("node:fs")
+const { execSync } = require("node:child_process")
+const files = execSync("git -C packages/ui ls-files src/components", { encoding: "utf8" })
+  .split("\n").filter((f) => /\.(ts|tsx)$/.test(f) && !/(stories|__tests__|\.test\.)/.test(f))
+const light = /colors\.(bg|text|icon|border|fg)\.light\./
+const dark = /colors\.(bg|text|icon|border|fg)\.dark\./
+for (const f of files) {
+  const lines = readFileSync("packages/ui/" + f, "utf8").split("\n")
+  lines.forEach((line, i) => {
+    if (!light.test(line)) return
+    if (lines.slice(Math.max(0, i - 3), i + 4).some((l) => dark.test(l))) return
+    console.log(`packages/ui/${f}:${i + 1}:${line.trim()}`)
+  })
+}' 2>/dev/null || true)
 LIGHT_ONLY_COUNT=$(printf '%s' "$LIGHT_ONLY" | grep -c . || true)
 if [ "$LIGHT_ONLY_COUNT" -gt "$LIGHT_ONLY_CEILING" ]; then
   echo -e "${RED}FAIL${NC} ($LIGHT_ONLY_COUNT > $LIGHT_ONLY_CEILING)"
