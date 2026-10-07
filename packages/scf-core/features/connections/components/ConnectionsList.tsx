@@ -115,12 +115,16 @@ export function ConnectionsList() {
   return (
     <Stack gap={16}>
       <Row justify="space-between" align="center" gap={8}>
-        <Input
-          style={{ flex: 1 }}
-          placeholder="Search connections..."
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-        />
+        {/* Input fills its parent and ignores a flex on its own style, so the
+            search took the whole row and pushed Export CSV off the edge at
+            390. The wrapper is what flexes. */}
+        <Stack style={{ flex: 1, minWidth: 0 }}>
+          <Input
+            placeholder="Search connections..."
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+          />
+        </Stack>
         {filteredConnections.length > 0 && (
           <Button size="sm" variant="outline" iconStart={Download} onPress={handleExportCSV}>
             Export CSV
