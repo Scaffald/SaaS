@@ -1,46 +1,40 @@
-import { Fragment } from "react";
-import { Spinner, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
+import { Fragment } from 'react'
+import { Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
-import type {
-  ResumeMergeStrategy,
-  ResumeWizardSection,
-} from "../hooks/useResumeWizard";
+import type { ResumeMergeStrategy, ResumeWizardSection } from '../hooks/useResumeWizard'
 
 interface MergeComparisonRow {
-  id: ResumeWizardSection;
-  label: string;
-  strategy: ResumeMergeStrategy;
-  existingItems: string[];
-  incomingItems: string[];
-  hasIncoming: boolean;
-  notes?: string;
+  id: ResumeWizardSection
+  label: string
+  strategy: ResumeMergeStrategy
+  existingItems: string[]
+  incomingItems: string[]
+  hasIncoming: boolean
+  notes?: string
 }
 
 interface MergeComparisonViewProps {
-  sections: MergeComparisonRow[];
-  isLoading?: boolean;
+  sections: MergeComparisonRow[]
+  isLoading?: boolean
 }
 
 const STRATEGY_LABELS: Record<ResumeMergeStrategy, string> = {
-  replace: "Replace existing data",
-  append: "Append to existing data",
-  keepExisting: "Keep existing data",
-};
+  replace: 'Replace existing data',
+  append: 'Append to existing data',
+  keepExisting: 'Keep existing data',
+}
 
-export function MergeComparisonView({
-  sections,
-  isLoading = false,
-}: MergeComparisonViewProps) {
-  const { theme } = useThemeContext();
-  const t = theme === "dark" ? "dark" : "light";
+export function MergeComparisonView({ sections, isLoading = false }: MergeComparisonViewProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   if (isLoading) {
     return (
       <Row gap={8} align="center">
         <Spinner variant="ios" size="sm" />
         <Text color={colors.text[t].secondary}>Loading current profile data…</Text>
       </Row>
-    );
+    )
   }
 
   if (sections.length === 0) {
@@ -48,11 +42,10 @@ export function MergeComparisonView({
       <Stack gap={8}>
         <Text>Nothing to review</Text>
         <Text color={colors.text[t].secondary}>
-          We didn't detect any changes to compare. You can still finish the
-          wizard to exit.
+          We didn't detect any changes to compare. You can still finish the wizard to exit.
         </Text>
       </Stack>
-    );
+    )
   }
 
   return (
@@ -75,10 +68,7 @@ export function MergeComparisonView({
           {section.notes ? <Text color={colors.text[t].secondary}>{section.notes}</Text> : null}
 
           <Row gap={16} wrap>
-            <SummaryColumn
-              title="Current profile"
-              items={section.existingItems}
-            />
+            <SummaryColumn title="Current profile" items={section.existingItems} />
             <SummaryColumn
               title="Incoming from resume"
               items={section.incomingItems}
@@ -88,7 +78,7 @@ export function MergeComparisonView({
         </Stack>
       ))}
     </Stack>
-  );
+  )
 }
 
 function SummaryColumn({
@@ -96,18 +86,18 @@ function SummaryColumn({
   items,
   highlight = false,
 }: {
-  title: string;
-  items: string[];
-  highlight?: boolean;
+  title: string
+  items: string[]
+  highlight?: boolean
 }) {
-  const { theme } = useThemeContext();
-  const t = theme === "dark" ? "dark" : "light";
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack
       gap={8}
       flex={1}
       padding="xs"
-      backgroundColor={highlight ? (t === 'dark' ? colors.blue[900] : colors.blue[100]) : "transparent"}
+      backgroundColor={highlight ? colors.bg[t].selected : 'transparent'}
       borderRadius={12}
       style={{ minWidth: 220 }}
     >
@@ -122,36 +112,40 @@ function SummaryColumn({
         ))
       )}
     </Stack>
-  );
+  )
 }
 
 function StrategyPill({ strategy }: { strategy: ResumeMergeStrategy }) {
-  const { theme } = useThemeContext();
-  const t = theme === "dark" ? "dark" : "light";
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack
       paddingHorizontal={12}
       paddingVertical={4}
       borderRadius={12}
       backgroundColor={
-        strategy === "replace"
-          ? (t === 'dark' ? colors.error[900] : colors.error[100])
-          : strategy === "append"
-          ? (t === 'dark' ? colors.blue[900] : colors.blue[100])
-          : colors.bg[t].muted
+        strategy === 'replace'
+          ? t === 'dark'
+            ? colors.error[900]
+            : colors.error[100]
+          : strategy === 'append'
+            ? colors.bg[t].selected
+            : colors.bg[t].muted
       }
     >
       <Text
         color={
-          strategy === "replace"
-            ? (t === 'dark' ? colors.error[300] : colors.error[600])
-            : strategy === "append"
-            ? (t === 'dark' ? colors.blue[300] : colors.blue[600])
-            : colors.text[t].secondary
+          strategy === 'replace'
+            ? t === 'dark'
+              ? colors.error[300]
+              : colors.error[600]
+            : strategy === 'append'
+              ? colors.text[t].emphasis
+              : colors.text[t].secondary
         }
       >
         {STRATEGY_LABELS[strategy]}
       </Text>
     </Stack>
-  );
+  )
 }

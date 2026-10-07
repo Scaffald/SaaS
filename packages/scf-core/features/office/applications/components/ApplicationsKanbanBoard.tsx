@@ -292,7 +292,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
           gap={12}
           padding="sm"
           style={{
-            backgroundColor: theme === 'light' ? colors.blue[50] : colors.blue[900],
+            backgroundColor: colors.bg[theme === 'light' ? 'light' : 'dark'].selected,
             borderBottomWidth: 1,
             borderBottomColor: colors.border[theme].default,
           }}

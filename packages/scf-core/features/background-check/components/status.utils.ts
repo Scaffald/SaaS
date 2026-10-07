@@ -218,9 +218,11 @@ export function getStatusToneColors(tone: StatusTone, t: 'light' | 'dark' = 'lig
   switch (tone) {
     case 'info':
       return {
-        background: t === 'dark' ? colors.blue[900] : colors.blue[50],
-        border: t === 'dark' ? colors.blue[700] : colors.blue[300],
-        text: t === 'dark' ? colors.blue[300] : colors.blue[700],
+        // The info tokens, not the teal accent: an info tone is a state, and
+        // the raw blue ramp it used bypassed the theme (#1028).
+        background: `${colors.fg[t].info}1A`,
+        border: colors.border[t].info,
+        text: colors.fg[t].info,
       }
     case 'success':
       return {

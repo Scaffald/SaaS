@@ -37,7 +37,7 @@ const getEventColor = (eventType: EventType, t: 'light' | 'dark'): string => {
   switch (eventType) {
     case 'inquiry_created':
     case 'inquiry_sent':
-      return t === 'dark' ? colors.blue[300] : colors.blue[600]
+      return colors.text[t].emphasis
     case 'section_accepted':
       return t === 'dark' ? colors.green[300] : colors.green[600]
     case 'comment_added':
@@ -152,7 +152,9 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
   if (error) {
     return (
       <Stack padding="md" align="center" gap={16}>
-        <Text color={t === 'dark' ? colors.error[300] : colors.error[600]}>Failed to load history</Text>
+        <Text color={t === 'dark' ? colors.error[300] : colors.error[600]}>
+          Failed to load history
+        </Text>
       </Stack>
     )
   }
@@ -194,7 +196,14 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                 >
                   <EventIcon size={16} color="white" />
                 </Stack>
-                {!isLast && <Stack flex={1} width={2} backgroundColor={colors.border[t].default} height={40} />}
+                {!isLast && (
+                  <Stack
+                    flex={1}
+                    width={2}
+                    backgroundColor={colors.border[t].default}
+                    height={40}
+                  />
+                )}
               </Stack>
 
               {/* Event details */}
@@ -203,19 +212,32 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                   <Avatar
                     size={32}
                     src={(event.actor as AuditLogEntry['actor'])?.avatar_path ?? undefined}
-                    initials={actorDisplayName(event.actor as AuditLogEntry['actor']).charAt(0).toUpperCase()}
+                    initials={actorDisplayName(event.actor as AuditLogEntry['actor'])
+                      .charAt(0)
+                      .toUpperCase()}
                   />
                   <Text>{actorDisplayName(event.actor as AuditLogEntry['actor'])}</Text>
-                  <Text color={colors.text[t].secondary}>{formatEventType(event.event_type as EventType)}</Text>
+                  <Text color={colors.text[t].secondary}>
+                    {formatEventType(event.event_type as EventType)}
+                  </Text>
                 </Row>
 
-                <Text color={colors.text[t].secondary}>{formatTimestamp(event.created_at as string)}</Text>
+                <Text color={colors.text[t].secondary}>
+                  {formatTimestamp(event.created_at as string)}
+                </Text>
 
                 {/* Event-specific details */}
                 {event.event_data
                   ? ((): ReactNode => {
-                      const msg = formatEventData(event.event_type as EventType, event.event_data as Record<string, unknown>)
-                      return msg != null ? <Text color={colors.text[t].secondary} style={{ marginTop: 4 }}>{msg}</Text> : null
+                      const msg = formatEventData(
+                        event.event_type as EventType,
+                        event.event_data as Record<string, unknown>
+                      )
+                      return msg != null ? (
+                        <Text color={colors.text[t].secondary} style={{ marginTop: 4 }}>
+                          {msg}
+                        </Text>
+                      ) : null
                     })()
                   : null}
               </Stack>

@@ -54,16 +54,18 @@ export function RiasecQuickAssessment({
               width={60}
               height={32}
               align="center"
-              style={{ borderWidth: 1, borderColor: colors.border[t].default, paddingHorizontal: 8 }}
+              style={{
+                borderWidth: 1,
+                borderColor: colors.border[t].default,
+                paddingHorizontal: 8,
+              }}
             >
               <Text>{value[dimension.key]}</Text>
             </Row>
           </Row>
 
           <Row align="center" gap={12}>
-            <Text style={{ color: colors.text[t].secondary, width: 20 }}>
-              1
-            </Text>
+            <Text style={{ color: colors.text[t].secondary, width: 20 }}>1</Text>
             <Stack style={{ flex: 1 }}>
               <Slider
                 value={value[dimension.key]}
@@ -74,18 +76,18 @@ export function RiasecQuickAssessment({
                 disabled={disabled}
               />
             </Stack>
-            <Text style={{ color: colors.text[t].secondary, width: 20 }}>
-              5
-            </Text>
+            <Text style={{ color: colors.text[t].secondary, width: 20 }}>5</Text>
           </Row>
         </Stack>
       ))}
 
-      <Stack gap={8} padding="sm" style={{ borderWidth: 1, borderColor: t === 'dark' ? colors.blue[800] : colors.blue[200] }}>
-        <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
-          What is RIASEC?
-        </Text>
-        <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
+      <Stack
+        gap={8}
+        padding="sm"
+        style={{ borderWidth: 1, borderColor: t === 'dark' ? colors.blue[800] : colors.blue[200] }}
+      >
+        <Text style={{ color: colors.text[t].emphasis }}>What is RIASEC?</Text>
+        <Text style={{ color: colors.text[t].emphasis }}>
           RIASEC (Holland Codes) is a career interest model that helps match your personality to
           compatible occupations. Your scores help us recommend careers that align with your natural
           interests and work style.

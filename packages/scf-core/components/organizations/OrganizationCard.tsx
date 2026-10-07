@@ -71,7 +71,12 @@ export const OrganizationCard = memo(
         const location = [address.city, address.state].filter(Boolean).join(', ')
         metadataItems.push({
           key: 'location',
-          icon: <MapPin size={20} color={isSelected ? colors.bg[t].default : colors.text[t].secondary} />,
+          icon: (
+            <MapPin
+              size={20}
+              color={isSelected ? colors.bg[t].default : colors.text[t].secondary}
+            />
+          ),
           label: location,
         })
       }
@@ -79,7 +84,9 @@ export const OrganizationCard = memo(
       if (employeeCount) {
         metadataItems.push({
           key: 'employees',
-          icon: <Users size={20} color={isSelected ? colors.bg[t].default : colors.text[t].secondary} />,
+          icon: (
+            <Users size={20} color={isSelected ? colors.bg[t].default : colors.text[t].secondary} />
+          ),
           label: `${employeeCount} employees`,
         })
       }
@@ -93,14 +100,19 @@ export const OrganizationCard = memo(
           selection={{
             enabled: true,
             selectedBorderColor: t === 'dark' ? colors.blue[500] : colors.blue[300],
-            selectedBgColor: t === 'dark' ? colors.blue[900] : colors.blue[50],
+            selectedBgColor: colors.bg[t].selected,
             selectedShadow: '0 4px 8px rgba(35, 156, 178, 0.2)',
           }}
         >
           {/* Header with building icon */}
           <CardHeader
             title={name}
-            action={<Building size={20} color={isSelected ? colors.bg[t].default : (t === 'dark' ? colors.blue[300] : colors.blue[700])} />}
+            action={
+              <Building
+                size={20}
+                color={isSelected ? colors.bg[t].default : colors.text[t].emphasis}
+              />
+            }
             children={undefined}
           />
 
@@ -111,13 +123,17 @@ export const OrganizationCard = memo(
                 align="center"
                 gap={4}
                 style={{
-                  backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50],
+                  backgroundColor: colors.bg[t].selected,
                 }}
                 borderRadius={16}
                 paddingHorizontal={8}
                 paddingVertical={4}
               >
-                <Text style={{ color: isSelected ? colors.bg[t].default : (t === 'dark' ? colors.blue[300] : colors.blue[700]) }}>{industry}</Text>
+                <Text
+                  style={{ color: isSelected ? colors.bg[t].default : colors.text[t].emphasis }}
+                >
+                  {industry}
+                </Text>
               </Row>
             </Row>
           )}

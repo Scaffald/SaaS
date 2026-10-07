@@ -1,29 +1,22 @@
-import {
-  Award,
-  Briefcase,
-  DollarSign,
-  MapPin,
-  MessageSquare,
-  Star,
-} from "lucide-react-native";
-import { Button, Card, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
+import { Award, Briefcase, DollarSign, MapPin, MessageSquare, Star } from 'lucide-react-native'
+import { Button, Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface UserProfileHeaderProps {
   profile: {
-    name: string | null;
-    avatar_url: string | null;
-    headline: string | null;
-    industry_name: string | null;
-    years_of_experience: number | null;
-    calculatedYearsOfExperience?: number | null;
-    gamified_score: number | null;
-    location: string | null;
-    hourly_rate_cents: number | null;
-    open_to_work: boolean | null;
-  };
-  onLeaveReview?: () => void;
-  canLeaveReview?: boolean;
+    name: string | null
+    avatar_url: string | null
+    headline: string | null
+    industry_name: string | null
+    years_of_experience: number | null
+    calculatedYearsOfExperience?: number | null
+    gamified_score: number | null
+    location: string | null
+    hourly_rate_cents: number | null
+    open_to_work: boolean | null
+  }
+  onLeaveReview?: () => void
+  canLeaveReview?: boolean
 }
 
 /**
@@ -35,24 +28,24 @@ export function UserProfileHeader({
   onLeaveReview,
   canLeaveReview,
 }: UserProfileHeaderProps) {
-  const { theme } = useThemeContext();
+  const { theme } = useThemeContext()
   const formatHourlyRate = (cents: number | null) => {
-    if (!cents) return null;
-    const dollars = cents / 100;
-    return `$${dollars.toFixed(2)}/hr`;
-  };
+    if (!cents) return null
+    const dollars = cents / 100
+    return `$${dollars.toFixed(2)}/hr`
+  }
 
   const resolvedYears =
-    typeof profile.calculatedYearsOfExperience === "number"
+    typeof profile.calculatedYearsOfExperience === 'number'
       ? profile.calculatedYearsOfExperience
-      : profile.years_of_experience;
+      : profile.years_of_experience
 
   const formattedYears =
-    typeof resolvedYears === "number" && !Number.isNaN(resolvedYears)
+    typeof resolvedYears === 'number' && !Number.isNaN(resolvedYears)
       ? resolvedYears % 1 !== 0
         ? resolvedYears.toFixed(1)
         : resolvedYears
-      : null;
+      : null
 
   return (
     <Card elevate bordered>
@@ -66,12 +59,12 @@ export function UserProfileHeader({
                 width={120}
                 height={120}
                 borderRadius={60}
-                style={{ overflow: "hidden", backgroundColor: colors.bg[theme].muted }}
+                style={{ overflow: 'hidden', backgroundColor: colors.bg[theme].muted }}
               >
                 <img
                   src={profile.avatar_url}
-                  alt={profile.name || "User"}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  alt={profile.name || 'User'}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               </Stack>
             ) : (
@@ -83,7 +76,9 @@ export function UserProfileHeader({
                 align="center"
                 justify="center"
               >
-                <Text style={{ color: theme === 'light' ? colors.blue[600] : colors.blue[400] }}>{profile.name?.charAt(0) || "?"}</Text>
+                <Text style={{ color: theme === 'light' ? colors.blue[600] : colors.blue[400] }}>
+                  {profile.name?.charAt(0) || '?'}
+                </Text>
               </Stack>
             )}
 
@@ -96,7 +91,9 @@ export function UserProfileHeader({
               {profile.industry_name && (
                 <Row gap={8} align="center">
                   <Briefcase size={18} color={colors.text[theme].secondary} />
-                  <Text style={{ color: colors.text[theme].secondary }}>{profile.industry_name}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>
+                    {profile.industry_name}
+                  </Text>
                 </Row>
               )}
             </Stack>
@@ -105,7 +102,7 @@ export function UserProfileHeader({
             {profile.gamified_score !== null && (
               <Row
                 style={{
-                  backgroundColor: theme === 'light' ? colors.blue[50] : colors.blue[900],
+                  backgroundColor: colors.bg[theme === 'light' ? 'light' : 'dark'].selected,
                   borderWidth: 2,
                   borderColor: theme === 'light' ? colors.blue[300] : colors.blue[700],
                 }}
@@ -115,10 +112,20 @@ export function UserProfileHeader({
                 gap={8}
                 align="center"
               >
-                <Star size={32} color={theme === 'light' ? colors.blue[600] : colors.blue[400]} fill={theme === 'light' ? colors.blue[600] : colors.blue[400]} />
+                <Star
+                  size={32}
+                  color={theme === 'light' ? colors.blue[600] : colors.blue[400]}
+                  fill={theme === 'light' ? colors.blue[600] : colors.blue[400]}
+                />
                 <Stack>
-                  <Text style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}>{profile.gamified_score}</Text>
-                  <Text style={{ color: theme === 'light' ? colors.blue[600] : colors.blue[400] }}>Scaffald Score</Text>
+                  <Text
+                    style={{ color: colors.text[theme === 'light' ? 'light' : 'dark'].emphasis }}
+                  >
+                    {profile.gamified_score}
+                  </Text>
+                  <Text style={{ color: theme === 'light' ? colors.blue[600] : colors.blue[400] }}>
+                    Scaffald Score
+                  </Text>
                 </Stack>
               </Row>
             )}
@@ -126,12 +133,7 @@ export function UserProfileHeader({
 
           {/* Leave Review Button */}
           {canLeaveReview && onLeaveReview && (
-            <Button
-              size="md"
-              color="primary"
-              iconStart={MessageSquare}
-              onPress={onLeaveReview}
-            >
+            <Button size="md" color="primary" iconStart={MessageSquare} onPress={onLeaveReview}>
               Leave Review
             </Button>
           )}
@@ -163,7 +165,9 @@ export function UserProfileHeader({
               borderRadius={12}
             >
               <Award size={18} color={colors.text[theme].secondary} />
-              <Text style={{ color: colors.text[theme].secondary }}>{formattedYears} years experience</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                {formattedYears} years experience
+              </Text>
             </Row>
           )}
 
@@ -190,11 +194,13 @@ export function UserProfileHeader({
               style={{ backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900] }}
               borderRadius={12}
             >
-              <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>✓ Available for Work</Text>
+              <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>
+                ✓ Available for Work
+              </Text>
             </Row>
           )}
         </Row>
       </Stack>
     </Card>
-  );
+  )
 }

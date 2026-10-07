@@ -195,275 +195,339 @@ export function APIKeyScopesManager({
       <ModalHeader title="Manage API Key Permissions" description={apiKey.name} />
       <ModalContent>
         <Stack gap={16}>
-            {!apiKey.is_active && (
-              <Card
-                padding="sm"
-                style={{ backgroundColor: t === 'dark' ? colors.orange[900] : colors.orange[50], borderColor: t === 'dark' ? colors.orange[700] : colors.orange[300], borderWidth: 1 }}
-              >
-                <Row align="center" gap={8}>
-                  <AlertCircle size={24} color={t === 'dark' ? colors.orange[300] : colors.orange[600]} />
-                  <Paragraph style={{ color: t === 'dark' ? colors.orange[300] : colors.orange[600] }}>
-                    This API key is revoked. Updating scopes will not re-activate it.
-                  </Paragraph>
-                </Row>
-              </Card>
-            )}
-
-            <Separator />
-
-            {/* Info Card */}
+          {!apiKey.is_active && (
             <Card
               padding="sm"
-              style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], borderColor: t === 'dark' ? colors.blue[700] : colors.blue[300], borderWidth: 1 }}
+              style={{
+                backgroundColor: t === 'dark' ? colors.orange[900] : colors.orange[50],
+                borderColor: t === 'dark' ? colors.orange[700] : colors.orange[300],
+                borderWidth: 1,
+              }}
             >
-              <Row align="flex-start" gap={12}>
-                <Info size={24} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-                <Stack flex={1} gap={8}>
-                  <Paragraph style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>Permission Scopes</Paragraph>
-                  <Paragraph size="sm" style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
-                    Scopes control what your API key can access. Grant only the minimum permissions
-                    needed for your use case (principle of least privilege).
-                  </Paragraph>
-                </Stack>
+              <Row align="center" gap={8}>
+                <AlertCircle
+                  size={24}
+                  color={t === 'dark' ? colors.orange[300] : colors.orange[600]}
+                />
+                <Paragraph
+                  style={{ color: t === 'dark' ? colors.orange[300] : colors.orange[600] }}
+                >
+                  This API key is revoked. Updating scopes will not re-activate it.
+                </Paragraph>
               </Row>
             </Card>
+          )}
 
-            {/* Scopes Selection - Scrollable */}
-            <Stack gap={16} style={{ maxHeight: 400 }}>
-                {/* Read Permissions */}
-                <Stack gap={12}>
-                  <Row align="center" gap={8}>
-                    <Shield size={24} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
-                    <H4>Read Permissions</H4>
-                  </Row>
-                  <Stack gap={8}>
-                    {SCOPE_DEFINITIONS.filter((s) => s.category === 'read').map((scope) => (
-                      <Card
-                        key={scope.id}
-                        padding="sm"
-                        pressable
-                        onPress={() => toggleScope(scope.id)}
-                        style={{
-                          backgroundColor: selectedScopes.includes(scope.id) ? (t === 'dark' ? colors.green[900] : colors.green[50]) : colors.bg[t].muted,
-                          borderColor: selectedScopes.includes(scope.id) ? (t === 'dark' ? colors.green[700] : colors.green[300]) : colors.border[t].default,
-                          borderWidth: 1,
-                        }}
-                      >
-                        <Row align="flex-start" gap={12}>
-                          <Checkbox
-                            checked={selectedScopes.includes(scope.id)}
-                            onChange={() => toggleScope(scope.id)}
-                          />
-                          <Stack flex={1} gap={8}>
-                            <Paragraph>{scope.label}</Paragraph>
-                            <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
-                              {scope.description}
-                            </Paragraph>
-                            {scope.requires && scope.requires.length > 0 && (
-                              <Row align="center" gap={8} wrap>
-                                <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
-                                  Requires:
-                                </Paragraph>
-                                {scope.requires.map((req) => (
-                                  <Card
-                                    key={req}
-                                    style={{
-                                      backgroundColor: colors.bg[t].muted,
-                                      paddingHorizontal: 8,
-                                      paddingVertical: 4,
-                                      borderRadius: 7,
-                                    }}
-                                  >
-                                    <Paragraph size="sm" style={{ color: colors.text[t].secondary, fontFamily: 'monospace' }}>
-                                      {req}
-                                    </Paragraph>
-                                  </Card>
-                                ))}
-                              </Row>
-                            )}
-                          </Stack>
-                        </Row>
-                      </Card>
-                    ))}
-                  </Stack>
-                </Stack>
+          <Separator />
 
-                {/* Write Permissions */}
-                <Stack gap={12}>
-                  <Row align="center" gap={8}>
-                    <Lock size={24} color={t === 'dark' ? colors.orange[300] : colors.orange[600]} />
-                    <H4>Write Permissions</H4>
-                  </Row>
-                  <Stack gap={8}>
-                    {SCOPE_DEFINITIONS.filter((s) => s.category === 'write').map((scope) => (
-                      <Card
-                        key={scope.id}
-                        padding="sm"
-                        pressable
-                        onPress={() => toggleScope(scope.id)}
-                        style={{
-                          backgroundColor: selectedScopes.includes(scope.id) ? (t === 'dark' ? colors.orange[900] : colors.orange[50]) : colors.bg[t].muted,
-                          borderColor: selectedScopes.includes(scope.id) ? (t === 'dark' ? colors.orange[700] : colors.orange[300]) : colors.border[t].default,
-                          borderWidth: 1,
-                        }}
-                      >
-                        <Row align="flex-start" gap={12}>
-                          <Checkbox
-                            checked={selectedScopes.includes(scope.id)}
-                            onChange={() => toggleScope(scope.id)}
-                          />
-                          <Stack flex={1} gap={8}>
-                            <Paragraph>{scope.label}</Paragraph>
+          {/* Info Card */}
+          <Card
+            padding="sm"
+            style={{
+              backgroundColor: colors.bg[t].selected,
+              borderColor: t === 'dark' ? colors.blue[700] : colors.blue[300],
+              borderWidth: 1,
+            }}
+          >
+            <Row align="flex-start" gap={12}>
+              <Info size={24} color={colors.text[t].emphasis} />
+              <Stack flex={1} gap={8}>
+                <Paragraph style={{ color: colors.text[t].emphasis }}>Permission Scopes</Paragraph>
+                <Paragraph size="sm" style={{ color: colors.text[t].emphasis }}>
+                  Scopes control what your API key can access. Grant only the minimum permissions
+                  needed for your use case (principle of least privilege).
+                </Paragraph>
+              </Stack>
+            </Row>
+          </Card>
+
+          {/* Scopes Selection - Scrollable */}
+          <Stack gap={16} style={{ maxHeight: 400 }}>
+            {/* Read Permissions */}
+            <Stack gap={12}>
+              <Row align="center" gap={8}>
+                <Shield size={24} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+                <H4>Read Permissions</H4>
+              </Row>
+              <Stack gap={8}>
+                {SCOPE_DEFINITIONS.filter((s) => s.category === 'read').map((scope) => (
+                  <Card
+                    key={scope.id}
+                    padding="sm"
+                    pressable
+                    onPress={() => toggleScope(scope.id)}
+                    style={{
+                      backgroundColor: selectedScopes.includes(scope.id)
+                        ? t === 'dark'
+                          ? colors.green[900]
+                          : colors.green[50]
+                        : colors.bg[t].muted,
+                      borderColor: selectedScopes.includes(scope.id)
+                        ? t === 'dark'
+                          ? colors.green[700]
+                          : colors.green[300]
+                        : colors.border[t].default,
+                      borderWidth: 1,
+                    }}
+                  >
+                    <Row align="flex-start" gap={12}>
+                      <Checkbox
+                        checked={selectedScopes.includes(scope.id)}
+                        onChange={() => toggleScope(scope.id)}
+                      />
+                      <Stack flex={1} gap={8}>
+                        <Paragraph>{scope.label}</Paragraph>
+                        <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
+                          {scope.description}
+                        </Paragraph>
+                        {scope.requires && scope.requires.length > 0 && (
+                          <Row align="center" gap={8} wrap>
                             <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
-                              {scope.description}
+                              Requires:
                             </Paragraph>
-                            {scope.warning && (
+                            {scope.requires.map((req) => (
                               <Card
-                                padding="sm"
+                                key={req}
                                 style={{
-                                  backgroundColor: t === 'dark' ? colors.orange[900] : colors.orange[50],
-                                  borderColor: t === 'dark' ? colors.orange[700] : colors.orange[300],
-                                  borderWidth: 1,
+                                  backgroundColor: colors.bg[t].muted,
+                                  paddingHorizontal: 8,
+                                  paddingVertical: 4,
+                                  borderRadius: 7,
                                 }}
                               >
-                                <Row align="flex-start" gap={8}>
-                                  <AlertCircle size={20} color={t === 'dark' ? colors.orange[300] : colors.orange[600]} />
-                                  <Paragraph size="sm" style={{ color: t === 'dark' ? colors.orange[300] : colors.orange[600], flex: 1 }}>
-                                    {scope.warning}
-                                  </Paragraph>
-                                </Row>
-                              </Card>
-                            )}
-                            {scope.requires && scope.requires.length > 0 && (
-                              <Row align="center" gap={8} wrap>
-                                <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
-                                  Requires:
+                                <Paragraph
+                                  size="sm"
+                                  style={{
+                                    color: colors.text[t].secondary,
+                                    fontFamily: 'monospace',
+                                  }}
+                                >
+                                  {req}
                                 </Paragraph>
-                                {scope.requires.map((req) => (
-                                  <Card
-                                    key={req}
-                                    style={{
-                                      backgroundColor: colors.bg[t].muted,
-                                      paddingHorizontal: 8,
-                                      paddingVertical: 4,
-                                      borderRadius: 7,
-                                    }}
-                                  >
-                                    <Paragraph size="sm" style={{ color: colors.text[t].secondary, fontFamily: 'monospace' }}>
-                                      {req}
-                                    </Paragraph>
-                                  </Card>
-                                ))}
-                              </Row>
-                            )}
-                          </Stack>
-                        </Row>
-                      </Card>
-                    ))}
-                  </Stack>
-                </Stack>
+                              </Card>
+                            ))}
+                          </Row>
+                        )}
+                      </Stack>
+                    </Row>
+                  </Card>
+                ))}
               </Stack>
+            </Stack>
 
-            {/* Summary */}
-            <Card variant="glass" padding="sm" style={{ backgroundColor: colors.bg[t].muted }}>
+            {/* Write Permissions */}
+            <Stack gap={12}>
+              <Row align="center" gap={8}>
+                <Lock size={24} color={t === 'dark' ? colors.orange[300] : colors.orange[600]} />
+                <H4>Write Permissions</H4>
+              </Row>
               <Stack gap={8}>
-                <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
-                  Selected Permissions
-                </Paragraph>
-                <Row gap={8} wrap>
-                  {selectedScopes.length === 0 ? (
-                    <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
-                      No permissions selected
-                    </Paragraph>
-                  ) : (
-                    selectedScopes.map((scope) => (
-                      <Card
-                        key={scope}
-                        style={{
-                          backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100],
-                          paddingHorizontal: 8,
-                          paddingVertical: 4,
-                          borderRadius: 7,
-                        }}
-                      >
-                        <Paragraph size="sm" style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
-                          {scope}
+                {SCOPE_DEFINITIONS.filter((s) => s.category === 'write').map((scope) => (
+                  <Card
+                    key={scope.id}
+                    padding="sm"
+                    pressable
+                    onPress={() => toggleScope(scope.id)}
+                    style={{
+                      backgroundColor: selectedScopes.includes(scope.id)
+                        ? t === 'dark'
+                          ? colors.orange[900]
+                          : colors.orange[50]
+                        : colors.bg[t].muted,
+                      borderColor: selectedScopes.includes(scope.id)
+                        ? t === 'dark'
+                          ? colors.orange[700]
+                          : colors.orange[300]
+                        : colors.border[t].default,
+                      borderWidth: 1,
+                    }}
+                  >
+                    <Row align="flex-start" gap={12}>
+                      <Checkbox
+                        checked={selectedScopes.includes(scope.id)}
+                        onChange={() => toggleScope(scope.id)}
+                      />
+                      <Stack flex={1} gap={8}>
+                        <Paragraph>{scope.label}</Paragraph>
+                        <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
+                          {scope.description}
                         </Paragraph>
-                      </Card>
-                    ))
-                  )}
-                </Row>
+                        {scope.warning && (
+                          <Card
+                            padding="sm"
+                            style={{
+                              backgroundColor:
+                                t === 'dark' ? colors.orange[900] : colors.orange[50],
+                              borderColor: t === 'dark' ? colors.orange[700] : colors.orange[300],
+                              borderWidth: 1,
+                            }}
+                          >
+                            <Row align="flex-start" gap={8}>
+                              <AlertCircle
+                                size={20}
+                                color={t === 'dark' ? colors.orange[300] : colors.orange[600]}
+                              />
+                              <Paragraph
+                                size="sm"
+                                style={{
+                                  color: t === 'dark' ? colors.orange[300] : colors.orange[600],
+                                  flex: 1,
+                                }}
+                              >
+                                {scope.warning}
+                              </Paragraph>
+                            </Row>
+                          </Card>
+                        )}
+                        {scope.requires && scope.requires.length > 0 && (
+                          <Row align="center" gap={8} wrap>
+                            <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
+                              Requires:
+                            </Paragraph>
+                            {scope.requires.map((req) => (
+                              <Card
+                                key={req}
+                                style={{
+                                  backgroundColor: colors.bg[t].muted,
+                                  paddingHorizontal: 8,
+                                  paddingVertical: 4,
+                                  borderRadius: 7,
+                                }}
+                              >
+                                <Paragraph
+                                  size="sm"
+                                  style={{
+                                    color: colors.text[t].secondary,
+                                    fontFamily: 'monospace',
+                                  }}
+                                >
+                                  {req}
+                                </Paragraph>
+                              </Card>
+                            ))}
+                          </Row>
+                        )}
+                      </Stack>
+                    </Row>
+                  </Card>
+                ))}
+              </Stack>
+            </Stack>
+          </Stack>
+
+          {/* Summary */}
+          <Card variant="glass" padding="sm" style={{ backgroundColor: colors.bg[t].muted }}>
+            <Stack gap={8}>
+              <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
+                Selected Permissions
+              </Paragraph>
+              <Row gap={8} wrap>
+                {selectedScopes.length === 0 ? (
+                  <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
+                    No permissions selected
+                  </Paragraph>
+                ) : (
+                  selectedScopes.map((scope) => (
+                    <Card
+                      key={scope}
+                      style={{
+                        backgroundColor: colors.bg[t].selected,
+                        paddingHorizontal: 8,
+                        paddingVertical: 4,
+                        borderRadius: 7,
+                      }}
+                    >
+                      <Paragraph size="sm" style={{ color: colors.text[t].emphasis }}>
+                        {scope}
+                      </Paragraph>
+                    </Card>
+                  ))
+                )}
+              </Row>
+            </Stack>
+          </Card>
+
+          {/* Changes Summary */}
+          {hasChanges() && (
+            <Card
+              padding="sm"
+              style={{
+                backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[50],
+                borderColor: t === 'dark' ? colors.yellow[700] : colors.yellow[300],
+                borderWidth: 1,
+              }}
+            >
+              <Stack gap={8}>
+                <Paragraph
+                  style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[600] }}
+                >
+                  Pending Changes
+                </Paragraph>
+                {getAddedScopes().length > 0 && (
+                  <Row gap={8} align="center">
+                    <CheckCircle
+                      size={20}
+                      color={t === 'dark' ? colors.green[300] : colors.green[600]}
+                    />
+                    <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
+                      Adding: {getAddedScopes().join(', ')}
+                    </Paragraph>
+                  </Row>
+                )}
+                {getRemovedScopes().length > 0 && (
+                  <Row gap={8} align="center">
+                    <XCircle size={20} color={t === 'dark' ? colors.rose[300] : colors.rose[600]} />
+                    <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
+                      Removing: {getRemovedScopes().join(', ')}
+                    </Paragraph>
+                  </Row>
+                )}
               </Stack>
             </Card>
+          )}
 
-            {/* Changes Summary */}
-            {hasChanges() && (
-              <Card
-                padding="sm"
-                style={{
-                  backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[50],
-                  borderColor: t === 'dark' ? colors.yellow[700] : colors.yellow[300],
-                  borderWidth: 1,
-                }}
-              >
-                <Stack gap={8}>
-                  <Paragraph style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[600] }}>Pending Changes</Paragraph>
-                  {getAddedScopes().length > 0 && (
-                    <Row gap={8} align="center">
-                      <CheckCircle size={20} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
-                      <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
-                        Adding: {getAddedScopes().join(', ')}
-                      </Paragraph>
-                    </Row>
-                  )}
-                  {getRemovedScopes().length > 0 && (
-                    <Row gap={8} align="center">
-                      <XCircle size={20} color={t === 'dark' ? colors.rose[300] : colors.rose[600]} />
-                      <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
-                        Removing: {getRemovedScopes().join(', ')}
-                      </Paragraph>
-                    </Row>
-                  )}
-                </Stack>
-              </Card>
-            )}
+          {/* Error Message */}
+          {error && (
+            <Card
+              padding="sm"
+              style={{
+                backgroundColor: t === 'dark' ? colors.rose[900] : colors.rose[50],
+                borderColor: t === 'dark' ? colors.rose[700] : colors.rose[300],
+                borderWidth: 1,
+              }}
+            >
+              <Row align="center" gap={8}>
+                <AlertCircle size={24} color={t === 'dark' ? colors.rose[300] : colors.rose[600]} />
+                <Paragraph
+                  style={{ color: t === 'dark' ? colors.rose[300] : colors.rose[600], flex: 1 }}
+                >
+                  {error}
+                </Paragraph>
+              </Row>
+            </Card>
+          )}
 
-            {/* Error Message */}
-            {error && (
-              <Card
-                padding="sm"
-                style={{
-                  backgroundColor: t === 'dark' ? colors.rose[900] : colors.rose[50],
-                  borderColor: t === 'dark' ? colors.rose[700] : colors.rose[300],
-                  borderWidth: 1,
-                }}
-              >
-                <Row align="center" gap={8}>
-                  <AlertCircle size={24} color={t === 'dark' ? colors.rose[300] : colors.rose[600]} />
-                  <Paragraph style={{ color: t === 'dark' ? colors.rose[300] : colors.rose[600], flex: 1 }}>
-                    {error}
-                  </Paragraph>
-                </Row>
-              </Card>
-            )}
-
-            {/* Success Message */}
-            {success && (
-              <Card
-                padding="sm"
-                style={{
-                  backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50],
-                  borderColor: t === 'dark' ? colors.green[700] : colors.green[300],
-                  borderWidth: 1,
-                }}
-              >
-                <Row align="center" gap={8}>
-                  <CheckCircle size={24} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
-                  <Paragraph style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>Scopes updated successfully!</Paragraph>
-                </Row>
-              </Card>
-            )}
-
+          {/* Success Message */}
+          {success && (
+            <Card
+              padding="sm"
+              style={{
+                backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50],
+                borderColor: t === 'dark' ? colors.green[700] : colors.green[300],
+                borderWidth: 1,
+              }}
+            >
+              <Row align="center" gap={8}>
+                <CheckCircle
+                  size={24}
+                  color={t === 'dark' ? colors.green[300] : colors.green[600]}
+                />
+                <Paragraph style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>
+                  Scopes updated successfully!
+                </Paragraph>
+              </Row>
+            </Card>
+          )}
         </Stack>
       </ModalContent>
       <ModalActions

@@ -119,18 +119,26 @@ export function ChartView({
         <Stack
           gap={12}
           padding="lg"
-          backgroundColor={theme === 'light' ? colors.blue[50] : colors.blue[900]}
+          backgroundColor={colors.bg[theme === 'light' ? 'light' : 'dark'].selected}
           borderRadius={16}
           borderWidth={2}
           borderColor={theme === 'light' ? colors.blue[400] : colors.blue[500]}
           align="center"
         >
-          <Text style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}>Your Archetype</Text>
-          <Text style={{ color: theme === 'light' ? colors.blue[800] : colors.blue[200] }}>{archetype.name}</Text>
+          <Text style={{ color: colors.text[theme === 'light' ? 'light' : 'dark'].emphasis }}>
+            Your Archetype
+          </Text>
+          <Text style={{ color: theme === 'light' ? colors.blue[800] : colors.blue[200] }}>
+            {archetype.name}
+          </Text>
           {archetype.confidence !== undefined && (
             <Row gap={8} align="center">
-              <Text style={{ color: theme === 'light' ? colors.blue[600] : colors.blue[400] }}>Confidence:</Text>
-              <Text style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}>{archetype.confidence}%</Text>
+              <Text style={{ color: theme === 'light' ? colors.blue[600] : colors.blue[400] }}>
+                Confidence:
+              </Text>
+              <Text style={{ color: colors.text[theme === 'light' ? 'light' : 'dark'].emphasis }}>
+                {archetype.confidence}%
+              </Text>
             </Row>
           )}
         </Stack>
@@ -146,14 +154,11 @@ export function ChartView({
         borderColor={colors.border[theme].default}
       >
         <Text style={{ color: colors.text[theme].secondary }}>Big Five Personality Traits</Text>
-        <Text style={{ color: colors.text[theme].secondary }}>Your scores across the five major personality domains (0-100%)</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Your scores across the five major personality domains (0-100%)
+        </Text>
         <Stack align="center" padding="md">
-          <BarChart
-            data={radarData.map((d) => d.value)}
-            height={300}
-            width={300}
-            variant="3"
-          />
+          <BarChart data={radarData.map((d) => d.value)} height={300} width={300} variant="3" />
         </Stack>
         {/* Domain Labels with Scores */}
         <Stack gap={8} marginTop={8}>
@@ -207,7 +212,9 @@ export function ChartView({
                 accessibilityLiveRegion="polite"
               >
                 <Text style={{ color: colors.text[theme].tertiary }}>{domainName} Facets</Text>
-                <Text style={{ color: colors.text[theme].tertiary }}>Complete {domainName} questions to see facet details.</Text>
+                <Text style={{ color: colors.text[theme].tertiary }}>
+                  Complete {domainName} questions to see facet details.
+                </Text>
               </Stack>
             )
           }
@@ -239,13 +246,10 @@ export function ChartView({
               borderColor={colors.border[theme].default}
             >
               <Text style={{ color: colors.text[theme].secondary }}>{domainName} Facets</Text>
-              <Text style={{ color: colors.text[theme].secondary }}>Six sub-traits within {domainName} (0-100%)</Text>
-              <BarChart
-                data={facetData.map((d) => d.value)}
-                height={200}
-                width={280}
-                variant="3"
-              />
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Six sub-traits within {domainName} (0-100%)
+              </Text>
+              <BarChart data={facetData.map((d) => d.value)} height={200} width={280} variant="3" />
               {/* Facet Labels */}
               <Row wrap gap={8} marginTop={8}>
                 {facetKeys.map((facetKey) => {
@@ -295,7 +299,9 @@ export function ChartView({
           borderColor={theme === 'light' ? colors.yellow[200] : colors.yellow[700]}
           accessibilityLiveRegion="polite"
         >
-          <Text style={{ color: theme === 'light' ? colors.yellow[700] : colors.yellow[300] }}>Complete Your Assessment</Text>
+          <Text style={{ color: theme === 'light' ? colors.yellow[700] : colors.yellow[300] }}>
+            Complete Your Assessment
+          </Text>
           <Text style={{ color: theme === 'light' ? colors.yellow[600] : colors.yellow[400] }}>
             You've completed {completedDomains} of 5 domains. Finish the remaining questions to see
             your complete personality profile and archetype visualization.

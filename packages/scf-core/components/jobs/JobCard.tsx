@@ -162,7 +162,12 @@ export const JobCard = memo(
       if (location) {
         metadataItems.push({
           key: 'location',
-          icon: <MapPin size={20} color={isSelected ? colors.text[t].quaternary : colors.text[t].secondary} />,
+          icon: (
+            <MapPin
+              size={20}
+              color={isSelected ? colors.text[t].quaternary : colors.text[t].secondary}
+            />
+          ),
           label: location,
         })
       }
@@ -170,7 +175,12 @@ export const JobCard = memo(
       if (employment) {
         metadataItems.push({
           key: 'employment',
-          icon: <Briefcase size={20} color={isSelected ? colors.text[t].quaternary : colors.text[t].secondary} />,
+          icon: (
+            <Briefcase
+              size={20}
+              color={isSelected ? colors.text[t].quaternary : colors.text[t].secondary}
+            />
+          ),
           label: employment,
         })
       }
@@ -178,7 +188,12 @@ export const JobCard = memo(
       if (postedTime) {
         metadataItems.push({
           key: 'posted',
-          icon: <Clock size={20} color={isSelected ? colors.text[t].quaternary : colors.text[t].tertiary} />,
+          icon: (
+            <Clock
+              size={20}
+              color={isSelected ? colors.text[t].quaternary : colors.text[t].tertiary}
+            />
+          ),
           label: postedTime,
         })
       }
@@ -194,7 +209,7 @@ export const JobCard = memo(
         ...skills.slice(0, 2).map((skill) => ({
           key: skill.id,
           label: skill.name,
-          backgroundColor: t === 'dark' ? colors.blue[300] : colors.blue[600],
+          backgroundColor: colors.text[t].emphasis,
           color: colors.text[t].quaternary,
         })),
       ]
@@ -236,8 +251,13 @@ export const JobCard = memo(
                   )}
                   {organization && (
                     <Row gap={8} align="center">
-                      <Building2 size={24} color={isSelected ? colors.text[t].quaternary : colors.text[t].primary} />
-                      <Text color={isSelected ? colors.text[t].quaternary : colors.text[t].primary}>{organization.name}</Text>
+                      <Building2
+                        size={24}
+                        color={isSelected ? colors.text[t].quaternary : colors.text[t].primary}
+                      />
+                      <Text color={isSelected ? colors.text[t].quaternary : colors.text[t].primary}>
+                        {organization.name}
+                      </Text>
                     </Row>
                   )}
                 </>
@@ -249,7 +269,7 @@ export const JobCard = memo(
           {remoteOption && (
             <Row gap={8}>
               <Row
-                backgroundColor={t === 'dark' ? colors.blue[300] : colors.blue[600]}
+                backgroundColor={colors.text[t].emphasis}
                 paddingHorizontal={8}
                 paddingVertical={4}
                 borderRadius={8}
@@ -267,7 +287,10 @@ export const JobCard = memo(
 
           {/* Description */}
           {description && (
-            <Paragraph size="sm" color={isSelected ? colors.text[t].quaternary : colors.text[t].primary}>
+            <Paragraph
+              size="sm"
+              color={isSelected ? colors.text[t].quaternary : colors.text[t].primary}
+            >
               {description}
             </Paragraph>
           )}

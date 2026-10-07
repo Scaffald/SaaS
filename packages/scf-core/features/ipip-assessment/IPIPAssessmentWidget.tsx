@@ -104,7 +104,7 @@ export function IPIPAssessmentWidget() {
             <Row justify="space-between" align="center">
               <Stack gap={4} flex={1}>
                 <Text style={{ color: colors.text[theme].secondary }}>Your Archetype</Text>
-                <Text style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}>
+                <Text style={{ color: colors.text[theme === 'light' ? 'light' : 'dark'].emphasis }}>
                   {results.archetype.name}
                 </Text>
                 {results.archetype.confidence > 0 && (

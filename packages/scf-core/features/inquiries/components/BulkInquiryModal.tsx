@@ -157,41 +157,55 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
   if (showResults && bulkResults) {
     return (
       <Sheet visible={open} onClose={handleClose} height="three-quarters">
-        <SheetHeader
-          title="Bulk Inquiry Results"
-          onClose={handleClose}
-        />
+        <SheetHeader title="Bulk Inquiry Results" onClose={handleClose} />
         <SheetContent scrollable>
           <Stack gap={16} padding="md">
             {/* Summary */}
-            <Stack gap={12} padding="md" style={{ backgroundColor: colors.bg[t].muted }} borderRadius={16}>
+            <Stack
+              gap={12}
+              padding="md"
+              style={{ backgroundColor: colors.bg[t].muted }}
+              borderRadius={16}
+            >
               <Row gap={8} align="center">
-                <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>✓ {bulkResults.successful} Successful</Text>
+                <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>
+                  ✓ {bulkResults.successful} Successful
+                </Text>
               </Row>
               {bulkResults.failed > 0 && (
                 <Row gap={8} align="center">
-                  <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>✗ {bulkResults.failed} Failed</Text>
+                  <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>
+                    ✗ {bulkResults.failed} Failed
+                  </Text>
                 </Row>
               )}
-              <Text style={{ color: colors.text[t].secondary }}>Total: {bulkResults.total} candidates</Text>
+              <Text style={{ color: colors.text[t].secondary }}>
+                Total: {bulkResults.total} candidates
+              </Text>
             </Stack>
 
             {/* Failed details */}
             {bulkResults.failed > 0 && (
               <Stack gap={8}>
-                <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>Failed Inquiries</Text>
+                <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>
+                  Failed Inquiries
+                </Text>
                 {bulkResults.results
                   .filter((r) => !r.success)
                   .map((result) => (
                     <Stack
                       key={result.applicationId}
                       padding="sm"
-                      style={{ backgroundColor: t === 'dark' ? colors.error[900] : colors.error[50] }}
+                      style={{
+                        backgroundColor: t === 'dark' ? colors.error[900] : colors.error[50],
+                      }}
                       borderRadius={12}
                       gap={4}
                     >
                       <Text>Application: {result.applicationId}</Text>
-                      <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>{result.error || 'Unknown error'}</Text>
+                      <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>
+                        {result.error || 'Unknown error'}
+                      </Text>
                     </Stack>
                   ))}
               </Stack>
@@ -230,7 +244,12 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
 
                     {/* Progress indicator */}
                     {isSubmitting && (
-                      <Stack gap={8} padding="md" style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50] }} borderRadius={16}>
+                      <Stack
+                        gap={8}
+                        padding="md"
+                        style={{ backgroundColor: colors.bg[t].selected }}
+                        borderRadius={16}
+                      >
                         <Text>Sending inquiries...</Text>
                         <ProgressBarBase value={75} />
                         <Text style={{ color: colors.text[t].secondary }}>
@@ -416,14 +435,19 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                         )}
                       />
                     </Stack>
-
                   </Stack>
                 </ScrollView>
               </Stack>
 
               {/* Help Sidebar */}
               <Stack
-                style={{ width: 300, padding: 16, backgroundColor: colors.bg[t].muted, borderLeftWidth: 1, borderLeftColor: colors.border[t].default }}
+                style={{
+                  width: 300,
+                  padding: 16,
+                  backgroundColor: colors.bg[t].muted,
+                  borderLeftWidth: 1,
+                  borderLeftColor: colors.border[t].default,
+                }}
               >
                 <InquiryHelpSidebar />
               </Stack>
@@ -436,9 +460,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
           Cancel
         </Button>
         <Button onPress={onSubmit} disabled={isSubmitting} color="primary">
-          {isSubmitting
-            ? 'Sending...'
-            : `Send to ${applicationIds.length} Candidates`}
+          {isSubmitting ? 'Sending...' : `Send to ${applicationIds.length} Candidates`}
         </Button>
       </SheetFooter>
     </Sheet>

@@ -312,16 +312,33 @@ export function UserProfileHeaderEnhanced({
   return (
     <Card variant="glass" style={{ overflow: 'hidden' }} padding="none">
       {/* Banner Section */}
-      <Stack style={{ position: 'relative', height: bannerHeight, backgroundColor: colors.bg[t].muted }}>
+      <Stack
+        style={{ position: 'relative', height: bannerHeight, backgroundColor: colors.bg[t].muted }}
+      >
         {bannerUrl ? (
           <Image
             source={{ uri: bannerUrl }}
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: bannerHeight }}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: '100%',
+              height: bannerHeight,
+            }}
             resizeMode="cover"
           />
         ) : (
           <Stack
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[200] }}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[200],
+            }}
           />
         )}
 
@@ -351,7 +368,9 @@ export function UserProfileHeaderEnhanced({
             <Text style={{ color: colors.text[t].secondary }}>{profile.name || 'User'}</Text>
 
             {/* Headline */}
-            {profile.headline && <Text style={{ color: colors.text[t].secondary }}>{profile.headline}</Text>}
+            {profile.headline && (
+              <Text style={{ color: colors.text[t].secondary }}>{profile.headline}</Text>
+            )}
 
             {/* Industry and Location */}
             <Row gap={12} wrap align="center">
@@ -394,12 +413,7 @@ export function UserProfileHeaderEnhanced({
                 )}
 
                 {connectionButtonState.type === 'pending_sent' && (
-                  <Button
-                    size={buttonSize}
-                    variant="outline"
-                    iconStart={Loader2}
-                    disabled
-                  >
+                  <Button size={buttonSize} variant="outline" iconStart={Loader2} disabled>
                     Pending
                   </Button>
                 )}
@@ -495,14 +509,21 @@ export function UserProfileHeaderEnhanced({
           {/* Scaffald Score */}
           {profile.gamified_score !== null && (
             <Row
-              style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], paddingHorizontal: 16, paddingVertical: 8, borderRadius: 7, borderWidth: 1, borderColor: t === 'dark' ? colors.blue[700] : colors.blue[200] }}
+              style={{
+                backgroundColor: colors.bg[t].selected,
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                borderRadius: 7,
+                borderWidth: 1,
+                borderColor: t === 'dark' ? colors.blue[700] : colors.blue[200],
+              }}
               gap={8}
               align="center"
             >
-              <Star size={24} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+              <Star size={24} color={colors.text[t].emphasis} />
               <Stack>
-                <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>{profile.gamified_score}</Text>
-                <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>Scaffald Score</Text>
+                <Text style={{ color: colors.text[t].emphasis }}>{profile.gamified_score}</Text>
+                <Text style={{ color: colors.text[t].emphasis }}>Scaffald Score</Text>
               </Stack>
             </Row>
           )}
@@ -517,7 +538,9 @@ export function UserProfileHeaderEnhanced({
               style={{ backgroundColor: colors.bg[t].subtle, borderRadius: 7 }}
             >
               <Award size={18} color={colors.text[t].tertiary} />
-              <Text style={{ color: colors.text[t].secondary }}>{formattedYears} years experience</Text>
+              <Text style={{ color: colors.text[t].secondary }}>
+                {formattedYears} years experience
+              </Text>
             </Row>
           )}
 
@@ -531,16 +554,27 @@ export function UserProfileHeaderEnhanced({
               style={{ backgroundColor: colors.bg[t].subtle, borderRadius: 7 }}
             >
               <DollarSign size={18} color={colors.text[t].tertiary} />
-              <Text style={{ color: colors.text[t].secondary }}>{formatHourlyRate(profile.hourly_rate_cents)}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>
+                {formatHourlyRate(profile.hourly_rate_cents)}
+              </Text>
             </Row>
           )}
 
           {/* Open to Work Badge */}
           {profile.open_to_work && (
             <Row
-              style={{ paddingHorizontal: 12, paddingVertical: 8, backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50], borderRadius: 7, borderWidth: 1, borderColor: t === 'dark' ? colors.green[700] : colors.green[200] }}
+              style={{
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50],
+                borderRadius: 7,
+                borderWidth: 1,
+                borderColor: t === 'dark' ? colors.green[700] : colors.green[200],
+              }}
             >
-              <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>✓ Available for Work</Text>
+              <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>
+                ✓ Available for Work
+              </Text>
             </Row>
           )}
         </Row>

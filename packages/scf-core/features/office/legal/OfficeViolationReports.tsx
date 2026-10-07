@@ -45,7 +45,7 @@ const getStatusColor = (status: string, theme: 'light' | 'dark') => {
     case 'pending':
       return theme === 'light' ? colors.yellow[700] : colors.yellow[300]
     case 'under_review':
-      return theme === 'light' ? colors.blue[700] : colors.blue[300]
+      return colors.text[theme === 'light' ? 'light' : 'dark'].emphasis
     case 'confirmed':
       return theme === 'light' ? colors.error[700] : colors.error[300]
     case 'dismissed':
