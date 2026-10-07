@@ -1,120 +1,107 @@
-import { ROUTES } from "@scf/core/constants/routes";
-import { OpenToTravelCard } from "@scf/core/features/profile/components/employment-fields";
-import { useGeneralInfo } from "@scf/core/utils/profile-general-sdk-hooks";
-import { useExperience } from "@scf/core/utils/profile-experience-sdk-hooks";
-import { useEmployment } from "@scf/core/utils/profile-employment-sdk-hooks";
-import { useEducation } from "@scf/core/utils/profile-education-sdk-hooks";
-import { useUserCertificationTree } from "@scf/core/utils/profile-certifications-sdk-hooks";
-import { useUserSkillsMultiTaxonomy } from "@scf/core/utils/profile-skills-sdk-hooks";
-import { Button, useThemeContext } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
+import { ROUTES } from '@scf/core/constants/routes'
+import { OpenToTravelCard } from '@scf/core/features/profile/components/employment-fields'
+import { useGeneralInfo } from '@scf/core/utils/profile-general-sdk-hooks'
+import { useExperience } from '@scf/core/utils/profile-experience-sdk-hooks'
+import { useEmployment } from '@scf/core/utils/profile-employment-sdk-hooks'
+import { useEducation } from '@scf/core/utils/profile-education-sdk-hooks'
+import { useUserCertificationTree } from '@scf/core/utils/profile-certifications-sdk-hooks'
+import { useUserSkillsMultiTaxonomy } from '@scf/core/utils/profile-skills-sdk-hooks'
+import { Button, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import {
   AlertCircle,
   CheckCircle2,
   CornerDownLeft,
   SkipForward,
   UploadCloud,
-} from "lucide-react-native";
-import { useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Checkbox,
-  Input,
-  ScrollView,
-  Separator,
-  Spinner,
-  Text,
-  Row,
-  Stack,
-} from "@scaffald/ui";
-import { useResumeWizardContext } from "../context/ResumeWizardProvider";
+} from 'lucide-react-native'
+import { useRouter } from 'expo-router'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Checkbox, Input, ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { useResumeWizardContext } from '../context/ResumeWizardProvider'
 import {
   type ResumeMergeStrategy,
   type ResumeWizardSection,
   useResumeWizard,
-} from "../hooks/useResumeWizard";
-import { MergeComparisonView } from "./MergeComparisonView";
+} from '../hooks/useResumeWizard'
+import { MergeComparisonView } from './MergeComparisonView'
 
 interface ResumeWizardProps {
-  resumeId: string;
+  resumeId: string
 }
 
 interface GeneralFormState {
-  firstName: string;
-  lastName: string;
-  summary: string;
+  firstName: string
+  lastName: string
+  summary: string
 }
 
 interface EmploymentFormState {
-  openToTravel: boolean;
-  travelDistanceMiles: number | null;
-  hourlyRate: number | null;
-  locations: Array<{ id: string; value: string }>;
+  openToTravel: boolean
+  travelDistanceMiles: number | null
+  hourlyRate: number | null
+  locations: Array<{ id: string; value: string }>
 }
 
 interface ParsedResumeData {
-  general?: Array<{ firstName?: string; lastName?: string; bio?: string }>;
+  general?: Array<{ firstName?: string; lastName?: string; bio?: string }>
   experience?: Array<{
-    title?: string;
-    company?: string;
-    startDate?: string;
-    endDate?: string;
-    summary?: string;
-  }>;
+    title?: string
+    company?: string
+    startDate?: string
+    endDate?: string
+    summary?: string
+  }>
   education?: Array<{
-    school?: string;
-    degree?: string;
-    fieldOfStudy?: string;
-    startDate?: string;
-    endDate?: string;
-  }>;
-  skills?: Array<{ name: string; confidence?: number }>;
+    school?: string
+    degree?: string
+    fieldOfStudy?: string
+    startDate?: string
+    endDate?: string
+  }>
+  skills?: Array<{ name: string; confidence?: number }>
   certifications?: Array<{
-    name?: string;
-    issuer?: string;
-    issuedOn?: string;
-    expiresOn?: string;
-  }>;
+    name?: string
+    issuer?: string
+    issuedOn?: string
+    expiresOn?: string
+  }>
   employment?: {
-    openToTravel?: boolean;
-    travelDistanceMiles?: number;
-    hourlyRate?: number;
-    locations?: string[];
-  };
+    openToTravel?: boolean
+    travelDistanceMiles?: number
+    hourlyRate?: number
+    locations?: string[]
+  }
 }
 
 interface WizardError {
-  section: ResumeWizardSection | "review";
-  message: string;
-  rawText?: string;
+  section: ResumeWizardSection | 'review'
+  message: string
+  rawText?: string
 }
 
-type ParsedExperienceEntry = NonNullable<
-  ParsedResumeData["experience"]
->[number];
-type ParsedEducationEntry = NonNullable<ParsedResumeData["education"]>[number];
-type ParsedCertificationEntry = NonNullable<
-  ParsedResumeData["certifications"]
->[number];
-type ParsedSkillEntry = NonNullable<ParsedResumeData["skills"]>[number];
+type ParsedExperienceEntry = NonNullable<ParsedResumeData['experience']>[number]
+type ParsedEducationEntry = NonNullable<ParsedResumeData['education']>[number]
+type ParsedCertificationEntry = NonNullable<ParsedResumeData['certifications']>[number]
+type ParsedSkillEntry = NonNullable<ParsedResumeData['skills']>[number]
 
-type MergeStrategyMap = Record<ResumeWizardSection, ResumeMergeStrategy>;
+type MergeStrategyMap = Record<ResumeWizardSection, ResumeMergeStrategy>
 
 const MERGEABLE_SECTIONS: readonly ResumeWizardSection[] = [
-  "experience",
-  "education",
-  "skills",
-  "certifications",
-];
+  'experience',
+  'education',
+  'skills',
+  'certifications',
+]
 
 const OPENAI_DISABLED_MESSAGE =
-  "Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.";
+  'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.'
 
 export function ResumeWizard({ resumeId }: ResumeWizardProps) {
-  const { theme } = useThemeContext();
-  const t = theme === 'dark' ? 'dark' : 'light';
-  const router = useRouter();
-  const wizardController = useResumeWizardContext();
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  const router = useRouter()
+  const wizardController = useResumeWizardContext()
   const {
     currentIndex,
     currentStep,
@@ -126,140 +113,117 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     goPrevious,
     saveSection,
     skipSection,
-  } = wizardController ?? useResumeWizard(resumeId);
+  } = wizardController ?? useResumeWizard(resumeId)
 
   const generalProfileQuery = useGeneralInfo({
     refetchOnWindowFocus: false,
-  });
+  })
   const experienceQuery = useExperience({
     refetchOnWindowFocus: false,
-  });
+  })
   const educationQuery = useEducation({
     refetchOnWindowFocus: false,
-  });
+  })
   const skillsQuery = useUserSkillsMultiTaxonomy({
     refetchOnWindowFocus: false,
-  });
+  })
   const certificationsQuery = useUserCertificationTree({
     refetchOnWindowFocus: false,
-  });
+  })
   const employmentQuery = useEmployment({
     refetchOnWindowFocus: false,
-  });
+  })
 
-  const parsedData = (rawParsedData ?? {}) as ParsedResumeData;
-  const errors = (rawErrors ?? []) as WizardError[];
+  const parsedData = (rawParsedData ?? {}) as ParsedResumeData
+  const errors = (rawErrors ?? []) as WizardError[]
 
   const [generalForm, setGeneralForm] = useState<GeneralFormState>({
-    firstName: "",
-    lastName: "",
-    summary: "",
-  });
+    firstName: '',
+    lastName: '',
+    summary: '',
+  })
   const [employmentForm, setEmploymentForm] = useState<EmploymentFormState>({
     openToTravel: false,
     travelDistanceMiles: null,
     hourlyRate: null,
     locations: [],
-  });
+  })
 
-  const experienceSelections = useBooleanSelections(
-    parsedData.experience?.length ?? 0
-  );
-  const educationSelections = useBooleanSelections(
-    parsedData.education?.length ?? 0
-  );
-  const certificationSelections = useBooleanSelections(
-    parsedData.certifications?.length ?? 0
-  );
-  const skillSelections = useBooleanSelections(parsedData.skills?.length ?? 0);
+  const experienceSelections = useBooleanSelections(parsedData.experience?.length ?? 0)
+  const educationSelections = useBooleanSelections(parsedData.education?.length ?? 0)
+  const certificationSelections = useBooleanSelections(parsedData.certifications?.length ?? 0)
+  const skillSelections = useBooleanSelections(parsedData.skills?.length ?? 0)
 
-  const [mergeStrategies, setMergeStrategies] = useState<MergeStrategyMap>(
-    () => ({
-      general: "replace",
-      experience: "replace",
-      education: "replace",
-      skills: "replace",
-      certifications: "replace",
-      employment: "replace",
-    })
-  );
-  const mergeDefaultsInitialized = useRef(false);
+  const [mergeStrategies, setMergeStrategies] = useState<MergeStrategyMap>(() => ({
+    general: 'replace',
+    experience: 'replace',
+    education: 'replace',
+    skills: 'replace',
+    certifications: 'replace',
+    employment: 'replace',
+  }))
+  const mergeDefaultsInitialized = useRef(false)
 
-  const existingGeneral = generalProfileQuery.data;
+  const existingGeneral = generalProfileQuery.data
   const existingExperience = (experienceQuery.data ?? []) as unknown as Array<
     Record<string, unknown>
-  >;
-  const existingEducation = (educationQuery.data ?? []) as unknown as Array<
-    Record<string, unknown>
-  >;
+  >
+  const existingEducation = (educationQuery.data ?? []) as unknown as Array<Record<string, unknown>>
 
   const existingSkillNames = useMemo(() => {
     const rawSkills =
-      (skillsQuery.data?.skills as
-        | Array<{ skill_name?: unknown; name?: unknown }>
-        | undefined) ?? [];
+      (skillsQuery.data?.skills as Array<{ skill_name?: unknown; name?: unknown }> | undefined) ??
+      []
     return rawSkills
       .map((skill) => {
-        if (typeof skill.skill_name === "string") {
-          return skill.skill_name;
+        if (typeof skill.skill_name === 'string') {
+          return skill.skill_name
         }
-        if (typeof skill.name === "string") {
-          return skill.name;
+        if (typeof skill.name === 'string') {
+          return skill.name
         }
-        return null;
+        return null
       })
-      .filter((value): value is string => Boolean(value));
-  }, [skillsQuery.data]);
+      .filter((value): value is string => Boolean(value))
+  }, [skillsQuery.data])
 
   const existingCertificationNames = useMemo(() => {
-    const titles: string[] = [];
-    const tree = certificationsQuery.data;
+    const titles: string[] = []
+    const tree = certificationsQuery.data
     if (!tree) {
-      return titles;
+      return titles
     }
 
-    const collectTitles = (
-      entries: Array<Record<string, unknown>> | undefined
-    ) => {
-      if (!entries) return;
+    const collectTitles = (entries: Array<Record<string, unknown>> | undefined) => {
+      if (!entries) return
       for (const entry of entries) {
-        if (entry && typeof entry === "object") {
-          const record = entry as Record<string, unknown>;
-          const catalog = record.catalog as Record<string, unknown> | undefined;
+        if (entry && typeof entry === 'object') {
+          const record = entry as Record<string, unknown>
+          const catalog = record.catalog as Record<string, unknown> | undefined
           const title =
-            (typeof catalog?.title === "string" ? catalog.title : undefined) ??
-            (typeof catalog?.name === "string" ? catalog.name : undefined) ??
-            (typeof record.description === "string"
-              ? record.description
-              : undefined) ??
-            (typeof record.credential_id === "string"
-              ? record.credential_id
-              : undefined);
+            (typeof catalog?.title === 'string' ? catalog.title : undefined) ??
+            (typeof catalog?.name === 'string' ? catalog.name : undefined) ??
+            (typeof record.description === 'string' ? record.description : undefined) ??
+            (typeof record.credential_id === 'string' ? record.credential_id : undefined)
           if (title) {
-            titles.push(title);
+            titles.push(title)
           }
         }
       }
-    };
+    }
 
-    collectTitles(
-      tree.depth0 as unknown as Array<Record<string, unknown>> | undefined
-    );
+    collectTitles(tree.depth0 as unknown as Array<Record<string, unknown>> | undefined)
     for (const entries of Object.values(tree.depth1ByParent ?? {})) {
-      collectTitles(
-        entries as unknown as Array<Record<string, unknown>> | undefined
-      );
+      collectTitles(entries as unknown as Array<Record<string, unknown>> | undefined)
     }
     for (const entries of Object.values(tree.depth2ByParent ?? {})) {
-      collectTitles(
-        entries as unknown as Array<Record<string, unknown>> | undefined
-      );
+      collectTitles(entries as unknown as Array<Record<string, unknown>> | undefined)
     }
 
-    return titles;
-  }, [certificationsQuery.data]);
+    return titles
+  }, [certificationsQuery.data])
 
-  const existingEmployment = employmentQuery.data ?? null;
+  const existingEmployment = employmentQuery.data ?? null
 
   const mergeDataLoading =
     generalProfileQuery.isLoading ||
@@ -267,86 +231,79 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     educationQuery.isLoading ||
     skillsQuery.isLoading ||
     certificationsQuery.isLoading ||
-    employmentQuery.isLoading;
+    employmentQuery.isLoading
 
   useEffect(() => {
     if (mergeDefaultsInitialized.current || mergeDataLoading) {
-      return;
+      return
     }
 
-    mergeDefaultsInitialized.current = true;
+    mergeDefaultsInitialized.current = true
     setMergeStrategies((previous) => ({
       ...previous,
-      experience:
-        existingExperience.length > 0 ? "append" : previous.experience,
-      education: existingEducation.length > 0 ? "append" : previous.education,
-      skills: existingSkillNames.length > 0 ? "append" : previous.skills,
-      certifications:
-        existingCertificationNames.length > 0
-          ? "append"
-          : previous.certifications,
-    }));
+      experience: existingExperience.length > 0 ? 'append' : previous.experience,
+      education: existingEducation.length > 0 ? 'append' : previous.education,
+      skills: existingSkillNames.length > 0 ? 'append' : previous.skills,
+      certifications: existingCertificationNames.length > 0 ? 'append' : previous.certifications,
+    }))
   }, [
     existingCertificationNames.length,
     existingEducation.length,
     existingExperience.length,
     existingSkillNames.length,
     mergeDataLoading,
-  ]);
+  ])
 
   useEffect(() => {
-    const general = parsedData.general?.[0];
+    const general = parsedData.general?.[0]
     setGeneralForm({
-      firstName: general?.firstName ?? "",
-      lastName: general?.lastName ?? "",
-      summary: general?.bio ?? "",
-    });
-  }, [parsedData.general]);
+      firstName: general?.firstName ?? '',
+      lastName: general?.lastName ?? '',
+      summary: general?.bio ?? '',
+    })
+  }, [parsedData.general])
 
   useEffect(() => {
-    const employment = parsedData.employment;
+    const employment = parsedData.employment
     setEmploymentForm({
       openToTravel: Boolean(employment?.openToTravel),
       travelDistanceMiles: employment?.travelDistanceMiles ?? null,
       hourlyRate: employment?.hourlyRate ?? null,
       locations: (employment?.locations ?? []).map((location, index) => ({
-        id: `${index}-${location ?? "location"}`,
-        value: location ?? "",
+        id: `${index}-${location ?? 'location'}`,
+        value: location ?? '',
       })),
-    });
-  }, [parsedData.employment]);
+    })
+  }, [parsedData.employment])
 
   const selectedExperience = useMemo<ParsedExperienceEntry[]>(() => {
-    const experience = (parsedData.experience ?? []) as ParsedExperienceEntry[];
-    return experience.filter((_entry, index) => experienceSelections[index]);
-  }, [parsedData.experience, experienceSelections]);
+    const experience = (parsedData.experience ?? []) as ParsedExperienceEntry[]
+    return experience.filter((_entry, index) => experienceSelections[index])
+  }, [parsedData.experience, experienceSelections])
 
   const selectedEducation = useMemo<ParsedEducationEntry[]>(() => {
-    const education = (parsedData.education ?? []) as ParsedEducationEntry[];
-    return education.filter((_entry, index) => educationSelections[index]);
-  }, [educationSelections, parsedData.education]);
+    const education = (parsedData.education ?? []) as ParsedEducationEntry[]
+    return education.filter((_entry, index) => educationSelections[index])
+  }, [educationSelections, parsedData.education])
 
   const selectedSkills = useMemo<ParsedSkillEntry[]>(() => {
-    const skills = (parsedData.skills ?? []) as ParsedSkillEntry[];
-    return skills.filter((_entry, index) => skillSelections[index]);
-  }, [parsedData.skills, skillSelections]);
+    const skills = (parsedData.skills ?? []) as ParsedSkillEntry[]
+    return skills.filter((_entry, index) => skillSelections[index])
+  }, [parsedData.skills, skillSelections])
 
   const selectedCertifications = useMemo<ParsedCertificationEntry[]>(() => {
-    const certifications = (parsedData.certifications ??
-      []) as ParsedCertificationEntry[];
-    return certifications.filter(
-      (_entry, index) => certificationSelections[index]
-    );
-  }, [certificationSelections, parsedData.certifications]);
+    const certifications = (parsedData.certifications ?? []) as ParsedCertificationEntry[]
+    return certifications.filter((_entry, index) => certificationSelections[index])
+  }, [certificationSelections, parsedData.certifications])
 
   const hasExistingProfileData = useMemo(() => {
     const hasGeneral =
       Boolean(existingGeneral?.first_name) ||
       Boolean(existingGeneral?.last_name) ||
-      Boolean(existingGeneral?.about);
+      Boolean(existingGeneral?.about)
     const hasEmployment =
       Boolean(existingEmployment?.preferred_work_locations?.length) ||
-      typeof existingEmployment?.hourly_rate === "number";
+      typeof existingEmployment?.hourly_rate === 'number'
     return (
       hasGeneral ||
       existingExperience.length > 0 ||
@@ -354,7 +311,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       existingSkillNames.length > 0 ||
       existingCertificationNames.length > 0 ||
       hasEmployment
-    );
+    )
   }, [
     existingCertificationNames.length,
     existingEducation.length,
@@ -365,56 +322,48 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     existingGeneral?.first_name,
     existingGeneral?.last_name,
     existingSkillNames.length,
-  ]);
+  ])
 
   const aiParsingDisabled = useMemo(
-    () =>
-      errors?.some((error) =>
-        error.message?.includes(OPENAI_DISABLED_MESSAGE)
-      ) ?? false,
+    () => errors?.some((error) => error.message?.includes(OPENAI_DISABLED_MESSAGE)) ?? false,
     [errors]
-  );
+  )
 
   useEffect(() => {
     if (aiParsingDisabled) {
       console.warn(
-        "[ResumeWizard] AI parsing is disabled because the OpenAI API key is not configured."
-      );
+        '[ResumeWizard] AI parsing is disabled because the OpenAI API key is not configured.'
+      )
     }
-  }, [aiParsingDisabled]);
+  }, [aiParsingDisabled])
 
   const mergedErrors = useMemo(() => {
-    if (!errors?.length) return null;
+    if (!errors?.length) return null
     return errors
       .filter((error) => error.section === currentStep.id)
-      .filter(
-        (error) =>
-          !(
-            aiParsingDisabled && error.message.includes(OPENAI_DISABLED_MESSAGE)
-          )
-      );
-  }, [aiParsingDisabled, currentStep.id, errors]);
+      .filter((error) => !(aiParsingDisabled && error.message.includes(OPENAI_DISABLED_MESSAGE)))
+  }, [aiParsingDisabled, currentStep.id, errors])
 
-  const _completedSteps = wizard?.completedSteps ?? [];
+  const _completedSteps = wizard?.completedSteps ?? []
 
   const updateMergeStrategy = useCallback(
     (section: ResumeWizardSection, strategy: ResumeMergeStrategy) => {
       if (!MERGEABLE_SECTIONS.includes(section)) {
-        return;
+        return
       }
       setMergeStrategies((previous) => ({
         ...previous,
         [section]: strategy,
-      }));
+      }))
     },
     []
-  );
+  )
 
   const mergeComparisonSections = useMemo(() => {
     const sectionsForReview = [
       {
-        id: "general" as const,
-        label: "General Information",
+        id: 'general' as const,
+        label: 'General Information',
         strategy: mergeStrategies.general,
         existingItems: buildGeneralSummary(existingGeneral),
         incomingItems: buildSelectedGeneralSummary(generalForm),
@@ -425,13 +374,11 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         ),
       },
       {
-        id: "experience" as const,
-        label: "Work Experience",
+        id: 'experience' as const,
+        label: 'Work Experience',
         strategy: mergeStrategies.experience,
         existingItems: previewList(
-          existingExperience.map((entry) =>
-            formatExperienceEntry(entry as Record<string, unknown>)
-          )
+          existingExperience.map((entry) => formatExperienceEntry(entry as Record<string, unknown>))
         ),
         incomingItems: previewList(
           selectedExperience.map((entry) => formatParsedExperience(entry))
@@ -439,30 +386,26 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         hasIncoming: selectedExperience.length > 0,
       },
       {
-        id: "education" as const,
-        label: "Education",
+        id: 'education' as const,
+        label: 'Education',
         strategy: mergeStrategies.education,
         existingItems: previewList(
-          existingEducation.map((entry) =>
-            formatEducationEntry(entry as Record<string, unknown>)
-          )
+          existingEducation.map((entry) => formatEducationEntry(entry as Record<string, unknown>))
         ),
-        incomingItems: previewList(
-          selectedEducation.map((entry) => formatParsedEducation(entry))
-        ),
+        incomingItems: previewList(selectedEducation.map((entry) => formatParsedEducation(entry))),
         hasIncoming: selectedEducation.length > 0,
       },
       {
-        id: "skills" as const,
-        label: "Skills",
+        id: 'skills' as const,
+        label: 'Skills',
         strategy: mergeStrategies.skills,
         existingItems: previewList(existingSkillNames),
         incomingItems: previewList(selectedSkills.map((skill) => skill.name)),
         hasIncoming: selectedSkills.length > 0,
       },
       {
-        id: "certifications" as const,
-        label: "Certifications",
+        id: 'certifications' as const,
+        label: 'Certifications',
         strategy: mergeStrategies.certifications,
         existingItems: previewList(existingCertificationNames),
         incomingItems: previewList(
@@ -473,22 +416,20 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         hasIncoming: selectedCertifications.length > 0,
       },
       {
-        id: "employment" as const,
-        label: "Employment Preferences",
+        id: 'employment' as const,
+        label: 'Employment Preferences',
         strategy: mergeStrategies.employment,
         existingItems: buildEmploymentSummary(existingEmployment),
         incomingItems: buildIncomingEmploymentSummary(employmentForm),
         hasIncoming:
-          employmentForm.locations.some(
-            (location) => location.value.trim().length > 0
-          ) ||
+          employmentForm.locations.some((location) => location.value.trim().length > 0) ||
           employmentForm.hourlyRate !== null ||
           employmentForm.travelDistanceMiles !== null ||
           employmentForm.openToTravel !== existingEmployment?.open_to_travel,
       },
-    ];
+    ]
 
-    return sectionsForReview;
+    return sectionsForReview
   }, [
     employmentForm,
     existingCertificationNames,
@@ -508,20 +449,17 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     selectedEducation,
     selectedExperience,
     selectedSkills,
-  ]);
+  ])
 
-  const mergeComparisonLoading =
-    mergeDataLoading && !mergeDefaultsInitialized.current;
+  const mergeComparisonLoading = mergeDataLoading && !mergeDefaultsInitialized.current
 
   if (isLoading) {
     return (
       <Stack align="center" justify="center" flex={1} gap={12}>
         <Spinner variant="ios" size="lg" />
-        <Text style={{ color: colors.text[t].secondary }}>
-          Loading resume import wizard...
-        </Text>
+        <Text style={{ color: colors.text[t].secondary }}>Loading resume import wizard...</Text>
       </Stack>
-    );
+    )
   }
 
   if (!wizard) {
@@ -533,101 +471,101 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           Please upload your resume again to kick off the import flow.
         </Text>
       </Stack>
-    );
+    )
   }
 
   const handleSaveCurrentStep = async () => {
     switch (currentStep.id) {
-      case "general": {
-        await saveSection("general", {
+      case 'general': {
+        await saveSection('general', {
           first_name: generalForm.firstName.trim() || undefined,
           last_name: generalForm.lastName.trim() || undefined,
           about: generalForm.summary.trim() || undefined,
-        });
-        return;
+        })
+        return
       }
-      case "experience": {
-        const experience = selectedExperience;
+      case 'experience': {
+        const experience = selectedExperience
         const safeStrategy = resolveMergeStrategy(
           mergeStrategies.experience,
           experience.length,
           existingExperience.length
-        );
-        await saveSection("experience", experience, safeStrategy);
-        return;
+        )
+        await saveSection('experience', experience, safeStrategy)
+        return
       }
-      case "education": {
-        const education = selectedEducation;
+      case 'education': {
+        const education = selectedEducation
         const safeStrategy = resolveMergeStrategy(
           mergeStrategies.education,
           education.length,
           existingEducation.length
-        );
-        await saveSection("education", education, safeStrategy);
-        return;
+        )
+        await saveSection('education', education, safeStrategy)
+        return
       }
-      case "skills": {
-        const skills = selectedSkills;
+      case 'skills': {
+        const skills = selectedSkills
         const safeStrategy = resolveMergeStrategy(
           mergeStrategies.skills,
           skills.length,
           existingSkillNames.length
-        );
-        await saveSection("skills", skills, safeStrategy);
-        return;
+        )
+        await saveSection('skills', skills, safeStrategy)
+        return
       }
-      case "certifications": {
-        const certifications = selectedCertifications;
+      case 'certifications': {
+        const certifications = selectedCertifications
         const safeStrategy = resolveMergeStrategy(
           mergeStrategies.certifications,
           certifications.length,
           existingCertificationNames.length
-        );
-        await saveSection("certifications", certifications, safeStrategy);
-        return;
+        )
+        await saveSection('certifications', certifications, safeStrategy)
+        return
       }
-      case "employment": {
-        await saveSection("employment", {
+      case 'employment': {
+        await saveSection('employment', {
           openToTravel: employmentForm.openToTravel,
           travelDistanceMiles: employmentForm.travelDistanceMiles ?? undefined,
           hourlyRate: employmentForm.hourlyRate ?? undefined,
           locations: employmentForm.locations
             .map((entry) => entry.value.trim())
             .filter((location) => location.length > 0),
-        });
-        return;
+        })
+        return
       }
-      case "review": {
-        router.push(ROUTES.PROFILE.GENERAL.path);
-        return;
+      case 'review': {
+        router.push(ROUTES.PROFILE.GENERAL.path)
+        return
       }
       default:
-        return;
+        return
     }
-  };
+  }
 
   return (
     <Stack flex={1} gap={16}>
       <Stack gap={8}>
         <Text>Resume Import</Text>
         <Text style={{ color: colors.text[t].secondary }}>
-          Review each section parsed from your resume. Make edits or skip
-          sections you don't want to import.
+          Review each section parsed from your resume. Make edits or skip sections you don't want to
+          import.
         </Text>
       </Stack>
 
       {hasExistingProfileData ? (
         <Stack
           gap={8}
-          style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100], borderRadius: 7 }}
+          style={{ backgroundColor: colors.bg[t].selected, borderRadius: 7 }}
           padding="sm"
         >
-          <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
+          <Text style={{ color: colors.text[t].emphasis }}>
             Merge resume with existing profile data
           </Text>
-          <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
-            We found previously saved information. Choose how each section
-            merges to avoid overwriting details you want to keep.
+          <Text style={{ color: colors.text[t].emphasis }}>
+            We found previously saved information. Choose how each section merges to avoid
+            overwriting details you want to keep.
           </Text>
         </Stack>
       ) : null}
@@ -635,7 +573,10 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       {mergedErrors && mergedErrors.length > 0 && (
         <Stack
           gap={8}
-          style={{ backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[100], borderRadius: 7 }}
+          style={{
+            backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[100],
+            borderRadius: 7,
+          }}
           padding="sm"
         >
           <Text style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[700] }}>
@@ -671,7 +612,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           >
             Previous
           </Button>
-          {currentStep.id !== "review" && (
+          {currentStep.id !== 'review' && (
             <Button
               size="md"
               variant="outline"
@@ -693,30 +634,30 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           disabled={isSaving}
           onPress={() => void handleSaveCurrentStep()}
         >
-          {currentStep.id === "review" ? "Finish Import" : "Save & Continue"}
+          {currentStep.id === 'review' ? 'Finish Import' : 'Save & Continue'}
         </Button>
       </Row>
     </Stack>
-  );
+  )
 
   function renderCurrentStep() {
     switch (currentStep.id) {
-      case "general":
-        return renderGeneralStep();
-      case "experience":
-        return renderExperienceStep();
-      case "education":
-        return renderEducationStep();
-      case "skills":
-        return renderSkillsStep();
-      case "certifications":
-        return renderCertificationsStep();
-      case "employment":
-        return renderEmploymentStep();
-      case "review":
-        return renderReviewStep();
+      case 'general':
+        return renderGeneralStep()
+      case 'experience':
+        return renderExperienceStep()
+      case 'education':
+        return renderEducationStep()
+      case 'skills':
+        return renderSkillsStep()
+      case 'certifications':
+        return renderCertificationsStep()
+      case 'employment':
+        return renderEmploymentStep()
+      case 'review':
+        return renderReviewStep()
       default:
-        return null;
+        return null
     }
   }
 
@@ -725,26 +666,21 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       <Stack gap={16}>
         <Text>General Information</Text>
         <Text style={{ color: colors.text[t].secondary }}>
-          Update your basic profile details. We only update the fields you
-          confirm.
+          Update your basic profile details. We only update the fields you confirm.
         </Text>
         <Row gap={16} wrap>
           <Stack gap={8} flex={1}>
             <Text>First Name</Text>
             <Input
               value={generalForm.firstName}
-              onChangeText={(value) =>
-                setGeneralForm((prev) => ({ ...prev, firstName: value }))
-              }
+              onChangeText={(value) => setGeneralForm((prev) => ({ ...prev, firstName: value }))}
             />
           </Stack>
           <Stack gap={8} flex={1}>
             <Text>Last Name</Text>
             <Input
               value={generalForm.lastName}
-              onChangeText={(value) =>
-                setGeneralForm((prev) => ({ ...prev, lastName: value }))
-              }
+              onChangeText={(value) => setGeneralForm((prev) => ({ ...prev, lastName: value }))}
             />
           </Stack>
         </Row>
@@ -753,21 +689,17 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           <Input
             multiline
             value={generalForm.summary}
-            onChangeText={(value) =>
-              setGeneralForm((prev) => ({ ...prev, summary: value }))
-            }
+            onChangeText={(value) => setGeneralForm((prev) => ({ ...prev, summary: value }))}
           />
         </Stack>
       </Stack>
-    );
+    )
   }
 
   function renderExperienceStep() {
-    const experience = parsedData.experience ?? [];
+    const experience = parsedData.experience ?? []
     if (experience.length === 0) {
-      return (
-        <EmptyState message="No experience entries detected in your resume." />
-      );
+      return <EmptyState message="No experience entries detected in your resume." />
     }
     return (
       <Stack gap={16}>
@@ -781,34 +713,28 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         />
         {experience.map((entry, index) => {
           const details = buildDetails([
-            entry.startDate && entry.endDate
-              ? `${entry.startDate} – ${entry.endDate}`
-              : undefined,
+            entry.startDate && entry.endDate ? `${entry.startDate} – ${entry.endDate}` : undefined,
             entry.summary,
-          ]);
+          ])
           return (
             <SelectableCard
               key={`${entry.title}-${entry.company}-${index}`}
               checked={experienceSelections[index]}
-              onChange={(value) =>
-                experienceSelections.set(index, Boolean(value))
-              }
-              title={entry.title ?? "Untitled Role"}
-              subtitle={entry.company ?? "Unknown Company"}
+              onChange={(value) => experienceSelections.set(index, Boolean(value))}
+              title={entry.title ?? 'Untitled Role'}
+              subtitle={entry.company ?? 'Unknown Company'}
               details={details}
             />
-          );
+          )
         })}
       </Stack>
-    );
+    )
   }
 
   function renderEducationStep() {
-    const education = parsedData.education ?? [];
+    const education = parsedData.education ?? []
     if (education.length === 0) {
-      return (
-        <EmptyState message="We didn't find education entries in this resume." />
-      );
+      return <EmptyState message="We didn't find education entries in this resume." />
     }
     return (
       <Stack gap={16}>
@@ -822,34 +748,30 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         />
         {education.map((entry, index) => {
           const details = buildDetails([
-            entry.startDate && entry.endDate
-              ? `${entry.startDate} – ${entry.endDate}`
-              : undefined,
+            entry.startDate && entry.endDate ? `${entry.startDate} – ${entry.endDate}` : undefined,
             entry.fieldOfStudy,
-          ]);
+          ])
           return (
             <SelectableCard
               key={`${entry.school}-${index}`}
               checked={educationSelections[index]}
-              onChange={(value) =>
-                educationSelections.set(index, Boolean(value))
-              }
-              title={entry.school ?? "Institution"}
+              onChange={(value) => educationSelections.set(index, Boolean(value))}
+              title={entry.school ?? 'Institution'}
               subtitle={entry.degree}
               details={details}
             />
-          );
+          )
         })}
       </Stack>
-    );
+    )
   }
 
   function renderSkillsStep() {
-    const skills = parsedData.skills ?? [];
+    const skills = parsedData.skills ?? []
     if (skills.length === 0) {
       return (
         <EmptyState message="No skills were detected. You can always add skills manually later." />
-      );
+      )
     }
     return (
       <Stack gap={16}>
@@ -870,15 +792,13 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           />
         ))}
       </Stack>
-    );
+    )
   }
 
   function renderCertificationsStep() {
-    const certifications = parsedData.certifications ?? [];
+    const certifications = parsedData.certifications ?? []
     if (certifications.length === 0) {
-      return (
-        <EmptyState message="No certifications were found in this resume." />
-      );
+      return <EmptyState message="No certifications were found in this resume." />
     }
     return (
       <Stack gap={16}>
@@ -895,21 +815,19 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
             cert.issuedOn ? `Issued ${cert.issuedOn}` : undefined,
             cert.expiresOn ? `Expires ${cert.expiresOn}` : undefined,
             cert.issuer,
-          ]);
+          ])
           return (
             <SelectableCard
               key={`${cert.name}-${index}`}
               checked={certificationSelections[index]}
-              onChange={(value) =>
-                certificationSelections.set(index, Boolean(value))
-              }
-              title={cert.name ?? "Certification"}
+              onChange={(value) => certificationSelections.set(index, Boolean(value))}
+              title={cert.name ?? 'Certification'}
               details={details}
             />
-          );
+          )
         })}
       </Stack>
-    );
+    )
   }
 
   function renderEmploymentStep() {
@@ -917,14 +835,12 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       <Stack gap={16}>
         <Text>Employment Preferences</Text>
         <Text style={{ color: colors.text[t].secondary }}>
-          Tell us about your ideal working conditions. We'll update your profile
-          with these preferences.
+          Tell us about your ideal working conditions. We'll update your profile with these
+          preferences.
         </Text>
         <OpenToTravelCard
           checked={employmentForm.openToTravel}
-          onChange={(checked) =>
-            setEmploymentForm((prev) => ({ ...prev, openToTravel: checked }))
-          }
+          onChange={(checked) => setEmploymentForm((prev) => ({ ...prev, openToTravel: checked }))}
           travelDistanceValue={employmentForm.travelDistanceMiles ?? 25}
           onTravelDistanceChange={(value) =>
             setEmploymentForm((prev) => ({
@@ -938,7 +854,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
             <Text>Hourly rate (USD)</Text>
             <Input
               keyboardType="numeric"
-              value={employmentForm.hourlyRate?.toString() ?? ""}
+              value={employmentForm.hourlyRate?.toString() ?? ''}
               onChangeText={(value) =>
                 setEmploymentForm((prev) => ({
                   ...prev,
@@ -959,8 +875,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
                   setEmploymentForm((prev) => {
                     const next = prev.locations.map((item) =>
                       item.id === entry.id ? { ...item, value } : item
-                    );
-                    return { ...prev, locations: next };
+                    )
+                    return { ...prev, locations: next }
                   })
                 }
               />
@@ -970,9 +886,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
                 onPress={() =>
                   setEmploymentForm((prev) => ({
                     ...prev,
-                    locations: prev.locations.filter(
-                      (item) => item.id !== entry.id
-                    ),
+                    locations: prev.locations.filter((item) => item.id !== entry.id),
                   }))
                 }
               >
@@ -990,7 +904,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
                   ...prev.locations,
                   {
                     id: `new-${Date.now()}`,
-                    value: "",
+                    value: '',
                   },
                 ],
               }))
@@ -1000,7 +914,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           </Button>
         </Stack>
       </Stack>
-    );
+    )
   }
 
   function renderReviewStep() {
@@ -1008,9 +922,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       <Stack gap={16}>
         <Text>Review & Confirm</Text>
         <Text style={{ color: colors.text[t].secondary }}>
-          All set! When you finish, we'll save the confirmed details to your
-          profile. You can always make further edits from the profile sections
-          later on.
+          All set! When you finish, we'll save the confirmed details to your profile. You can always
+          make further edits from the profile sections later on.
         </Text>
         <MergeComparisonView
           sections={mergeComparisonSections}
@@ -1018,35 +931,42 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         />
         <Stack
           gap={8}
-          style={{ backgroundColor: t === 'dark' ? colors.green[900] : colors.green[100], borderRadius: 7 }}
+          style={{
+            backgroundColor: t === 'dark' ? colors.green[900] : colors.green[100],
+            borderRadius: 7,
+          }}
           padding="sm"
         >
           <Row gap={8} align="center">
             <CheckCircle2 />
-            <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>Ready to finalize</Text>
+            <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>
+              Ready to finalize
+            </Text>
           </Row>
           <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>
-            Click "Finish Import" to exit the wizard and continue updating your
-            profile.
+            Click "Finish Import" to exit the wizard and continue updating your profile.
           </Text>
         </Stack>
       </Stack>
-    );
+    )
   }
 }
 
 function EmptyState({ message }: { message: string }) {
-  const { theme } = useThemeContext();
-  const t = theme === 'dark' ? 'dark' : 'light';
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack
       gap={8}
-      style={{ backgroundColor: t === 'dark' ? colors.gray[800] : colors.gray[100], borderRadius: 7 }}
+      style={{
+        backgroundColor: t === 'dark' ? colors.gray[800] : colors.gray[100],
+        borderRadius: 7,
+      }}
       padding="sm"
     >
       <Text style={{ color: colors.text[t].secondary }}>{message}</Text>
     </Stack>
-  );
+  )
 }
 
 function SelectableCard({
@@ -1056,14 +976,14 @@ function SelectableCard({
   subtitle,
   details,
 }: {
-  checked: boolean;
-  onChange: (next: boolean) => void;
-  title: string;
-  subtitle?: string;
-  details?: string[];
+  checked: boolean
+  onChange: (next: boolean) => void
+  title: string
+  subtitle?: string
+  details?: string[]
 }) {
-  const { theme } = useThemeContext();
-  const t = theme === 'dark' ? 'dark' : 'light';
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack
       gap={8}
@@ -1071,21 +991,15 @@ function SelectableCard({
       style={{
         borderWidth: 1,
         borderColor: checked ? colors.blue[500] : colors.border[t].default,
-        backgroundColor: checked ? (t === 'dark' ? colors.blue[900] : colors.blue[100]) : colors.bg[t].default,
+        backgroundColor: checked ? colors.bg[t].selected : colors.bg[t].default,
         borderRadius: 7,
       }}
     >
       <Row gap={8} align="center">
-        <Checkbox
-          size="sm"
-          checked={checked}
-          onChange={(value) => onChange(value === true)}
-        />
+        <Checkbox size="sm" checked={checked} onChange={(value) => onChange(value === true)} />
         <Stack gap={4} flex={1}>
           <Text>{title}</Text>
-          {subtitle ? (
-            <Text style={{ color: colors.text[t].secondary }}>{subtitle}</Text>
-          ) : null}
+          {subtitle ? <Text style={{ color: colors.text[t].secondary }}>{subtitle}</Text> : null}
         </Stack>
       </Row>
       {!!details?.length && (
@@ -1098,33 +1012,31 @@ function SelectableCard({
         </Stack>
       )}
     </Stack>
-  );
+  )
 }
 
 interface BooleanSelections extends Array<boolean> {
-  set: (index: number, value: boolean) => void;
+  set: (index: number, value: boolean) => void
 }
 
 function useBooleanSelections(count: number): BooleanSelections {
-  const [state, setState] = useState<boolean[]>(() =>
-    Array.from({ length: count }, () => true)
-  );
+  const [state, setState] = useState<boolean[]>(() => Array.from({ length: count }, () => true))
 
   useEffect(() => {
-    setState(Array.from({ length: count }, () => true));
-  }, [count]);
+    setState(Array.from({ length: count }, () => true))
+  }, [count])
 
   const set = (index: number, value: boolean) => {
     setState((prev) => {
-      const next = [...prev];
-      next[index] = value;
-      return next;
-    });
-  };
+      const next = [...prev]
+      next[index] = value
+      return next
+    })
+  }
 
-  const selections = [...state] as BooleanSelections;
-  selections.set = set;
-  return selections;
+  const selections = [...state] as BooleanSelections
+  selections.set = set
+  return selections
 }
 
 function MergeStrategySelector({
@@ -1134,51 +1046,53 @@ function MergeStrategySelector({
   existingCount,
   disabled,
 }: {
-  section: ResumeWizardSection;
-  strategy: ResumeMergeStrategy;
-  onChange: (section: ResumeWizardSection, next: ResumeMergeStrategy) => void;
-  existingCount: number;
-  disabled?: boolean;
+  section: ResumeWizardSection
+  strategy: ResumeMergeStrategy
+  onChange: (section: ResumeWizardSection, next: ResumeMergeStrategy) => void
+  existingCount: number
+  disabled?: boolean
 }) {
-  const { theme } = useThemeContext();
-  const t = theme === 'dark' ? 'dark' : 'light';
-  const hasExistingData = existingCount > 0;
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  const hasExistingData = existingCount > 0
   const options: Array<{
-    value: ResumeMergeStrategy;
-    label: string;
-    description: string;
-    disabled?: boolean;
+    value: ResumeMergeStrategy
+    label: string
+    description: string
+    disabled?: boolean
   }> = [
     {
-      value: "replace",
-      label: "Replace existing data",
+      value: 'replace',
+      label: 'Replace existing data',
       description: hasExistingData
-        ? "Remove current entries and use only the selections from your resume."
-        : "Import the selected entries into your profile.",
+        ? 'Remove current entries and use only the selections from your resume.'
+        : 'Import the selected entries into your profile.',
       disabled: false,
     },
-  ];
+  ]
 
   if (hasExistingData) {
     options.push(
       {
-        value: "append",
-        label: "Append to profile",
-        description: "Keep existing entries and add the selected resume items.",
+        value: 'append',
+        label: 'Append to profile',
+        description: 'Keep existing entries and add the selected resume items.',
       },
       {
-        value: "keepExisting",
-        label: "Keep existing only",
-        description:
-          "Skip importing this section and preserve your current profile data.",
+        value: 'keepExisting',
+        label: 'Keep existing only',
+        description: 'Skip importing this section and preserve your current profile data.',
       }
-    );
+    )
   }
 
   return (
     <Stack
       gap={8}
-      style={{ backgroundColor: t === 'dark' ? colors.gray[800] : colors.gray[50], borderRadius: 7 }}
+      style={{
+        backgroundColor: t === 'dark' ? colors.gray[800] : colors.gray[50],
+        borderRadius: 7,
+      }}
       padding="sm"
     >
       <Text>Merge strategy</Text>
@@ -1193,7 +1107,7 @@ function MergeStrategySelector({
             style={{
               borderColor: strategy === option.value ? colors.blue[500] : colors.border[t].default,
               backgroundColor:
-                strategy === option.value ? (t === 'dark' ? colors.blue[900] : colors.blue[100]) : colors.bg[t].default,
+                strategy === option.value ? colors.bg[t].selected : colors.bg[t].default,
             }}
           >
             <Stack gap={4} align="flex-start">
@@ -1204,174 +1118,163 @@ function MergeStrategySelector({
         ))}
       </Stack>
     </Stack>
-  );
+  )
 }
 
 function buildDetails(lines: Array<string | undefined>) {
-  return lines.filter((line): line is string => Boolean(line?.trim()));
+  return lines.filter((line): line is string => Boolean(line?.trim()))
 }
 
 function formatExperienceEntry(entry: Record<string, unknown>): string {
-  const title =
-    typeof entry.job_title === "string" ? entry.job_title : undefined;
-  const company =
-    typeof entry.company_name === "string" ? entry.company_name : undefined;
+  const title = typeof entry.job_title === 'string' ? entry.job_title : undefined
+  const company = typeof entry.company_name === 'string' ? entry.company_name : undefined
   if (title && company) {
-    return `${title} · ${company}`;
+    return `${title} · ${company}`
   }
-  return title ?? company ?? "Experience entry";
+  return title ?? company ?? 'Experience entry'
 }
 
 function formatParsedExperience(entry: ParsedExperienceEntry): string {
-  const title = entry.title ?? "";
-  const company = entry.company ?? "";
+  const title = entry.title ?? ''
+  const company = entry.company ?? ''
   const range =
     entry.startDate && entry.endDate
       ? `${entry.startDate} – ${entry.endDate}`
       : entry.startDate
-      ? `${entry.startDate} – Present`
-      : "";
-  return (
-    [title, company, range].filter(Boolean).join(" · ") || "Experience entry"
-  );
+        ? `${entry.startDate} – Present`
+        : ''
+  return [title, company, range].filter(Boolean).join(' · ') || 'Experience entry'
 }
 
 function formatEducationEntry(entry: Record<string, unknown>): string {
-  const school = typeof entry.school === "string" ? entry.school : undefined;
-  const degree = typeof entry.degree === "string" ? entry.degree : undefined;
+  const school = typeof entry.school === 'string' ? entry.school : undefined
+  const degree = typeof entry.degree === 'string' ? entry.degree : undefined
   if (school && degree) {
-    return `${degree} · ${school}`;
+    return `${degree} · ${school}`
   }
-  return school ?? degree ?? "Education entry";
+  return school ?? degree ?? 'Education entry'
 }
 
 function formatParsedEducation(entry: ParsedEducationEntry): string {
-  const school = entry.school ?? "";
-  const degree = entry.degree ?? "";
-  return [degree, school].filter(Boolean).join(" · ") || "Education entry";
+  const school = entry.school ?? ''
+  const degree = entry.degree ?? ''
+  return [degree, school].filter(Boolean).join(' · ') || 'Education entry'
 }
 
 function previewList(items: string[], limit = 3): string[] {
   if (items.length === 0) {
-    return [];
+    return []
   }
   if (items.length <= limit) {
-    return items;
+    return items
   }
-  return [...items.slice(0, limit), `+${items.length - limit} more`];
+  return [...items.slice(0, limit), `+${items.length - limit} more`]
 }
 
 function buildGeneralSummary(
   existing:
     | {
-        first_name?: string;
-        last_name?: string;
-        about?: unknown;
+        first_name?: string
+        last_name?: string
+        about?: unknown
       }
     | null
     | undefined
 ) {
   if (!existing) {
-    return ["No data saved yet"];
+    return ['No data saved yet']
   }
-  const name = combineName(existing.first_name, existing.last_name);
+  const name = combineName(existing.first_name, existing.last_name)
   const about =
-    existing.about && typeof existing.about === "object"
-      ? "Profile summary present"
-      : "Summary not set";
-  return [name || "Name not set", about];
+    existing.about && typeof existing.about === 'object'
+      ? 'Profile summary present'
+      : 'Summary not set'
+  return [name || 'Name not set', about]
 }
 
 function buildSelectedGeneralSummary(form: GeneralFormState) {
-  const name = combineName(form.firstName, form.lastName) || "No name provided";
-  const summary =
-    form.summary.trim().length > 0
-      ? "New summary from resume"
-      : "Summary unchanged";
-  return [name, summary];
+  const name = combineName(form.firstName, form.lastName) || 'No name provided'
+  const summary = form.summary.trim().length > 0 ? 'New summary from resume' : 'Summary unchanged'
+  return [name, summary]
 }
 
 function combineName(first?: string, last?: string) {
-  const parts = [first?.trim(), last?.trim()].filter(Boolean);
-  return parts.join(" ") || "";
+  const parts = [first?.trim(), last?.trim()].filter(Boolean)
+  return parts.join(' ') || ''
 }
 
 function buildEmploymentSummary(
   existing: {
-    preferred_work_locations?: unknown[];
-    hourly_rate?: number | null;
-    open_to_travel?: boolean;
-    travel_distance_miles?: number | null;
+    preferred_work_locations?: unknown[]
+    hourly_rate?: number | null
+    open_to_travel?: boolean
+    travel_distance_miles?: number | null
   } | null
 ) {
   if (!existing) {
-    return ["No employment preferences saved"];
+    return ['No employment preferences saved']
   }
   const locations = Array.isArray(existing.preferred_work_locations)
     ? existing.preferred_work_locations
-        .map((location) => (typeof location === "string" ? location : null))
+        .map((location) => (typeof location === 'string' ? location : null))
         .filter((location): location is string => Boolean(location))
-    : [];
+    : []
   const hourlyRate =
-    typeof existing.hourly_rate === "number"
+    typeof existing.hourly_rate === 'number'
       ? `Hourly rate: ${formatCurrency(existing.hourly_rate)}`
-      : null;
+      : null
   const travel =
-    typeof existing.travel_distance_miles === "number"
+    typeof existing.travel_distance_miles === 'number'
       ? `Travel up to ${existing.travel_distance_miles} miles`
       : existing.open_to_travel === false
-      ? "Not open to travel"
-      : null;
+        ? 'Not open to travel'
+        : null
   return [
-    locations.length > 0
-      ? `Locations: ${locations.join(", ")}`
-      : "No preferred locations saved",
-    hourlyRate ?? "No hourly rate saved",
-    travel ?? "Travel preferences not set",
-  ];
+    locations.length > 0 ? `Locations: ${locations.join(', ')}` : 'No preferred locations saved',
+    hourlyRate ?? 'No hourly rate saved',
+    travel ?? 'Travel preferences not set',
+  ]
 }
 
 function buildIncomingEmploymentSummary(form: EmploymentFormState) {
   const locations = form.locations
     .map((location) => location.value.trim())
-    .filter((location) => location.length > 0);
+    .filter((location) => location.length > 0)
   const hourlyRate =
-    typeof form.hourlyRate === "number"
+    typeof form.hourlyRate === 'number'
       ? `Hourly rate: ${formatCurrency(form.hourlyRate)}`
-      : "No hourly rate from resume";
+      : 'No hourly rate from resume'
   const travel =
-    typeof form.travelDistanceMiles === "number"
+    typeof form.travelDistanceMiles === 'number'
       ? `Travel up to ${form.travelDistanceMiles} miles`
       : form.openToTravel
-      ? "Open to travel"
-      : "Not open to travel";
+        ? 'Open to travel'
+        : 'Not open to travel'
 
   return [
-    locations.length > 0
-      ? `Locations: ${locations.join(", ")}`
-      : "No locations detected in resume",
+    locations.length > 0 ? `Locations: ${locations.join(', ')}` : 'No locations detected in resume',
     hourlyRate,
     travel,
-  ];
+  ]
 }
 
 function formatCurrency(value: number) {
   if (!Number.isFinite(value)) {
-    return "$0";
+    return '$0'
   }
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
     maximumFractionDigits: 0,
-  }).format(value);
+  }).format(value)
 }
 
 function parseNumericInput(value: string): number | null {
   if (!value.trim()) {
-    return null;
+    return null
   }
-  const parsed = Number.parseInt(value, 10);
-  return Number.isNaN(parsed) ? null : parsed;
+  const parsed = Number.parseInt(value, 10)
+  return Number.isNaN(parsed) ? null : parsed
 }
 
 function resolveMergeStrategy(
@@ -1379,11 +1282,11 @@ function resolveMergeStrategy(
   selectedCount: number,
   existingCount: number
 ): ResumeMergeStrategy {
-  if (existingCount === 0 && strategy === "append") {
-    return "replace";
+  if (existingCount === 0 && strategy === 'append') {
+    return 'replace'
   }
-  if (existingCount > 0 && selectedCount === 0 && strategy === "replace") {
-    return "keepExisting";
+  if (existingCount > 0 && selectedCount === 0 && strategy === 'replace') {
+    return 'keepExisting'
   }
-  return strategy;
+  return strategy
 }

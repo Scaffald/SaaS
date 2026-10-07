@@ -44,21 +44,27 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
             borderRadius={12}
           >
             <Row justify="space-between" align="center">
-              <Text style={{ color: colors.text[t].secondary }}>{facetNarrative.title || facetKey}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>
+                {facetNarrative.title || facetKey}
+              </Text>
               <Text
                 style={{
                   color:
                     facetScore.result === 'high'
-                      ? t === 'dark' ? colors.green[300] : colors.green[600]
+                      ? t === 'dark'
+                        ? colors.green[300]
+                        : colors.green[600]
                       : facetScore.result === 'low'
-                        ? t === 'dark' ? colors.blue[300] : colors.blue[600]
+                        ? colors.text[t].emphasis
                         : colors.text[t].secondary,
                 }}
               >
                 {facetScore.result.toUpperCase()}
               </Text>
             </Row>
-            {facetNarrative.text && <Text style={{ color: colors.text[t].secondary }}>{facetNarrative.text}</Text>}
+            {facetNarrative.text && (
+              <Text style={{ color: colors.text[t].secondary }}>{facetNarrative.text}</Text>
+            )}
           </Stack>
         )
       })}

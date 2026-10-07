@@ -83,7 +83,9 @@ export function OrganizationPreviewModal({
         </Stack>
       ) : !organization ? (
         <Stack paddingVertical={32} align="center">
-          <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>Organization not found</Text>
+          <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>
+            Organization not found
+          </Text>
         </Stack>
       ) : (
         <>
@@ -93,17 +95,19 @@ export function OrganizationPreviewModal({
               width={80}
               height={80}
               borderRadius={24}
-              style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50] }}
+              style={{ backgroundColor: colors.bg[t].selected }}
               align="center"
               justify="center"
             >
-              <Building2 size={40} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+              <Building2 size={40} color={colors.text[t].emphasis} />
             </Stack>
 
             <Stack gap={8} align="center">
               <Text style={{ color: colors.text[t].secondary }}>{organization.name}</Text>
               {(organization as { industry_name?: string }).industry_name && (
-                <Text style={{ color: colors.text[t].tertiary }}>{(organization as { industry_name?: string }).industry_name}</Text>
+                <Text style={{ color: colors.text[t].tertiary }}>
+                  {(organization as { industry_name?: string }).industry_name}
+                </Text>
               )}
             </Stack>
 
@@ -136,25 +140,30 @@ export function OrganizationPreviewModal({
             {formatAddress(organization.address) && (
               <Row gap={8} align="center">
                 <MapPin size={18} color={colors.text[t].tertiary} />
-                <Text style={{ color: colors.text[t].secondary }}>{formatAddress(organization.address)}</Text>
+                <Text style={{ color: colors.text[t].secondary }}>
+                  {formatAddress(organization.address)}
+                </Text>
               </Row>
             )}
 
             {(organization as { employee_count_range?: string }).employee_count_range && (
               <Row gap={8} align="center">
                 <Users size={18} color={colors.text[t].tertiary} />
-                <Text style={{ color: colors.text[t].secondary }}>{(organization as { employee_count_range?: string }).employee_count_range} employees</Text>
+                <Text style={{ color: colors.text[t].secondary }}>
+                  {(organization as { employee_count_range?: string }).employee_count_range}{' '}
+                  employees
+                </Text>
               </Row>
             )}
 
             {(organization as { is_verified?: boolean }).is_verified && (
               <Row
-                style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100] }}
+                style={{ backgroundColor: colors.bg[t].selected }}
                 paddingHorizontal={12}
                 paddingVertical={6}
                 borderRadius={12}
               >
-                <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>Verified Organization</Text>
+                <Text style={{ color: colors.text[t].emphasis }}>Verified Organization</Text>
               </Row>
             )}
           </Stack>
@@ -179,10 +188,10 @@ export function OrganizationPreviewModal({
             <>
               <Separator />
               <Row gap={8} align="center">
-                <ExternalLink size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+                <ExternalLink size={20} color={colors.text[t].emphasis} />
                 <Text
                   style={{
-                    color: t === 'dark' ? colors.blue[300] : colors.blue[600],
+                    color: colors.text[t].emphasis,
                     textDecorationLine: 'underline',
                   }}
                   onPress={() => {
@@ -190,7 +199,10 @@ export function OrganizationPreviewModal({
                     if (url) openExternalLink(url)
                   }}
                 >
-                  {(organization as { website_url?: string }).website_url?.replace(/^https?:\/\//, '')}
+                  {(organization as { website_url?: string }).website_url?.replace(
+                    /^https?:\/\//,
+                    ''
+                  )}
                 </Text>
               </Row>
             </>
@@ -212,17 +224,19 @@ export function OrganizationPreviewModal({
               </Button>
             )}
             {jobsCount > 0 ? (
-              <Button
-                size="lg"
-                color="primary"
-                iconEnd={Briefcase}
-                onPress={handleViewJobs}
-              >
+              <Button size="lg" color="primary" iconEnd={Briefcase} onPress={handleViewJobs}>
                 View Open Positions ({jobsCount})
               </Button>
             ) : (
-              <Stack style={{ backgroundColor: colors.bg[t].muted }} padding="sm" borderRadius={12} align="center">
-                <Text style={{ color: colors.text[t].secondary }}>No open positions at this time</Text>
+              <Stack
+                style={{ backgroundColor: colors.bg[t].muted }}
+                padding="sm"
+                borderRadius={12}
+                align="center"
+              >
+                <Text style={{ color: colors.text[t].secondary }}>
+                  No open positions at this time
+                </Text>
               </Stack>
             )}
           </Stack>

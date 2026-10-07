@@ -79,9 +79,11 @@ export const DomainCard = memo(function DomainCard({
           <Text
             color={
               classification === 'high'
-                ? t === 'dark' ? colors.green[300] : colors.green[600]
+                ? t === 'dark'
+                  ? colors.green[300]
+                  : colors.green[600]
                 : classification === 'low'
-                  ? t === 'dark' ? colors.blue[300] : colors.blue[600]
+                  ? colors.text[t].emphasis
                   : colors.text[t].secondary
             }
           >

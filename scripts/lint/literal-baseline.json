@@ -20,7 +20,7 @@
       "hexColor": 1
     },
     "api-keys": {
-      "accentRamp": 33,
+      "accentRamp": 21,
       "borderRadius": 15,
       "hexColor": 1
     },
@@ -39,12 +39,12 @@
       "hexColor": 4
     },
     "background-check": {
-      "accentRamp": 30,
+      "accentRamp": 12,
       "borderRadius": 49,
       "fontSize": 2
     },
     "career-assessment": {
-      "accentRamp": 6,
+      "accentRamp": 2,
       "borderRadius": 3,
       "hexColor": 6
     },
@@ -54,7 +54,6 @@
       "fontSize": 22
     },
     "communities": {
-      "accentRamp": 4,
       "borderRadius": 30,
       "fontSize": 52,
       "hexColor": 8
@@ -75,7 +74,7 @@
       "hexColor": 2
     },
     "discover": {
-      "accentRamp": 38,
+      "accentRamp": 10,
       "borderRadius": 53,
       "fontSize": 40,
       "hexColor": 33
@@ -92,11 +91,11 @@
       "borderRadius": 7
     },
     "inquiries": {
-      "accentRamp": 24,
+      "accentRamp": 2,
       "borderRadius": 33
     },
     "ipip-assessment": {
-      "accentRamp": 37,
+      "accentRamp": 13,
       "borderRadius": 21,
       "fontSize": 9
     },
@@ -114,7 +113,6 @@
       "fontSize": 8
     },
     "news": {
-      "accentRamp": 4,
       "borderRadius": 3,
       "fontSize": 6
     },
@@ -124,14 +122,14 @@
       "fontSize": 17
     },
     "oauth": {
-      "accentRamp": 12,
+      "accentRamp": 2,
       "borderRadius": 3
     },
     "occupation-assessment": {
       "fontSize": 8
     },
     "office": {
-      "accentRamp": 102
+      "accentRamp": 94
     },
     "organizations": {
       "borderRadius": 1
@@ -143,7 +141,7 @@
       "hexColor": 10
     },
     "privacy": {
-      "accentRamp": 12,
+      "accentRamp": 10,
       "borderRadius": 39,
       "fontSize": 15,
       "hexColor": 1
@@ -162,7 +160,7 @@
       "hexColor": 32
     },
     "resume": {
-      "accentRamp": 22,
+      "accentRamp": 2,
       "borderRadius": 15
     },
     "reviews": {
@@ -186,7 +184,7 @@
       "hexColor": 4
     },
     "user-profile": {
-      "accentRamp": 62,
+      "accentRamp": 34,
       "borderRadius": 23
     },
     "work-logs": {

@@ -16,7 +16,7 @@ interface UserProfileCertificationsProps {
 
 export function UserProfileCertifications({ certifications }: UserProfileCertificationsProps) {
   const { theme } = useThemeContext()
-  const t = theme === 'dark' ? 'dark' : 'light' as const
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null
@@ -30,7 +30,7 @@ export function UserProfileCertifications({ certifications }: UserProfileCertifi
     <Card elevate bordered>
       <Stack gap={16} padding="lg">
         <Row gap={8} align="center">
-          <BadgeCheck size={24} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+          <BadgeCheck size={24} color={colors.text[t].emphasis} />
           <Text style={{ color: colors.text[t].secondary }}>Certifications</Text>
         </Row>
 
@@ -40,7 +40,9 @@ export function UserProfileCertifications({ certifications }: UserProfileCertifi
               <Stack gap={8} padding="md">
                 <Text style={{ color: colors.text[t].secondary }}>{cert.name}</Text>
                 {cert.issuing_organization && (
-                  <Text style={{ color: colors.text[t].secondary }}>{cert.issuing_organization}</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>
+                    {cert.issuing_organization}
+                  </Text>
                 )}
                 {(cert.issue_date || cert.expiration_date) && (
                   <Row gap={8} align="center">

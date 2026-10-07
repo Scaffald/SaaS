@@ -1,37 +1,37 @@
-import { ROUTES } from "@scf/core/constants/routes";
-import { useHasUploadedResume } from "@scf/core/utils/resume-sdk-hooks";
-import { DashboardWidget } from "@scaffald/ui";
-import { colors, namedSpacing } from "@scaffald/ui/tokens";
-import { FileText, ShieldCheck } from "lucide-react-native";
-import { useRouter } from "expo-router";
-import { useCallback, useState } from "react";
-import { Text, Row, Stack, useThemeContext } from "@scaffald/ui";
-import { ResumeUploadButton } from "./ResumeUploadButton";
-import { ResumeUploadModal } from "./ResumeUploadModal";
+import { ROUTES } from '@scf/core/constants/routes'
+import { useHasUploadedResume } from '@scf/core/utils/resume-sdk-hooks'
+import { DashboardWidget } from '@scaffald/ui'
+import { colors, namedSpacing } from '@scaffald/ui/tokens'
+import { FileText, ShieldCheck } from 'lucide-react-native'
+import { useRouter } from 'expo-router'
+import { useCallback, useState } from 'react'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { ResumeUploadButton } from './ResumeUploadButton'
+import { ResumeUploadModal } from './ResumeUploadModal'
 
 export function ResumeImportWidget() {
-  const { theme } = useThemeContext();
-  const t = theme === 'dark' ? 'dark' : 'light' as const;
-  const router = useRouter();
-  const [modalOpen, setModalOpen] = useState(false);
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
+  const router = useRouter()
+  const [modalOpen, setModalOpen] = useState(false)
   const handleResumeUploadComplete = useCallback(
     (resumeId: string) => {
-      setModalOpen(false);
+      setModalOpen(false)
       router.push({
         pathname: ROUTES.PROFILE.RESUME.REVIEW.path,
         params: { resumeId },
-      });
+      })
     },
     [router]
-  );
+  )
   const { data, isLoading } = useHasUploadedResume({
     refetchOnWindowFocus: false,
-  });
+  })
 
-  const shouldHideWidget = !isLoading && data?.hasUploaded;
+  const shouldHideWidget = !isLoading && data?.hasUploaded
 
   if (shouldHideWidget) {
-    return null;
+    return null
   }
 
   return (
@@ -44,16 +44,15 @@ export function ResumeImportWidget() {
               height={48}
               align="center"
               justify="center"
-              style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50] }}
+              style={{ backgroundColor: colors.bg[t].selected }}
               borderRadius={16}
             >
-              <FileText color={t === 'dark' ? colors.blue[300] : colors.blue[600]} size={26} />
+              <FileText color={colors.text[t].emphasis} size={26} />
             </Stack>
             <Stack gap={4}>
               <Text style={{ color: colors.text[t].secondary }}>Import Your Resume</Text>
               <Text style={{ color: colors.text[t].secondary }}>
-                Upload a PDF or Word document and we'll auto-fill your profile
-                details for you.
+                Upload a PDF or Word document and we'll auto-fill your profile details for you.
               </Text>
             </Stack>
           </Row>
@@ -70,11 +69,7 @@ export function ResumeImportWidget() {
             </Text>
           </Stack>
 
-          <ResumeUploadButton
-            onPress={() => setModalOpen(true)}
-            label="Upload Resume"
-            size="md"
-          />
+          <ResumeUploadButton onPress={() => setModalOpen(true)} label="Upload Resume" size="md" />
         </Stack>
       </DashboardWidget>
 
@@ -84,5 +79,5 @@ export function ResumeImportWidget() {
         onUploadComplete={handleResumeUploadComplete}
       />
     </>
-  );
+  )
 }

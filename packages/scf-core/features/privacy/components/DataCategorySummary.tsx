@@ -91,7 +91,13 @@ function CategoryCard({ info }: { info: CategoryInfo }) {
       backgroundColor={colors.bg[t].muted}
       borderRadius={12}
       borderWidth={1}
-      borderColor={info.hasData ? (t === 'dark' ? colors.green[300] : colors.green[600]) : colors.border[t].default}
+      borderColor={
+        info.hasData
+          ? t === 'dark'
+            ? colors.green[300]
+            : colors.green[600]
+          : colors.border[t].default
+      }
       gap={8}
       flex={1}
       minWidth={280}
@@ -99,11 +105,23 @@ function CategoryCard({ info }: { info: CategoryInfo }) {
       <Row justify="space-between" align="center">
         <Text>{info.name}</Text>
         {info.hasData ? (
-          <Row backgroundColor={t === 'dark' ? `${colors.green[300]}20` : `${colors.green[600]}15`} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
-            <Text color={t === 'dark' ? colors.green[300] : colors.green[600]}>{info.recordCount || 0} records</Text>
+          <Row
+            backgroundColor={t === 'dark' ? `${colors.green[300]}20` : `${colors.green[600]}15`}
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
+          >
+            <Text color={t === 'dark' ? colors.green[300] : colors.green[600]}>
+              {info.recordCount || 0} records
+            </Text>
           </Row>
         ) : (
-          <Row backgroundColor={colors.bg[t].muted} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+          <Row
+            backgroundColor={colors.bg[t].muted}
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
+          >
             <Text color={colors.text[t].secondary}>No data</Text>
           </Row>
         )}
@@ -149,8 +167,14 @@ export function DataCategorySummary({ categories }: DataCategorySummaryProps) {
   return (
     <Stack gap={16}>
       {/* Summary banner */}
-      <Row padding="sm" backgroundColor={t === 'dark' ? `${colors.blue[300]}15` : `${colors.blue[600]}10`} borderRadius={12} gap={8} align="center">
-        <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>
+      <Row
+        padding="sm"
+        backgroundColor={t === 'dark' ? `${colors.blue[300]}15` : `${colors.blue[600]}10`}
+        borderRadius={12}
+        gap={8}
+        align="center"
+      >
+        <Text color={colors.text[t].emphasis}>
           We collect data in {categoriesWithData} of 6 CCPA categories. View details below.
         </Text>
       </Row>

@@ -127,17 +127,9 @@ export function InquiryCommentThread({
                 padding="sm"
                 borderRadius={12}
                 style={{
-                  backgroundColor: isUnread
-                    ? t === 'dark'
-                      ? colors.blue[900]
-                      : colors.blue[50]
-                    : colors.bg[t].muted,
+                  backgroundColor: isUnread ? colors.bg[t].selected : colors.bg[t].muted,
                   borderWidth: 1,
-                  borderColor: isUnread
-                    ? t === 'dark'
-                      ? colors.blue[300]
-                      : colors.blue[600]
-                    : colors.border[t].default,
+                  borderColor: isUnread ? colors.text[t].emphasis : colors.border[t].default,
                 }}
               >
                 <Avatar size={32} initials={comment.sender_id.charAt(0).toUpperCase()} />
@@ -186,10 +178,10 @@ export function InquiryCommentThread({
           gap={8}
           padding="xs"
           borderRadius={12}
-          style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50] }}
+          style={{ backgroundColor: colors.bg[t].selected }}
         >
-          <MessageSquare size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-          <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
+          <MessageSquare size={20} color={colors.text[t].emphasis} />
+          <Text style={{ color: colors.text[t].emphasis }}>
             {`${unreadComments.length} new comment${unreadComments.length > 1 ? 's' : ''}`}
           </Text>
         </Row>

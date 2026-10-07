@@ -460,9 +460,7 @@ export function NewsWidget({
         <Stack>
           {displayNews.map((item: EnrichedNewsItem, index: number) => (
             <Stack key={`${item.id}-${index}`}>
-              {index > 0 && (
-                <Stack style={{ height: 1, backgroundColor: dividerColor }} />
-              )}
+              {index > 0 && <Stack style={{ height: 1, backgroundColor: dividerColor }} />}
               <Pressable onPress={() => handleNewsClick(item)}>
                 {({ pressed }) => (
                   <Row
@@ -515,9 +513,7 @@ export function NewsWidget({
                               borderRadius: 4,
                             }}
                           >
-                            <Text
-                              style={{ fontSize: 11, color: colors.text[theme].secondary }}
-                            >
+                            <Text style={{ fontSize: 11, color: colors.text[theme].secondary }}>
                               {capitalise(item.category)}
                             </Text>
                           </Stack>
@@ -540,14 +536,14 @@ export function NewsWidget({
                                 paddingHorizontal: 6,
                                 paddingVertical: 2,
                                 backgroundColor:
-                                  theme === 'dark' ? colors.blue[900] : colors.blue[50],
+                                  colors.bg[theme === 'dark' ? 'dark' : 'light'].selected,
                                 borderRadius: 4,
                               }}
                             >
                               <Text
                                 style={{
                                   fontSize: 11,
-                                  color: theme === 'dark' ? colors.blue[300] : colors.blue[700],
+                                  color: colors.text[theme === 'dark' ? 'dark' : 'light'].emphasis,
                                 }}
                               >
                                 {reason}
@@ -570,11 +566,7 @@ export function NewsWidget({
         </Stack>
       )}
 
-      <Sheet
-        visible={preferencesOpen}
-        onClose={() => setPreferencesOpen(false)}
-        height="half"
-      >
+      <Sheet visible={preferencesOpen} onClose={() => setPreferencesOpen(false)} height="half">
         <SheetHeader
           title="Customise Recommendations"
           onClose={() => setPreferencesOpen(false)}

@@ -49,9 +49,11 @@ export function PostCard({ post, onPress }: Props) {
               borderRadius: 4,
               backgroundColor:
                 post.post_type === 'showcase'
-                  ? (t === 'dark' ? colors.blue[900] : colors.blue[100])
+                  ? colors.bg[t].selected
                   : post.post_type === 'critique'
-                    ? (t === 'dark' ? colors.amber[900] : colors.amber[100])
+                    ? t === 'dark'
+                      ? colors.amber[900]
+                      : colors.amber[100]
                     : colors.bg[t].muted,
             }}
           >
@@ -137,7 +139,15 @@ export function PostCard({ post, onPress }: Props) {
                 backgroundColor: t === 'dark' ? colors.green[900] : colors.green[100],
               }}
             >
-              <Text style={{ fontSize: 11, fontWeight: '500', color: t === 'dark' ? colors.green[300] : colors.green[600] }}>Published</Text>
+              <Text
+                style={{
+                  fontSize: 11,
+                  fontWeight: '500',
+                  color: t === 'dark' ? colors.green[300] : colors.green[600],
+                }}
+              >
+                Published
+              </Text>
             </Stack>
           )}
         </Row>

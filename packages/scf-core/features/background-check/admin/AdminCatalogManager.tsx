@@ -448,7 +448,11 @@ export function AdminCatalogManager() {
       <Stack gap={16}>
         <Card
           padding="md"
-          style={{ backgroundColor: colors.bg[t].muted, borderColor: colors.border[t].default, gap: 16 }}
+          style={{
+            backgroundColor: colors.bg[t].muted,
+            borderColor: colors.border[t].default,
+            gap: 16,
+          }}
           borderWidth={1}
           radius="xl"
         >
@@ -506,7 +510,11 @@ export function AdminCatalogManager() {
                 <Card
                   key={pkg.id}
                   padding="md"
-                  style={{ backgroundColor: colors.bg[t].default, borderColor: colors.border[t].default, gap: 12 }}
+                  style={{
+                    backgroundColor: colors.bg[t].default,
+                    borderColor: colors.border[t].default,
+                    gap: 12,
+                  }}
                   borderWidth={1}
                   radius="lg"
                 >
@@ -514,7 +522,9 @@ export function AdminCatalogManager() {
                     <Stack gap={4} flex={1}>
                       <Text style={{ color: colors.text[t].secondary }}>{pkg.display_name}</Text>
                       <Text style={{ color: colors.text[t].secondary }}>{pkg.slug}</Text>
-                      {pkg.description ? <Text style={{ color: colors.text[t].secondary }}>{pkg.description}</Text> : null}
+                      {pkg.description ? (
+                        <Text style={{ color: colors.text[t].secondary }}>{pkg.description}</Text>
+                      ) : null}
                     </Stack>
                     <Row gap={8} wrap>
                       <Button
@@ -556,21 +566,28 @@ export function AdminCatalogManager() {
                   <Stack gap={8}>
                     <Text style={{ color: colors.text[t].secondary }}>Components</Text>
                     {pkg.components.length === 0 ? (
-                      <Text style={{ color: colors.text[t].secondary }}>No check types linked to this package.</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>
+                        No check types linked to this package.
+                      </Text>
                     ) : (
                       pkg.components.map((component: AdminPackageRecord['components'][number]) => (
                         <Row
                           key={component.id}
                           justify="space-between"
                           align="center"
-                          style={{ borderColor: colors.border[t].default, backgroundColor: colors.bg[t].default }}
+                          style={{
+                            borderColor: colors.border[t].default,
+                            backgroundColor: colors.bg[t].default,
+                          }}
                           borderWidth={1}
                           borderRadius={12}
                           paddingHorizontal={12}
                           paddingVertical={8}
                         >
                           <Stack gap={4} flex={1}>
-                            <Text style={{ color: colors.text[t].secondary }}>{component.display_name}</Text>
+                            <Text style={{ color: colors.text[t].secondary }}>
+                              {component.display_name}
+                            </Text>
                             <Row gap={8} wrap>
                               <InfoText label="Category" value={component.category ?? 'General'} />
                               <InfoText
@@ -595,7 +612,11 @@ export function AdminCatalogManager() {
 
         <Card
           padding="md"
-          style={{ backgroundColor: colors.bg[t].muted, borderColor: colors.border[t].default, gap: 16 }}
+          style={{
+            backgroundColor: colors.bg[t].muted,
+            borderColor: colors.border[t].default,
+            gap: 16,
+          }}
           borderWidth={1}
           radius="xl"
         >
@@ -623,7 +644,9 @@ export function AdminCatalogManager() {
             </Stack>
           ) : checkTypes.length === 0 ? (
             <Stack gap={8} paddingVertical={16} align="center">
-              <Text style={{ color: colors.text[t].secondary }}>No check types configured yet.</Text>
+              <Text style={{ color: colors.text[t].secondary }}>
+                No check types configured yet.
+              </Text>
               <Button size="sm" onPress={() => openCheckTypeDialog('create')}>
                 Create your first check type
               </Button>
@@ -634,7 +657,11 @@ export function AdminCatalogManager() {
                 <Card
                   key={type.id}
                   padding="md"
-                  style={{ backgroundColor: colors.bg[t].default, borderColor: colors.border[t].default, gap: 12 }}
+                  style={{
+                    backgroundColor: colors.bg[t].default,
+                    borderColor: colors.border[t].default,
+                    gap: 12,
+                  }}
                   borderWidth={1}
                   radius="lg"
                 >
@@ -642,7 +669,9 @@ export function AdminCatalogManager() {
                     <Stack gap={4} flex={1}>
                       <Text style={{ color: colors.text[t].secondary }}>{type.display_name}</Text>
                       <Text style={{ color: colors.text[t].secondary }}>{type.slug}</Text>
-                      {type.description ? <Text style={{ color: colors.text[t].secondary }}>{type.description}</Text> : null}
+                      {type.description ? (
+                        <Text style={{ color: colors.text[t].secondary }}>{type.description}</Text>
+                      ) : null}
                     </Stack>
                     <Row gap={8} wrap>
                       <Button
@@ -710,7 +739,10 @@ export function AdminCatalogManager() {
       >
         <Dialog.Portal>
           <Dialog.Overlay />
-          <Dialog.Content style={{ backgroundColor: colors.bg[t].muted, borderColor: colors.border[t].default }} borderWidth={1}>
+          <Dialog.Content
+            style={{ backgroundColor: colors.bg[t].muted, borderColor: colors.border[t].default }}
+            borderWidth={1}
+          >
             <Dialog.Title>
               {packageDialog?.mode === 'edit'
                 ? 'Edit background check package'
@@ -788,7 +820,9 @@ export function AdminCatalogManager() {
                     {checkTypesQuery.isLoading ? (
                       <Row gap={8} align="center">
                         <Spinner variant="ios" size="sm" />
-                        <Text style={{ color: colors.text[t].secondary }}>Loading check types…</Text>
+                        <Text style={{ color: colors.text[t].secondary }}>
+                          Loading check types…
+                        </Text>
                       </Row>
                     ) : checkTypes.length === 0 ? (
                       <Text style={{ color: colors.text[t].secondary }}>
@@ -802,7 +836,12 @@ export function AdminCatalogManager() {
                             key={type.id}
                             gap={8}
                             align="center"
-                            style={{ borderColor: colors.border[t].default, backgroundColor: selected ? (t === 'dark' ? colors.blue[900] : colors.blue[50]) : colors.bg[t].default }}
+                            style={{
+                              borderColor: colors.border[t].default,
+                              backgroundColor: selected
+                                ? colors.bg[t].selected
+                                : colors.bg[t].default,
+                            }}
                             borderWidth={1}
                             borderRadius={12}
                             paddingHorizontal={12}
@@ -814,7 +853,9 @@ export function AdminCatalogManager() {
                               onChange={(value) => handleTogglePackageType(type.id, value === true)}
                               labelElement={
                                 <Stack gap={4} flex={1}>
-                                  <Text style={{ color: colors.text[t].secondary }}>{type.display_name}</Text>
+                                  <Text style={{ color: colors.text[t].secondary }}>
+                                    {type.display_name}
+                                  </Text>
                                   <Text style={{ color: colors.text[t].secondary }}>
                                     {type.category ?? 'General'} ·{' '}
                                     {formatCurrency(type.platform_cost_cents)}
@@ -850,7 +891,11 @@ export function AdminCatalogManager() {
                   rows={4}
                 />
 
-                {packageFormError ? <Text style={{ color: t === 'dark' ? colors.rose[300] : colors.rose[600] }}>{packageFormError}</Text> : null}
+                {packageFormError ? (
+                  <Text style={{ color: t === 'dark' ? colors.rose[300] : colors.rose[600] }}>
+                    {packageFormError}
+                  </Text>
+                ) : null}
 
                 <Row gap={8} justify="flex-end">
                   <Dialog.Close asChild>
@@ -885,7 +930,10 @@ export function AdminCatalogManager() {
       >
         <Dialog.Portal>
           <Dialog.Overlay />
-          <Dialog.Content style={{ backgroundColor: colors.bg[t].muted, borderColor: colors.border[t].default }} borderWidth={1}>
+          <Dialog.Content
+            style={{ backgroundColor: colors.bg[t].muted, borderColor: colors.border[t].default }}
+            borderWidth={1}
+          >
             <Dialog.Title>
               {checkTypeDialog?.mode === 'edit'
                 ? 'Edit background check type'
@@ -1002,7 +1050,11 @@ export function AdminCatalogManager() {
                   rows={4}
                 />
 
-                {checkTypeFormError ? <Text style={{ color: t === 'dark' ? colors.rose[300] : colors.rose[600] }}>{checkTypeFormError}</Text> : null}
+                {checkTypeFormError ? (
+                  <Text style={{ color: t === 'dark' ? colors.rose[300] : colors.rose[600] }}>
+                    {checkTypeFormError}
+                  </Text>
+                ) : null}
 
                 <Row gap={8} justify="flex-end">
                   <Dialog.Close asChild>
