@@ -16,6 +16,7 @@ import { openExternalLink } from '@scf/core/utils/platform'
 import { CheckCircle2, DownloadCloud, RefreshCcw } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { ScrollView } from 'react-native'
 import { ResponsiveSelect } from '@scaffald/ui'
 import {
   Input,
@@ -315,9 +316,13 @@ export function AdminCheckReviewDialog({
 
         <Dialog.Content
           key="content"
-          style={{ width: '96%', maxWidth: 780, maxHeight: '85%' }}
+          // Padded, and only the body scrolls: the content used to sit flush
+          // against the dialog's edge and run past its bottom, putting the
+          // expiration field and the actions outside it (#1047).
+          // The Modal panel owns width and height; this fills it.
+          style={{ flex: 1, minHeight: 0, padding: 24 }}
         >
-          <Stack gap={16}>
+          <Stack gap={16} style={{ flex: 1, minHeight: 0 }}>
             <Row justify="space-between" align="center" wrap gap={12}>
               <Dialog.Title>Review background check</Dialog.Title>
               <Dialog.Close asChild>
@@ -327,6 +332,7 @@ export function AdminCheckReviewDialog({
               </Dialog.Close>
             </Row>
 
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 16 }}>
             {!checkId ? (
               <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
                 <Text style={{ color: colors.text[t].secondary }}>Select a background check to review the full details.</Text>
@@ -711,6 +717,8 @@ export function AdminCheckReviewDialog({
                 ) : null}
               </Stack>
             )}
+
+            </ScrollView>
 
             <Separator />
 
