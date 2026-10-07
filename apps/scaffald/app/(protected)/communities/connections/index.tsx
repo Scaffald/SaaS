@@ -5,6 +5,7 @@ import { CommunityStatsWidget } from '@scf/core/features/communities'
 export default function CommunitiesConnectionsPage() {
   return (
     <DashboardPage
+      screenTip="Manage your professional connections, followers, and pending requests."
       leftContent={<ConnectionsManagementPage />}
       showBreadcrumb={false}
       rightContent={<CommunityStatsWidget />}

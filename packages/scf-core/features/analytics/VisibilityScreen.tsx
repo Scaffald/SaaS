@@ -36,16 +36,9 @@ export function VisibilityScreen() {
 
   return (
     <Stack gap={20}>
-      {/* Header */}
+      {/* Controls. The title and its line used to be here too, under the
+          shared header that already says the same thing (#1025). */}
       <Row align="center" justify="space-between" style={{ flexWrap: 'wrap', gap: 12 }}>
-        <Stack gap={2}>
-          <Text style={{ fontSize: 22, fontWeight: '700', color: colors.text[resolvedTheme].primary }}>
-            Visibility
-          </Text>
-          <Text style={{ fontSize: 13, color: colors.text[resolvedTheme].secondary }}>
-            How often you appear in searches and recommendations
-          </Text>
-        </Stack>
         <DateRangeSelector value={days} onChange={setDays} />
       </Row>
 

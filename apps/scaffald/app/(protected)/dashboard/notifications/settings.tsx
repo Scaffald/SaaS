@@ -6,7 +6,8 @@ export default function NotificationsSettingsPage() {
     <DashboardPage
       showBreadcrumb={false}
       pageTitle="Notification settings"
-      leftContent={<SettingsNotificationsSection />}
+      screenTip="Stay up to date with applications, opportunities, and platform updates."
+      leftContent={<SettingsNotificationsSection showHeading={false} />}
     />
   )
 }

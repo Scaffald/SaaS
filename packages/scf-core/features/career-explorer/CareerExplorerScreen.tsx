@@ -9,7 +9,6 @@ import { useCallback, useState } from 'react'
 import { Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
 import {
-  AssessmentHeader,
   Button,
   Card,
   Input,
@@ -73,12 +72,9 @@ export function CareerExplorerScreen() {
 
   const leftContent = (
     <Stack gap={24} style={{ paddingBottom: 40 }}>
-      {/* Header */}
-      <AssessmentHeader
-        category="Career Discovery"
-        title="Career Explorer"
-        subtitle="Search and discover careers from 1,000+ occupations in the O*NET database"
-      />
+      {/* No header here: the route's shared header carries the kicker, title
+          and tip. This screen used to print "Career Explorer" under it a
+          second time (#1025). */}
 
       {/* Search */}
       <Stack gap={8}>

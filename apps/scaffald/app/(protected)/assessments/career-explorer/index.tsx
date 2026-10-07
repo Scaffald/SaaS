@@ -7,6 +7,8 @@ export default function CareerExplorerRoute() {
   return (
     <DashboardPage
       breadcrumbs={[{ label: 'Career Explorer' }]}
+      screenKicker="Career discovery"
+      screenTip="Search and discover careers from 1,000+ occupations in the O*NET database."
       leftContent={leftContent}
       rightContent={rightContent}
     />
