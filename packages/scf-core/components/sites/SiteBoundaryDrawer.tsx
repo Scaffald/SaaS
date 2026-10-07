@@ -55,7 +55,7 @@ export function SiteBoundaryDrawer({
   zoom: _zoom = 12,
 }: SiteBoundaryDrawerProps) {
   const { theme } = useThemeContext()
-  const t = theme === 'dark' ? 'dark' : 'light' as const
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
 
   const [coordinates, setCoordinates] = useState<Boundary>(boundary)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -129,9 +129,13 @@ export function SiteBoundaryDrawer({
           {areaSqft > 0 && (
             <Card
               padding="md"
-              style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], borderColor: t === 'dark' ? colors.blue[700] : colors.blue[300], borderWidth: 1 }}
+              style={{
+                backgroundColor: colors.bg[t].selected,
+                borderColor: t === 'dark' ? colors.blue[700] : colors.blue[300],
+                borderWidth: 1,
+              }}
             >
-              <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
+              <Text style={{ color: colors.text[t].emphasis }}>
                 Calculated Area: {areaSqft.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
                 sq ft
               </Text>
@@ -142,7 +146,9 @@ export function SiteBoundaryDrawer({
           <Stack gap={8}>
             <Text>Boundary Coordinates</Text>
             {coordinates.length === 0 ? (
-              <Text style={{ color: colors.text[t].tertiary }}>No points added yet. Click "Add Point" to start drawing.</Text>
+              <Text style={{ color: colors.text[t].tertiary }}>
+                No points added yet. Click "Add Point" to start drawing.
+              </Text>
             ) : (
               <Stack gap={8}>
                 {coordinates.map((coord: MapCoordinate, index: number) => (

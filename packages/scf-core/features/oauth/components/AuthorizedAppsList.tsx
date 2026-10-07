@@ -71,7 +71,11 @@ export function AuthorizedAppsList() {
                     <Stack
                       width={64}
                       height={64}
-                      style={{ borderRadius: 7, overflow: 'hidden', backgroundColor: colors.bg[t].muted }}
+                      style={{
+                        borderRadius: 7,
+                        overflow: 'hidden',
+                        backgroundColor: colors.bg[t].muted,
+                      }}
                     >
                       <img
                         src={app.logo_url}
@@ -99,7 +103,7 @@ export function AuthorizedAppsList() {
                       {app?.homepage_url && (
                         <Text
                           size="sm"
-                          style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}
+                          style={{ color: colors.text[t].emphasis }}
                           data-testid="authorized-app-homepage"
                         >
                           {app.homepage_url}
@@ -174,8 +178,7 @@ export function AuthorizedAppsList() {
           <Stack gap={16}>
             <Paragraph size="sm">
               Are you sure you want to revoke access for{' '}
-              <strong>{appToRevoke?.oauth_app?.display_name}</strong>?
-              This will:
+              <strong>{appToRevoke?.oauth_app?.display_name}</strong>? This will:
             </Paragraph>
             <Stack gap={8} style={{ paddingLeft: 16 }}>
               <Paragraph size="sm">• Immediately invalidate all access tokens</Paragraph>

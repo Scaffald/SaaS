@@ -38,9 +38,9 @@ export const ProfileAvatar = ({
 
   // Map index to color
   const bgColors = [
-    t === 'dark' ? colors.blue[300] : colors.blue[600],
+    colors.text[t].emphasis,
     t === 'dark' ? colors.green[300] : colors.green[600],
-    t === 'dark' ? colors.blue[300] : colors.blue[600],
+    colors.text[t].emphasis,
     t === 'dark' ? colors.error[300] : colors.error[600],
     t === 'dark' ? colors.pink[300] : colors.pink[600],
     t === 'dark' ? colors.error[300] : colors.error[600],
@@ -58,7 +58,11 @@ export const ProfileAvatar = ({
         borderRadius={12}
         style={{ overflow: 'hidden', borderWidth: 1, borderColor: colors.border[t].default }}
       >
-        <Image source={{ uri: avatarUrl }} style={{ width: size, height: size }} resizeMode="cover" />
+        <Image
+          source={{ uri: avatarUrl }}
+          style={{ width: size, height: size }}
+          resizeMode="cover"
+        />
       </Row>
     )
   }

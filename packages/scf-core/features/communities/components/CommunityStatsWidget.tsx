@@ -1,11 +1,11 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import { Pressable } from 'react-native'
 import {
   useMyCommunities,
   useScaffoldScore,
 } from '@scf/core/utils/communities-sdk-hooks'
 import { useConnections } from '@scf/core/utils/engagement-sdk-hooks'
 import {
-  Button,
   DashboardWidget,
   DashboardWidgetHeader,
   Skeleton,
@@ -45,16 +45,19 @@ function StatRow({
     </Row>
   )
 
+  // A Pressable, not a text Button: the Button sized its label to content,
+  // so the row's space-between had no width to spread across and every
+  // label ran into its figure ("Communities3").
   if (onPress) {
     return (
-      <Button
-        variant="text"
+      <Pressable
         onPress={onPress}
-        fullWidth
-        style={{ paddingHorizontal: 0, justifyContent: 'flex-start' }}
+        accessibilityRole="link"
+        accessibilityLabel={`${label}: ${value}`}
+        style={({ pressed }) => ({ width: '100%', opacity: pressed ? 0.6 : 1 })}
       >
         {content}
-      </Button>
+      </Pressable>
     )
   }
   return content

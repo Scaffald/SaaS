@@ -39,8 +39,8 @@ const PackageCard = memo(function PackageCard({
     <Card
       elevate
       bordered
-      backgroundColor={isSelected ? (t === 'dark' ? colors.blue[900] : colors.blue[100]) : colors.bg[t].default}
-      borderColor={isSelected ? (t === 'dark' ? colors.blue[300] : colors.blue[600]) : colors.border[t].default}
+      backgroundColor={isSelected ? colors.bg[t].selected : colors.bg[t].default}
+      borderColor={isSelected ? colors.text[t].emphasis : colors.border[t].default}
       borderWidth={2}
       radius="lg"
       padding="md"
@@ -52,7 +52,9 @@ const PackageCard = memo(function PackageCard({
         <Text color={colors.text[t].secondary}>{pkg.description}</Text>
         <Row gap={12} align="center">
           <Text color={colors.text[t].secondary}>{formatCurrency(pkg.retail_cost_cents)}</Text>
-          <Text color={colors.text[t].secondary}>Platform cost: {formatCurrency(pkg.platform_cost_cents)}</Text>
+          <Text color={colors.text[t].secondary}>
+            Platform cost: {formatCurrency(pkg.platform_cost_cents)}
+          </Text>
         </Row>
         <Stack gap={4}>
           <Text color={colors.text[t].secondary}>Components</Text>
@@ -96,7 +98,9 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
         <Stack gap={12} paddingBottom={24}>
           {isLoading && <Text color={colors.text[t].secondary}>Loading packages…</Text>}
           {!isLoading && (!packages || packages.length === 0) && (
-            <Text color={colors.text[t].secondary}>Packages will be available soon. Please check back later.</Text>
+            <Text color={colors.text[t].secondary}>
+              Packages will be available soon. Please check back later.
+            </Text>
           )}
           {packages?.map((pkg) => (
             <PackageCard

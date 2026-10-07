@@ -48,13 +48,13 @@ export function NarrativeView({
         <Stack
           gap={12}
           padding="lg"
-          backgroundColor={t === 'dark' ? colors.blue[900] : colors.blue[50]}
+          backgroundColor={colors.bg[t].selected}
           borderRadius={16}
           borderWidth={1}
           borderColor={t === 'dark' ? colors.blue[700] : colors.blue[300]}
         >
-          <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>Your Personality Profile</Text>
-          <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]} style={{ lineHeight: 20 }}>
+          <Text color={colors.text[t].emphasis}>Your Personality Profile</Text>
+          <Text color={colors.text[t].emphasis} style={{ lineHeight: 20 }}>
             {overallSummary}
           </Text>
         </Stack>
@@ -65,14 +65,14 @@ export function NarrativeView({
         <Stack
           gap={8}
           padding="md"
-          backgroundColor={t === 'dark' ? colors.blue[900] : colors.blue[50]}
+          backgroundColor={colors.bg[t].selected}
           borderRadius={16}
           borderWidth={1}
           borderColor={t === 'dark' ? colors.blue[700] : colors.blue[300]}
           accessibilityLiveRegion="polite"
         >
-          <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>Partial Results</Text>
-          <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>
+          <Text color={colors.text[t].emphasis}>Partial Results</Text>
+          <Text color={colors.text[t].emphasis}>
             Complete more domains to see your full personality profile summary.
           </Text>
         </Stack>
@@ -110,7 +110,9 @@ export function NarrativeView({
           borderWidth={1}
           borderColor={t === 'dark' ? colors.yellow[700] : colors.yellow[300]}
         >
-          <Text color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]}>Complete Your Assessment</Text>
+          <Text color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]}>
+            Complete Your Assessment
+          </Text>
           <Text color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]}>
             You've completed {completedDomains} of 5 domains. Finish the remaining questions to see
             your complete personality profile and archetype.

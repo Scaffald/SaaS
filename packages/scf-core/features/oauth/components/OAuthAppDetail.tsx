@@ -189,133 +189,141 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       {/* App Details */}
       <Card variant="glass" padding="md">
         <Stack gap={16}>
-        <Stack gap={12}>
-          <Text size="lg">Application Details</Text>
+          <Stack gap={12}>
+            <Text size="lg">Application Details</Text>
 
-          <Stack gap={8}>
-            <Text size="sm" color={colors.text[t].secondary}>
-              Description
-            </Text>
-            <Paragraph size="sm">{app.description || 'No description provided'}</Paragraph>
-          </Stack>
-
-          <Separator />
-
-          <Stack gap={8}>
-            <Text size="sm" color={colors.text[t].secondary}>
-              Client ID
-            </Text>
-            <Text size="sm" mono data-testid="oauth-app-client-id">
-              {app.client_id}
-            </Text>
-          </Stack>
-
-          <Stack gap={8}>
-            <Text size="sm" color={colors.text[t].secondary}>
-              Homepage URL
-            </Text>
-            <Text size="sm" color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>
-              {app.homepage_url || 'Not provided'}
-            </Text>
-          </Stack>
-
-          {app.privacy_policy_url && (
             <Stack gap={8}>
               <Text size="sm" color={colors.text[t].secondary}>
-                Privacy Policy URL
+                Description
               </Text>
-              <Text size="sm" color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>
-                {app.privacy_policy_url}
-              </Text>
+              <Paragraph size="sm">{app.description || 'No description provided'}</Paragraph>
             </Stack>
-          )}
 
-          {app.terms_of_service_url && (
+            <Separator />
+
             <Stack gap={8}>
               <Text size="sm" color={colors.text[t].secondary}>
-                Terms of Service URL
+                Client ID
               </Text>
-              <Text size="sm" color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>
-                {app.terms_of_service_url}
+              <Text size="sm" mono data-testid="oauth-app-client-id">
+                {app.client_id}
               </Text>
             </Stack>
-          )}
 
-          <Separator />
-
-          <Stack gap={8}>
-            <Text size="sm" color={colors.text[t].secondary}>
-              Owner Email
-            </Text>
-            <Text size="sm">{app.owner_email || 'Not provided'}</Text>
-          </Stack>
-
-          <Stack gap={8}>
-            <Text size="sm" color={colors.text[t].secondary}>
-              Created
-            </Text>
-            <Text size="sm">{new Date(app.created_at).toLocaleString()}</Text>
-          </Stack>
-
-          {app.approved_at && (
             <Stack gap={8}>
               <Text size="sm" color={colors.text[t].secondary}>
-                Approved
+                Homepage URL
               </Text>
-              <Text size="sm">{new Date(app.approved_at).toLocaleString()}</Text>
+              <Text size="sm" color={colors.text[t].emphasis}>
+                {app.homepage_url || 'Not provided'}
+              </Text>
             </Stack>
-          )}
-        </Stack>
+
+            {app.privacy_policy_url && (
+              <Stack gap={8}>
+                <Text size="sm" color={colors.text[t].secondary}>
+                  Privacy Policy URL
+                </Text>
+                <Text size="sm" color={colors.text[t].emphasis}>
+                  {app.privacy_policy_url}
+                </Text>
+              </Stack>
+            )}
+
+            {app.terms_of_service_url && (
+              <Stack gap={8}>
+                <Text size="sm" color={colors.text[t].secondary}>
+                  Terms of Service URL
+                </Text>
+                <Text size="sm" color={colors.text[t].emphasis}>
+                  {app.terms_of_service_url}
+                </Text>
+              </Stack>
+            )}
+
+            <Separator />
+
+            <Stack gap={8}>
+              <Text size="sm" color={colors.text[t].secondary}>
+                Owner Email
+              </Text>
+              <Text size="sm">{app.owner_email || 'Not provided'}</Text>
+            </Stack>
+
+            <Stack gap={8}>
+              <Text size="sm" color={colors.text[t].secondary}>
+                Created
+              </Text>
+              <Text size="sm">{new Date(app.created_at).toLocaleString()}</Text>
+            </Stack>
+
+            {app.approved_at && (
+              <Stack gap={8}>
+                <Text size="sm" color={colors.text[t].secondary}>
+                  Approved
+                </Text>
+                <Text size="sm">{new Date(app.approved_at).toLocaleString()}</Text>
+              </Stack>
+            )}
+          </Stack>
         </Stack>
       </Card>
 
       {/* Redirect URIs */}
       <Card variant="glass" padding="md" data-testid="oauth-app-redirect-uris">
         <Stack gap={16}>
-        <Stack gap={12}>
-          <Text size="lg">Redirect URIs</Text>
-          <Stack gap={8}>
-            {app.redirect_uris.map((uri, index) => (
-              <Stack key={index} gap={4}>
-                <Text
-                  size="sm"
-                  mono
-                  color={t === 'dark' ? colors.blue[300] : colors.blue[600]}
-                  data-testid={`oauth-app-redirect-uri-${index}`}
-                >
-                  {uri}
-                </Text>
-              </Stack>
-            ))}
+          <Stack gap={12}>
+            <Text size="lg">Redirect URIs</Text>
+            <Stack gap={8}>
+              {app.redirect_uris.map((uri, index) => (
+                <Stack key={index} gap={4}>
+                  <Text
+                    size="sm"
+                    mono
+                    color={colors.text[t].emphasis}
+                    data-testid={`oauth-app-redirect-uri-${index}`}
+                  >
+                    {uri}
+                  </Text>
+                </Stack>
+              ))}
+            </Stack>
           </Stack>
-        </Stack>
         </Stack>
       </Card>
 
       {/* Allowed Scopes */}
       <Card variant="glass" padding="md" data-testid="oauth-app-scopes">
         <Stack gap={16}>
-        <Stack gap={12}>
-          <Text size="lg">Allowed Scopes</Text>
-          {app.allowed_scopes.length > 0 ? (
-            <Row gap={8} wrap>
-              {app.allowed_scopes.map((scope) => (
-                <Chip
-                  key={scope}
-                  style={{ backgroundColor: t === 'dark' ? colors.info[900] : colors.info[100], paddingHorizontal: 8, paddingVertical: 4 }}
-                  textStyle={{ color: colors.info[700] }}
-                  data-testid={`oauth-app-scope-${scope}`}
-                >
-                  {scope}
-                </Chip>
-              ))}
-            </Row>
-          ) : (
-            <Paragraph size="sm" color={colors.text[t].secondary} data-testid="oauth-app-no-scopes">
-              No scopes approved yet
-            </Paragraph>
-          )}
-        </Stack>
+          <Stack gap={12}>
+            <Text size="lg">Allowed Scopes</Text>
+            {app.allowed_scopes.length > 0 ? (
+              <Row gap={8} wrap>
+                {app.allowed_scopes.map((scope) => (
+                  <Chip
+                    key={scope}
+                    style={{
+                      backgroundColor: t === 'dark' ? colors.info[900] : colors.info[100],
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                    }}
+                    textStyle={{ color: colors.info[700] }}
+                    data-testid={`oauth-app-scope-${scope}`}
+                  >
+                    {scope}
+                  </Chip>
+                ))}
+              </Row>
+            ) : (
+              <Paragraph
+                size="sm"
+                color={colors.text[t].secondary}
+                data-testid="oauth-app-no-scopes"
+              >
+                No scopes approved yet
+              </Paragraph>
+            )}
+          </Stack>
         </Stack>
       </Card>
 
@@ -328,73 +336,73 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
             onClose={() => setShowApproveDialog(false)}
           />
           <Stack gap={16}>
-              {/* Scope Selection */}
-              <Stack gap={12}>
-                <Text size="md">Select Scopes</Text>
-                <Stack gap={8} style={{ maxHeight: 300, overflow: 'scroll' }}>
-                  {scopes.map((scope) => (
-                    <Row key={scope.id} gap={8} align="center">
-                      <Checkbox
-                        checked={selectedScopes.includes(scope.scope)}
-                        onChange={(checked) => {
-                          if (checked) {
-                            setSelectedScopes([...selectedScopes, scope.scope])
-                          } else {
-                            setSelectedScopes(selectedScopes.filter((s) => s !== scope.scope))
-                          }
-                        }}
-                      />
-                      <Stack flex={1}>
-                        <Text size="sm">{scope.display_name}</Text>
-                        <Text size="sm" color={colors.text[t].secondary}>
-                          {scope.description}
-                        </Text>
-                      </Stack>
-                    </Row>
-                  ))}
-                </Stack>
+            {/* Scope Selection */}
+            <Stack gap={12}>
+              <Text size="md">Select Scopes</Text>
+              <Stack gap={8} style={{ maxHeight: 300, overflow: 'scroll' }}>
+                {scopes.map((scope) => (
+                  <Row key={scope.id} gap={8} align="center">
+                    <Checkbox
+                      checked={selectedScopes.includes(scope.scope)}
+                      onChange={(checked) => {
+                        if (checked) {
+                          setSelectedScopes([...selectedScopes, scope.scope])
+                        } else {
+                          setSelectedScopes(selectedScopes.filter((s) => s !== scope.scope))
+                        }
+                      }}
+                    />
+                    <Stack flex={1}>
+                      <Text size="sm">{scope.display_name}</Text>
+                      <Text size="sm" color={colors.text[t].secondary}>
+                        {scope.description}
+                      </Text>
+                    </Stack>
+                  </Row>
+                ))}
               </Stack>
-
-              {/* Trust Level */}
-              <Stack gap={12}>
-                <Text size="md">Trust Level</Text>
-                <Row gap={8}>
-                  <Button
-                    variant={trustLevel === 'active' ? 'filled' : 'outline'}
-                    onPress={() => setTrustLevel('active')}
-                    style={{ flex: 1 }}
-                  >
-                    Active
-                  </Button>
-                  <Button
-                    variant={trustLevel === 'trusted' ? 'filled' : 'outline'}
-                    onPress={() => setTrustLevel('trusted')}
-                    style={{ flex: 1 }}
-                  >
-                    Trusted
-                  </Button>
-                </Row>
-                <Paragraph size="sm" color={colors.text[t].secondary}>
-                  {trustLevel === 'active'
-                    ? 'Active apps require user consent for each authorization'
-                    : 'Trusted apps can skip the consent screen'}
-                </Paragraph>
-              </Stack>
-
-              <ModalActions
-                primaryAction={{
-                  label: 'Approve Application',
-                  onPress: handleApprove,
-                  disabled: selectedScopes.length === 0 || approveApp.isPending,
-                  loading: approveApp.isPending,
-                }}
-                secondaryAction={{
-                  label: 'Cancel',
-                  onPress: () => setShowApproveDialog(false),
-                  variant: 'outline',
-                }}
-              />
             </Stack>
+
+            {/* Trust Level */}
+            <Stack gap={12}>
+              <Text size="md">Trust Level</Text>
+              <Row gap={8}>
+                <Button
+                  variant={trustLevel === 'active' ? 'filled' : 'outline'}
+                  onPress={() => setTrustLevel('active')}
+                  style={{ flex: 1 }}
+                >
+                  Active
+                </Button>
+                <Button
+                  variant={trustLevel === 'trusted' ? 'filled' : 'outline'}
+                  onPress={() => setTrustLevel('trusted')}
+                  style={{ flex: 1 }}
+                >
+                  Trusted
+                </Button>
+              </Row>
+              <Paragraph size="sm" color={colors.text[t].secondary}>
+                {trustLevel === 'active'
+                  ? 'Active apps require user consent for each authorization'
+                  : 'Trusted apps can skip the consent screen'}
+              </Paragraph>
+            </Stack>
+
+            <ModalActions
+              primaryAction={{
+                label: 'Approve Application',
+                onPress: handleApprove,
+                disabled: selectedScopes.length === 0 || approveApp.isPending,
+                loading: approveApp.isPending,
+              }}
+              secondaryAction={{
+                label: 'Cancel',
+                onPress: () => setShowApproveDialog(false),
+                variant: 'outline',
+              }}
+            />
+          </Stack>
         </ModalContent>
       </Modal>
 
@@ -407,31 +415,31 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
             onClose={() => setShowRejectDialog(false)}
           />
           <Stack gap={16}>
-              <Stack gap={8}>
-                <Text size="sm">Rejection Reason (Optional)</Text>
-                <Input
-                  value={rejectReason}
-                  onChangeText={setRejectReason}
-                  placeholder="e.g., Does not meet security requirements"
-                  multiline
-                />
-              </Stack>
-
-              <ModalActions
-                primaryAction={{
-                  label: 'Reject Application',
-                  onPress: handleReject,
-                  disabled: rejectApp.isPending,
-                  loading: rejectApp.isPending,
-                  color: 'error',
-                }}
-                secondaryAction={{
-                  label: 'Cancel',
-                  onPress: () => setShowRejectDialog(false),
-                  variant: 'outline',
-                }}
+            <Stack gap={8}>
+              <Text size="sm">Rejection Reason (Optional)</Text>
+              <Input
+                value={rejectReason}
+                onChangeText={setRejectReason}
+                placeholder="e.g., Does not meet security requirements"
+                multiline
               />
             </Stack>
+
+            <ModalActions
+              primaryAction={{
+                label: 'Reject Application',
+                onPress: handleReject,
+                disabled: rejectApp.isPending,
+                loading: rejectApp.isPending,
+                color: 'error',
+              }}
+              secondaryAction={{
+                label: 'Cancel',
+                onPress: () => setShowRejectDialog(false),
+                variant: 'outline',
+              }}
+            />
+          </Stack>
         </ModalContent>
       </Modal>
 
@@ -444,21 +452,21 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
             onClose={() => setShowSuspendDialog(false)}
           />
           <Stack gap={16}>
-              <ModalActions
-                primaryAction={{
-                  label: 'Suspend Application',
-                  onPress: handleSuspend,
-                  disabled: suspendApp.isPending,
-                  loading: suspendApp.isPending,
-                  color: 'error',
-                }}
-                secondaryAction={{
-                  label: 'Cancel',
-                  onPress: () => setShowSuspendDialog(false),
-                  variant: 'outline',
-                }}
-              />
-            </Stack>
+            <ModalActions
+              primaryAction={{
+                label: 'Suspend Application',
+                onPress: handleSuspend,
+                disabled: suspendApp.isPending,
+                loading: suspendApp.isPending,
+                color: 'error',
+              }}
+              secondaryAction={{
+                label: 'Cancel',
+                onPress: () => setShowSuspendDialog(false),
+                variant: 'outline',
+              }}
+            />
+          </Stack>
         </ModalContent>
       </Modal>
     </Stack>

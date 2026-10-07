@@ -71,9 +71,7 @@ export function PublishedPostsGallery({ userId, variant = 'full', onPostPress }:
               {isFetchingNextPage ? (
                 <Spinner variant="ios" size="sm" />
               ) : (
-                <Text style={{ color: colors.text[t].secondary, fontSize: 13 }}>
-                  Load more
-                </Text>
+                <Text style={{ color: colors.text[t].secondary, fontSize: 13 }}>Load more</Text>
               )}
             </Stack>
           </Pressable>
@@ -159,7 +157,12 @@ function PolaroidCard({
                 paddingHorizontal: 6,
                 paddingVertical: 1,
                 borderRadius: 4,
-                backgroundColor: post.post_type === 'showcase' ? (t === 'dark' ? colors.blue[900] : colors.blue[100]) : (t === 'dark' ? colors.amber[900] : colors.amber[100]),
+                backgroundColor:
+                  post.post_type === 'showcase'
+                    ? colors.bg[t].selected
+                    : t === 'dark'
+                      ? colors.amber[900]
+                      : colors.amber[100],
               }}
             >
               <Text style={{ fontSize: 10, fontWeight: '500' }}>{post.post_type}</Text>

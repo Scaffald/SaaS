@@ -21,6 +21,12 @@ vi.mock('@scaffald/ui', async () => {
     />
   )
   const Toggle = () => <input type="checkbox" />
+  const EmptyState = ({ title, description }: { title: string; description?: string }) => (
+    <div>
+      <span>{title}</span>
+      {description ? <span>{description}</span> : null}
+    </div>
+  )
   const Button = ({
     children,
     onPress,
@@ -85,6 +91,7 @@ vi.mock('@scaffald/ui', async () => {
     Separator,
     Input,
     Toggle,
+    EmptyState,
     Button,
     DashboardWidget,
     DashboardWidgetHeader,
@@ -184,8 +191,7 @@ afterEach(() => {
 /**
  * These replace the sample-data assertions this file used to hold. Slots and
  * links now come from `/v1/employer/scheduling`; calendar connections and
- * availability windows are still placeholders, and the notice narrowed to say
- * so rather than disappearing.
+ * availability windows were placeholders and are gone (#1024).
  */
 describe('CalendarSchedulingScreen — real scheduling data', () => {
   it('renders slots from the API, with the candidate name resolved from the application', () => {
@@ -322,27 +328,27 @@ describe('CalendarSchedulingScreen — write paths', () => {
   })
 })
 
-describe('CalendarSchedulingScreen — what is still sample data', () => {
-  it('scopes the notice to calendars, not the whole screen', () => {
+/**
+ * Calendar connections and availability windows were sample data behind a
+ * notice. #1024 (Clay, 2026-10-07): remove the dummy data. Nothing on the
+ * screen may show a connection or a window that does not exist.
+ */
+describe('CalendarSchedulingScreen — no sample calendar data', () => {
+  it('shows no sample notice, sample connection or calendar write actions anywhere', () => {
     render(<CalendarSchedulingScreen />)
 
-    expect(screen.getByText(/sample data — no calendar is connected/i)).toBeInTheDocument()
-    // The old copy claimed slots and links were placeholders too. They are not.
-    expect(
-      screen.queryByText(/sample data — scheduling is not connected/i)
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText(/sample data/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/last synced/i)).not.toBeInTheDocument()
+    for (const name of [/connect google/i, /connect outlook/i, /add availability/i]) {
+      expect(screen.queryAllByRole('button', { name })).toHaveLength(0)
+    }
   })
 
-  it('keeps the calendar write actions disabled, since OAuth does not exist yet', () => {
+  it('says plainly that no calendar can be connected yet', () => {
+    // The Tabs mock renders every tab's content, so no tab switch is needed.
     render(<CalendarSchedulingScreen />)
 
-    for (const name of [/connect google/i, /connect outlook/i, /add availability/i]) {
-      const buttons = screen.getAllByRole('button', { name })
-      expect(buttons.length).toBeGreaterThan(0)
-      for (const button of buttons) {
-        expect(button).toBeDisabled()
-      }
-    }
+    expect(screen.getByText(/no calendar connected/i)).toBeInTheDocument()
   })
 
   it('no longer disables the scheduling write actions', () => {

@@ -129,11 +129,11 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               width={80}
               height={80}
               borderRadius={24}
-              style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50] }}
+              style={{ backgroundColor: colors.bg[t].selected }}
               align="center"
               justify="center"
             >
-              <Briefcase size={40} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+              <Briefcase size={40} color={colors.text[t].emphasis} />
             </Stack>
 
             <Stack gap={8} align="center">
@@ -152,7 +152,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 {job.employment_type && (
                   <Row
                     style={{
-                      backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50],
+                      backgroundColor: colors.bg[t].selected,
                       borderColor: t === 'dark' ? colors.blue[700] : colors.blue[200],
                     }}
                     paddingHorizontal={12}
@@ -160,7 +160,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     borderRadius={12}
                     borderWidth={1}
                   >
-                    <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>
+                    <Text style={{ color: colors.text[t].emphasis }}>
                       {formatEmploymentType(job.employment_type)}
                     </Text>
                   </Row>

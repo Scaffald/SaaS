@@ -182,9 +182,7 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
         ? colors.green[700]
         : colors.green[300]
       : application.score >= 60
-        ? theme === 'light'
-          ? colors.blue[700]
-          : colors.blue[300]
+        ? colors.text[theme === 'light' ? 'light' : 'dark'].emphasis
         : theme === 'light'
           ? colors.error[700]
           : colors.error[300]
@@ -194,9 +192,7 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
         ? colors.green[50]
         : colors.green[900]
       : application.score >= 60
-        ? theme === 'light'
-          ? colors.blue[50]
-          : colors.blue[900]
+        ? colors.bg[theme === 'light' ? 'light' : 'dark'].selected
         : theme === 'light'
           ? colors.error[50]
           : colors.error[900]

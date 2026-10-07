@@ -18,7 +18,7 @@ interface UserProfileEducationProps {
 
 export function UserProfileEducation({ education }: UserProfileEducationProps) {
   const { theme } = useThemeContext()
-  const t = theme === 'dark' ? 'dark' : 'light' as const
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null
@@ -32,7 +32,7 @@ export function UserProfileEducation({ education }: UserProfileEducationProps) {
     <Card elevate bordered>
       <Stack gap={16} padding="lg">
         <Row gap={8} align="center">
-          <GraduationCap size={24} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+          <GraduationCap size={24} color={colors.text[t].emphasis} />
           <Text style={{ color: colors.text[t].secondary }}>Education</Text>
         </Row>
 
@@ -44,7 +44,9 @@ export function UserProfileEducation({ education }: UserProfileEducationProps) {
                   {edu.degree_type}
                   {edu.field_of_study && ` in ${edu.field_of_study}`}
                 </Text>
-                {edu.institution_name && <Text style={{ color: colors.text[t].secondary }}>{edu.institution_name}</Text>}
+                {edu.institution_name && (
+                  <Text style={{ color: colors.text[t].secondary }}>{edu.institution_name}</Text>
+                )}
                 {(edu.start_date || edu.end_date) && (
                   <Row gap={8} align="center">
                     <Calendar size={20} color={colors.text[t].secondary} />

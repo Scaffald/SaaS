@@ -1,15 +1,9 @@
-import { Popover, PopoverHeader, PopoverContent } from "@scaffald/ui";
-import { AlertCircle, Bell, Info, ShieldAlert } from "lucide-react-native";
-import type { Href } from "expo-router";
-import { useRouter } from "expo-router";
-import {
-  type ElementRef,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { Platform, ScrollView } from "react-native";
+import { Popover, PopoverHeader, PopoverContent } from '@scaffald/ui'
+import { AlertCircle, Bell, Info, ShieldAlert } from 'lucide-react-native'
+import type { Href } from 'expo-router'
+import { useRouter } from 'expo-router'
+import { type ElementRef, useCallback, useEffect, useRef, useState } from 'react'
+import { Platform, ScrollView } from 'react-native'
 import {
   Button,
   Card,
@@ -21,31 +15,31 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface NotificationItem {
-  id: string;
-  type: string;
-  severity: "info" | "important" | "critical";
-  title: string;
-  preview: string;
-  createdAt: string;
-  read: boolean;
-  ctaUrl?: string | null;
-  ctaLabel?: string | null;
-  channels: string[];
+  id: string
+  type: string
+  severity: 'info' | 'important' | 'critical'
+  title: string
+  preview: string
+  createdAt: string
+  read: boolean
+  ctaUrl?: string | null
+  ctaLabel?: string | null
+  channels: string[]
   metadata?: {
-    notification_type?: string;
-    site_id?: string;
-    overlapping_site_id?: string;
-    overlap_percent?: number;
-    threshold?: number;
-    [key: string]: unknown;
-  } | null;
+    notification_type?: string
+    site_id?: string
+    overlapping_site_id?: string
+    overlap_percent?: number
+    threshold?: number
+    [key: string]: unknown
+  } | null
 }
 
-type ButtonRef = ElementRef<typeof Button>;
+type ButtonRef = ElementRef<typeof Button>
 
 function getSeverityPillStyles(t: 'light' | 'dark') {
   return {
@@ -59,22 +53,22 @@ function getSeverityPillStyles(t: 'light' | 'dark') {
     },
     info: {
       backgroundColor: t === 'dark' ? colors.blue[800] : colors.blue[50],
-      color: t === 'dark' ? colors.blue[300] : colors.blue[600],
+      color: colors.text[t].emphasis,
     },
-  } as const;
+  } as const
 }
 
 interface PillProps {
-  label: string;
-  backgroundColor: StackProps["backgroundColor"];
-  color: TextProps["color"];
+  label: string
+  backgroundColor: StackProps['backgroundColor']
+  color: TextProps['color']
 }
 
 function getChannelPillStyle(t: 'light' | 'dark') {
   return {
     backgroundColor: colors.bg[t].muted,
     color: colors.text[t].primary,
-  } as const;
+  } as const
 }
 
 function Pill({ label, backgroundColor, color }: PillProps) {
@@ -88,90 +82,88 @@ function Pill({ label, backgroundColor, color }: PillProps) {
     >
       <Text color={color}>{label}</Text>
     </Row>
-  );
+  )
 }
 
 interface NotificationPopoverProps {
   /**
    * Array of notifications to display
    */
-  notifications: NotificationItem[];
+  notifications: NotificationItem[]
   /**
    * Unread count to display on badge
    */
-  unreadCount: number;
+  unreadCount: number
   /**
    * Loading state
    */
-  isLoading?: boolean;
+  isLoading?: boolean
   /**
    * Callback when notification is clicked
    */
-  onNotificationClick?: (notification: NotificationItem) => void;
+  onNotificationClick?: (notification: NotificationItem) => void
   /**
    * Callback to mark notification as read
    */
-  onMarkAsRead?: (notificationId: string) => void;
+  onMarkAsRead?: (notificationId: string) => void
 }
 
 /**
  * Format relative time (e.g., "2 hours ago", "1 day ago")
  */
 function formatRelativeTime(dateString: string): string {
-  if (!dateString) return "";
+  if (!dateString) return ''
 
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffSeconds = Math.floor(diffMs / 1000);
-  const diffMinutes = Math.floor(diffSeconds / 60);
-  const diffHours = Math.floor(diffMinutes / 60);
-  const diffDays = Math.floor(diffHours / 24);
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffSeconds = Math.floor(diffMs / 1000)
+  const diffMinutes = Math.floor(diffSeconds / 60)
+  const diffHours = Math.floor(diffMinutes / 60)
+  const diffDays = Math.floor(diffHours / 24)
 
-  if (diffSeconds < 60) return "Just now";
-  if (diffMinutes < 60)
-    return `${diffMinutes} ${diffMinutes === 1 ? "minute" : "minutes"} ago`;
-  if (diffHours < 24)
-    return `${diffHours} ${diffHours === 1 ? "hour" : "hours"} ago`;
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffSeconds < 60) return 'Just now'
+  if (diffMinutes < 60) return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'} ago`
+  if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`
+  if (diffDays === 1) return 'Yesterday'
+  if (diffDays < 7) return `${diffDays} days ago`
   if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7);
-    return `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
+    const weeks = Math.floor(diffDays / 7)
+    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`
   }
   if (diffDays < 365) {
-    const months = Math.floor(diffDays / 30);
-    return `${months} ${months === 1 ? "month" : "months"} ago`;
+    const months = Math.floor(diffDays / 30)
+    return `${months} ${months === 1 ? 'month' : 'months'} ago`
   }
-  const years = Math.floor(diffDays / 365);
-  return `${years} ${years === 1 ? "year" : "years"} ago`;
+  const years = Math.floor(diffDays / 365)
+  return `${years} ${years === 1 ? 'year' : 'years'} ago`
 }
 
 /**
  * Get notification icon based on type
  */
-function getNotificationIcon(severity: NotificationItem["severity"]) {
+function getNotificationIcon(severity: NotificationItem['severity']) {
   switch (severity) {
-    case "critical":
-      return ShieldAlert;
-    case "important":
-      return AlertCircle;
+    case 'critical':
+      return ShieldAlert
+    case 'important':
+      return AlertCircle
     default:
-      return Info;
+      return Info
   }
 }
 
 /**
  * Get notification color based on type
  */
-function getNotificationColor(severity: NotificationItem["severity"], t: 'light' | 'dark') {
+function getNotificationColor(severity: NotificationItem['severity'], t: 'light' | 'dark') {
   switch (severity) {
-    case "critical":
-      return t === 'dark' ? colors.error[300] : colors.error[600];
-    case "important":
-      return t === 'dark' ? colors.orange[300] : colors.orange[600];
+    case 'critical':
+      return t === 'dark' ? colors.error[300] : colors.error[600]
+    case 'important':
+      return t === 'dark' ? colors.orange[300] : colors.orange[600]
     default:
-      return t === 'dark' ? colors.blue[300] : colors.blue[600];
+      return colors.text[t].emphasis
   }
 }
 
@@ -187,69 +179,69 @@ export function NotificationPopover({
   onNotificationClick,
   onMarkAsRead,
 }: NotificationPopoverProps) {
-  const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const triggerRef = useRef<ButtonRef>(null);
-  const { theme } = useThemeContext();
-  const t = theme === 'dark' ? 'dark' : 'light' as const;
-  const severityPillStyles = getSeverityPillStyles(t);
-  const channelPillStyle = getChannelPillStyle(t);
+  const [open, setOpen] = useState(false)
+  const router = useRouter()
+  const triggerRef = useRef<ButtonRef>(null)
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
+  const severityPillStyles = getSeverityPillStyles(t)
+  const channelPillStyle = getChannelPillStyle(t)
 
   // Separate notifications into unread and read
-  const unreadNotifications = notifications.filter((n) => !n.read);
-  const readNotifications = notifications.filter((n) => n.read);
+  const unreadNotifications = notifications.filter((n) => !n.read)
+  const readNotifications = notifications.filter((n) => n.read)
 
   // Handle notification click
   const handleNotificationClick = useCallback(
     (notification: NotificationItem) => {
       // Mark as read if unread
       if (!notification.read && onMarkAsRead) {
-        onMarkAsRead(notification.id);
+        onMarkAsRead(notification.id)
       }
 
       // Call custom handler if provided
       if (onNotificationClick) {
-        onNotificationClick(notification);
+        onNotificationClick(notification)
       }
 
       // Navigate to destination if provided
       if (notification.ctaUrl) {
-        router.push(notification.ctaUrl as Href);
+        router.push(notification.ctaUrl as Href)
       }
 
       // Close popover
-      setOpen(false);
+      setOpen(false)
     },
     [onNotificationClick, onMarkAsRead, router]
-  );
+  )
 
   // Handle escape key to close
   useEffect(() => {
-    if (!open) return;
+    if (!open) return
 
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpen(false);
+      if (e.key === 'Escape') {
+        setOpen(false)
         // Return focus to trigger (web only; trigger may be View on RN)
-        (triggerRef.current as unknown as { focus?: () => void })?.focus?.();
+        ;(triggerRef.current as unknown as { focus?: () => void })?.focus?.()
       }
-    };
-
-    if (Platform.OS === "web" && typeof window !== "undefined") {
-      window.addEventListener("keydown", handleEscape); // platform-allow: gated by Platform.OS === 'web'
-      return () => window.removeEventListener("keydown", handleEscape); // platform-allow: gated by Platform.OS === 'web'
     }
-  }, [open]);
+
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleEscape) // platform-allow: gated by Platform.OS === 'web'
+      return () => window.removeEventListener('keydown', handleEscape) // platform-allow: gated by Platform.OS === 'web'
+    }
+  }, [open])
 
   // Handle click outside to close
   const handleOpenChange = useCallback((newOpen: boolean) => {
-    setOpen(newOpen);
+    setOpen(newOpen)
     if (!newOpen && triggerRef.current) {
       // Return focus to trigger when closing (web only)
-      const el = triggerRef.current as unknown as { focus?: () => void };
-      setTimeout(() => el?.focus?.(), 100);
+      const el = triggerRef.current as unknown as { focus?: () => void }
+      setTimeout(() => el?.focus?.(), 100)
     }
-  }, []);
+  }, [])
 
   const popoverContent = (
     <>
@@ -268,18 +260,15 @@ export function NotificationPopover({
         ) : notifications.length === 0 ? (
           <Stack padding="md" align="center" gap={12}>
             <Bell size={32} color="gray" opacity={0.5} />
-            <Text color="gray" style={{ textAlign: "center" }}>
+            <Text color="gray" style={{ textAlign: 'center' }}>
               No notifications
             </Text>
-            <Text color="gray" style={{ textAlign: "center" }}>
+            <Text color="gray" style={{ textAlign: 'center' }}>
               You're all caught up!
             </Text>
           </Stack>
         ) : (
-          <ScrollView
-            style={{ maxHeight: 320 }}
-            showsVerticalScrollIndicator={false}
-          >
+          <ScrollView style={{ maxHeight: 320 }} showsVerticalScrollIndicator={false}>
             <Stack>
               {/* Unread Section */}
               {unreadNotifications.length > 0 && (
@@ -293,27 +282,19 @@ export function NotificationPopover({
                       borderBottomColor: colors.border[t].default,
                     }}
                   >
-                    <Text color="gray">
-                      Unread ({unreadNotifications.length})
-                    </Text>
+                    <Text color="gray">Unread ({unreadNotifications.length})</Text>
                   </Row>
                   <Stack>
                     {unreadNotifications.map((notification, index) => {
-                      const IconComponent = getNotificationIcon(
-                        notification.severity
-                      );
-                      const iconColor = getNotificationColor(
-                        notification.severity, t
-                      );
+                      const IconComponent = getNotificationIcon(notification.severity)
+                      const iconColor = getNotificationColor(notification.severity, t)
 
                       return (
                         <Stack key={notification.id}>
                           <Card
                             pressable
                             padding="sm"
-                            onPress={() =>
-                              handleNotificationClick(notification)
-                            }
+                            onPress={() => handleNotificationClick(notification)}
                             style={{
                               backgroundColor: colors.bg[t].muted,
                               borderWidth: 1,
@@ -327,18 +308,16 @@ export function NotificationPopover({
                             <Row gap={12} align="flex-start">
                               <IconComponent size={18} color={iconColor} />
                               <Stack style={{ flex: 1 }} gap={8}>
-                                <Row
-                                  justify="space-between"
-                                  align="flex-start"
-                                  gap={8}
-                                >
+                                <Row justify="space-between" align="flex-start" gap={8}>
                                   <Text color="gray" style={{ flex: 1 }}>
                                     {notification.title}
                                   </Text>
                                   <Stack
                                     width={6}
                                     height={6}
-                                    backgroundColor={t === 'dark' ? colors.blue[400] : colors.blue[500]}
+                                    backgroundColor={
+                                      t === 'dark' ? colors.blue[400] : colors.blue[500]
+                                    }
                                     borderRadius={8}
                                     style={{ marginTop: 4 }}
                                   />
@@ -353,22 +332,14 @@ export function NotificationPopover({
                                   <Pill
                                     label={notification.severity.toUpperCase()}
                                     backgroundColor={
-                                      severityPillStyles[
-                                        notification.severity
-                                      ].backgroundColor
+                                      severityPillStyles[notification.severity].backgroundColor
                                     }
-                                    color={
-                                      severityPillStyles[
-                                        notification.severity
-                                      ].color
-                                    }
+                                    color={severityPillStyles[notification.severity].color}
                                   />
                                   {notification.channels?.length > 0 && (
                                     <Pill
-                                      label={notification.channels.join(", ")}
-                                      backgroundColor={
-                                        channelPillStyle.backgroundColor
-                                      }
+                                      label={notification.channels.join(', ')}
+                                      backgroundColor={channelPillStyle.backgroundColor}
                                       color={channelPillStyle.color}
                                     />
                                   )}
@@ -378,9 +349,7 @@ export function NotificationPopover({
                                     size="sm"
                                     color="primary"
                                     style={{ marginTop: 4 }}
-                                    onPress={() =>
-                                      handleNotificationClick(notification)
-                                    }
+                                    onPress={() => handleNotificationClick(notification)}
                                   >
                                     {notification.ctaLabel}
                                   </Button>
@@ -389,24 +358,19 @@ export function NotificationPopover({
                             </Row>
                           </Card>
                           {index < unreadNotifications.length - 1 && (
-                            <Separator
-                              style={{ backgroundColor: colors.border[t].default }}
-                            />
+                            <Separator style={{ backgroundColor: colors.border[t].default }} />
                           )}
                         </Stack>
-                      );
+                      )
                     })}
                   </Stack>
                 </>
               )}
 
               {/* Separator between sections */}
-              {unreadNotifications.length > 0 &&
-                readNotifications.length > 0 && (
-                  <Separator
-                    style={{ backgroundColor: colors.border[t].default }}
-                  />
-                )}
+              {unreadNotifications.length > 0 && readNotifications.length > 0 && (
+                <Separator style={{ backgroundColor: colors.border[t].default }} />
+              )}
 
               {/* Read Section */}
               {readNotifications.length > 0 && (
@@ -424,21 +388,15 @@ export function NotificationPopover({
                   </Row>
                   <Stack>
                     {readNotifications.map((notification, index) => {
-                      const IconComponent = getNotificationIcon(
-                        notification.severity
-                      );
-                      const iconColor = getNotificationColor(
-                        notification.severity, t
-                      );
+                      const IconComponent = getNotificationIcon(notification.severity)
+                      const iconColor = getNotificationColor(notification.severity, t)
 
                       return (
                         <Stack key={notification.id}>
                           <Card
                             pressable
                             padding="sm"
-                            onPress={() =>
-                              handleNotificationClick(notification)
-                            }
+                            onPress={() => handleNotificationClick(notification)}
                             style={{
                               backgroundColor: colors.bg[t].subtle,
                               borderWidth: 0,
@@ -463,22 +421,14 @@ export function NotificationPopover({
                                   <Pill
                                     label={notification.severity.toUpperCase()}
                                     backgroundColor={
-                                      severityPillStyles[
-                                        notification.severity
-                                      ].backgroundColor
+                                      severityPillStyles[notification.severity].backgroundColor
                                     }
-                                    color={
-                                      severityPillStyles[
-                                        notification.severity
-                                      ].color
-                                    }
+                                    color={severityPillStyles[notification.severity].color}
                                   />
                                   {notification.channels?.length > 0 && (
                                     <Pill
-                                      label={notification.channels.join(", ")}
-                                      backgroundColor={
-                                        channelPillStyle.backgroundColor
-                                      }
+                                      label={notification.channels.join(', ')}
+                                      backgroundColor={channelPillStyle.backgroundColor}
                                       color={channelPillStyle.color}
                                     />
                                   )}
@@ -488,9 +438,7 @@ export function NotificationPopover({
                                     size="sm"
                                     color="primary"
                                     style={{ marginTop: 4 }}
-                                    onPress={() =>
-                                      handleNotificationClick(notification)
-                                    }
+                                    onPress={() => handleNotificationClick(notification)}
                                   >
                                     {notification.ctaLabel}
                                   </Button>
@@ -499,12 +447,10 @@ export function NotificationPopover({
                             </Row>
                           </Card>
                           {index < readNotifications.length - 1 && (
-                            <Separator
-                              style={{ backgroundColor: colors.border[t].default }}
-                            />
+                            <Separator style={{ backgroundColor: colors.border[t].default }} />
                           )}
                         </Stack>
-                      );
+                      )
                     })}
                   </Stack>
                 </>
@@ -514,7 +460,7 @@ export function NotificationPopover({
         )}
       </PopoverContent>
     </>
-  );
+  )
 
   return (
     <Popover
@@ -529,20 +475,18 @@ export function NotificationPopover({
         color="gray"
         style={{
           borderWidth: 0,
-          backgroundColor: "transparent",
+          backgroundColor: 'transparent',
           height: 30,
-          position: "relative",
+          position: 'relative',
         }}
-        accessibilityLabel={`Notifications${
-          unreadCount > 0 ? ` (${unreadCount} unread)` : ""
-        }`}
+        accessibilityLabel={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
         onPress={() => setOpen(!open)}
       >
         <Bell size={20} />
         {unreadCount > 0 && (
           <Stack
             style={{
-              position: "absolute",
+              position: 'absolute',
               top: -4,
               right: -4,
               backgroundColor: t === 'dark' ? colors.error[400] : colors.error[500],
@@ -554,13 +498,11 @@ export function NotificationPopover({
             }}
           >
             <Row align="center" justify="center">
-              <Text color="white">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </Text>
+              <Text color="white">{unreadCount > 99 ? '99+' : unreadCount}</Text>
             </Row>
           </Stack>
         )}
       </Button>
     </Popover>
-  );
+  )
 }

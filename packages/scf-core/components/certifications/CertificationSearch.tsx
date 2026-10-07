@@ -112,7 +112,7 @@ export function CertificationSearch({
   const DepthBadge = ({ depth }: { depth: number }) => {
     const labels = ['Top Level', 'Category', 'Certification']
     const badgeColors = [
-      t === 'dark' ? colors.blue[300] : colors.blue[600],
+      colors.text[t].emphasis,
       t === 'dark' ? colors.green[300] : colors.green[600],
       t === 'dark' ? colors.purple[300] : colors.purple[600],
     ]
@@ -184,7 +184,9 @@ export function CertificationSearch({
                 ) : (
                   <>
                     <Search size={32} color={colors.text[t].secondary} />
-                    <Text style={{ color: colors.text[t].secondary }}>Type to search certifications</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>
+                      Type to search certifications
+                    </Text>
                     <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
                       Search for certifications like "OSHA" or "First Aid"
                     </Text>
@@ -230,7 +232,11 @@ export function CertificationSearch({
                             <Text style={{ flex: 1 }}>{cert.title}</Text>
                             <DepthBadge depth={cert.depth} />
                           </Row>
-                          {cert.description && <Text style={{ color: colors.text[t].secondary }}>{cert.description}</Text>}
+                          {cert.description && (
+                            <Text style={{ color: colors.text[t].secondary }}>
+                              {cert.description}
+                            </Text>
+                          )}
                         </Stack>
                       </Card>
                     ))}
@@ -278,7 +284,11 @@ export function CertificationSearch({
                             <Text style={{ flex: 1 }}>{cert.title}</Text>
                             <DepthBadge depth={cert.depth} />
                           </Row>
-                          {cert.description && <Text style={{ color: colors.text[t].secondary }}>{cert.description}</Text>}
+                          {cert.description && (
+                            <Text style={{ color: colors.text[t].secondary }}>
+                              {cert.description}
+                            </Text>
+                          )}
                         </Stack>
                       </Card>
                     ))}
@@ -331,11 +341,19 @@ export function CertificationSearch({
                             <Row gap={8} align="center" style={{ flexWrap: 'wrap' }}>
                               <Stack style={{ flex: 1 }} gap={4}>
                                 <Text>{cert.title}</Text>
-                                {cert.parent_title && <Text style={{ color: colors.text[t].secondary }}>{hierarchyPath}</Text>}
+                                {cert.parent_title && (
+                                  <Text style={{ color: colors.text[t].secondary }}>
+                                    {hierarchyPath}
+                                  </Text>
+                                )}
                               </Stack>
                               <DepthBadge depth={cert.depth} />
                             </Row>
-                            {cert.description && <Text style={{ color: colors.text[t].secondary }}>{cert.description}</Text>}
+                            {cert.description && (
+                              <Text style={{ color: colors.text[t].secondary }}>
+                                {cert.description}
+                              </Text>
+                            )}
                           </Stack>
                         </Card>
                       )

@@ -26,7 +26,7 @@ export function CertificationChip({
   return (
     <Row
       style={{
-        backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100],
+        backgroundColor: colors.bg[t].selected,
         borderColor: t === 'dark' ? colors.blue[500] : colors.blue[400],
         borderWidth: 1,
         borderRadius: 8,
@@ -36,7 +36,7 @@ export function CertificationChip({
         alignItems: 'center',
       }}
     >
-      <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>{certification.title}</Text>
+      <Text style={{ color: colors.text[t].emphasis }}>{certification.title}</Text>
       <Button
         size="sm"
         variant="text"
