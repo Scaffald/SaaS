@@ -239,7 +239,6 @@ export function TeamSettingsForm({
 
       <Stack gap={16} style={{ opacity: canEdit ? 1 : 0.6 }}>
         <Stack gap={8}>
-          <Text>Default role for new members</Text>
           <Text style={{ color: colors.text[theme].secondary }}>
             Select which role is assigned when a member is added without specifying a role.
           </Text>

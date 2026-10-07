@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { Button, Label, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 import { getStatusMetadata } from '../components/status.utils'
 import { OrganizationCheckDetails } from './OrganizationCheckDetails'
@@ -218,7 +218,6 @@ export function OrganizationBackgroundChecksPage() {
     <Stack flex={1}>
       <Stack padding="md" gap={12}>
         <Stack gap={8}>
-          <Label htmlFor="office-background-checks-organization">Organization</Label>
           <ResponsiveSelect
             value={selectedOrganizationId ?? ''}
             onValueChange={(value) => {

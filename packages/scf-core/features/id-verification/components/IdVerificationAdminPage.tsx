@@ -279,7 +279,6 @@ export function IdVerificationAdminPage({
         </Stack>
 
         <Stack gap={8}>
-          <Text style={{ color: colors.text[t].secondary }}>Organization</Text>
           <ResponsiveSelect
             value={selectedOrganizationId ?? '__all__'}
             onValueChange={handleOrganizationChange}

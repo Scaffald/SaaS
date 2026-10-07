@@ -447,7 +447,6 @@ export function AdminCheckReviewDialog({
 
                 <Stack gap={12}>
                   <Stack gap={4}>
-                    <Label>Status</Label>
                     <ResponsiveSelect
                       value={status}
                       onValueChange={(value) => setStatus(value as BackgroundCheckStatus)}

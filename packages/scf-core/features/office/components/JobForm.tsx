@@ -954,13 +954,14 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       />
         {/* Organization Selector */}
         <Stack gap={8}>
-          <Text>Organization *</Text>
           <ResponsiveSelect
             testID="job-organization-select"
             value={formData.organization_id}
             onValueChange={(value: string) => setFormData({ ...formData, organization_id: value })}
             placeholder="Select organization"
-            label="Organization"
+            // Required, marked like the other required fields; the separate
+            // "Organization *" text above printed the label twice (#1026).
+            label="Organization *"
             options={organizations.map((org: Organization) => ({
               value: org.id,
               label: org.name,
@@ -1051,7 +1052,6 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               range. Workers couldn't filter by them on the discovery side. */}
           <Row gap={8}>
             <Stack gap={8} flex={1}>
-              <Text>Employment type</Text>
               <ResponsiveSelect
                 value={formData.employment_type ?? ''}
                 onValueChange={(value: string) =>
@@ -1069,7 +1069,6 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               />
             </Stack>
             <Stack gap={8} flex={1}>
-              <Text>Work arrangement</Text>
               <ResponsiveSelect
                 value={formData.remote_option ?? ''}
                 onValueChange={(value: string) =>

@@ -317,7 +317,6 @@ export function OrganizationBackgroundCheckRequestForm() {
 
         <Stack gap={12}>
           <Stack gap={8}>
-            <Label htmlFor="org-select">Organization</Label>
             <ResponsiveSelect
               value={organizationId ?? ""}
               onValueChange={(value) => {
@@ -339,7 +338,6 @@ export function OrganizationBackgroundCheckRequestForm() {
           </Stack>
 
           <Stack gap={8}>
-            <Label htmlFor="package-select">Background check package</Label>
             <ResponsiveSelect
               value={selectedPackageId ?? ""}
               onValueChange={(value) => setSelectedPackageId(value)}
@@ -407,7 +405,6 @@ export function OrganizationBackgroundCheckRequestForm() {
           </Stack>
 
           <Stack gap={8}>
-            <Label htmlFor="job-select">Related job (optional)</Label>
             <ResponsiveSelect
               value={selectedJobId ?? ""}
               onValueChange={(value) => setSelectedJobId(value || null)}
