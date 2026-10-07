@@ -16,9 +16,10 @@ import {
   Row,
   Stack,
   Text,
-  Input,
+  ListToolbar,
   useThemeContext,
 } from '@scaffald/ui'
+import { StatusBadge } from '@scf/core/components/ui/StatusBadge'
 import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import {
   Calendar,
@@ -142,11 +143,15 @@ const MOCK_PROJECTS: HiringProject[] = [
 // Helper Components
 // ============================================================================
 
-const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  planning: { bg: colors.blue[100], text: colors.blue[800] },
-  hiring: { bg: colors.amber[100], text: colors.amber[800] },
-  active: { bg: colors.emerald[100], text: colors.emerald[800] },
-  completed: { bg: colors.zinc[200], text: colors.zinc[700] },
+const STATUS_FILTERS = ['all', 'planning', 'hiring', 'active', 'completed'] as const
+
+// StatusBadge's tints read in both themes; the raw 100/800 ramps this used
+// were light-only, a pale-yellow block on the dark card.
+const STATUS_VARIANT: Record<string, 'default' | 'success' | 'warning'> = {
+  planning: 'default',
+  hiring: 'warning',
+  active: 'success',
+  completed: 'default',
 }
 
 function ProjectCard({ project, onPress }: { project: HiringProject; onPress: () => void }) {
@@ -154,7 +159,6 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
   const fillPct = project.totalPositions > 0
     ? Math.round((project.filledPositions / project.totalPositions) * 100)
     : 0
-  const statusStyle = STATUS_COLORS[project.status] ?? STATUS_COLORS.planning
 
   return (
     <Pressable onPress={onPress}>
@@ -169,18 +173,9 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
                 {project.client}
               </Text>
             </Stack>
-            <Stack
-              style={{
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-                borderRadius: borderRadius.l,
-                backgroundColor: statusStyle.bg,
-              }}
-            >
-              <Text style={{ fontSize: fontSize.sm, fontWeight: '600', color: statusStyle.text }}>
-                {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
-              </Text>
-            </Stack>
+            <StatusBadge variant={STATUS_VARIANT[project.status] ?? 'default'}>
+              {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+            </StatusBadge>
           </Row>
 
           <Row gap={16}>
@@ -523,42 +518,24 @@ export function ProjectHiringScreen() {
           </Card>
         </Row>
 
-        {/* Search + Filters */}
-        <Row gap={12} align="center">
-          <Stack flex={1}>
-            <Input
-              placeholder="Search projects, locations, clients..."
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-          </Stack>
-        </Row>
-
-        {/* Status filter pills */}
-        <Row gap={8}>
-          {['all', 'planning', 'hiring', 'active', 'completed'].map((s) => (
-            <Pressable key={s} onPress={() => setStatusFilter(s)}>
-              <Stack
-                style={{
-                  paddingHorizontal: 14,
-                  paddingVertical: 6,
-                  borderRadius: borderRadius.l,
-                  backgroundColor:
-                    statusFilter === s ? colors.fg[theme].active : colors.bg[theme].subtle,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: fontSize.sm,
-                    color: statusFilter === s ? colors.text[theme].quaternary : colors.text[theme].secondary,
-                  }}
-                >
-                  {s.charAt(0).toUpperCase() + s.slice(1)} ({statusCounts[s] ?? 0})
-                </Text>
-              </Stack>
-            </Pressable>
-          ))}
-        </Row>
+        {/* Status partition on the toolbar's top edge, search beneath — the
+            ListToolbar pattern (#984). The status pills were a loose row that
+            ran off the page at 390, cutting "Completed" (#1031); folder tabs
+            scroll horizontally instead. */}
+        <ListToolbar
+          tabs={STATUS_FILTERS.map((s) => ({
+            key: s,
+            label: s.charAt(0).toUpperCase() + s.slice(1),
+            count: statusCounts[s] ?? 0,
+          }))}
+          activeTab={statusFilter}
+          onTabChange={setStatusFilter}
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Search projects, locations, clients..."
+          resultCount={filteredProjects.length}
+          resultNoun="project"
+        />
 
         {/* Project list */}
         <Stack gap={12}>
