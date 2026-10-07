@@ -9,6 +9,7 @@
 
 import { useState } from 'react'
 import {
+  ScreenHeader,
   Button,
   Card,
   DashboardWidget,
@@ -202,22 +203,16 @@ export function HRISIntegrationsScreen() {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <Stack gap={16}>
-        {/* Header */}
-        <Row justify="space-between" align="center">
-          <Stack gap={2}>
-            <Text style={{ color: colors.text[theme].primary, fontSize: fontSize.xl, fontWeight: '700' }}>
-              HRIS & Payroll
-            </Text>
-            <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.md }}>
-              Connect HRIS platforms and sync hired candidates automatically
-            </Text>
-          </Stack>
-          <Row gap={8} align="center">
+        <ScreenHeader
+          kicker="Integrations"
+          title="HRIS & payroll"
+          tip="Connect HRIS platforms and sync hired candidates automatically."
+          actions={
             <StatusBadge variant={connectedCount > 0 ? 'success' : 'default'}>
               {connectedCount} connected
             </StatusBadge>
-          </Row>
-        </Row>
+          }
+        />
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} type="line">

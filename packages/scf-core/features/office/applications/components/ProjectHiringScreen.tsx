@@ -10,9 +10,9 @@
 import { useState, useMemo, useCallback } from 'react'
 import { ScrollView, Pressable } from 'react-native'
 import {
+  ScreenHeader,
   Button,
   Card,
-  H2,
   Row,
   Stack,
   Text,
@@ -475,18 +475,16 @@ export function ProjectHiringScreen() {
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={24} style={{ paddingBottom: 40 }}>
-        {/* Header */}
-        <Row justify="space-between" align="center">
-          <Stack gap={4}>
-            <H2>Project-Based Hiring</H2>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              Manage crew hiring for construction projects and seasonal work
-            </Text>
-          </Stack>
-          <Button variant="filled" color="primary" size="sm" iconStart={Plus}>
-            New Project
-          </Button>
-        </Row>
+        <ScreenHeader
+          kicker="Compliance"
+          title="Project-based hiring"
+          tip="Crew hiring for construction projects and seasonal work."
+          actions={
+            <Button variant="filled" color="primary" size="sm" iconStart={Plus}>
+              New Project
+            </Button>
+          }
+        />
 
         {/* Summary cards */}
         <Row gap={12} style={{ flexWrap: 'wrap' }}>

@@ -6,6 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";
 import {
+  ScreenHeader,
   Button,
   Card,
   Spinner,
@@ -147,24 +148,22 @@ export function OfficePaymentAnalytics() {
 
   return (
     <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
-      <Row justify="space-between" align="center">
-        <Stack flex={1} minWidth={0}>
-          <Text>Payment Analytics</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>
-            Monitor payment transactions, revenue, and failure rates across all
-            services.
-          </Text>
-        </Stack>
-        <Button
-          size="sm"
-          variant="outline"
-          iconStart={RefreshCw}
-          onPress={() => analyticsQuery.refetch()}
-          disabled={analyticsQuery.isRefetching}
-        >
-          Refresh
-        </Button>
-      </Row>
+      <ScreenHeader
+        kicker="Payments"
+        title="Payment analytics"
+        tip="Transactions, revenue and failure rates across all services."
+        actions={
+          <Button
+            size="sm"
+            variant="outline"
+            iconStart={RefreshCw}
+            onPress={() => analyticsQuery.refetch()}
+            disabled={analyticsQuery.isRefetching}
+          >
+            Refresh
+          </Button>
+        }
+      />
 
       {isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>

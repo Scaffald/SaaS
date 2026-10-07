@@ -5,9 +5,9 @@
 
 import { useState } from 'react'
 import {
+  ScreenHeader,
   Button,
   Card,
-  H2,
   H4,
   Paragraph,
   Separator,
@@ -98,18 +98,17 @@ export function APIKeysList({
 
   return (
     <Stack flex={1} gap={16}>
-      {/* Header */}
-      <Row justify="space-between" align="center">
-        <Stack gap={8}>
-          <H2>API Keys</H2>
-          <Paragraph color={colors.text[theme].tertiary}>
-            Manage API keys for third-party integrations and SDK access
-          </Paragraph>
-        </Stack>
-        <Button iconStart={Plus} onPress={onCreateKey} color="primary">
-          Create API Key
-        </Button>
-      </Row>
+      {/* At 390 the hand-rolled row pushed Create API Key off-screen (#1022). */}
+      <ScreenHeader
+        kicker="Integrations"
+        title="API keys"
+        tip="Keys for third-party integrations and SDK access."
+        actions={
+          <Button iconStart={Plus} onPress={onCreateKey} color="primary">
+            Create API Key
+          </Button>
+        }
+      />
 
       <Separator />
 

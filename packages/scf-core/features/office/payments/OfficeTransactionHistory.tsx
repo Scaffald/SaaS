@@ -5,7 +5,8 @@ import {
 import type { PaymentTransaction } from "@scaffald/sdk";
 import { columnsFromTanStack } from "@scf/core/utils/table-columns";
 import { downloadFile } from "@scf/core/utils/platform";
-import { ResponsiveSelect, Table, useThemeContext } from "@scaffald/ui";
+import {
+  ScreenHeader, ResponsiveSelect, Table, useThemeContext } from "@scaffald/ui";
 import { Download, FileText, RefreshCw } from "lucide-react-native";
 import type { ColumnDef } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -165,34 +166,33 @@ export function OfficeTransactionHistory() {
 
   return (
     <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
-      <Row justify="space-between" align="center">
-        <Stack flex={1} minWidth={0}>
-          <Text>Transaction History</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>
-            View and export payment transaction records.
-          </Text>
-        </Stack>
-        <Row gap={8}>
-          <Button
-            size="sm"
-            variant="outline"
-            iconStart={Download}
-            onPress={handleExportCsv}
-            disabled={exportCsvMutation.isFetching}
-          >
-            Export CSV
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            iconStart={RefreshCw}
-            onPress={() => transactionsQuery.refetch()}
-            disabled={transactionsQuery.isRefetching}
-          >
-            Refresh
-          </Button>
-        </Row>
-      </Row>
+      <ScreenHeader
+        kicker="Payments"
+        title="Transaction history"
+        tip="Every payment transaction, exportable as CSV."
+        actions={
+          <Row gap={8}>
+            <Button
+              size="sm"
+              variant="outline"
+              iconStart={Download}
+              onPress={handleExportCsv}
+              disabled={exportCsvMutation.isFetching}
+            >
+              Export CSV
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              iconStart={RefreshCw}
+              onPress={() => transactionsQuery.refetch()}
+              disabled={transactionsQuery.isRefetching}
+            >
+              Refresh
+            </Button>
+          </Row>
+        }
+      />
 
       {/* Filters */}
       <Card

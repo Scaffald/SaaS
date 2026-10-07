@@ -3,13 +3,11 @@
  * Developer Portal for managing organization API keys
  */
 
+import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
 import { DeveloperPortal } from '@scf/core/features/api-keys'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
+// OfficeLayout, like the other office screens: this page rendered the portal
+// in a bare SafeAreaView, at an 8px gutter where the office sits at 16 (#1022).
 export default function OfficeAPIKeysPage() {
-  return (
-    <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
-      <DeveloperPortal />
-    </SafeAreaView>
-  )
+  return <OfficeLayout leftContent={<DeveloperPortal />} leftContainerProps={{ minWidth: '100%' }} />
 }
