@@ -1,11 +1,13 @@
+import { colors } from '@scaffald/ui/tokens'
 import { useEffect, useState } from 'react'
-import { Button, Card, Input, Spinner, Text, Row, Stack, useToast } from '@scaffald/ui'
+import { Button, Card, Input, Spinner, Text, Row, Stack, useToast, useThemeContext } from '@scaffald/ui'
 import {
   useGeographicSettings,
   useUpdateGeographicSettings,
 } from '@scf/core/utils/office-settings-sdk-hooks'
 
 export default function GeographicSettingsPage() {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const [threshold, setThreshold] = useState<string>('2.0')
 
@@ -87,14 +89,14 @@ export default function GeographicSettingsPage() {
     <Stack padding={16} gap={16}>
       <Stack gap={8}>
         <Text>Geographic Settings</Text>
-        <Text color="$gray11">Configure geographic validation settings for site boundaries</Text>
+        <Text color="secondary">Configure geographic validation settings for site boundaries</Text>
       </Stack>
       <Stack gap={16} style={{ maxWidth: 600 }}>
         <Card padding="md">
           <Stack gap={16}>
             <Stack gap={8}>
               <Text>Site Overlap Threshold</Text>
-              <Text color="$gray11">
+              <Text color="secondary">
                 When site boundaries overlap by more than this percentage, admins will receive
                 notifications. This helps identify potential data quality issues or survey
                 discrepancies.
@@ -113,14 +115,14 @@ export default function GeographicSettingsPage() {
                 />
                 <Text>%</Text>
               </Row>
-              <Text color="$gray10">Range: 0.1% - 10% (Default: 2.0%)</Text>
+              <Text color="tertiary">Range: 0.1% - 10% (Default: 2.0%)</Text>
             </Stack>
 
             <Card padding="md">
               <Stack gap={8}>
                 <Text>Current Setting</Text>
-                <Text color="$blue11">{threshold}%</Text>
-                <Text color="$gray11">
+                <Text style={{ color: colors.text[theme].emphasis }}>{threshold}%</Text>
+                <Text color="secondary">
                   Site overlaps exceeding {threshold}% will trigger admin notifications.
                 </Text>
               </Stack>
@@ -155,7 +157,7 @@ export default function GeographicSettingsPage() {
         <Card padding="md">
           <Stack gap={8}>
             <Text>About Site Overlaps</Text>
-            <Text color="$gray11">
+            <Text color="secondary">
               Site overlaps can occur when:
               {'\n'}• Multiple projects are assigned to adjacent or overlapping geographic areas
               {'\n'}• Survey data contains inaccuracies

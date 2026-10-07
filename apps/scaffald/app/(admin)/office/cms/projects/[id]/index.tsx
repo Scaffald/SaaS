@@ -1,3 +1,4 @@
+import { colors } from '@scaffald/ui/tokens'
 import { RouteBuilder } from '@scf/core/constants/routes'
 import {
   useApproveWorkerMutation,
@@ -8,9 +9,10 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import { CheckCircle, Clock, Eye, EyeOff, Plus, XCircle } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 
 export default function ProjectDetailPage() {
+  const { theme } = useThemeContext()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -119,7 +121,7 @@ export default function ProjectDetailPage() {
     <Stack padding={16} gap={16}>
       <Stack gap={8}>
         <Text>{project.name}</Text>
-        {project.description && <Text color="$gray11">{project.description}</Text>}
+        {project.description && <Text color="secondary">{project.description}</Text>}
       </Stack>
       <Stack gap={16}>
         {/* Project Info */}
@@ -140,31 +142,31 @@ export default function ProjectDetailPage() {
 
             <Row gap={16}>
               <Stack gap={4}>
-                <Text color="$gray10">Status</Text>
+                <Text color="tertiary">Status</Text>
                 <Text>{project.status.charAt(0).toUpperCase() + project.status.slice(1)}</Text>
               </Stack>
 
               {project.start_date && (
                 <Stack gap={4}>
-                  <Text color="$gray10">Start Date</Text>
+                  <Text color="tertiary">Start Date</Text>
                   <Text>{project.start_date}</Text>
                 </Stack>
               )}
 
               {project.end_date && (
                 <Stack gap={4}>
-                  <Text color="$gray10">End Date</Text>
+                  <Text color="tertiary">End Date</Text>
                   <Text>{project.end_date}</Text>
                 </Stack>
               )}
 
               <Stack gap={4}>
-                <Text color="$gray10">Location Visibility</Text>
+                <Text color="tertiary">Location Visibility</Text>
                 <Row gap={8} align="center">
                   {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                   <Text>{getVisibilityLabel(project.location_visibility)}</Text>
                   {project.location_visibility_override && (
-                    <Text color="$yellow10">(Override)</Text>
+                    <Text style={{ color: colors.text[theme].attention }}>(Override)</Text>
                   )}
                 </Row>
               </Stack>
@@ -183,7 +185,7 @@ export default function ProjectDetailPage() {
             </Row>
 
             {sites.length === 0 && addresses.length === 0 ? (
-              <Text color="$gray10">No location data added yet</Text>
+              <Text color="tertiary">No location data added yet</Text>
             ) : (
               <Stack gap={16}>
                 {sites.length > 0 && (
@@ -195,7 +197,7 @@ export default function ProjectDetailPage() {
                           {ps.site?.site_identifier || `Site ${ps.site?.id?.slice(0, 8)}`}
                         </Text>
                         {ps.site?.area_sqft && (
-                          <Text color="$gray10">
+                          <Text color="tertiary">
                             Area: {ps.site.area_sqft.toLocaleString()} sq ft
                           </Text>
                         )}
@@ -211,7 +213,7 @@ export default function ProjectDetailPage() {
                       <Card key={pa.address?.id || idx} padding="sm">
                         <Text>{pa.address?.address || 'No address'}</Text>
                         {pa.address?.property_type && (
-                          <Text color="$gray10">Type: {pa.address.property_type}</Text>
+                          <Text color="tertiary">Type: {pa.address.property_type}</Text>
                         )}
                       </Card>
                     ))}
@@ -219,7 +221,7 @@ export default function ProjectDetailPage() {
                 )}
 
                 {/* Mapbox map display - see SiteBoundaryDrawer for polygon drawing integration */}
-                <Text color="$gray10">
+                <Text color="tertiary">
                   Map display coming soon - will show site boundaries and address pins
                 </Text>
               </Stack>
@@ -238,7 +240,7 @@ export default function ProjectDetailPage() {
             </Row>
 
             {workers.length === 0 ? (
-              <Text color="$gray10">No workers assigned yet</Text>
+              <Text color="tertiary">No workers assigned yet</Text>
             ) : (
               <Stack gap={8}>
                 {workers.map((worker: (typeof workers)[0]) => {
@@ -254,15 +256,15 @@ export default function ProjectDetailPage() {
                             <Text>Worker {worker.user_id?.slice(0, 8)}</Text>
                           </Row>
                           {worker.role_on_project && (
-                            <Text color="$gray10">Role: {worker.role_on_project}</Text>
+                            <Text color="tertiary">Role: {worker.role_on_project}</Text>
                           )}
                           {worker.start_date && worker.end_date && (
-                            <Text color="$gray10">
+                            <Text color="tertiary">
                               {worker.start_date} - {worker.end_date}
                             </Text>
                           )}
                           {worker.claimed_by_worker && (
-                            <Text color="$blue10">Claimed by worker</Text>
+                            <Text style={{ color: colors.text[theme].emphasis }}>Claimed by worker</Text>
                           )}
                           {worker.assigned_by_manager && (
                             <Text color="green">Assigned by manager</Text>

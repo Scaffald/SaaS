@@ -33,7 +33,7 @@ interface ProfileResultCardProps extends CardProps {
  * >
  *   <Stack gap={8}>
  *     <Text>{item.name}</Text>
- *     <Text color="$gray11">{item.description}</Text>
+ *     <Text color="secondary">{item.description}</Text>
  *   </Stack>
  * </ProfileResultCard>
  * ```

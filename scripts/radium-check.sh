@@ -87,6 +87,22 @@ else
 fi
 
 echo ""
+# 7. Tamagui token strings as colours (#1038). Nothing resolves "$gray11" any
+#    more: the Typography resolver passes it through as a custom CSS colour,
+#    which is invalid, so the text silently inherits — dark-on-dark in dark
+#    mode. Use a semantic name (color="secondary") or colors.*[theme].
+echo -n "Checking Tamagui colour strings... "
+HITS=$(git ls-files 'apps/*.tsx' 'packages/scf-core/*.tsx' 2>/dev/null | xargs grep -nE '(color|fill|stroke)="\$[a-z]+[0-9]+"' 2>/dev/null || true)
+if [ -n "$HITS" ]; then
+  echo -e "${RED}FAIL${NC}"
+  echo '  Tamagui $tokens do not theme — use color="secondary" or colors.*[theme]:'
+  echo "$HITS" | head -10 | sed 's/^/    /'
+  ERRORS=$((ERRORS + 1))
+else
+  echo -e "${GREEN}OK${NC}"
+fi
+echo ""
+
 if [ "$ERRORS" -gt 0 ]; then
   echo -e "${RED}Found $ERRORS constraint violation(s)${NC}"
   echo "See .radium/ docs for correct patterns."

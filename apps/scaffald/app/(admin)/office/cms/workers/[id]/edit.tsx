@@ -1,14 +1,16 @@
+import { colors } from '@scaffald/ui/tokens'
 import { ProfileSkillsLeft, ProfileSkillsProvider } from '@scf/core/features/profile'
 import { EmploymentSection, GeneralProfileSection } from '@scf/core/features/profile/components'
 import { ProfileCertificationsHighlightProvider } from '@scf/core/features/profile/profile-certifications-highlight-context'
 import { ProfileCertificationsLeft } from '@scf/core/features/profile/profile-certifications-left'
 import { ProfileEducationLeft } from '@scf/core/features/profile/profile-education-left'
 import { ProfileExperienceLeft } from '@scf/core/features/profile/profile-experience-left'
-import { Button, H2, Separator, Text, Row, Stack, Card } from '@scaffald/ui'
+import { Button, H2, Separator, Text, Row, Stack, Card, useThemeContext } from '@scaffald/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
 
 export default function EditUserPage() {
+  const { theme } = useThemeContext()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
 
@@ -51,7 +53,7 @@ export default function EditUserPage() {
         <Stack gap={8}>
           <Text>Skills & Expertise</Text>
           <Card bordered padding="sm">
-            <Text color="$yellow11">
+            <Text style={{ color: colors.text[theme].attention }}>
               ⚠️ Note: Skills section currently shows/edits the logged-in admin's skills. Full
               multi-user support coming soon.
             </Text>
@@ -65,7 +67,7 @@ export default function EditUserPage() {
         <Stack gap={8}>
           <Text>Work Experience</Text>
           <Card bordered padding="sm">
-            <Text color="$yellow11">
+            <Text style={{ color: colors.text[theme].attention }}>
               ⚠️ Note: Experience section currently shows/edits the logged-in admin's experience.
               Full multi-user support coming soon.
             </Text>
@@ -77,7 +79,7 @@ export default function EditUserPage() {
         <Stack gap={8}>
           <Text>Education</Text>
           <Card bordered padding="sm">
-            <Text color="$yellow11">
+            <Text style={{ color: colors.text[theme].attention }}>
               ⚠️ Note: Education section currently shows/edits the logged-in admin's education. Full
               multi-user support coming soon.
             </Text>
@@ -89,7 +91,7 @@ export default function EditUserPage() {
         <Stack gap={8}>
           <Text>Certifications</Text>
           <Card bordered padding="sm">
-            <Text color="$yellow11">
+            <Text style={{ color: colors.text[theme].attention }}>
               ⚠️ Note: Certifications section currently shows/edits the logged-in admin's
               certifications. Full multi-user support coming soon.
             </Text>

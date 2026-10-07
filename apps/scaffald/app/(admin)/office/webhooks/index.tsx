@@ -1,3 +1,5 @@
+import { colors } from '@scaffald/ui/tokens'
+import { StatusBadge } from '@scf/core/components/ui'
 /**
  * Webhooks Management Page
  * Developer Portal page for managing webhook endpoints
@@ -8,11 +10,12 @@ import { Link, useRouter } from "expo-router";
 import { Pressable, ScrollView } from "react-native";
 import { useWebhooks } from "@scf/core/utils/webhooks-sdk-hooks";
 import { OfficeLayout } from "@scf/core/components/layouts/OfficeLayout";
-import { Button, Card, ErrorState, Row, Stack, Text } from "@scaffald/ui";
+import { Button, Card, ErrorState, Row, Stack, Text, useThemeContext } from "@scaffald/ui";
 import { ROUTES, buildPath } from "@scf/core/constants/routes";
 import type { Webhook } from "@scaffald/sdk/types/webhooks-management";
 
 export default function WebhooksPage() {
+  const { theme } = useThemeContext()
   const router = useRouter();
   const [selectedWebhook, setSelectedWebhook] = useState<string | null>(null);
 
@@ -34,7 +37,7 @@ export default function WebhooksPage() {
             <Row justify="space-between" align="center">
               <Text>Webhooks</Text>
               <Link href={ROUTES.OFFICE.WEBHOOKS.CREATE.path} asChild>
-                <Button variant="filled" size="md">
+                <Button variant="filled" color="primary" size="md">
                   Create Webhook
                 </Button>
               </Link>
@@ -44,7 +47,7 @@ export default function WebhooksPage() {
             <Card padding="lg">
               <Stack gap={12}>
                 <Text>Getting Started with Webhooks</Text>
-                <Text color="$gray11">
+                <Text color="secondary">
                   Webhooks allow you to receive real-time notifications when
                   events occur in your organization. Configure endpoints to
                   receive POST requests when jobs are created, applications are
@@ -52,7 +55,7 @@ export default function WebhooksPage() {
                 </Text>
                 <Pressable>
                   <Row>
-                    <Text color="$blue10">View Documentation →</Text>
+                    <Text style={{ color: colors.text[theme].emphasis }}>View Documentation →</Text>
                   </Row>
                 </Pressable>
               </Stack>
@@ -61,7 +64,7 @@ export default function WebhooksPage() {
             {/* Webhooks List */}
             {isLoading ? (
               <Stack padding="xl" align="center" justify="center">
-                <Text color="$gray11">Loading webhooks...</Text>
+                <Text color="secondary">Loading webhooks...</Text>
               </Stack>
             ) : isError ? (
               // A failed load is not "no webhooks" — the 500 behind #1016
@@ -76,12 +79,12 @@ export default function WebhooksPage() {
               <Card padding="xl">
                 <Stack align="center" gap={16}>
                   <Text>No webhooks configured</Text>
-                  <Text color="$gray11" style={{ maxWidth: 400 }}>
+                  <Text color="secondary" style={{ maxWidth: 400 }}>
                     Create your first webhook endpoint to start receiving
                     real-time event notifications.
                   </Text>
                   <Link href={ROUTES.OFFICE.WEBHOOKS.CREATE.path} asChild>
-                    <Button variant="filled" size="md">
+                    <Button variant="filled" color="primary" size="md">
                       Create Your First Webhook
                     </Button>
                   </Link>
@@ -116,10 +119,11 @@ export default function WebhooksPage() {
               <Card padding="lg">
                 <Stack gap={8}>
                   <Text>Available Event Types</Text>
-                  <Text color="$gray11">
+                  <Text color="secondary">
                     Subscribe to these events to receive notifications:
                   </Text>
-                  <Row gap={8}>
+                  {/* Wraps: six event cells in one row ran past the card at 390. */}
+                  <Row gap={8} style={{ flexWrap: "wrap" }}>
                     <EventTypeBadge label="job.created" category="Jobs" />
                     <EventTypeBadge label="job.published" category="Jobs" />
                     <EventTypeBadge
@@ -141,7 +145,7 @@ export default function WebhooksPage() {
                   </Row>
                   <Pressable>
                     <Row>
-                      <Text color="$blue10">View All Event Types →</Text>
+                      <Text style={{ color: colors.text[theme].emphasis }}>View All Event Types →</Text>
                     </Row>
                   </Pressable>
                 </Stack>
@@ -176,32 +180,25 @@ function WebhookCard({
       <Stack gap={16}>
         <Stack gap={8}>
           <Row gap={12} align="center" justify="space-between">
-            <Text>{webhook.url}</Text>
-            <Text
-              size="sm"
-              style={{
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                borderRadius: 4,
-                backgroundColor: webhook.is_active ? "#10b981" : "#6b7280",
-                color: "#ffffff",
-              }}
-            >
+            <Text style={{ flexShrink: 1 }}>{webhook.url}</Text>
+            {/* The themed status badge, not hand-rolled hex — and the URL
+                shrinks, so the badge is not pushed past the card at 390 (#1038). */}
+            <StatusBadge variant={webhook.is_active ? "success" : "default"}>
               {webhook.is_active ? "Active" : "Inactive"}
-            </Text>
+            </StatusBadge>
           </Row>
           {webhook.description && (
-            <Text color="$gray11">{webhook.description}</Text>
+            <Text color="secondary">{webhook.description}</Text>
           )}
         </Stack>
 
         <Row gap={24}>
           <Stack gap={4}>
-            <Text color="$gray11">Events</Text>
+            <Text color="secondary">Events</Text>
             <Text>{webhook.events.length}</Text>
           </Stack>
           <Stack gap={4}>
-            <Text color="$gray11">Success Rate</Text>
+            <Text color="secondary">Success Rate</Text>
             <Text>
               {(webhook.total_deliveries ?? 0) > 0
                 ? `${Math.round(
@@ -213,7 +210,7 @@ function WebhookCard({
             </Text>
           </Stack>
           <Stack gap={4}>
-            <Text color="$gray11">Last Delivery</Text>
+            <Text color="secondary">Last Delivery</Text>
             <Text>
               {webhook.last_delivery_at
                 ? new Date(webhook.last_delivery_at).toLocaleDateString()
@@ -240,10 +237,10 @@ interface EventTypeBadgeProps {
 function EventTypeBadge({ label, category }: EventTypeBadgeProps) {
   return (
     <Stack padding={8} gap={4}>
-      <Text style={{ fontFamily: "monospace" }} color="$gray12">
+      <Text style={{ fontFamily: "monospace" }} color="primary">
         {label}
       </Text>
-      <Text color="$gray10">{category}</Text>
+      <Text color="tertiary">{category}</Text>
     </Stack>
   );
 }
