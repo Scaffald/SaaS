@@ -113,7 +113,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
         </Stack>
       ) : !job ? (
         <Stack paddingVertical={32} align="center">
-          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Job not found</Text>
+          <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+            Job not found
+          </Text>
         </Stack>
       ) : (
         <ScrollView style={{ maxHeight: 600 }}>
@@ -124,11 +126,11 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 width={80}
                 height={80}
                 borderRadius={borderRadius.l}
-                style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+                style={{ backgroundColor: colors.bg[theme].selected }}
                 align="center"
                 justify="center"
               >
-                <Briefcase size={40} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
+                <Briefcase size={40} color={colors.text[theme].emphasis} />
               </Stack>
 
               <Stack gap={8} align="center">
@@ -147,30 +149,37 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               <Row gap={8} wrap justify="center">
                 {formatEmploymentType(job.employment_type ?? null) && (
                   <Row
-                    style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+                    style={{ backgroundColor: colors.bg[theme].selected }}
                     paddingHorizontal={12}
                     paddingVertical={4}
                     borderRadius={borderRadius.l}
                     gap={8}
                     align="center"
                   >
-                    <Briefcase size={20} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
-                    <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
+                    <Briefcase size={20} color={colors.text[theme].emphasis} />
+                    <Text style={{ color: colors.text[theme].emphasis }}>
                       {formatEmploymentType(job.employment_type ?? null)}
                     </Text>
                   </Row>
                 )}
                 {formatRemoteOption(job.remote_option ?? null) && (
                   <Row
-                    style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
+                    style={{
+                      backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
+                    }}
                     paddingHorizontal={12}
                     paddingVertical={4}
                     borderRadius={borderRadius.l}
                     gap={8}
                     align="center"
                   >
-                    <MapPin size={20} color={theme === "light" ? colors.green[700] : colors.green[300]} />
-                    <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
+                    <MapPin
+                      size={20}
+                      color={theme === 'light' ? colors.green[700] : colors.green[300]}
+                    />
+                    <Text
+                      style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}
+                    >
                       {formatRemoteOption(job.remote_option ?? null)}
                     </Text>
                   </Row>
@@ -251,12 +260,12 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     return (
                       <Row
                         key={skillKey}
-                        style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+                        style={{ backgroundColor: colors.bg[theme].selected }}
                         paddingHorizontal={8}
                         paddingVertical={4}
                         borderRadius={borderRadius.l}
                       >
-                        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{skillName}</Text>
+                        <Text style={{ color: colors.text[theme].emphasis }}>{skillName}</Text>
                       </Row>
                     )
                   })}
@@ -286,7 +295,13 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                             {jobCert.certification?.name || 'Unknown Certification'}
                           </Text>
                           {jobCert.is_required && (
-                            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>(Required)</Text>
+                            <Text
+                              style={{
+                                color: theme === 'light' ? colors.error[700] : colors.error[300],
+                              }}
+                            >
+                              (Required)
+                            </Text>
                           )}
                         </Row>
                       )
@@ -301,12 +316,18 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               <Row
                 backgroundColor={
                   job.status === 'open'
-                    ? theme === "light" ? colors.green[50] : colors.green[900]
+                    ? theme === 'light'
+                      ? colors.green[50]
+                      : colors.green[900]
                     : job.status === 'draft'
                       ? colors.bg[theme].muted
                       : job.status === 'paused'
-                        ? theme === "light" ? colors.yellow[50] : colors.yellow[900]
-                        : theme === "light" ? colors.error[50] : colors.error[900]
+                        ? theme === 'light'
+                          ? colors.yellow[50]
+                          : colors.yellow[900]
+                        : theme === 'light'
+                          ? colors.error[50]
+                          : colors.error[900]
                 }
                 paddingHorizontal={12}
                 paddingVertical={4}
@@ -315,12 +336,18 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 <Text
                   color={
                     job.status === 'open'
-                      ? theme === "light" ? colors.green[700] : colors.green[300]
+                      ? theme === 'light'
+                        ? colors.green[700]
+                        : colors.green[300]
                       : job.status === 'draft'
                         ? colors.text[theme].secondary
                         : job.status === 'paused'
-                          ? theme === "light" ? colors.yellow[700] : colors.yellow[300]
-                          : theme === "light" ? colors.error[700] : colors.error[300]
+                          ? theme === 'light'
+                            ? colors.yellow[700]
+                            : colors.yellow[300]
+                          : theme === 'light'
+                            ? colors.error[700]
+                            : colors.error[300]
                   }
                 >
                   {job.status

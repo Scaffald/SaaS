@@ -120,9 +120,14 @@ export function CooldownStep({
           <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             Please wait 60 seconds before taking the second color test
           </Text>
-          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{formatTime(timeRemaining)}</Text>
+          <Text style={{ color: colors.text[theme].emphasis }}>{formatTime(timeRemaining)}</Text>
         </Stack>
-        <ProgressBar value={cooldownProgress} showLabel={false} showIndicator={false} showHintMessage={false} />
+        <ProgressBar
+          value={cooldownProgress}
+          showLabel={false}
+          showIndicator={false}
+          showHintMessage={false}
+        />
       </Stack>
 
       {/* IPIP Questions Section */}
@@ -167,7 +172,12 @@ export function CooldownStep({
 
         {!currentQuestion && !isCooldownActive && (
           <Stack gap={8} align="center" padding="md">
-            <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300], textAlign: 'center' }}>
+            <Text
+              style={{
+                color: theme === 'light' ? colors.green[700] : colors.green[300],
+                textAlign: 'center',
+              }}
+            >
               All questions answered! You can continue to the next step.
             </Text>
           </Stack>

@@ -64,11 +64,7 @@ export function BackgroundCheckNavigationMenu() {
                 borderRadius={16}
                 borderWidth={1}
                 style={{
-                  borderColor: isActive
-                    ? t === 'dark'
-                      ? colors.blue[700]
-                      : colors.blue[300]
-                    : colors.border[t].default,
+                  borderColor: isActive ? colors.border[t].active : colors.border[t].default,
                   backgroundColor: isActive ? colors.bg[t].selected : colors.bg[t].muted,
                 }}
               >

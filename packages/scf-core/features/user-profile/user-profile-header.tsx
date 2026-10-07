@@ -102,9 +102,9 @@ export function UserProfileHeader({
             {profile.gamified_score !== null && (
               <Row
                 style={{
-                  backgroundColor: colors.bg[theme === 'light' ? 'light' : 'dark'].selected,
+                  backgroundColor: colors.bg[theme].selected,
                   borderWidth: 2,
-                  borderColor: theme === 'light' ? colors.blue[300] : colors.blue[700],
+                  borderColor: colors.border[theme].active,
                 }}
                 paddingHorizontal={20}
                 paddingVertical={12}
@@ -118,9 +118,7 @@ export function UserProfileHeader({
                   fill={theme === 'light' ? colors.blue[600] : colors.blue[400]}
                 />
                 <Stack>
-                  <Text
-                    style={{ color: colors.text[theme === 'light' ? 'light' : 'dark'].emphasis }}
-                  >
+                  <Text style={{ color: colors.text[theme].emphasis }}>
                     {profile.gamified_score}
                   </Text>
                   <Text style={{ color: theme === 'light' ? colors.blue[600] : colors.blue[400] }}>

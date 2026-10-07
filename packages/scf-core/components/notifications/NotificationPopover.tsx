@@ -52,7 +52,7 @@ function getSeverityPillStyles(t: 'light' | 'dark') {
       color: t === 'dark' ? colors.yellow[300] : colors.yellow[600],
     },
     info: {
-      backgroundColor: t === 'dark' ? colors.blue[800] : colors.blue[50],
+      backgroundColor: colors.bg[t].selected,
       color: colors.text[t].emphasis,
     },
   } as const
@@ -315,9 +315,7 @@ export function NotificationPopover({
                                   <Stack
                                     width={6}
                                     height={6}
-                                    backgroundColor={
-                                      t === 'dark' ? colors.blue[400] : colors.blue[500]
-                                    }
+                                    backgroundColor={colors.fg[t].active}
                                     borderRadius={8}
                                     style={{ marginTop: 4 }}
                                   />

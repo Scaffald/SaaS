@@ -3,16 +3,7 @@
  * Self-service app registration form
  */
 
-import {
-  Button,
-  Card,
-  Input,
-  Paragraph,
-  Text,
-  Row,
-  Stack,
-  useThemeContext,
-} from '@scaffald/ui'
+import { Button, Card, Input, Paragraph, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useState } from 'react'
 import { useRegisterAppMutation } from '@scf/core/utils/oauth-sdk-hooks'
@@ -87,7 +78,7 @@ export function AppRegistrationForm() {
             <Stack
               gap={8}
               padding="md"
-              style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+              style={{ backgroundColor: colors.bg[theme].selected }}
               borderRadius={8}
             >
               <Stack gap={4}>
@@ -100,14 +91,20 @@ export function AppRegistrationForm() {
                 <Text size="sm">Client Secret</Text>
                 <Text
                   size="sm"
-                  style={{ fontFamily: 'monospace', color: theme === "light" ? colors.error[700] : colors.error[300] }}
+                  style={{
+                    fontFamily: 'monospace',
+                    color: theme === 'light' ? colors.error[700] : colors.error[300],
+                  }}
                 >
                   {credentials.client_secret}
                 </Text>
               </Stack>
             </Stack>
 
-            <Paragraph size="sm" style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
+            <Paragraph
+              size="sm"
+              style={{ color: theme === 'light' ? colors.yellow[700] : colors.yellow[300] }}
+            >
               ⚠️ Important: Copy your client_secret now. It will not be shown again.
             </Paragraph>
 

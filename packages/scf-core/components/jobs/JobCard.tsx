@@ -224,7 +224,7 @@ export const JobCard = memo(
             onSelect
               ? {
                   enabled: true,
-                  selectedBorderColor: t === 'dark' ? colors.blue[400] : colors.blue[500],
+                  selectedBorderColor: colors.fg[t].active,
                   selectedBgColor: colors.bg[t].muted,
                   selectedShadow: '0 4px 8px rgba(35, 156, 178, 0.2)',
                 }

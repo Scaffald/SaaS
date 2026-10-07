@@ -40,7 +40,9 @@ export function OrganizationProjectPrivacySettings({
 }: OrganizationProjectPrivacySettingsProps) {
   const { theme } = useThemeContext()
   const toast = useToast()
-  const { data: orgData, isLoading } = useOrganization(organizationId, { enabled: !!organizationId })
+  const { data: orgData, isLoading } = useOrganization(organizationId, {
+    enabled: !!organizationId,
+  })
 
   const { data: projectsWithOverrides } = useOrganizationProjectsWithOverrides(organizationId, {
     enabled: !!organizationId,
@@ -91,8 +93,8 @@ export function OrganizationProjectPrivacySettings({
   return (
     <Card
       padding="md"
-      style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
-      borderColor={theme === "light" ? colors.blue[300] : colors.blue[700]}
+      style={{ backgroundColor: colors.bg[theme].selected }}
+      borderColor={colors.border[theme].active}
       borderWidth={1}
     >
       <Stack gap={16}>
@@ -117,8 +119,8 @@ export function OrganizationProjectPrivacySettings({
 
         <Card
           padding="sm"
-          style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900] }}
-          borderColor={theme === "light" ? colors.yellow[300] : colors.yellow[700]}
+          style={{ backgroundColor: theme === 'light' ? colors.yellow[50] : colors.yellow[900] }}
+          borderColor={theme === 'light' ? colors.yellow[300] : colors.yellow[700]}
           borderWidth={1}
         >
           <Stack gap={8}>

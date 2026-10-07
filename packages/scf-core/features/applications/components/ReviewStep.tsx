@@ -1,15 +1,7 @@
 import type { AttachmentMetadata, CustomQuestionAnswer, ScreeningAnswers } from '@scf/schemas'
 import { Check, Edit3, FileText } from 'lucide-react-native'
 import { useState } from 'react'
-import {
-  Button,
-  Checkbox,
-  Separator,
-  Text,
-  Row,
-  Stack,
-  useThemeContext,
-} from '@scaffald/ui'
+import { Button, Checkbox, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 export interface ReviewStepProps {
@@ -105,22 +97,25 @@ export function ReviewStep({
             onPress={() => onEdit('screening')}
             disabled={isSubmitting}
           >
-            <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Edit</Text>
+            <Text style={{ color: colors.text[theme].emphasis }}>Edit</Text>
           </Button>
         </Row>
 
         <Separator />
 
         <Stack gap={16}>
-          <InfoRow theme={theme}
+          <InfoRow
+            theme={theme}
             label="Current Location"
             value={screeningAnswers.current_location || 'Not provided'}
           />
-          <InfoRow theme={theme}
+          <InfoRow
+            theme={theme}
             label="Willing to Relocate"
             value={screeningAnswers.willing_to_relocate ? 'Yes' : 'No'}
           />
-          <InfoRow theme={theme}
+          <InfoRow
+            theme={theme}
             label="Years of Experience"
             value={
               screeningAnswers.years_experience
@@ -128,7 +123,8 @@ export function ReviewStep({
                 : 'Not provided'
             }
           />
-          <InfoRow theme={theme}
+          <InfoRow
+            theme={theme}
             label="Work Authorization"
             value={
               screeningAnswers.is_authorized_to_work
@@ -136,7 +132,8 @@ export function ReviewStep({
                 : 'No, will require sponsorship'
             }
           />
-          <InfoRow theme={theme}
+          <InfoRow
+            theme={theme}
             label="Earliest Start Date"
             value={screeningAnswers.earliest_start_date || 'Not provided'}
           />
@@ -168,7 +165,7 @@ export function ReviewStep({
               onPress={() => onEdit('questions')}
               disabled={isSubmitting}
             >
-              <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Edit</Text>
+              <Text style={{ color: colors.text[theme].emphasis }}>Edit</Text>
             </Button>
           </Row>
 
@@ -176,7 +173,8 @@ export function ReviewStep({
 
           <Stack gap={16}>
             {customQuestionAnswers.map((answer, index) => (
-              <InfoRow theme={theme}
+              <InfoRow
+                theme={theme}
                 key={answer.question_id || index}
                 label={answer.question}
                 value={formatAnswer(answer.answer)}
@@ -210,7 +208,7 @@ export function ReviewStep({
             onPress={() => onEdit('attachments')}
             disabled={isSubmitting}
           >
-            <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Edit</Text>
+            <Text style={{ color: colors.text[theme].emphasis }}>Edit</Text>
           </Button>
         </Row>
 
@@ -224,13 +222,23 @@ export function ReviewStep({
           )}
 
           {attachments.cover_letter ? (
-            <DocumentRow type="Cover Letter" metadata={attachments.cover_letter} required={false} theme={theme} />
+            <DocumentRow
+              type="Cover Letter"
+              metadata={attachments.cover_letter}
+              required={false}
+              theme={theme}
+            />
           ) : (
             <Text style={{ color: colors.text[theme].secondary }}>Cover Letter: Not provided</Text>
           )}
 
           {attachments.portfolio && (
-            <DocumentRow type="Portfolio" metadata={attachments.portfolio} required={false} theme={theme} />
+            <DocumentRow
+              type="Portfolio"
+              metadata={attachments.portfolio}
+              required={false}
+              theme={theme}
+            />
           )}
         </Stack>
       </Stack>
@@ -291,7 +299,15 @@ export function ReviewStep({
 /**
  * Helper component for displaying info rows
  */
-function InfoRow({ label, value, theme }: { label: string; value: string; theme: 'light' | 'dark' }) {
+function InfoRow({
+  label,
+  value,
+  theme,
+}: {
+  label: string
+  value: string
+  theme: 'light' | 'dark'
+}) {
   return (
     <Stack gap={8}>
       <Text style={{ color: colors.text[theme].secondary }}>{label}</Text>
@@ -325,11 +341,15 @@ function DocumentRow({
 
   return (
     <Row gap={12} align="center">
-      <FileText size={24} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
+      <FileText size={24} color={colors.text[theme].emphasis} />
       <Stack gap={4} flex={1}>
         <Row gap={8} align="center">
           <Text style={{ color: colors.text[theme].secondary }}>{type}</Text>
-          {required && <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>(Required)</Text>}
+          {required && (
+            <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+              (Required)
+            </Text>
+          )}
         </Row>
         <Text style={{ color: colors.text[theme].secondary }}>{metadata.filename}</Text>
         <Row gap={8} align="center">

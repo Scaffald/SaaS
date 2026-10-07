@@ -133,9 +133,20 @@ export const MessagesTab = ({
   if (error) {
     return (
       <Stack gap={12} padding="md">
-        <Card variant="glass" padding="md" style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}>
-          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Error loading messages</Text>
-          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300], marginTop: 8 }}>
+        <Card
+          variant="glass"
+          padding="md"
+          style={{ backgroundColor: theme === 'light' ? colors.error[50] : colors.error[900] }}
+        >
+          <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+            Error loading messages
+          </Text>
+          <Text
+            style={{
+              color: theme === 'light' ? colors.error[700] : colors.error[300],
+              marginTop: 8,
+            }}
+          >
             {error.message || 'Failed to load messages'}
           </Text>
         </Card>
@@ -160,7 +171,9 @@ export const MessagesTab = ({
               padding="md"
               style={{
                 backgroundColor:
-                  message.sender === 'recruiter' ? theme === "light" ? colors.blue[50] : colors.blue[900] : colors.bg[theme].subtle,
+                  message.sender === 'recruiter'
+                    ? colors.bg[theme].selected
+                    : colors.bg[theme].subtle,
                 alignSelf: message.sender === 'recruiter' ? 'flex-end' : 'flex-start',
                 maxWidth: '80%',
               }}
@@ -181,7 +194,11 @@ export const MessagesTab = ({
 
               {!message.isRead && message.sender === 'candidate' && (
                 <Stack style={{ marginTop: 8 }}>
-                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Unread</Text>
+                  <Text
+                    style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+                  >
+                    Unread
+                  </Text>
                 </Stack>
               )}
             </Card>
@@ -191,7 +208,11 @@ export const MessagesTab = ({
 
       {/* Template Manager (full screen overlay) */}
       {showTemplateManager && (
-        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle, minHeight: 400 }}>
+        <Card
+          variant="glass"
+          padding="md"
+          style={{ backgroundColor: colors.bg[theme].subtle, minHeight: 400 }}
+        >
           <MessageTemplatesManager
             templates={allTemplates}
             onCreate={createTemplate}

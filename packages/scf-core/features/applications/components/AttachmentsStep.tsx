@@ -311,7 +311,11 @@ export function AttachmentsStep({
       <Stack gap={12}>
         <Row gap={8} align="center">
           <Text style={{ color: colors.text[theme].secondary }}>Resume</Text>
-          {requireResume && <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Required</Text>}
+          {requireResume && (
+            <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+              Required
+            </Text>
+          )}
         </Row>
 
         {getAttachment('resume') ? (
@@ -320,15 +324,18 @@ export function AttachmentsStep({
             borderRadius={16}
             style={{
               borderWidth: 2,
-              borderColor: theme === "light" ? colors.green[300] : colors.green[700],
-              backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
+              borderColor: theme === 'light' ? colors.green[300] : colors.green[700],
+              backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
             }}
             justify="space-between"
             align="center"
             gap={12}
           >
             <Row gap={12} align="center" flex={1}>
-              <CheckCircle2 size={24} color={theme === "light" ? colors.green[700] : colors.green[300]} />
+              <CheckCircle2
+                size={24}
+                color={theme === 'light' ? colors.green[700] : colors.green[300]}
+              />
               <Stack flex={1}>
                 <Text style={{ color: colors.text[theme].secondary }}>
                   {getAttachment('resume')?.filename}
@@ -353,13 +360,13 @@ export function AttachmentsStep({
               borderRadius={16}
               style={{
                 borderWidth: 2,
-                borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
-                backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+                borderColor: colors.border[theme].active,
+                backgroundColor: colors.bg[theme].selected,
               }}
               align="center"
               gap={12}
             >
-              <Upload size={32} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
+              <Upload size={32} color={colors.text[theme].emphasis} />
               <Stack gap={8} width="100%">
                 <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Uploading...
@@ -385,12 +392,14 @@ export function AttachmentsStep({
                   borderWidth: 2,
                   borderStyle: 'dashed',
                   borderColor: errors.resume
-                    ? theme === "light" ? colors.error[300] : colors.error[700]
+                    ? theme === 'light'
+                      ? colors.error[300]
+                      : colors.error[700]
                     : dragOverRefs.current.resume
-                      ? theme === "light" ? colors.blue[300] : colors.blue[700]
+                      ? colors.text[theme].emphasis
                       : colors.border[theme].default,
                   backgroundColor: dragOverRefs.current.resume
-                    ? theme === "light" ? colors.blue[50] : colors.blue[900]
+                    ? colors.bg[theme].selected
                     : colors.bg[theme].default,
                 }}
                 align="center"
@@ -403,7 +412,11 @@ export function AttachmentsStep({
                   onDrop={(e) => handleDrop('resume', e)}
                   style={{
                     width: '100%',
-                    color: errors.resume ? theme === "light" ? colors.error[300] : colors.error[700] : theme === "light" ? colors.blue[300] : colors.blue[700],
+                    color: errors.resume
+                      ? theme === 'light'
+                        ? colors.error[300]
+                        : colors.error[700]
+                      : colors.text[theme].emphasis,
                   }}
                 >
                   <Upload size={32} />
@@ -433,7 +446,9 @@ export function AttachmentsStep({
               disabled={isSubmitting || uploading.resume}
             />
             {errors.resume && (
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.resume}</Text>
+              <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                {errors.resume}
+              </Text>
             )}
           </Stack>
         )}
@@ -452,15 +467,18 @@ export function AttachmentsStep({
             borderRadius={16}
             style={{
               borderWidth: 2,
-              borderColor: theme === "light" ? colors.green[300] : colors.green[700],
-              backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
+              borderColor: theme === 'light' ? colors.green[300] : colors.green[700],
+              backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
             }}
             justify="space-between"
             align="center"
             gap={12}
           >
             <Row gap={12} align="center" flex={1}>
-              <CheckCircle2 size={24} color={theme === "light" ? colors.green[700] : colors.green[300]} />
+              <CheckCircle2
+                size={24}
+                color={theme === 'light' ? colors.green[700] : colors.green[300]}
+              />
               <Stack flex={1}>
                 <Text style={{ color: colors.text[theme].secondary }}>
                   {getAttachment('cover_letter')?.filename}
@@ -485,13 +503,13 @@ export function AttachmentsStep({
               borderRadius={16}
               style={{
                 borderWidth: 2,
-                borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
-                backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+                borderColor: colors.border[theme].active,
+                backgroundColor: colors.bg[theme].selected,
               }}
               align="center"
               gap={12}
             >
-              <Upload size={32} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
+              <Upload size={32} color={colors.text[theme].emphasis} />
               <Stack gap={8} width="100%">
                 <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Uploading...
@@ -517,12 +535,14 @@ export function AttachmentsStep({
                   borderWidth: 2,
                   borderStyle: 'dashed',
                   borderColor: errors.cover_letter
-                    ? theme === "light" ? colors.error[300] : colors.error[700]
+                    ? theme === 'light'
+                      ? colors.error[300]
+                      : colors.error[700]
                     : dragOverRefs.current.cover_letter
-                      ? theme === "light" ? colors.blue[300] : colors.blue[700]
+                      ? colors.text[theme].emphasis
                       : colors.border[theme].default,
                   backgroundColor: dragOverRefs.current.cover_letter
-                    ? theme === "light" ? colors.blue[50] : colors.blue[900]
+                    ? colors.bg[theme].selected
                     : colors.bg[theme].default,
                 }}
                 align="center"
@@ -536,8 +556,10 @@ export function AttachmentsStep({
                   style={{
                     width: '100%',
                     color: errors.cover_letter
-                      ? theme === "light" ? colors.error[300] : colors.error[700]
-                      : theme === "light" ? colors.blue[300] : colors.blue[700],
+                      ? theme === 'light'
+                        ? colors.error[300]
+                        : colors.error[700]
+                      : colors.text[theme].emphasis,
                   }}
                 >
                   <Upload size={32} />
@@ -567,7 +589,9 @@ export function AttachmentsStep({
               disabled={isSubmitting || uploading.cover_letter}
             />
             {errors.cover_letter && (
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.cover_letter}</Text>
+              <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                {errors.cover_letter}
+              </Text>
             )}
           </Stack>
         )}
@@ -586,15 +610,18 @@ export function AttachmentsStep({
             borderRadius={16}
             style={{
               borderWidth: 2,
-              borderColor: theme === "light" ? colors.green[300] : colors.green[700],
-              backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
+              borderColor: theme === 'light' ? colors.green[300] : colors.green[700],
+              backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
             }}
             justify="space-between"
             align="center"
             gap={12}
           >
             <Row gap={12} align="center" flex={1}>
-              <CheckCircle2 size={24} color={theme === "light" ? colors.green[700] : colors.green[300]} />
+              <CheckCircle2
+                size={24}
+                color={theme === 'light' ? colors.green[700] : colors.green[300]}
+              />
               <Stack flex={1}>
                 <Text style={{ color: colors.text[theme].secondary }}>
                   {getAttachment('portfolio')?.filename}
@@ -619,13 +646,13 @@ export function AttachmentsStep({
               borderRadius={16}
               style={{
                 borderWidth: 2,
-                borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
-                backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+                borderColor: colors.border[theme].active,
+                backgroundColor: colors.bg[theme].selected,
               }}
               align="center"
               gap={12}
             >
-              <Upload size={32} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
+              <Upload size={32} color={colors.text[theme].emphasis} />
               <Stack gap={8} width="100%">
                 <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Uploading...
@@ -651,12 +678,14 @@ export function AttachmentsStep({
                   borderWidth: 2,
                   borderStyle: 'dashed',
                   borderColor: errors.portfolio
-                    ? theme === "light" ? colors.error[300] : colors.error[700]
+                    ? theme === 'light'
+                      ? colors.error[300]
+                      : colors.error[700]
                     : dragOverRefs.current.portfolio
-                      ? theme === "light" ? colors.blue[300] : colors.blue[700]
+                      ? colors.text[theme].emphasis
                       : colors.border[theme].default,
                   backgroundColor: dragOverRefs.current.portfolio
-                    ? theme === "light" ? colors.blue[50] : colors.blue[900]
+                    ? colors.bg[theme].selected
                     : colors.bg[theme].default,
                 }}
                 align="center"
@@ -670,8 +699,10 @@ export function AttachmentsStep({
                   style={{
                     width: '100%',
                     color: errors.portfolio
-                      ? theme === "light" ? colors.error[300] : colors.error[700]
-                      : theme === "light" ? colors.blue[300] : colors.blue[700],
+                      ? theme === 'light'
+                        ? colors.error[300]
+                        : colors.error[700]
+                      : colors.text[theme].emphasis,
                   }}
                 >
                   <Upload size={32} />
@@ -701,7 +732,9 @@ export function AttachmentsStep({
               disabled={isSubmitting || uploading.portfolio}
             />
             {errors.portfolio && (
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.portfolio}</Text>
+              <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                {errors.portfolio}
+              </Text>
             )}
           </Stack>
         )}
@@ -712,12 +745,12 @@ export function AttachmentsStep({
         padding="md"
         borderRadius={16}
         style={{
-          backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+          backgroundColor: colors.bg[theme].selected,
           borderColor: colors.border[theme].subtle,
           borderWidth: 1,
         }}
       >
-        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
+        <Text style={{ color: colors.text[theme].emphasis }}>
           💡 Tip: Make sure your documents are up-to-date and clearly showcase your relevant
           experience and skills for this position.
         </Text>

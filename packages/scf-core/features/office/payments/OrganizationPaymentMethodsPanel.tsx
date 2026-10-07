@@ -1,93 +1,88 @@
 import {
   usePaymentMethod,
   useDeletePaymentMethodMutation,
-} from "@scf/core/utils/payments-sdk-hooks";
-import { CreditCard, Plus, Trash2 } from "lucide-react-native";
-import { useToast, useThemeContext } from "@scaffald/ui";
-import { useState } from "react";
-import { Button, Card, Spinner, Text, Row, Stack } from "@scaffald/ui";
-import { SetupIntentForm } from "./SetupIntentForm";
-import { borderRadius, colors } from '@scaffald/ui/tokens';
+} from '@scf/core/utils/payments-sdk-hooks'
+import { CreditCard, Plus, Trash2 } from 'lucide-react-native'
+import { useToast, useThemeContext } from '@scaffald/ui'
+import { useState } from 'react'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { SetupIntentForm } from './SetupIntentForm'
+import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 type OrganizationPaymentMethodsPanelProps = {
-  organizationId: string;
-};
+  organizationId: string
+}
 
 const formatCardBrand = (brand: string | null | undefined): string => {
-  if (!brand) return "Card";
-  return brand.charAt(0).toUpperCase() + brand.slice(1);
-};
+  if (!brand) return 'Card'
+  return brand.charAt(0).toUpperCase() + brand.slice(1)
+}
 
 const formatExpiry = (month: number | null, year: number | null): string => {
-  if (!month || !year) return "";
-  return `${String(month).padStart(2, "0")}/${String(year).slice(-2)}`;
-};
+  if (!month || !year) return ''
+  return `${String(month).padStart(2, '0')}/${String(year).slice(-2)}`
+}
 
 export function OrganizationPaymentMethodsPanel({
   organizationId,
 }: OrganizationPaymentMethodsPanelProps) {
-  const { theme } = useThemeContext();
-  const toast = useToast();
-  const [showAddForm, setShowAddForm] = useState(false);
+  const { theme } = useThemeContext()
+  const toast = useToast()
+  const [showAddForm, setShowAddForm] = useState(false)
 
-  const paymentMethodQuery = usePaymentMethod(organizationId);
+  const paymentMethodQuery = usePaymentMethod(organizationId)
 
   const deleteMutation = useDeletePaymentMethodMutation({
     onSuccess: () => {
       toast.show({
-        title: "Payment method removed",
-        message: "The payment method has been removed successfully.",
-      });
-      paymentMethodQuery.refetch();
-      setShowAddForm(false);
+        title: 'Payment method removed',
+        message: 'The payment method has been removed successfully.',
+      })
+      paymentMethodQuery.refetch()
+      setShowAddForm(false)
     },
     onError: (error: unknown) => {
-      const _message =
-        error instanceof Error ? error.message : "An error occurred";
+      const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-        title: "Failed to remove payment method",
+        title: 'Failed to remove payment method',
         message: _message,
-        variant: "error",
-      });
+        variant: 'error',
+      })
     },
-  });
+  })
 
-  const paymentMethod = paymentMethodQuery.data;
+  const paymentMethod = paymentMethodQuery.data
 
   const handleDelete = () => {
-    if (!paymentMethod?.id) return;
+    if (!paymentMethod?.id) return
 
     if (
-      !confirm(
-        "Are you sure you want to remove this payment method? This action cannot be undone."
-      )
+      !confirm('Are you sure you want to remove this payment method? This action cannot be undone.')
     ) {
-      return;
+      return
     }
 
-    deleteMutation.mutate(paymentMethod.id);
-  };
+    deleteMutation.mutate(paymentMethod.id)
+  }
 
   const handleAddSuccess = () => {
     toast.show({
-      title: "Payment method added",
-      message: "The payment method has been saved successfully.",
-    });
-    paymentMethodQuery.refetch();
-    setShowAddForm(false);
-  };
+      title: 'Payment method added',
+      message: 'The payment method has been saved successfully.',
+    })
+    paymentMethodQuery.refetch()
+    setShowAddForm(false)
+  }
 
   if (paymentMethodQuery.isLoading) {
     return (
       <Card bordered padding="md">
         <Stack gap={12} align="center" paddingVertical={16}>
           <Spinner variant="ios" size="lg" />
-          <Text style={{ color: colors.text[theme].secondary }}>
-            Loading payment method…
-          </Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading payment method…</Text>
         </Stack>
       </Card>
-    );
+    )
   }
 
   return (
@@ -96,12 +91,7 @@ export function OrganizationPaymentMethodsPanel({
         <Row justify="space-between" align="center">
           <Text>Payment Method</Text>
           {!showAddForm && !paymentMethod && (
-            <Button
-              size="sm"
-              color="primary"
-              iconStart={Plus}
-              onPress={() => setShowAddForm(true)}
-            >
+            <Button size="sm" color="primary" iconStart={Plus} onPress={() => setShowAddForm(true)}>
               Add Payment Method
             </Button>
           )}
@@ -130,16 +120,12 @@ export function OrganizationPaymentMethodsPanel({
               <Stack flex={1} gap={4}>
                 <Row gap={8} align="center">
                   <Text>
-                    {formatCardBrand(paymentMethod.brand)} ••••{" "}
-                    {paymentMethod.last4}
+                    {formatCardBrand(paymentMethod.brand)} •••• {paymentMethod.last4}
                   </Text>
                   {paymentMethod.isDefault && (
                     <Text
                       style={{
-                        color:
-                          theme === "light"
-                            ? colors.blue[700]
-                            : colors.blue[300],
+                        color: colors.text[theme].emphasis,
                       }}
                     >
                       Default
@@ -147,11 +133,8 @@ export function OrganizationPaymentMethodsPanel({
                   )}
                 </Row>
                 <Text style={{ color: colors.text[theme].secondary }}>
-                  Expires{" "}
-                  {formatExpiry(paymentMethod.expMonth, paymentMethod.expYear)}
-                  {paymentMethod.billingName
-                    ? ` • ${paymentMethod.billingName}`
-                    : ""}
+                  Expires {formatExpiry(paymentMethod.expMonth, paymentMethod.expYear)}
+                  {paymentMethod.billingName ? ` • ${paymentMethod.billingName}` : ''}
                 </Text>
               </Stack>
               <Button
@@ -161,8 +144,7 @@ export function OrganizationPaymentMethodsPanel({
                 onPress={handleDelete}
                 disabled={deleteMutation.isPending}
                 style={{
-                  borderColor:
-                    theme === "light" ? colors.error[300] : colors.error[700],
+                  borderColor: theme === 'light' ? colors.error[300] : colors.error[700],
                 }}
                 color="error"
               >
@@ -185,16 +167,13 @@ export function OrganizationPaymentMethodsPanel({
             style={{ backgroundColor: colors.bg[theme].subtle }}
             borderRadius={borderRadius.l}
           >
+            <Text style={{ color: colors.text[theme].secondary }}>No payment method on file</Text>
             <Text style={{ color: colors.text[theme].secondary }}>
-              No payment method on file
-            </Text>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              Add a payment method to enable automatic billing for this
-              organization.
+              Add a payment method to enable automatic billing for this organization.
             </Text>
           </Stack>
         )}
       </Stack>
     </Card>
-  );
+  )
 }
