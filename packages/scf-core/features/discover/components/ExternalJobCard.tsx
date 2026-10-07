@@ -55,7 +55,7 @@ function formatRelativeDate(dateString?: string): string | null {
   return sharedRelativeDate(dateString)
 }
 
-function formatCompensation(job: ExternalJob): string | null {
+export function formatCompensation(job: ExternalJob): string | null {
   const currency = job.compensation_currency || 'USD'
   const symbol = currency === 'USD' ? '$' : currency
 

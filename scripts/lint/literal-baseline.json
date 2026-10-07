@@ -76,8 +76,8 @@
     },
     "discover": {
       "accentRamp": 38,
-      "borderRadius": 55,
-      "fontSize": 41,
+      "borderRadius": 53,
+      "fontSize": 40,
       "hexColor": 33
     },
     "drawer": {

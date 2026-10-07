@@ -87,7 +87,7 @@ interface InternalJobCardProps {
   applicationId?: string | null
 }
 
-function formatPayRange(minCents?: number, maxCents?: number, type?: string): string {
+export function formatPayRange(minCents?: number, maxCents?: number, type?: string): string {
   if (!minCents || !maxCents || !type) return ''
   const min = (minCents / 100).toFixed(2)
   const max = (maxCents / 100).toFixed(2)
@@ -108,7 +108,7 @@ function formatPayRange(minCents?: number, maxCents?: number, type?: string): st
   }
 }
 
-function formatEmploymentType(type?: string): string {
+export function formatEmploymentType(type?: string): string {
   if (!type) return ''
   const typeMap: Record<string, string> = {
     full_time: 'Full-Time',
@@ -120,7 +120,7 @@ function formatEmploymentType(type?: string): string {
   return typeMap[type] || type
 }
 
-function formatRemoteOption(option?: string): string {
+export function formatRemoteOption(option?: string): string {
   if (!option) return ''
   const optionMap: Record<string, string> = {
     on_site: 'On-site',

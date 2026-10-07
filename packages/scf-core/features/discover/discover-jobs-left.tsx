@@ -13,6 +13,7 @@ import type { ExternalJob as SdkExternalJob, JobListResponse } from '@scaffald/s
 import { colors } from '@scaffald/ui/tokens'
 import { type ExternalJob, ExternalJobCard } from './components/ExternalJobCard'
 import { type InternalJob, InternalJobCard } from './components/InternalJobCard'
+import { JobListRow } from './components/JobListRow'
 
 /**
  * What the public `/jobs` route loader hands the screen: the same two
@@ -38,6 +39,11 @@ interface DiscoverJobsLeftProps {
    * the same number.
    */
   onResultCount?: (count: number) => void
+  /**
+   * Ruled rows (the default, #1035) or the boxed cards. The toolbar's
+   * List/Cards switch sets it; a phone always gets rows.
+   */
+  view?: 'list' | 'cards'
 }
 
 type MixedJob = { type: 'external'; job: ExternalJob } | { type: 'internal'; job: InternalJob }
@@ -61,6 +67,7 @@ export function DiscoverJobsLeft({
   minSoftSkillsMatch,
   sortBy,
   onResultCount,
+  view = 'list',
 }: DiscoverJobsLeftProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
@@ -283,21 +290,39 @@ export function DiscoverJobsLeft({
 
     return (
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        <Stack gap={12} padding="md">
-          {filteredJobs.map((item) => {
-            if (item.type === 'external') {
-              return <ExternalJobCard key={`external-${item.job.id}`} job={item.job} />
-            }
-            return (
-              <InternalJobCard
-                key={`internal-${item.job.id}`}
-                job={item.job}
-                hasApplied={appliedJobIds.has(item.job.id)}
-                applicationId={applicationIdByJobId.get(item.job.id)}
-              />
-            )
-          })}
-        </Stack>
+        {view === 'list' ? (
+          <Stack style={{ borderTopWidth: 1, borderTopColor: colors.border[t].default }}>
+            {filteredJobs.map((item) =>
+              item.type === 'external' ? (
+                <JobListRow key={`external-${item.job.id}`} kind="external" job={item.job} />
+              ) : (
+                <JobListRow
+                  key={`internal-${item.job.id}`}
+                  kind="internal"
+                  job={item.job}
+                  hasApplied={appliedJobIds.has(item.job.id)}
+                  applicationId={applicationIdByJobId.get(item.job.id)}
+                />
+              )
+            )}
+          </Stack>
+        ) : (
+          <Stack gap={12} padding="md">
+            {filteredJobs.map((item) => {
+              if (item.type === 'external') {
+                return <ExternalJobCard key={`external-${item.job.id}`} job={item.job} />
+              }
+              return (
+                <InternalJobCard
+                  key={`internal-${item.job.id}`}
+                  job={item.job}
+                  hasApplied={appliedJobIds.has(item.job.id)}
+                  applicationId={applicationIdByJobId.get(item.job.id)}
+                />
+              )
+            })}
+          </Stack>
+        )}
       </ScrollView>
     )
   }

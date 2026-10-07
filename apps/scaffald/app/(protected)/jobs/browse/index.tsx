@@ -18,6 +18,8 @@ export default function BrowseJobsPage() {
     <>
       <DashboardPage
         showBreadcrumb={false}
+        screenKicker="Find work"
+        screenTip="Scaffald postings and outside listings in one place. Open one for pay and requirements, or save it for later."
         headerContent={header}
         leftContent={left}
         rightContent={right}
