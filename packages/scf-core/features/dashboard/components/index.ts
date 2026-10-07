@@ -1,4 +1,4 @@
-export { AnalyticsWidget } from './AnalyticsWidget'
+export { HomeMetrics } from './HomeMetrics'
 export { AssessmentsSection } from './AssessmentsSection'
 export { CommunitiesWidget } from './CommunitiesWidget'
 export { CompactNewsWidget } from './CompactNewsWidget'
@@ -9,4 +9,4 @@ export {
   TeamInvitationsWidget,
 } from './TeamInvitationsWidget'
 export { HomeSection } from './HomeSection'
-export { ProfileStrengthSection } from './ProfileStrengthSection'
+export { BuildProfileBlock } from './BuildProfileBlock'

@@ -1,5 +1,10 @@
 import { Separator, Stack, useResponsive } from '@scaffald/ui'
-import { CommunitiesWidget, CompactNewsWidget, SuggestedContactsWidget } from './components'
+import {
+  BuildProfileBlock,
+  CommunitiesWidget,
+  CompactNewsWidget,
+  SuggestedContactsWidget,
+} from './components'
 
 /**
  * The desktop second column: the reading material.
@@ -17,6 +22,9 @@ export function DashboardIndexRight() {
 
   return (
     <Stack gap={24}>
+      {/* What is left on the profile, prototype-style, above the reading
+          material (#1033). Renders nothing once the profile is complete. */}
+      <BuildProfileBlock />
       <CommunitiesWidget />
       <Separator />
       <CompactNewsWidget />

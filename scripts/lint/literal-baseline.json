@@ -65,7 +65,7 @@
     },
     "dashboard": {
       "accentRamp": 7,
-      "borderRadius": 36,
+      "borderRadius": 33,
       "fontSize": 33,
       "hexColor": 1
     },

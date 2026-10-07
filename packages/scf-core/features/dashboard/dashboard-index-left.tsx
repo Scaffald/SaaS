@@ -2,11 +2,11 @@ import { Separator, Stack, useResponsive } from '@scaffald/ui'
 import { AppleRelayBanner } from '@scf/core/features/auth/components/AppleRelayBanner'
 import { InquiryOverviewWidget } from '@scf/core/features/inquiries/components/InquiryOverviewWidget'
 import {
-  AnalyticsWidget,
   AssessmentsSection,
+  BuildProfileBlock,
   CommunitiesWidget,
   CompactNewsWidget,
-  ProfileStrengthSection,
+  HomeMetrics,
   RecentActivityWidget,
   TeamInvitationsWidget,
 } from './components'
@@ -20,11 +20,14 @@ import {
  * on the desktop. Every block had the same visual weight, so the screen said
  * nothing about what to do first.
  *
- * Now: profile strength and the sections that make it up, then whatever is
- * waiting on the worker (invitations), then assessments, then what has been
- * happening. Hairlines between them, one section gap, no cards. The phone
- * gets the same column with the same order rather than a different subset —
- * `DashboardIndexRight` is desktop-only and holds the reading material.
+ * Then (#1033): the greeting moved into the shared ScreenHeader, the figures
+ * (search appearances, profile views, invitations) open the column, and the
+ * profile checklist shrank to one block that disappears once the profile is
+ * complete. On a desktop that block sits in the right rail, as in the
+ * prototype; on a phone it follows the figures. After that: whatever is
+ * waiting on the worker, assessments, then what has been happening. The
+ * phone gets the same column in the same order rather than a different
+ * subset. `DashboardIndexRight` is desktop-only.
  */
 export function DashboardIndexLeft() {
   const { isMobile } = useResponsive()
@@ -32,16 +35,15 @@ export function DashboardIndexLeft() {
   return (
     <Stack gap={24}>
       <AppleRelayBanner />
-      <ProfileStrengthSection />
-      <Separator />
+      <HomeMetrics />
+      {isMobile ? <BuildProfileBlock /> : null}
       <TeamInvitationsWidget />
       <InquiryOverviewWidget />
-      <Separator />
+      {/* No rule here: the metric row draws its own hairline beneath it, and
+          with no invitations a Separator sat directly under that one. */}
       <AssessmentsSection />
       <Separator />
       <RecentActivityWidget />
-      <Separator />
-      <AnalyticsWidget />
       {/* On a phone there is no second column, so the reading material that
           lives there on a desktop comes back here rather than disappearing. */}
       {isMobile ? (
