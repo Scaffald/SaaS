@@ -147,6 +147,13 @@ jobs:
             exit 1
           fi
           echo "✅ Build complete ($(du -sh dist | cut -f1))"
+          # Commit stamp, served at /build.json. An HTTP 200 does not say WHICH
+          # build is live, and the entry-*.js hash does not change when only a
+          # route chunk does (#1051), so the smoke step below compares this.
+          printf '{"commit":"%s","ref":"%s","target":"%s","builtAt":"%s"}\n' \
+            "$GITHUB_SHA" "$GITHUB_REF_NAME" "$APP_ENV" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            > dist/client/build.json
+          cat dist/client/build.json
 
       # ===== UPLOAD ARTIFACT =====
       - name: 📦 Upload artifact
@@ -227,7 +234,25 @@ jobs:
       # The old S3 + CloudFront sync was removed on 2026-07-28: since the switch
       # to web.output 'server' the export has no static index.html, so syncing
       # dist/ to a bucket produced an unservable site.
+      # ===== LATEST-WINS GUARD =====
+      # Runs check out their own event SHA and finish in whatever order they
+      # finish, so an older push could take the alias after a newer one and
+      # roll the environment back (#1051: dev lost #1050's fix this way). Only
+      # the branch's current head may move the alias; an older run stops here.
+      - name: 🧭 Only the branch head deploys
+        id: head
+        run: |
+          git fetch --quiet origin "$GITHUB_REF_NAME"
+          HEAD_SHA=$(git rev-parse "origin/$GITHUB_REF_NAME")
+          if [ "$HEAD_SHA" != "$GITHUB_SHA" ]; then
+            echo "::notice::Skipping deploy: $GITHUB_SHA is no longer the head of $GITHUB_REF_NAME ($HEAD_SHA is). The newer run deploys."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: 🚀 Deploy to EAS Hosting
+        if: steps.head.outputs.deploy == 'true'
         working-directory: apps/scaffald
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -252,8 +277,35 @@ jobs:
           npx eas-cli@latest deploy --alias "$DEPLOY_ALIAS" --environment "$DEPLOY_ENVIRONMENT" --non-interactive
 
 
+      # ===== DEPLOYED-COMMIT CHECK =====
+      # Not continue-on-error: a site serving the wrong build is the failure
+      # #1051 describes, and it looks like success to every other check. A
+      # newer head having replaced ours in the meantime is fine and says so.
+      - name: 🔖 Deployed build is this commit
+        if: steps.head.outputs.deploy == 'true'
+        env:
+          SITE_URL: ${{ env.DEPLOY_TARGET == 'preview' && 'https://preview.scaffald.com' || 'https://dev.scaffald.com' }}
+        run: |
+          for i in $(seq 1 12); do
+            SERVED=$(curl -s --max-time 15 "$SITE_URL/build.json" | sed -n 's/.*"commit":"\([0-9a-f]*\)".*/\1/p')
+            if [ "$SERVED" = "$GITHUB_SHA" ]; then
+              echo "✅ $SITE_URL serves $GITHUB_SHA"
+              exit 0
+            fi
+            git fetch --quiet origin "$GITHUB_REF_NAME"
+            if [ -n "$SERVED" ] && [ "$SERVED" = "$(git rev-parse "origin/$GITHUB_REF_NAME")" ]; then
+              echo "ℹ️ $SITE_URL already serves the newer head $SERVED"
+              exit 0
+            fi
+            echo "  attempt $i: served '${SERVED:-none}', want $GITHUB_SHA"
+            sleep 10
+          done
+          echo "❌ $SITE_URL does not serve this build or the branch head."
+          exit 1
+
       # ===== SMOKE TEST =====
       - name: 🧪 Smoke test
+        if: steps.head.outputs.deploy == 'true'
         env:
           SITE_URL: ${{ env.DEPLOY_TARGET == 'preview' && 'https://preview.scaffald.com' || 'https://dev.scaffald.com' }}
         run: |
@@ -292,6 +344,7 @@ jobs:
             echo "|---|---|"
             echo "| **Branch** | ${{ github.ref_name }} |"
             echo "| **Commit** | \`${{ github.sha }}\` |"
+            echo "| **Deployed** | ${{ steps.head.outputs.deploy == 'true' && 'yes' || 'no — a newer head exists (#1051)' }} |"
             echo "| **Actor** | ${{ github.actor }} |"
             echo "| **Time** | $(date -u '+%Y-%m-%d %H:%M UTC') |"
           } >> "$GITHUB_STEP_SUMMARY"

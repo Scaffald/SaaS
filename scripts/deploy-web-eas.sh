@@ -72,6 +72,18 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 cd "${REPO_ROOT}"
 
+# ===== CLEAN TREE =====
+# The build is the working tree, not the commit. On 2026-10-07 an uncommitted
+# codemod edit shipped to prod this way (#1073). Refuse unless the tree matches
+# HEAD, so what is deployed is a commit someone can name.
+if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+  echo "error: the working tree has uncommitted changes; the build would include them:" >&2
+  git status --short --untracked-files=no >&2
+  echo "Commit or discard them, or set ALLOW_DIRTY=1 to deploy them anyway." >&2
+  [ "${ALLOW_DIRTY:-}" = "1" ] || exit 2
+fi
+DEPLOY_COMMIT="$(git rev-parse HEAD)"
+
 # ===== BUILD =====
 if [ -z "${SKIP_BUILD}" ]; then
   if [ ! -f "${ENV_FILE}" ]; then
@@ -93,9 +105,20 @@ if [ -z "${SKIP_BUILD}" ]; then
     APP_ENV="${APP_ENV}" NODE_ENV=production \
       pnpm exec dotenv -e "../../${ENV_FILE}" -- pnpm exec expo export --platform web
   )
-  echo "✅ Export complete: $(du -sh apps/scaffald/dist | cut -f1)"
+  # Commit stamp, served at /build.json (#1051): which build is live, which
+  # neither an HTTP 200 nor the entry-*.js hash can say.
+  printf '{"commit":"%s","ref":"%s","target":"%s","builtAt":"%s"}\n' \
+    "${DEPLOY_COMMIT}" "$(git rev-parse --abbrev-ref HEAD)" "${APP_ENV}" \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > apps/scaffald/dist/client/build.json
+  echo "✅ Export complete: $(du -sh apps/scaffald/dist | cut -f1) — stamped ${DEPLOY_COMMIT}"
 else
   echo "⏭️  Skipping build (--skip-build); using existing apps/scaffald/dist"
+  STAMPED=$(sed -n 's/.*"commit":"\([0-9a-f]*\)".*/\1/p' apps/scaffald/dist/client/build.json 2>/dev/null || true)
+  echo "   dist is stamped ${STAMPED:-<no stamp>}"
+  if [ -n "${STAMPED}" ] && [ "${STAMPED}" != "${DEPLOY_COMMIT}" ]; then
+    echo "error: dist was built from ${STAMPED}, but HEAD is ${DEPLOY_COMMIT}; rebuild without --skip-build" >&2
+    [ "${ALLOW_DIRTY:-}" = "1" ] || exit 2
+  fi
   if [ ! -d apps/scaffald/dist ]; then
     echo "error: apps/scaffald/dist does not exist; can't skip build" >&2
     exit 2
@@ -105,11 +128,14 @@ fi
 # ===== DEPLOY =====
 echo ""
 echo "🚀 Deploying to EAS Hosting (${TARGET}, environment: ${EAS_ENVIRONMENT})"
+EAS_LOG="$(mktemp)"
 (
   cd apps/scaffald
   npx eas-cli@latest deploy "${DEPLOY_ARGS[@]}" \
     --environment "${EAS_ENVIRONMENT}" --non-interactive
-)
+) 2>&1 | tee "${EAS_LOG}"
+[ "${PIPESTATUS[0]}" -eq 0 ] || exit 1
+DEPLOYMENT_URL=$(grep -oE 'https://[a-z0-9-]+--[a-z0-9]+\.expo\.app' "${EAS_LOG}" | head -1 || true)
 
 # ===== CLOUDFRONT INVALIDATE (prod only) =====
 # Prod HTML is edge-cached for 60s by the scaffald-ssr-html cache policy, so
@@ -160,6 +186,18 @@ if [ -n "${ENTRY}" ]; then
 else
   echo "⚠️  could not find the entry bundle in ${APP_URL}/ — skipping the cache-header check"
 fi
+# Which build is live (#1051). The per-deploy URL is the deployment itself, so
+# CloudFront cannot answer for it; the public URL is checked too and may lag by
+# its edge TTL when no invalidation ran.
+for url in ${DEPLOYMENT_URL} ${APP_URL}; do
+  SERVED=$(curl -s --max-time 20 "${url}/build.json" | sed -n 's/.*"commit":"\([0-9a-f]*\)".*/\1/p' || true)
+  if [ "${SERVED}" = "${DEPLOY_COMMIT}" ]; then
+    echo "${url}/build.json → ${SERVED} ✓"
+  else
+    echo "${url}/build.json → ${SERVED:-<none>} (want ${DEPLOY_COMMIT})"
+    [ "${url}" = "${DEPLOYMENT_URL}" ] && FAILED=1
+  fi
+done
 if [ "${FAILED}" = "0" ]; then
   echo "✅ Smoke test passed"
 else
