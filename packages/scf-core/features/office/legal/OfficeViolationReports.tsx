@@ -170,7 +170,9 @@ export function OfficeViolationReports() {
         <Card
           borderWidth={1}
           borderColor={colors.border[theme].default}
-          style={{ backgroundColor: colors.bg[theme].subtle }}
+          // The table's own surface is bg.default; a subtle card around it drew
+          // a white table inside a grey frame (Scaffald/SaaS#1102). One surface.
+          style={{ backgroundColor: colors.bg[theme].default }}
           padding="md"
         >
           <Table
