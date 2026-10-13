@@ -22,6 +22,7 @@ import {
   type ApiEnv,
   authMiddleware,
 } from "../middleware/auth.ts";
+import { webhookEventTypeCatalog } from "../../_shared/webhook-event-types.ts";
 
 const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
@@ -102,6 +103,47 @@ app.openapi(
     }
 
     return c.json({ data: data || [] });
+  },
+);
+
+/**
+ * GET /v1/webhooks/event-types
+ * The events a webhook can subscribe to.
+ *
+ * The create screen builds its checklist from this. It was a tRPC procedure
+ * that the REST migration dropped without a replacement, so the request 404'd
+ * and the screen showed an empty "Event Subscriptions" card (#1085). Declared
+ * above any `/{id}` route so the literal path is reachable.
+ */
+app.openapi(
+  createRoute({
+    method: "get",
+    path: "/event-types",
+    tags: ["Webhooks"],
+    summary: "List subscribable webhook event types",
+    responses: {
+      200: {
+        description: "Event types",
+        content: {
+          "application/json": {
+            schema: z.object({
+              data: z.array(z.object({
+                value: z.string(),
+                label: z.string(),
+                category: z.string(),
+              })),
+            }),
+          },
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  (c) => {
+    if (!c.get("user")) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+    return c.json({ data: webhookEventTypeCatalog() });
   },
 );
 

@@ -11,6 +11,10 @@
  * organization sees nothing, cannot create, and cannot delete someone else's
  * webhook (404, which does not confirm it exists).
  *
+ * `GET /event-types` is the catalog the Create Webhook screen builds its
+ * checklist from. It was dropped with the tRPC router and 404'd, which left the
+ * screen's Event Subscriptions card empty (#1085).
+ *
  * Users: `office` is zach@unicorn.love, an admin of the seeded Unicorn org
  * (seeds/004); `regular` is test@example.com, in no organization.
  */
@@ -120,5 +124,36 @@ Deno.test({
       cleanup = (await call(`/${id}`, office, { method: 'DELETE' })).status
     }
     assertEquals(cleanup, 200, 'the owner could still delete it, so the other caller’s DELETE removed nothing')
+  },
+})
+
+Deno.test({
+  name: 'Webhooks REST - event-types lists the subscribable events, bare of any further wrapping',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const { office } = await tokens()
+
+    const res = await call('/event-types', office)
+    assertEquals(res.status, 200, `event-types should succeed, got ${JSON.stringify(res.body)}`)
+    // The SDK returns the body verbatim as EventTypesResponse = { data: WebhookEventTypeInfo[] }.
+    const events = res.body?.data as { value: string; label: string; category: string }[]
+    assertEquals(Array.isArray(events), true, 'data is the array of event types')
+    assertEquals(events.length > 0, true, 'the catalog is not empty')
+    assertEquals(
+      events.find((e) => e.value === 'job.created'),
+      { value: 'job.created', label: 'Job Created', category: 'job' },
+      'each entry carries value, label and category'
+    )
+  },
+})
+
+Deno.test({
+  name: 'Webhooks REST - event-types requires a signed-in caller',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const res = await call('/event-types', TEST_SUPABASE_ANON_KEY)
+    assertEquals(res.status, 401, 'the anon key alone is not a caller')
   },
 })

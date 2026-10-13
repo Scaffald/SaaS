@@ -24,6 +24,7 @@ const ROUTE_FILES = [
   "reviews.ts",
   "skill-analytics.ts",
   "profiles.ts",
+  "webhooks.ts",
 ];
 
 interface Declaration {
