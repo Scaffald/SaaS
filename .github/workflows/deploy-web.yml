@@ -293,7 +293,11 @@ jobs:
           SITE_URL: ${{ env.DEPLOY_TARGET == 'preview' && 'https://preview.scaffald.com' || 'https://dev.scaffald.com' }}
           DEPLOYMENT_URL: ${{ steps.eas.outputs.deployment_url }}
         run: |
-          commit_of() { curl -s --max-time 15 "$1/build.json" | sed -n 's/.*"commit":"\([0-9a-f]*\)".*/\1/p'; }
+          # The query string is the CloudFront cache key: dev and preview sit
+          # behind CloudFront like the apex, and it holds /build.json for an
+          # hour (max-age=3600 from EAS), so an uncached fetch is the only one
+          # that says what is live. EAS Hosting ignores the query.
+          commit_of() { curl -s --max-time 15 "$1/build.json?v=$GITHUB_SHA-$RANDOM" | sed -n 's/.*"commit":"\([0-9a-f]*\)".*/\1/p'; }
           # 1. The deployment itself carries this commit. Immediate and exact.
           if [ -z "$DEPLOYMENT_URL" ]; then
             echo "❌ No deployment URL in the eas deploy output."
@@ -330,9 +334,9 @@ jobs:
         env:
           SITE_URL: ${{ env.DEPLOY_TARGET == 'preview' && 'https://preview.scaffald.com' || 'https://dev.scaffald.com' }}
         run: |
-          # dev and preview CNAME straight to EAS, so a new deploy is live
-          # within about a minute. (Production is edge-cached for an hour, but
-          # production does not deploy from here.)
+          # dev and preview are behind CloudFront too (x-cache, max-age=3600 on
+          # static files), not a bare CNAME to EAS; HTML and the hashed bundles
+          # are what this checks, and those are fresh within about a minute.
           echo "⏳ Waiting 30s for the deploy to become reachable..."
           sleep 30
           FAILED=0
