@@ -76,8 +76,11 @@ export function IdVerificationContent() {
   }, [])
 
   const selectedPricing = pricingOptions.find((row) => row.id === selectedPricingId) ?? null
+  // No published pricing means nothing can be bought: the unavailable notice is
+  // the only state shown, with no payment copy or checkout button (#1110).
+  const isPurchasable = !pricingQuery.isLoading && pricingOptions.length > 0
 
-  const statusCard = renderStatusCard(currentVerificationQuery, theme)
+  const statusCard = renderStatusCard(currentVerificationQuery, theme, isPurchasable)
 
   const handleCreatePaymentSession = async () => {
     if (!user) {
@@ -144,26 +147,24 @@ export function IdVerificationContent() {
     <Stack gap={16}>
       {statusCard}
 
-      <Card variant="glass" padding="md" bordered>
-        <Stack gap={8}>
-          <Text>Why verify your identity?</Text>
+      <Stack gap={8}>
+        <Text>Why verify your identity?</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Verified profiles are highlighted across search, inquiries, and background checks, giving
+          organizations confidence that you are who you say you are.
+        </Text>
+        <Stack gap={4} marginTop={8}>
           <Text style={{ color: colors.text[theme].secondary }}>
-            Verified profiles are highlighted across search, inquiries, and background checks,
-            giving organizations confidence that you are who you say you are.
+            • Badge displayed on your profile and worker cards
           </Text>
-          <Stack gap={4} marginTop={8}>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              • Badge displayed on your profile and worker cards
-            </Text>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              • Valid for 6 months with automated reminders
-            </Text>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              • Powered by Persona, the same provider used by banks
-            </Text>
-          </Stack>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            • Valid for 6 months with automated reminders
+          </Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            • Powered by Persona, the same provider used by banks
+          </Text>
         </Stack>
-      </Card>
+      </Stack>
 
       <PricingSection
         pricingOptions={pricingOptions}
@@ -172,50 +173,58 @@ export function IdVerificationContent() {
         isLoading={pricingQuery.isLoading}
       />
 
-      <PaymentSection
-        selectedPricing={selectedPricing}
-        paymentSession={paymentSession}
-        isRequesting={requestVerification.isPending}
-        isConfirming={confirmVerification.isPending}
-        requestError={requestError}
-        onCreateSession={handleCreatePaymentSession}
-        onResetSession={() => {
-          if (!confirmVerification.isPending) {
-            setPaymentSession(null)
-            setRequestError(null)
-          }
-        }}
-        onPaymentSuccess={handlePaymentSuccess}
-      />
+      {isPurchasable && (
+        <PaymentSection
+          selectedPricing={selectedPricing}
+          paymentSession={paymentSession}
+          isRequesting={requestVerification.isPending}
+          isConfirming={confirmVerification.isPending}
+          requestError={requestError}
+          onCreateSession={handleCreatePaymentSession}
+          onResetSession={() => {
+            if (!confirmVerification.isPending) {
+              setPaymentSession(null)
+              setRequestError(null)
+            }
+          }}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
     </Stack>
   )
 }
 
 export function IdVerificationRight() {
   const { theme } = useThemeContext()
+  // Same query (and cache entry) as IdVerificationContent: explain the
+  // after-payment flow only when there is something to pay for.
+  const pricingQuery = useIdVerificationPricing({ staleTime: 5 * 60 * 1000 })
+  const isPurchasable = !pricingQuery.isLoading && (pricingQuery.data ?? []).length > 0
   return (
     <Stack gap={16}>
-      <Card variant="glass" padding="md" bordered>
-        <Stack gap={8}>
-          <Text>What happens after payment?</Text>
-          <Text style={{ color: colors.text[theme].secondary }}>
-            We automatically create a Persona inquiry using your Scaffald profile details. You'll
-            receive an email and in-app notification with a secure link to upload your government ID
-            and selfie. Most verifications finish within a few minutes.
-          </Text>
-          <Stack gap={4}>
+      {isPurchasable && (
+        <Card variant="glass" padding="md" bordered>
+          <Stack gap={8}>
+            <Text>What happens after payment?</Text>
             <Text style={{ color: colors.text[theme].secondary }}>
-              1. Complete the Persona flow on web or mobile
+              We automatically create a Persona inquiry using your Scaffald profile details. You'll
+              receive an email and in-app notification with a secure link to upload your government
+              ID and selfie. Most verifications finish within a few minutes.
             </Text>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              2. Persona confirms the authenticity of your ID
-            </Text>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              3. Your badge updates instantly across the platform
-            </Text>
+            <Stack gap={4}>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                1. Complete the Persona flow on web or mobile
+              </Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                2. Persona confirms the authenticity of your ID
+              </Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                3. Your badge updates instantly across the platform
+              </Text>
+            </Stack>
           </Stack>
-        </Stack>
-      </Card>
+        </Card>
+      )}
 
       <Card
         variant="glass"
@@ -251,20 +260,22 @@ export function IdVerificationFlow() {
   )
 }
 
+// The status sits directly in its container (the profile accordion) — the
+// badge is already a bordered pill, so wrapping it in a bordered card drew a
+// box in a box in a box (#1110). Only the error state keeps a callout surface.
 function renderStatusCard(
   queryReturn: ReturnType<typeof useCurrentIdVerification>,
-  theme: 'light' | 'dark'
+  theme: 'light' | 'dark',
+  isPurchasable: boolean
 ) {
   if (queryReturn.isLoading) {
     return (
-      <Card variant="glass" padding="md" bordered>
-        <Stack gap={8}>
-          <IdVerificationBadge status={null} muted size="md" />
-          <Text style={{ color: colors.text[theme].secondary }}>
-            Loading your verification badge…
-          </Text>
-        </Stack>
-      </Card>
+      <Stack gap={8}>
+        <IdVerificationBadge status={null} muted size="md" />
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Loading your verification badge…
+        </Text>
+      </Stack>
     )
   }
 
@@ -297,39 +308,36 @@ function renderStatusCard(
     | undefined
   if (!badge) {
     return (
-      <Card variant="glass" padding="md" bordered>
-        <Stack gap={8}>
-          <IdVerificationBadge status={null} muted size="md" />
+      <Stack gap={8}>
+        <IdVerificationBadge status={null} muted size="md" />
+        {isPurchasable && (
           <Text style={{ color: colors.text[theme].secondary }}>
             Purchase a verification to unlock the "Verified Identity" badge on your profile.
           </Text>
-        </Stack>
-      </Card>
+        )}
+      </Stack>
     )
   }
 
   return (
-    <Card variant="glass" padding="md" bordered>
-      <Stack gap={8}>
-        <IdVerificationBadge
-          status={badge.badgeStatus as 'active' | 'expired' | 'revoked'}
-          badgeExpiresAt={badge.badgeExpiresAt}
-        />
-        <Text style={{ color: colors.text[theme].secondary }}>
-          {badge.badgeStatus === 'active'
-            ? `Valid until ${formatDate(badge.badgeExpiresAt ?? '')} (${formatDuration(
-                badge.badgeExpiresAt ?? ''
-              )})`
-            : badge.badgeStatus === 'expired'
-              ? `Expired on ${formatDate(badge.badgeExpiresAt ?? '')}`
-              : 'Contact support to resolve revocation.'}
-        </Text>
-        <Text style={{ color: colors.text[theme].secondary }}>
-          Verified on {formatDate(badge.verifiedAt ?? '')} • Level:{' '}
-          {badge.verificationLevel ?? 'N/A'}
-        </Text>
-      </Stack>
-    </Card>
+    <Stack gap={8}>
+      <IdVerificationBadge
+        status={badge.badgeStatus as 'active' | 'expired' | 'revoked'}
+        badgeExpiresAt={badge.badgeExpiresAt}
+      />
+      <Text style={{ color: colors.text[theme].secondary }}>
+        {badge.badgeStatus === 'active'
+          ? `Valid until ${formatDate(badge.badgeExpiresAt ?? '')} (${formatDuration(
+              badge.badgeExpiresAt ?? ''
+            )})`
+          : badge.badgeStatus === 'expired'
+            ? `Expired on ${formatDate(badge.badgeExpiresAt ?? '')}`
+            : 'Contact support to resolve revocation.'}
+      </Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
+        Verified on {formatDate(badge.verifiedAt ?? '')} • Level: {badge.verificationLevel ?? 'N/A'}
+      </Text>
+    </Stack>
   )
 }
 
