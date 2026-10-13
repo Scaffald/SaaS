@@ -29,15 +29,7 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
-import {
-  CalendarDays,
-  Link2,
-  Plus,
-  Video,
-  Phone,
-  MapPin,
-  Copy,
-} from 'lucide-react-native'
+import { CalendarDays, Link2, Plus, Video, Phone, MapPin, Copy } from 'lucide-react-native'
 import { Platform, Pressable, ScrollView } from 'react-native'
 import { StatusBadge } from '@scf/core/components/ui'
 import {
@@ -130,7 +122,9 @@ function InterviewSlotCard({ slot }: { slot: InterviewSlot }) {
         <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
           {start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
         </Text>
-        <Text style={{ color: colors.text[theme].primary, fontWeight: '600', fontSize: fontSize.sm }}>
+        <Text
+          style={{ color: colors.text[theme].primary, fontWeight: '600', fontSize: fontSize.sm }}
+        >
           {start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
         </Text>
       </Stack>
@@ -454,9 +448,12 @@ export function CalendarSchedulingScreen() {
           title="Interview scheduling"
           tip="Interview slots, and links candidates use to book them."
           actions={
+            // One CTA per action (#1105): the header owns Propose Time, in
+            // the app's primary rather than the default near-black fill.
             <Button
               size="sm"
               variant="filled"
+              color="primary"
               iconStart={Plus}
               onPress={() => setShowAddSlotModal(true)}
             >
@@ -481,7 +478,10 @@ export function CalendarSchedulingScreen() {
                   icon={CalendarDays}
                   title="No calendar connected"
                   description="Connecting Google Calendar or Outlook isn't available yet. Interview slots and self-scheduling links, on the other tabs, work without one."
-                  action={{ label: 'Go to interview slots', onPress: () => setActiveTab('interviews') }}
+                  action={{
+                    label: 'Go to interview slots',
+                    onPress: () => setActiveTab('interviews'),
+                  }}
                 />
               </Stack>
             </Tabs.Content>
@@ -492,19 +492,7 @@ export function CalendarSchedulingScreen() {
             <Tabs.Content>
               <Stack gap={16} style={{ paddingTop: 16 }}>
                 <DashboardWidget>
-                  <DashboardWidgetHeader
-                    title="Upcoming Interviews"
-                    action={
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        iconStart={Plus}
-                        onPress={() => setShowAddSlotModal(true)}
-                      >
-                        Propose Time
-                      </Button>
-                    }
-                  />
+                  <DashboardWidgetHeader title="Upcoming Interviews" />
                   <Stack gap={6}>
                     {slotsQuery.isLoading && (
                       <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>
@@ -603,7 +591,11 @@ export function CalendarSchedulingScreen() {
                     }
                   />
                   <Text
-                    style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm, marginBottom: 8 }}
+                    style={{
+                      color: colors.text[theme].tertiary,
+                      fontSize: fontSize.sm,
+                      marginBottom: 8,
+                    }}
                   >
                     Send candidates a link to choose their preferred interview time
                   </Text>
@@ -636,7 +628,10 @@ export function CalendarSchedulingScreen() {
                           gap={12}
                           align="center"
                           padding="md"
-                          style={{ backgroundColor: colors.bg[theme].subtle, borderRadius: borderRadius.l }}
+                          style={{
+                            backgroundColor: colors.bg[theme].subtle,
+                            borderRadius: borderRadius.l,
+                          }}
                         >
                           <Link2 size={18} color={colors.icon[theme].default} />
                           <Stack style={{ flex: 1 }} gap={2}>
@@ -649,7 +644,9 @@ export function CalendarSchedulingScreen() {
                             >
                               {schedulingUrl(link.token)}
                             </Text>
-                            <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}>
+                            <Text
+                              style={{ color: colors.text[theme].tertiary, fontSize: fontSize.xxs }}
+                            >
                               {candidateNameByApplication.get(link.application_id) ?? 'Candidate'} ·{' '}
                               {expired ? 'Expired' : 'Expires'}{' '}
                               {new Date(link.expires_at).toLocaleDateString()} ·{' '}
@@ -679,7 +676,11 @@ export function CalendarSchedulingScreen() {
                 <Card variant="glass" padding="lg">
                   <Stack gap={12}>
                     <Text
-                      style={{ color: colors.text[theme].primary, fontWeight: '600', fontSize: fontSize.md }}
+                      style={{
+                        color: colors.text[theme].primary,
+                        fontWeight: '600',
+                        fontSize: fontSize.md,
+                      }}
                     >
                       How Self-Scheduling Works
                     </Text>
@@ -711,7 +712,9 @@ export function CalendarSchedulingScreen() {
                               {item.step}
                             </Text>
                           </Stack>
-                          <Text style={{ color: colors.text[theme].secondary, fontSize: fontSize.md }}>
+                          <Text
+                            style={{ color: colors.text[theme].secondary, fontSize: fontSize.md }}
+                          >
                             {item.text}
                           </Text>
                         </Row>
@@ -738,7 +741,11 @@ export function CalendarSchedulingScreen() {
             <Stack gap={16}>
               <Stack gap={4}>
                 <Text
-                  style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}
+                  style={{
+                    color: colors.text[theme].primary,
+                    fontSize: fontSize.md,
+                    fontWeight: '500',
+                  }}
                 >
                   Candidate
                 </Text>
@@ -751,7 +758,11 @@ export function CalendarSchedulingScreen() {
               </Stack>
               <Stack gap={4}>
                 <Text
-                  style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}
+                  style={{
+                    color: colors.text[theme].primary,
+                    fontSize: fontSize.md,
+                    fontWeight: '500',
+                  }}
                 >
                   Date & Time
                 </Text>
@@ -763,7 +774,11 @@ export function CalendarSchedulingScreen() {
               </Stack>
               <Stack gap={4}>
                 <Text
-                  style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}
+                  style={{
+                    color: colors.text[theme].primary,
+                    fontSize: fontSize.md,
+                    fontWeight: '500',
+                  }}
                 >
                   Duration (minutes)
                 </Text>
@@ -776,7 +791,11 @@ export function CalendarSchedulingScreen() {
               </Stack>
               <Stack gap={4}>
                 <Text
-                  style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}
+                  style={{
+                    color: colors.text[theme].primary,
+                    fontSize: fontSize.md,
+                    fontWeight: '500',
+                  }}
                 >
                   Location Type
                 </Text>
@@ -809,7 +828,11 @@ export function CalendarSchedulingScreen() {
               </Stack>
               <Stack gap={4}>
                 <Text
-                  style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}
+                  style={{
+                    color: colors.text[theme].primary,
+                    fontSize: fontSize.md,
+                    fontWeight: '500',
+                  }}
                 >
                   Meeting Link
                 </Text>
@@ -821,7 +844,11 @@ export function CalendarSchedulingScreen() {
               </Stack>
               <Stack gap={4}>
                 <Text
-                  style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}
+                  style={{
+                    color: colors.text[theme].primary,
+                    fontSize: fontSize.md,
+                    fontWeight: '500',
+                  }}
                 >
                   Notes
                 </Text>
@@ -834,7 +861,9 @@ export function CalendarSchedulingScreen() {
                 />
               </Stack>
               {slotError && (
-                <Text style={{ color: colors.fg[theme].error, fontSize: fontSize.sm }}>{slotError}</Text>
+                <Text style={{ color: colors.fg[theme].error, fontSize: fontSize.sm }}>
+                  {slotError}
+                </Text>
               )}
             </Stack>
           </ModalContent>
@@ -867,7 +896,11 @@ export function CalendarSchedulingScreen() {
             <Stack gap={16}>
               <Stack gap={4}>
                 <Text
-                  style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}
+                  style={{
+                    color: colors.text[theme].primary,
+                    fontSize: fontSize.md,
+                    fontWeight: '500',
+                  }}
                 >
                   Application
                 </Text>
@@ -880,7 +913,11 @@ export function CalendarSchedulingScreen() {
               </Stack>
               <Stack gap={4}>
                 <Text
-                  style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}
+                  style={{
+                    color: colors.text[theme].primary,
+                    fontSize: fontSize.md,
+                    fontWeight: '500',
+                  }}
                 >
                   Link Expiration (days)
                 </Text>
@@ -893,7 +930,11 @@ export function CalendarSchedulingScreen() {
               </Stack>
               <Stack gap={4}>
                 <Text
-                  style={{ color: colors.text[theme].primary, fontSize: fontSize.md, fontWeight: '500' }}
+                  style={{
+                    color: colors.text[theme].primary,
+                    fontSize: fontSize.md,
+                    fontWeight: '500',
+                  }}
                 >
                   Max Bookings
                 </Text>
@@ -905,7 +946,9 @@ export function CalendarSchedulingScreen() {
                 />
               </Stack>
               {linkError && (
-                <Text style={{ color: colors.fg[theme].error, fontSize: fontSize.sm }}>{linkError}</Text>
+                <Text style={{ color: colors.fg[theme].error, fontSize: fontSize.sm }}>
+                  {linkError}
+                </Text>
               )}
             </Stack>
           </ModalContent>

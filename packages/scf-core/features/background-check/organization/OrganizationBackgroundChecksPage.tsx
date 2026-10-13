@@ -3,12 +3,12 @@ import { OfficePageLayout } from '@scf/core/features/office/components/OfficePag
 import { useOrganizationBackgroundChecks } from '@scf/core/utils/background-checks-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { ExternalLink, Eye, RefreshCcw } from 'lucide-react-native'
+import { ExternalLink, Eye, RefreshCcw, ShieldCheck } from 'lucide-react-native'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
+import { EmptyState, ResponsiveSelect, ScreenHeader, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
@@ -215,54 +215,62 @@ export function OrganizationBackgroundChecksPage() {
   }
 
   return (
-    <Stack flex={1}>
-      <Stack padding="md" gap={12}>
-        <Stack gap={8}>
-          <ResponsiveSelect
-            value={selectedOrganizationId ?? ''}
-            onValueChange={(value) => {
-              setSelectedOrganizationId(value)
-              setSelectedCheckId(null)
-            }}
-            placeholder={
-              selectedOrganizationId
-                ? (organizations.find((org) => org.id === selectedOrganizationId)?.name ??
-                  'Select organization')
-                : 'Select organization'
-            }
-            label="Organization"
-            options={organizations.map((org) => ({
-              value: org.id as string,
-              label: (org.name as string) ?? 'Untitled organization',
-            }))}
-          />
-        </Stack>
+    <Stack flex={1} gap={16}>
+      <Stack gap={12}>
+        {/* The actions sit in the header, where page actions live. They were a
+            right-aligned row of their own under the select, orphaned at 390
+            (#1126). */}
+        <ScreenHeader
+          kicker="Screening"
+          title="Background checks"
+          actions={
+            <Row gap={8} wrap>
+              <Button
+                size="sm"
+                variant="outline"
+                iconStart={RefreshCcw}
+                onPress={() => checksQuery.refetch()}
+                disabled={checksQuery.isLoading}
+              >
+                Refresh
+              </Button>
+              <Button
+                size="sm"
+                variant="filled"
+                color="primary"
+                iconStart={ExternalLink}
+                onPress={handleNavigateToRequest}
+                disabled={!selectedOrganizationId}
+              >
+                Request Check
+              </Button>
+            </Row>
+          }
+        />
 
-        <Row gap={8} justify="flex-end">
-          <Button
-            size="sm"
-            variant="outline"
-            iconStart={RefreshCcw}
-            onPress={() => checksQuery.refetch()}
-            disabled={checksQuery.isLoading}
-          >
-            Refresh
-          </Button>
-          <Button
-            size="sm"
-            color="primary"
-            iconStart={ExternalLink}
-            onPress={handleNavigateToRequest}
-            disabled={!selectedOrganizationId}
-          >
-            Request Check
-          </Button>
-        </Row>
+        <ResponsiveSelect
+          value={selectedOrganizationId ?? ''}
+          onValueChange={(value) => {
+            setSelectedOrganizationId(value)
+            setSelectedCheckId(null)
+          }}
+          placeholder={
+            selectedOrganizationId
+              ? (organizations.find((org) => org.id === selectedOrganizationId)?.name ??
+                'Select organization')
+              : 'Select organization'
+          }
+          label="Organization"
+          options={organizations.map((org) => ({
+            value: org.id as string,
+            label: (org.name as string) ?? 'Untitled organization',
+          }))}
+        />
       </Stack>
 
       {selectedOrganizationId ? (
         <OfficePageLayout
-      resultNoun="check"
+          resultNoun="check"
           title="Background Checks"
           searchPlaceholder="Filter results..."
           searchValue={searchQuery}
@@ -270,6 +278,7 @@ export function OrganizationBackgroundChecksPage() {
           createButtonLabel="Request Background Check"
           onCreateClick={handleNavigateToRequest}
           hideCreateButton
+          hideHeader
           columns={columns}
           data={filteredRows}
           isLoading={checksQuery.isLoading}
@@ -281,16 +290,19 @@ export function OrganizationBackgroundChecksPage() {
           onRowView={(row: CheckRow) => setSelectedCheckId(row.id)}
         />
       ) : (
-        <Stack flex={1} padding="md" gap={12} align="center" justify="center">
-          <Text style={{ color: colors.text[t].secondary }}>Select an organization to view background checks</Text>
-          <Text style={{ color: colors.text[t].secondary }}>
-            Choose an organization above to manage screening requests and results.
-          </Text>
+        // One centred empty state; the title was centred and the description
+        // left-aligned (#1126).
+        <Stack paddingTop={16}>
+          <EmptyState
+            icon={ShieldCheck}
+            title="Select an organization"
+            description="Choose an organization above to manage screening requests and results."
+          />
         </Stack>
       )}
 
       {selectedCheckId ? (
-        <Stack paddingHorizontal={16} paddingBottom={24} gap={12}>
+        <Stack paddingTop={16} paddingBottom={24} gap={12}>
           <OrganizationCheckDetails
             checkId={selectedCheckId}
             summary={rows.find((row: CheckRow) => row.id === selectedCheckId)?.raw}

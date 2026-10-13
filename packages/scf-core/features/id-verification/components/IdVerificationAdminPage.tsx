@@ -11,7 +11,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@scaffald/ui'
 import {
   Button,
-  Card,
+  MetricBlock,
+  MetricRow,
+  ScreenHeader,
   Spinner,
   Tabs,
   Text,
@@ -38,9 +40,21 @@ const SOURCE_META: Record<
   'worker' | 'organization' | 'platform',
   { label: string; color: string; backgroundColor: string }
 > = {
-  worker: { label: 'Worker self-serve', color: colors.gray[800], backgroundColor: colors.gray[100] },
-  organization: { label: 'Organization', color: colors.info[700], backgroundColor: colors.info[100] },
-  platform: { label: 'Platform initiated', color: colors.primary[700], backgroundColor: colors.primary[100] },
+  worker: {
+    label: 'Worker self-serve',
+    color: colors.gray[800],
+    backgroundColor: colors.gray[100],
+  },
+  organization: {
+    label: 'Organization',
+    color: colors.info[700],
+    backgroundColor: colors.info[100],
+  },
+  platform: {
+    label: 'Platform initiated',
+    color: colors.primary[700],
+    backgroundColor: colors.primary[100],
+  },
 }
 
 interface IdVerificationAdminPageProps {
@@ -136,7 +150,9 @@ export function IdVerificationAdminPage({
           const badgeKey = row.original.badgeStatus as Exclude<StatusFilter, 'all'>
           const meta = STATUS_META[badgeKey]
           if (!meta) {
-            return <Text style={{ color: colors.text[t].secondary }}>{row.original.badgeStatus}</Text>
+            return (
+              <Text style={{ color: colors.text[t].secondary }}>{row.original.badgeStatus}</Text>
+            )
           }
           return (
             <Text
@@ -223,45 +239,42 @@ export function IdVerificationAdminPage({
 
   return (
     <Stack flex={1} gap={16}>
-      <Stack paddingHorizontal={16} gap={12}>
-        <Row gap={12} wrap>
-          {[
-            {
-              label: 'Active badges',
-              value: count(summary.active),
-              color: colors.success[800],
-            },
-            {
-              label: 'Expired badges',
-              value: count(summary.expired),
-              color: colors.warning[800],
-            },
-            {
-              label: 'Revoked badges',
-              value: count(summary.revoked),
-              color: colors.error[700],
-            },
-            {
-              label: 'Total verifications',
-              value: count(summary.total),
-              color: colors.gray[900],
-            },
-          ].map((item) => (
-            <Card
-              key={item.label}
-              padding="sm"
-              style={{ flex: 1, minWidth: 200, borderColor: colors.border[t].default, borderWidth: 1 }}
+      <Stack gap={12}>
+        {/* Title first, then the figures. The header used to come after the
+            stats and the filters, and the four 200px-minimum cards stacked
+            one per row at 390, pushing the list below the fold (#1126).
+            MetricRow wraps whole columns: 2x2 on a phone, 4-up on desktop. */}
+        <ScreenHeader
+          kicker="Screening"
+          title="ID verifications"
+          actions={
+            <Button
+              size="sm"
+              variant="outline"
+              iconStart={RefreshCcw}
+              onPress={() => listQuery.refetch()}
+              disabled={listQuery.isFetching}
             >
-              <Text style={{ color: colors.text[t].tertiary }}>{item.label}</Text>
-              <Text style={{ color: item.color }}>{item.value}</Text>
-            </Card>
-          ))}
-        </Row>
+              Refresh
+            </Button>
+          }
+        />
+
+        <MetricRow bordered minColumnWidth={140}>
+          <MetricBlock label="Active badges" value={count(summary.active)} />
+          <MetricBlock label="Expired badges" value={count(summary.expired)} />
+          <MetricBlock label="Revoked badges" value={count(summary.revoked)} />
+          <MetricBlock label="Total verifications" value={count(summary.total)} />
+        </MetricRow>
 
         <Stack gap={8}>
           <Text style={{ color: colors.text[t].secondary }}>Badge status filter</Text>
           <Row
-            style={{ backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default, overflow: 'hidden' }}
+            style={{
+              backgroundColor: colors.bg[t].subtle,
+              borderColor: colors.border[t].default,
+              overflow: 'hidden',
+            }}
             borderRadius={16}
             borderWidth={1}
           >
@@ -304,22 +317,10 @@ export function IdVerificationAdminPage({
             </Row>
           ) : null}
         </Stack>
-
-        <Row justify="flex-end">
-          <Button
-            size="sm"
-            variant="outline"
-            iconStart={RefreshCcw}
-            onPress={() => listQuery.refetch()}
-            disabled={listQuery.isFetching}
-          >
-            Refresh
-          </Button>
-        </Row>
       </Stack>
 
       <OfficePageLayout
-      resultNoun="verification"
+        resultNoun="verification"
         title="ID Verifications"
         searchPlaceholder="Search worker, organization, or status"
         searchValue={searchValue}
@@ -327,6 +328,7 @@ export function IdVerificationAdminPage({
         createButtonLabel="New verification"
         onCreateClick={() => undefined}
         hideCreateButton
+        hideHeader
         columns={columns}
         data={listQuery.data?.items ?? []}
         isLoading={listQuery.isLoading}

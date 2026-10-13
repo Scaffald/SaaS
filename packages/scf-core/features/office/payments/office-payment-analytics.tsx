@@ -1,13 +1,16 @@
-import { usePaymentAnalytics } from "@scf/core/utils/payments-sdk-hooks";
-import type { PaymentAnalytics, FailedTransactionRow } from "@scaffald/sdk";
-import { columnsFromTanStack } from "@scf/core/utils/table-columns";
-import { RefreshCw } from "lucide-react-native";
-import type { ColumnDef } from "@tanstack/react-table";
-import { createColumnHelper } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { usePaymentAnalytics } from '@scf/core/utils/payments-sdk-hooks'
+import type { PaymentAnalytics, FailedTransactionRow } from '@scaffald/sdk'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
+import { RefreshCw } from 'lucide-react-native'
+import type { ColumnDef } from '@tanstack/react-table'
+import { createColumnHelper } from '@tanstack/react-table'
+import { useMemo } from 'react'
 import {
   ScreenHeader,
   Button,
+  MetricBlock,
+  MetricRow,
+  type MetricTone,
   Card,
   Spinner,
   Table,
@@ -15,75 +18,73 @@ import {
   Row,
   Stack,
   useThemeContext,
-} from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useScreenRhythm } from '@scf/core/constants/layout'
 
-const columnHelper = createColumnHelper<FailedTransactionRow>();
+const columnHelper = createColumnHelper<FailedTransactionRow>()
 
 const formatCurrency = (cents: number): string => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
     minimumFractionDigits: 2,
-  }).format(cents / 100);
-};
+  }).format(cents / 100)
+}
 
 const formatTransactionType = (type: string): string => {
   return type
-    .split("_")
+    .split('_')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-};
+    .join(' ')
+}
 
 export function OfficePaymentAnalytics() {
   const { gutter, verticalPadding } = useScreenRhythm()
-  const { theme } = useThemeContext();
-  const analyticsQuery = usePaymentAnalytics();
+  const { theme } = useThemeContext()
+  const analyticsQuery = usePaymentAnalytics()
 
-  const analytics = analyticsQuery.data as PaymentAnalytics | undefined;
+  const analytics = analyticsQuery.data as PaymentAnalytics | undefined
 
-  const kpis = analytics?.kpis;
-  const breakdowns = analytics?.breakdowns;
-  const failedQueue = analytics?.failedQueue ?? [];
+  const kpis = analytics?.kpis
+  const breakdowns = analytics?.breakdowns
+  const failedQueue = analytics?.failedQueue ?? []
 
   const columnDefs = useMemo(() => {
     const defs = [
-      columnHelper.accessor("transactionType", {
-        header: "Type",
-        cell: (info) => (
-          <Text>{formatTransactionType(info.getValue() ?? "")}</Text>
-        ),
+      columnHelper.accessor('transactionType', {
+        header: 'Type',
+        cell: (info) => <Text>{formatTransactionType(info.getValue() ?? '')}</Text>,
       }),
-      columnHelper.accessor("amountCents", {
-        header: "Amount",
+      columnHelper.accessor('amountCents', {
+        header: 'Amount',
         cell: (info) => formatCurrency(info.getValue() ?? 0),
       }),
-      columnHelper.accessor("failureReason", {
-        header: "Failure Reason",
+      columnHelper.accessor('failureReason', {
+        header: 'Failure Reason',
         cell: (info) => (
           <Text
             style={{
-              color: theme === "light" ? colors.error[700] : colors.error[300],
+              color: theme === 'light' ? colors.error[700] : colors.error[300],
             }}
           >
-            {info.getValue() ?? "Unknown error"}
+            {info.getValue() ?? 'Unknown error'}
           </Text>
         ),
       }),
-      columnHelper.accessor("failedAt", {
-        header: "Failed At",
+      columnHelper.accessor('failedAt', {
+        header: 'Failed At',
         cell: (info) => {
-          const value = info.getValue();
+          const value = info.getValue()
           if (!value) {
-            return "—";
+            return '—'
           }
-          return new Date(value).toLocaleString();
+          return new Date(value).toLocaleString()
         },
       }),
-    ];
-    return defs as ColumnDef<FailedTransactionRow, unknown>[];
-  }, [theme]);
+    ]
+    return defs as ColumnDef<FailedTransactionRow, unknown>[]
+  }, [theme])
 
   const tableColumns = useMemo(
     () =>
@@ -91,43 +92,48 @@ export function OfficePaymentAnalytics() {
         columnDefs as ColumnDef<Record<string, unknown>, unknown>[]
       ),
     [columnDefs]
-  );
+  )
 
-  const summaryCards = useMemo(() => {
+  const summaryCards = useMemo((): {
+    label: string
+    value: string
+    subtext: string
+    tone?: MetricTone
+    emphasis?: boolean
+  }[] => {
     if (!kpis) {
-      return [];
+      return []
     }
 
     return [
       {
-        label: "Total Revenue",
+        label: 'Total Revenue',
         value: formatCurrency(kpis.totalRevenue),
         subtext: `${kpis.succeededTransactions} successful transactions`,
       },
       {
-        label: "Success Rate",
+        label: 'Success Rate',
         value: `${kpis.successRate.toFixed(1)}%`,
         subtext: `${kpis.succeededTransactions} of ${kpis.totalTransactions} succeeded`,
       },
       {
-        label: "Failed Transactions",
+        label: 'Failed Transactions',
         value: kpis.failedTransactions.toString(),
-        subtext:
-          kpis.failedTransactions > 0
-            ? "Requires attention"
-            : "All transactions succeeded",
+        subtext: kpis.failedTransactions > 0 ? 'Requires attention' : 'All transactions succeeded',
+        tone: kpis.failedTransactions > 0 ? 'attention' : 'neutral',
+        emphasis: kpis.failedTransactions > 0,
       },
       {
-        label: "Pending",
+        label: 'Pending',
         value: kpis.pendingTransactions.toString(),
-        subtext: "Awaiting completion",
+        subtext: 'Awaiting completion',
       },
-    ];
-  }, [kpis]);
+    ]
+  }, [kpis])
 
   const typeBreakdown = useMemo(() => {
     if (!breakdowns?.byType) {
-      return [];
+      return []
     }
 
     return Object.entries(breakdowns.byType)
@@ -135,16 +141,16 @@ export function OfficePaymentAnalytics() {
         type,
         label: formatTransactionType(type),
         ...(stats as {
-          revenue: number;
-          count: number;
-          succeeded: number;
-          failed: number;
+          revenue: number
+          count: number
+          succeeded: number
+          failed: number
         }),
       }))
-      .sort((a, b) => b.revenue - a.revenue);
-  }, [breakdowns]);
+      .sort((a, b) => b.revenue - a.revenue)
+  }, [breakdowns])
 
-  const isLoading = analyticsQuery.isLoading;
+  const isLoading = analyticsQuery.isLoading
 
   return (
     <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
@@ -168,39 +174,25 @@ export function OfficePaymentAnalytics() {
       {isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>
           <Spinner variant="ios" size="lg" />
-          <Text style={{ color: colors.text[theme].secondary }}>
-            Loading payment metrics…
-          </Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading payment metrics…</Text>
         </Stack>
       ) : (
         <>
-          <Row gap={12} wrap>
+          {/* Figures, not cards: four 280px cards wrapped to 3 + 1 at
+              desktop and left "Pending" alone on a second line, and the
+              value was set at body size. MetricRow wraps whole columns. */}
+          <MetricRow bordered minColumnWidth={160}>
             {summaryCards.map((card) => (
-              <Card
+              <MetricBlock
                 key={card.label}
-                borderWidth={1}
-                borderColor={colors.border[theme].default}
-                style={{
-                  backgroundColor: colors.bg[theme].subtle,
-                  width: "100%",
-                  maxWidth: 280,
-                }}
-                padding="md"
-              >
-                <Stack gap={8}>
-                  <Text style={{ color: colors.text[theme].secondary }}>
-                    {card.label}
-                  </Text>
-                  <Text>{card.value}</Text>
-                  {card.subtext ? (
-                    <Text style={{ color: colors.text[theme].secondary }}>
-                      {card.subtext}
-                    </Text>
-                  ) : null}
-                </Stack>
-              </Card>
+                label={card.label}
+                value={card.value}
+                delta={card.subtext}
+                tone={card.tone}
+                emphasis={card.emphasis}
+              />
             ))}
-          </Row>
+          </MetricRow>
 
           {typeBreakdown.length > 0 && (
             <Card
@@ -217,8 +209,7 @@ export function OfficePaymentAnalytics() {
                       <Row justify="space-between" align="center">
                         <Text>{entry.label}</Text>
                         <Text style={{ color: colors.text[theme].secondary }}>
-                          {formatCurrency(entry.revenue)} · {entry.count}{" "}
-                          transactions
+                          {formatCurrency(entry.revenue)} · {entry.count} transactions
                         </Text>
                       </Row>
                       <Row gap={8}>
@@ -236,12 +227,9 @@ export function OfficePaymentAnalytics() {
           {failedQueue.length > 0 && (
             <Card
               borderWidth={1}
-              borderColor={
-                theme === "light" ? colors.error[300] : colors.error[700]
-              }
+              borderColor={theme === 'light' ? colors.error[300] : colors.error[700]}
               style={{
-                backgroundColor:
-                  theme === "light" ? colors.error[50] : colors.error[900],
+                backgroundColor: theme === 'light' ? colors.error[50] : colors.error[900],
               }}
               padding="md"
             >
@@ -249,20 +237,14 @@ export function OfficePaymentAnalytics() {
                 <Row justify="space-between" align="center">
                   <Text
                     style={{
-                      color:
-                        theme === "light"
-                          ? colors.error[700]
-                          : colors.error[300],
+                      color: theme === 'light' ? colors.error[700] : colors.error[300],
                     }}
                   >
                     Failed Transactions Queue
                   </Text>
                   <Text
                     style={{
-                      color:
-                        theme === "light"
-                          ? colors.error[700]
-                          : colors.error[300],
+                      color: theme === 'light' ? colors.error[700] : colors.error[300],
                     }}
                   >
                     {failedQueue.length} failed
@@ -270,14 +252,10 @@ export function OfficePaymentAnalytics() {
                 </Row>
                 <Table
                   columns={tableColumns}
-                  data={
-                    failedQueue as unknown as import("@scaffald/ui").TableRowData[]
-                  }
+                  data={failedQueue as unknown as import('@scaffald/ui').TableRowData[]}
                   pageSize={10}
                   emptyMessage="No failed transactions"
-                  getRowId={(row, i) =>
-                    (row as { id?: string }).id ?? String(i)
-                  }
+                  getRowId={(row, i) => (row as { id?: string }).id ?? String(i)}
                 />
               </Stack>
             </Card>
@@ -285,5 +263,5 @@ export function OfficePaymentAnalytics() {
         </>
       )}
     </Stack>
-  );
+  )
 }
