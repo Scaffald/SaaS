@@ -1,9 +1,10 @@
+import { CmsFormPage } from '@scf/core/features/office/components/CmsFormPage'
 import { OrganizationForm } from '@scf/core/features/office/components/OrganizationForm'
 import { useOrganization } from '@scf/core/utils/organizations-sdk-hooks'
 import { Spinner, Stack } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
 
-export default function EditOrganizationPage() {
+function EditOrganizationPageContent() {
   const { id } = useLocalSearchParams<{ id: string }>()
 
   if (!id) {
@@ -46,5 +47,14 @@ export default function EditOrganizationPage() {
         visibility: (data.visibility === 'private' ? 'private' : 'public') as 'public' | 'private',
       }}
     />
+  )
+}
+
+// One shell for every CMS form (#1098): office gutter, ScreenHeader, one column.
+export default function EditOrganizationPage() {
+  return (
+    <CmsFormPage title="Edit organization">
+      <EditOrganizationPageContent />
+    </CmsFormPage>
   )
 }

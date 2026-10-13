@@ -1,3 +1,4 @@
+import { CmsFormPage } from '@scf/core/features/office/components/CmsFormPage'
 import { TeamForm } from '@scf/core/features/office/teams'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
@@ -9,7 +10,7 @@ import { Button, ResponsiveSelect, Spinner, Text, Stack } from '@scaffald/ui'
 type OfficeOrganizationsOutput = inferRouterOutputs<AppRouter>['office']['getOrganizations']
 type OrganizationOption = OfficeOrganizationsOutput['organizations'][number]
 
-export default function CreateTeamPage() {
+function CreateTeamPageContent() {
   const router = useRouter()
   const { data, isLoading } = useAllOrganizations()
   const organizations = useMemo<OrganizationOption[]>(
@@ -54,8 +55,8 @@ export default function CreateTeamPage() {
   }
 
   return (
-    <Stack padding={16} gap={16}>
-      <Stack gap={8} style={{ maxWidth: 520 }}>
+    <Stack gap={16}>
+      <Stack gap={8}>
         <ResponsiveSelect
           label="Select organization"
           placeholder="Select organization"
@@ -80,5 +81,14 @@ export default function CreateTeamPage() {
         </Stack>
       )}
     </Stack>
+  )
+}
+
+// One shell for every CMS form (#1098): office gutter, ScreenHeader, one column.
+export default function CreateTeamPage() {
+  return (
+    <CmsFormPage title="New team" tip="A group of people inside one organization.">
+      <CreateTeamPageContent />
+    </CmsFormPage>
   )
 }
