@@ -19,7 +19,6 @@ import { Button, ScreenHeader, Toggle, Text, Row, Stack } from "@scaffald/ui";
 import type { OfficeJob } from "@scaffald/sdk";
 import { JobsKanbanBoard } from "./components/JobsKanbanBoard";
 import { OfficePageLayout } from "./components/OfficePageLayout";
-import { QuickActionsWidget } from "./components/QuickActionsWidget";
 import { colors } from "@scaffald/ui/tokens";
 
 type Job = OfficeJob;
@@ -418,15 +417,8 @@ export function OfficeJobsList({
         (statusFilter ? 1 : 0) + (organizationFilter ? 1 : 0) + (teamFilter ? 1 : 0)
       }
       toolbarActions={viewToggle}
-      rightContent={
-        <QuickActionsWidget
-          context="list"
-          resourceName="Job"
-          onCreate={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
-          onRefresh={() => refetch()}
-          isLoading={isLoading}
-        />
-      }
+      // No Quick Actions rail (#1099): it repeated the toolbar's Create and a
+      // Refresh, and cost the table ~400px, clipping its last column at 1440.
     />
   );
 }

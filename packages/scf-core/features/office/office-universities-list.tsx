@@ -8,7 +8,6 @@ import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { OfficePageLayout } from "./components/OfficePageLayout";
-import { QuickActionsWidget } from "./components/QuickActionsWidget";
 
 type University = {
   id: string;
@@ -102,17 +101,8 @@ export function OfficeUniversitiesList() {
       onRowDelete={handleRowDelete}
       getItemName={getItemName}
       itemType="university"
-      rightContent={
-        <QuickActionsWidget
-          context="list"
-          resourceName="University"
-          onCreate={() =>
-            router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.CREATE.path)
-          }
-          onRefresh={() => refetch()}
-          isLoading={isLoading}
-        />
-      }
+      // No Quick Actions rail (#1099): it repeated the toolbar's Create and a
+      // Refresh, and cost the table ~400px, clipping its last column at 1440.
     />
   );
 }

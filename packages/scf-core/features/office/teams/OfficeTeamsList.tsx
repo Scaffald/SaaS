@@ -6,7 +6,6 @@ import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { Spinner, Text, Row, Stack } from "@scaffald/ui";
 import { OfficePageLayout } from "../components/OfficePageLayout";
-import { QuickActionsWidget } from "../components/QuickActionsWidget";
 import { useTeams, useArchiveTeam } from "@scaffald/sdk/react";
 import type { Team } from "@scaffald/sdk";
 import { borderRadius, colors } from '@scaffald/ui/tokens';
@@ -169,15 +168,8 @@ export function OfficeTeamsList() {
       onRowDelete={handleRowDelete}
       getItemName={getItemName}
       itemType="team"
-      rightContent={
-        <QuickActionsWidget
-          context="list"
-          resourceName="Team"
-          onCreate={() => router.push(ROUTES.OFFICE.CMS.TEAMS.CREATE.path)}
-          onRefresh={() => refetch()}
-          isLoading={isLoading || archiveMutation.isPending}
-        />
-      }
+      // No Quick Actions rail (#1099): it repeated the toolbar's Create and a
+      // Refresh, and cost the table ~400px, clipping its last column at 1440.
       afterContent={
         archiveMutation.isPending ? (
           <Stack

@@ -13,7 +13,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useCallback, useMemo, useState } from 'react'
 import { Pressable } from 'react-native'
-import { ResponsiveSelect } from '@scaffald/ui'
+import { ScreenHeader, ResponsiveSelect } from '@scaffald/ui'
 import {
   Button,
   MetricBlock,
@@ -92,6 +92,33 @@ const STATUS_FILTERS: Array<{ value: 'all' | BackgroundCheckStatus; label: strin
   })),
 ]
 
+/**
+ * Worker name over email, one line each with an ellipsis (#1099). Both were
+ * secondary grey and unbounded, so a long email ran to the cell edge and was
+ * cut mid-character with no ellipsis.
+ */
+function WorkerCell({
+  name,
+  email,
+  t,
+}: {
+  name: string
+  email?: string | null
+  t: 'light' | 'dark'
+}) {
+  return (
+    <Stack gap={2} style={{ minWidth: 0, width: '100%' }}>
+      <Text numberOfLines={1} style={{ color: colors.text[t].primary }}>
+        {name}
+      </Text>
+      {email ? (
+        <Text numberOfLines={1} style={{ color: colors.text[t].tertiary }}>
+          {email}
+        </Text>
+      ) : null}
+    </Stack>
+  )
+}
 export function AdminBackgroundChecksPage() {
   const router = useRouter()
   const { hasRole, isLoading: isLoadingRoles } = useUserRoles()
@@ -238,12 +265,7 @@ export function AdminBackgroundChecksPage() {
         accessorKey: 'workerName',
         header: 'Worker',
         cell: ({ row }) => (
-          <Stack>
-            <Text style={{ color: colors.text[t].secondary }}>{row.original.workerName}</Text>
-            {row.original.workerEmail ? (
-              <Text style={{ color: colors.text[t].secondary }}>{row.original.workerEmail}</Text>
-            ) : null}
-          </Stack>
+          <WorkerCell name={row.original.workerName} email={row.original.workerEmail} t={t} />
         ),
       },
       {
@@ -296,12 +318,7 @@ export function AdminBackgroundChecksPage() {
         accessorKey: 'workerName',
         header: 'Worker',
         cell: ({ row }) => (
-          <Stack>
-            <Text style={{ color: colors.text[t].secondary }}>{row.original.workerName}</Text>
-            {row.original.workerEmail ? (
-              <Text style={{ color: colors.text[t].secondary }}>{row.original.workerEmail}</Text>
-            ) : null}
-          </Stack>
+          <WorkerCell name={row.original.workerName} email={row.original.workerEmail} t={t} />
         ),
       },
       {
@@ -384,14 +401,16 @@ export function AdminBackgroundChecksPage() {
   }
 
   return (
-    <Stack flex={1} style={{ backgroundColor: colors.bg[t].default }}>
-      <Stack padding="md" gap={16}>
-        <Stack gap={8}>
-          <Text style={{ color: colors.text[t].secondary }}>Background check administration</Text>
-          <Text style={{ color: colors.text[t].secondary }}>
-            Review in-progress screenings, resolve disputes, and keep results compliant.
-          </Text>
-        </Stack>
+    // Inside OfficeLayout now (#1099): the layout supplies the gutter and the
+    // ground, and the page opens on a ScreenHeader instead of two grey lines
+    // in body type (#1098's legacy-header family).
+    <Stack flex={1}>
+      <Stack gap={16}>
+        <ScreenHeader
+          kicker="Screening"
+          title="Background check administration"
+          tip="Review in-progress screenings, resolve disputes, and keep results compliant."
+        />
 
         {/* The queue strip. These were three Cards whose label and value used
             the SAME colour and size, so the figure did not read as a figure —
@@ -614,7 +633,7 @@ export function AdminBackgroundChecksPage() {
 
       {activeTab === 'checks' ? (
         <OfficePageLayout
-      resultNoun="check"
+          resultNoun="check"
           title="Screenings under review"
           searchPlaceholder="Search by worker, organization, or package"
           searchValue={searchQuery}
