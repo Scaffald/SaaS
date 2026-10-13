@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   daysOpen,
   LISTING_FILTERS,
+  listingAgeLabel,
   listingStatus,
   statusesForListingFilter,
 } from '../employer-jobs-status'
@@ -81,5 +82,17 @@ describe('daysOpen', () => {
 
   it('is null for an unparseable date', () => {
     expect(daysOpen('last Tuesday', null, now)).toBeNull()
+  })
+})
+
+describe('listingAgeLabel', () => {
+  it('does not carry the status, so a closed posting never reads "open"', () => {
+    // #1084: the Closed group showed "98d OPEN". The chip carries status.
+    expect(listingAgeLabel('2026-07-07T00:00:00Z')).toBe('posted')
+  })
+
+  it('says a never-posted draft is in draft', () => {
+    expect(listingAgeLabel(null)).toBe('in draft')
+    expect(listingAgeLabel(undefined)).toBe('in draft')
   })
 })
