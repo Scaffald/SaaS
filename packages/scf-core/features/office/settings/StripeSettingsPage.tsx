@@ -16,6 +16,7 @@ import {
   ErrorState,
   Input,
   Paragraph,
+  ScreenHeader,
   Spinner,
   Switch,
   Text,
@@ -23,7 +24,6 @@ import {
   Stack,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { useScreenRhythm } from '@scf/core/constants/layout'
 
 function formatDate(value?: string | null): string | null {
   if (!value) return null
@@ -37,11 +37,12 @@ function formatDate(value?: string | null): string | null {
 
 export function StripeSettingsPage() {
   const { theme } = useThemeContext()
-  const { gutter, verticalPadding } = useScreenRhythm()
   const toast = useToast()
   const queryClient = useQueryClient()
 
-  const { data, isLoading, isError, error, refetch } = useStripeSettings({ refetchOnWindowFocus: false })
+  const { data, isLoading, isError, error, refetch } = useStripeSettings({
+    refetchOnWindowFocus: false,
+  })
 
   const updatePublishableKey = useUpdatePublishableKeyMutation({
     onSuccess: async () => {
@@ -176,13 +177,15 @@ export function StripeSettingsPage() {
   }
 
   return (
-    <Stack flex={1} paddingHorizontal={gutter} paddingVertical={verticalPadding} gap={16}>
-      <Stack gap={8}>
-        <Text>Stripe Payments</Text>
-        <Paragraph size="md" style={{ color: colors.text[theme].secondary }}>
-          Manage API keys, webhook secrets, and connection diagnostics for the Stripe integration.
-        </Paragraph>
-      </Stack>
+    // ScreenHeader inside the office gutter (#1098). The title was a small
+    // sans line, and each save button carried its own background: white,
+    // green-50 and white again, so the three disabled states looked unrelated.
+    <Stack gap={16}>
+      <ScreenHeader
+        kicker="Settings"
+        title="Stripe payments"
+        tip="API keys, webhook secrets and connection diagnostics for the Stripe integration."
+      />
 
       <Stack gap={16} style={{ maxWidth: 720, width: '100%' }}>
         <Card variant="glass" padding="md">
@@ -202,9 +205,8 @@ export function StripeSettingsPage() {
               />
               <Row gap={8} justify="flex-end">
                 <Button
-                  style={{
-                    backgroundColor: colors.bg[theme].default,
-                  }}
+                  variant="filled"
+                  color="primary"
                   disabled={updatePublishableKey.isPending || publishableKey.length < 16}
                   loading={updatePublishableKey.isPending}
                   onPress={() =>
@@ -243,9 +245,8 @@ export function StripeSettingsPage() {
                 />
                 <Row gap={8} justify="flex-end">
                   <Button
-                    style={{
-                      backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
-                    }}
+                    variant="filled"
+                    color="primary"
                     disabled={updateApiKey.isPending || apiSecret.length < 20}
                     loading={updateApiKey.isPending}
                     onPress={() => {
@@ -283,9 +284,8 @@ export function StripeSettingsPage() {
                 />
                 <Row gap={8} justify="flex-end">
                   <Button
-                    style={{
-                      backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
-                    }}
+                    variant="filled"
+                    color="primary"
                     disabled={updateWebhookSecret.isPending || webhookSecret.length < 10}
                     loading={updateWebhookSecret.isPending}
                     onPress={() => {
@@ -380,9 +380,7 @@ export function StripeSettingsPage() {
 
             <Row gap={8} justify="flex-end">
               <Button
-                style={{
-                  backgroundColor: colors.bg[theme].default,
-                }}
+                variant="outline"
                 disabled={testConnection.isPending || !data?.hasApiKey}
                 loading={testConnection.isPending}
                 onPress={() => testConnection.mutate()}

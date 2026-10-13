@@ -3,13 +3,11 @@
  * Admin OAuth app approval dashboard
  */
 
+import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
 import { OAuthAppList } from '@scf/core/features/oauth/components/OAuthAppList'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
+// OfficeLayout, like the rest of the office: a bare SafeAreaView put the list
+// flush against the sidebar with the cards running past the viewport (#1098).
 export default function OfficeOAuthAppsPage() {
-  return (
-    <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
-      <OAuthAppList />
-    </SafeAreaView>
-  )
+  return <OfficeLayout leftContent={<OAuthAppList />} leftContainerProps={{ minWidth: '100%' }} />
 }
