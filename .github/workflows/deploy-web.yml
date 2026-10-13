@@ -252,8 +252,10 @@ jobs:
           fi
 
       - name: 🚀 Deploy to EAS Hosting
+        id: eas
         if: steps.head.outputs.deploy == 'true'
         working-directory: apps/scaffald
+        shell: bash
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           DEPLOY_ALIAS: ${{ env.DEPLOY_TARGET }}
@@ -274,7 +276,11 @@ jobs:
           # scripts/deploy-web-eas.sh's job, where the typed confirmation and
           # the CloudFront invalidation live.
           echo "🚀 Deploying to EAS alias: $DEPLOY_ALIAS, env: $DEPLOY_ENVIRONMENT"
-          npx eas-cli@latest deploy --alias "$DEPLOY_ALIAS" --environment "$DEPLOY_ENVIRONMENT" --non-interactive
+          npx eas-cli@latest deploy --alias "$DEPLOY_ALIAS" --environment "$DEPLOY_ENVIRONMENT" --non-interactive 2>&1 | tee eas-deploy.log
+          # The per-deploy URL is this deployment itself, reachable at once;
+          # the alias moves to it on EAS's schedule (minutes, observed).
+          URL=$(grep -oE 'https://[a-z0-9-]+--[a-z0-9]+\.expo\.app' eas-deploy.log | grep -v -- "--${DEPLOY_ALIAS}\.expo\.app" | head -1 || true)
+          echo "deployment_url=$URL" >> "$GITHUB_OUTPUT"
 
 
       # ===== DEPLOYED-COMMIT CHECK =====
@@ -285,11 +291,26 @@ jobs:
         if: steps.head.outputs.deploy == 'true'
         env:
           SITE_URL: ${{ env.DEPLOY_TARGET == 'preview' && 'https://preview.scaffald.com' || 'https://dev.scaffald.com' }}
+          DEPLOYMENT_URL: ${{ steps.eas.outputs.deployment_url }}
         run: |
-          for i in $(seq 1 12); do
-            SERVED=$(curl -s --max-time 15 "$SITE_URL/build.json" | sed -n 's/.*"commit":"\([0-9a-f]*\)".*/\1/p')
+          commit_of() { curl -s --max-time 15 "$1/build.json" | sed -n 's/.*"commit":"\([0-9a-f]*\)".*/\1/p'; }
+          # 1. The deployment itself carries this commit. Immediate and exact.
+          if [ -z "$DEPLOYMENT_URL" ]; then
+            echo "❌ No deployment URL in the eas deploy output."
+            exit 1
+          fi
+          GOT=$(commit_of "$DEPLOYMENT_URL")
+          if [ "$GOT" != "$GITHUB_SHA" ]; then
+            echo "❌ $DEPLOYMENT_URL/build.json is '${GOT:-none}', want $GITHUB_SHA"
+            exit 1
+          fi
+          echo "✅ $DEPLOYMENT_URL is $GITHUB_SHA"
+          # 2. The alias reaches it (or a newer head). EAS moves an alias on
+          # its own schedule; the first run took over two minutes (#1051).
+          for i in $(seq 1 36); do
+            SERVED=$(commit_of "$SITE_URL")
             if [ "$SERVED" = "$GITHUB_SHA" ]; then
-              echo "✅ $SITE_URL serves $GITHUB_SHA"
+              echo "✅ $SITE_URL serves $GITHUB_SHA (after $(( (i - 1) * 10 ))s)"
               exit 0
             fi
             git fetch --quiet origin "$GITHUB_REF_NAME"
@@ -297,10 +318,10 @@ jobs:
               echo "ℹ️ $SITE_URL already serves the newer head $SERVED"
               exit 0
             fi
-            echo "  attempt $i: served '${SERVED:-none}', want $GITHUB_SHA"
+            echo "  $((i * 10))s: $SITE_URL serves '${SERVED:-none}', want $GITHUB_SHA"
             sleep 10
           done
-          echo "❌ $SITE_URL does not serve this build or the branch head."
+          echo "❌ $SITE_URL still does not serve this build or the branch head after 6 minutes."
           exit 1
 
       # ===== SMOKE TEST =====
