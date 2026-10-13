@@ -47,9 +47,6 @@ const LoginSchema = z.object({
 })
 
 export const LoginScreen = () => {
-  const renderCount = useRef(0)
-  renderCount.current++
-  console.log(`[LoginScreen] render #${renderCount.current}`)
   const params = useLocalSearchParams<{
     email?: string
     oauth_error?: string
@@ -74,9 +71,7 @@ export const LoginScreen = () => {
   const cardLinkColor = colors.primary[700]               // #034550 — 6.8:1 on glass
 
   useEffect(() => {
-    console.log('[LoginScreen] params check:', JSON.stringify(params))
     if (params?.email) {
-      console.log('[LoginScreen] has email param, replacing route')
       router.replace(ROUTES.AUTH.LOGIN.path)
     }
   }, [params?.email, router, params])
