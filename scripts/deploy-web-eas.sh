@@ -190,7 +190,9 @@ fi
 # CloudFront cannot answer for it; the public URL is checked too and may lag by
 # its edge TTL when no invalidation ran.
 for url in ${DEPLOYMENT_URL} ${APP_URL}; do
-  SERVED=$(curl -s --max-time 20 "${url}/build.json" | sed -n 's/.*"commit":"\([0-9a-f]*\)".*/\1/p' || true)
+  # Cache-busted: the query is CloudFront's cache key, and it would otherwise
+  # answer /build.json from the previous deploy for up to an hour.
+  SERVED=$(curl -s --max-time 20 "${url}/build.json?v=${DEPLOY_COMMIT}-${RANDOM}" | sed -n 's/.*"commit":"\([0-9a-f]*\)".*/\1/p' || true)
   if [ "${SERVED}" = "${DEPLOY_COMMIT}" ]; then
     echo "${url}/build.json → ${SERVED} ✓"
   else
