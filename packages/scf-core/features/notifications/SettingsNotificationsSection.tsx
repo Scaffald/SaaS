@@ -14,11 +14,13 @@ import {
   useMarkAsUnreadMutation,
   useArchiveManyMutation,
 } from '@scf/core/utils/notifications-sdk-hooks'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useQueryClient } from '@tanstack/react-query'
 import { AlertCircle, ExternalLink, Info, ShieldAlert } from 'lucide-react-native'
 import {
   Button,
   Card,
+  ErrorState,
   NotificationTag,
   Tabs,
   Toggle,
@@ -197,12 +199,23 @@ export function SettingsNotificationsSection({
     },
   })
 
+  // Hold the list until the session's access token is here. Before it, the SDK
+  // client carries only the anon key, so the first fetch 401s; the token change
+  // then invalidates everything, but this infinite query's refetch could still
+  // run with the anon client and 401 again, with nothing left to retry it — the
+  // list sat on "You're all caught up!" while the unread count, fetched after
+  // the token, said 7 (#1081, #964). The client is rebuilt in the same render
+  // that delivers the token, so the fetch that `enabled` flipping starts always
+  // uses the token-bearing client.
+  const { session } = useSessionContext()
+  const hasSessionToken = !!session?.access_token?.trim()
+
   const notificationsQuery = useInfiniteNotifications(
     {
       limit: 25,
       ...(filter === 'unread' ? { read: false } : {}),
     },
-    { placeholderData: (previousData) => previousData }
+    { enabled: hasSessionToken, placeholderData: (previousData) => previousData }
   )
 
   const unreadCountQuery = useUnreadCount({ refetchOnMount: false })
@@ -251,7 +264,12 @@ export function SettingsNotificationsSection({
   )
 
   const unreadCount = unreadCountQuery.data?.data?.unread_count ?? 0
-  const isEmpty = notifications.length === 0 && !notificationsQuery.isLoading
+  // `isPending`, not `isLoading`: while the query waits on the session it is
+  // pending but not fetching, and must not read as empty.
+  const isListLoading = notificationsQuery.isPending && !notificationsQuery.isError
+  // A failed request is not an empty inbox.
+  const isListError = notificationsQuery.isError && notifications.length === 0
+  const isEmpty = notifications.length === 0 && !isListLoading && !notificationsQuery.isError
 
   const [preferences, setPreferences] = useState({
     channelEnabled: { email: true, in_app: true, push: true, sms: false },
@@ -305,12 +323,23 @@ export function SettingsNotificationsSection({
   }
 
   const renderNotificationList = () => {
-    if (notificationsQuery.isLoading) {
+    if (isListLoading) {
       return (
         <Stack gap={12} align="center" style={{ paddingVertical: 40 }}>
           <Spinner variant="ios" size="lg" color="gray" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading notifications…</Text>
         </Stack>
+      )
+    }
+
+    if (isListError) {
+      return (
+        <ErrorState
+          title="Couldn’t load notifications"
+          description="Your notifications did not load. An empty list here does not mean you have none."
+          error={notificationsQuery.error as Error}
+          retry={() => notificationsQuery.refetch()}
+        />
       )
     }
 

@@ -42,7 +42,14 @@ vi.mock('@scaffald/ui', async (importOriginal) => {
     }
   )
   const NotificationTag = ({ children }: Props) => createElement('span', null, children as never)
-  return { ...actual, Tabs, NotificationTag }
+  const ErrorState = ({ title, retry }: { title: string; retry?: () => void }) =>
+    createElement(
+      'div',
+      null,
+      createElement('p', null, title),
+      retry ? createElement('button', { type: 'button', onClick: retry }, 'Retry') : null
+    )
+  return { ...actual, Tabs, NotificationTag, ErrorState }
 })
 
 vi.mock('@scf/core/features/notifications/components/SiteOverlapNotification', () => ({
@@ -82,6 +89,11 @@ const page: NotificationsListResponse = {
 }
 
 const useInfiniteNotifications = vi.fn()
+const session = { current: { access_token: 'user-jwt' } as { access_token: string } | null }
+
+vi.mock('@scf/core/utils/supabase/useSessionContext', () => ({
+  useSessionContext: () => ({ session: session.current, isLoading: false }),
+}))
 
 vi.mock('@scf/core/utils/notifications-sdk-hooks', () => {
   const mutation = () => ({ mutate: vi.fn(), isPending: false })
@@ -109,10 +121,14 @@ function renderSection() {
 
 describe('SettingsNotificationsSection inbox (#1081)', () => {
   beforeEach(() => {
+    session.current = { access_token: 'user-jwt' }
     useInfiniteNotifications.mockReset()
     useInfiniteNotifications.mockReturnValue({
       data: { pages: [page], pageParams: [undefined] },
       isLoading: false,
+      isPending: false,
+      isError: false,
+      error: null,
       hasNextPage: false,
       isFetchingNextPage: false,
       refetch: vi.fn(),
@@ -146,6 +162,47 @@ describe('SettingsNotificationsSection inbox (#1081)', () => {
       { limit: 25, read: false },
       expect.anything()
     )
+  })
+
+  it('does not fetch until the session has an access token', () => {
+    session.current = null
+    useInfiniteNotifications.mockReturnValue({
+      ...useInfiniteNotifications(),
+      data: undefined,
+      isPending: true,
+    })
+    renderSection()
+    expect(useInfiniteNotifications).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({ enabled: false })
+    )
+    // Waiting on the session is loading, not an empty inbox.
+    expect(screen.queryByText("You're all caught up!")).toBeNull()
+    expect(screen.getAllByText('Loading notifications…').length).toBeGreaterThan(0)
+
+    session.current = { access_token: 'user-jwt' }
+    renderSection()
+    expect(useInfiniteNotifications).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({ enabled: true })
+    )
+  })
+
+  it('shows an error with Retry, not "caught up", when the list fails', () => {
+    const refetch = vi.fn()
+    useInfiniteNotifications.mockReturnValue({
+      ...useInfiniteNotifications(),
+      data: undefined,
+      isPending: false,
+      isError: true,
+      error: new Error('Unauthorized'),
+      refetch,
+    })
+    renderSection()
+    expect(screen.queryByText("You're all caught up!")).toBeNull()
+    expect(screen.getAllByText('Couldn’t load notifications').length).toBeGreaterThan(0)
+    fireEvent.click(screen.getAllByRole('button', { name: 'Retry' })[0])
+    expect(refetch).toHaveBeenCalled()
   })
 
   it('offers no Archived tab, since the endpoint has no archived filter', () => {

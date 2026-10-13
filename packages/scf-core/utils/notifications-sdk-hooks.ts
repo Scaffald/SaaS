@@ -105,8 +105,10 @@ export function useInfiniteNotifications(
       return page < total_pages ? page + 1 : undefined
     },
     initialPageParam: undefined,
-    enabled: !!client && (options?.enabled ?? true),
     ...options,
+    // After the spread, so a caller's `enabled` narrows the client guard
+    // instead of replacing it.
+    enabled: !!client && (options?.enabled ?? true),
   })
 }
 
