@@ -10,16 +10,17 @@ import {
   useInfiniteNotifications,
   useUnreadCount,
   useNotificationDevices,
-  useMarkManyReadMutation,
-  useMarkManyUnreadMutation,
+  useMarkAsReadMutation,
+  useMarkAsUnreadMutation,
   useArchiveManyMutation,
-  useRestoreManyMutation,
 } from '@scf/core/utils/notifications-sdk-hooks'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useQueryClient } from '@tanstack/react-query'
 import { AlertCircle, ExternalLink, Info, ShieldAlert } from 'lucide-react-native'
 import {
   Button,
   Card,
+  ErrorState,
   NotificationTag,
   Tabs,
   Toggle,
@@ -82,12 +83,16 @@ interface ApiNotification {
   routed_channels?: string[] | null
 }
 
-const FILTERS = ['All', 'Unread', 'Archived'] as const
-type FilterValue = 'all' | 'unread' | 'archived'
+/*
+ * No Archived tab: GET /v1/notifications has no archived filter (it ignores an
+ * unknown `archived` param and returns everything), so the tab only ever showed
+ * what All shows (#1081). Bring it back with the endpoint support.
+ */
+const FILTERS = ['All', 'Unread'] as const
+type FilterValue = 'all' | 'unread'
 const FILTER_MAP: Record<(typeof FILTERS)[number], FilterValue> = {
   All: 'all',
   Unread: 'unread',
-  Archived: 'archived',
 }
 
 function getSeverityColor(severity: NotificationItem['severity']): string {
@@ -194,12 +199,23 @@ export function SettingsNotificationsSection({
     },
   })
 
+  // Hold the list until the session's access token is here. Before it, the SDK
+  // client carries only the anon key, so the first fetch 401s; the token change
+  // then invalidates everything, but this infinite query's refetch could still
+  // run with the anon client and 401 again, with nothing left to retry it — the
+  // list sat on "You're all caught up!" while the unread count, fetched after
+  // the token, said 7 (#1081, #964). The client is rebuilt in the same render
+  // that delivers the token, so the fetch that `enabled` flipping starts always
+  // uses the token-bearing client.
+  const { session } = useSessionContext()
+  const hasSessionToken = !!session?.access_token?.trim()
+
   const notificationsQuery = useInfiniteNotifications(
     {
       limit: 25,
-      ...(filter === 'unread' ? { read: false } : filter === 'all' ? {} : {}),
+      ...(filter === 'unread' ? { read: false } : {}),
     },
-    { placeholderData: (previousData) => previousData }
+    { enabled: hasSessionToken, placeholderData: (previousData) => previousData }
   )
 
   const unreadCountQuery = useUnreadCount({ refetchOnMount: false })
@@ -216,14 +232,14 @@ export function SettingsNotificationsSection({
   }
   const deviceRows: DeviceRow[] = (devicesQuery.data ?? []) as DeviceRow[]
 
-  const markReadMutation = useMarkManyReadMutation({
+  const markReadMutation = useMarkAsReadMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list'] })
       queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list-infinite'] })
       queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'unread-count'] })
     },
   })
-  const markUnreadMutation = useMarkManyUnreadMutation({
+  const markUnreadMutation = useMarkAsUnreadMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list'] })
       queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list-infinite'] })
@@ -236,26 +252,24 @@ export function SettingsNotificationsSection({
       queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list-infinite'] })
     },
   })
-  const restoreMutation = useRestoreManyMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list'] })
-      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list-infinite'] })
-    },
-  })
 
+  // Each page is the SDK's `NotificationsListResponse`, `{ data, pagination }`.
+  // Reading `page.items` here left the list permanently empty (#1081).
   const notifications: NotificationItem[] = useMemo(
     () =>
-      ((notificationsQuery.data as { pages?: unknown[] } | undefined)?.pages ?? [])
-        .flatMap((page) => {
-          const p = page as { items?: ApiNotification[] | null } | null | undefined
-          return p?.items ?? []
-        })
+      (notificationsQuery.data?.pages ?? [])
+        .flatMap((page) => (page?.data ?? []) as unknown as ApiNotification[])
         .map(mapNotification),
     [notificationsQuery.data]
   )
 
   const unreadCount = unreadCountQuery.data?.data?.unread_count ?? 0
-  const isEmpty = notifications.length === 0 && !notificationsQuery.isLoading
+  // `isPending`, not `isLoading`: while the query waits on the session it is
+  // pending but not fetching, and must not read as empty.
+  const isListLoading = notificationsQuery.isPending && !notificationsQuery.isError
+  // A failed request is not an empty inbox.
+  const isListError = notificationsQuery.isError && notifications.length === 0
+  const isEmpty = notifications.length === 0 && !isListLoading && !notificationsQuery.isError
 
   const [preferences, setPreferences] = useState({
     channelEnabled: { email: true, in_app: true, push: true, sms: false },
@@ -309,12 +323,23 @@ export function SettingsNotificationsSection({
   }
 
   const renderNotificationList = () => {
-    if (notificationsQuery.isLoading) {
+    if (isListLoading) {
       return (
         <Stack gap={12} align="center" style={{ paddingVertical: 40 }}>
           <Spinner variant="ios" size="lg" color="gray" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading notifications…</Text>
         </Stack>
+      )
+    }
+
+    if (isListError) {
+      return (
+        <ErrorState
+          title="Couldn’t load notifications"
+          description="Your notifications did not load. An empty list here does not mean you have none."
+          error={notificationsQuery.error as Error}
+          retry={() => notificationsQuery.refetch()}
+        />
       )
     }
 
@@ -400,7 +425,7 @@ export function SettingsNotificationsSection({
                     <Button
                       size="sm"
                       variant="outline"
-                      onPress={() => markReadMutation.mutate({ ids: [notification.id] })}
+                      onPress={() => markReadMutation.mutate(notification.id)}
                     >
                       Mark as read
                     </Button>
@@ -408,29 +433,18 @@ export function SettingsNotificationsSection({
                     <Button
                       size="sm"
                       variant="outline"
-                      onPress={() => markUnreadMutation.mutate({ ids: [notification.id] })}
+                      onPress={() => markUnreadMutation.mutate(notification.id)}
                     >
                       Mark unread
                     </Button>
                   )}
-                  {filter === 'archived' ? (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      color="success"
-                      onPress={() => restoreMutation.mutate({ ids: [notification.id] })}
-                    >
-                      Restore
-                    </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onPress={() => archiveMutation.mutate({ ids: [notification.id] })}
-                    >
-                      Archive
-                    </Button>
-                  )}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onPress={() => archiveMutation.mutate({ ids: [notification.id] })}
+                  >
+                    Archive
+                  </Button>
                   {notification.ctaUrl && (
                     <Button
                       size="sm"

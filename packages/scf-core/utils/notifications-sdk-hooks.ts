@@ -7,6 +7,7 @@ import {
   useMutation,
   useQuery,
   useInfiniteQuery,
+  type InfiniteData,
   type UseMutationOptions,
   type UseQueryOptions,
   type UseInfiniteQueryOptions,
@@ -81,7 +82,13 @@ export function useNotifications(
 export function useInfiniteNotifications(
   params?: ListNotificationsParams,
   options?: Omit<
-    UseInfiniteQueryOptions<NotificationsListResponse>,
+    // TData is the InfiniteData wrapper, not one page: without it `data.pages`
+    // failed to typecheck and callers cast their way to the wrong field (#1081).
+    UseInfiniteQueryOptions<
+      NotificationsListResponse,
+      Error,
+      InfiniteData<NotificationsListResponse>
+    >,
     'queryKey' | 'queryFn' | 'getNextPageParam' | 'initialPageParam'
   >
 ) {
@@ -98,8 +105,10 @@ export function useInfiniteNotifications(
       return page < total_pages ? page + 1 : undefined
     },
     initialPageParam: undefined,
-    enabled: !!client && (options?.enabled ?? true),
     ...options,
+    // After the spread, so a caller's `enabled` narrows the client guard
+    // instead of replacing it.
+    enabled: !!client && (options?.enabled ?? true),
   })
 }
 
