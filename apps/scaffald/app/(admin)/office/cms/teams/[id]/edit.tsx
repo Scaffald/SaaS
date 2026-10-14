@@ -1,3 +1,4 @@
+import { CmsFormPage } from '@scf/core/features/office/components/CmsFormPage'
 import {
   TeamForm,
   TeamInvitationsList,
@@ -15,7 +16,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
-export default function EditTeamPage() {
+function EditTeamPageContent() {
   const router = useRouter()
   const params = useLocalSearchParams<{ id?: string }>()
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
@@ -140,5 +141,14 @@ export default function EditTeamPage() {
         onInvited={() => setInviteRefreshKey((value) => value + 1)}
       />
     </Stack>
+  )
+}
+
+// One shell for every CMS form (#1098): office gutter, ScreenHeader, one column.
+export default function EditTeamPage() {
+  return (
+    <CmsFormPage title="Edit team">
+      <EditTeamPageContent />
+    </CmsFormPage>
   )
 }

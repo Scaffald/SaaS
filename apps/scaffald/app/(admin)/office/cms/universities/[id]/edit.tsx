@@ -1,10 +1,11 @@
+import { CmsFormPage } from '@scf/core/features/office/components/CmsFormPage'
 import { ROUTES } from '@scf/core/constants/routes'
 import { OfficeUniversitiesForm } from '@scf/core/features/office/office-universities-form'
 import { useOfficeUniversity } from '@scf/core/utils/office-universities-sdk-hooks'
 import { Spinner, Stack } from '@scaffald/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 
-export default function EditUniversityPage() {
+function EditUniversityPageContent() {
   const router = useRouter()
   const { id } = useLocalSearchParams<{ id: string }>()
 
@@ -44,5 +45,14 @@ export default function EditUniversityPage() {
         router.back()
       }}
     />
+  )
+}
+
+// One shell for every CMS form (#1098): office gutter, ScreenHeader, one column.
+export default function EditUniversityPage() {
+  return (
+    <CmsFormPage title="Edit university">
+      <EditUniversityPageContent />
+    </CmsFormPage>
   )
 }

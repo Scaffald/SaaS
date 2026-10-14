@@ -14,7 +14,7 @@ import { useToast, useThemeContext } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Controller, type Resolver, useForm } from 'react-hook-form'
-import { Button, Input, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { ResponsiveSelect } from '@scaffald/ui'
 import { OrganizationCreditsPanel } from '../payments/OrganizationCreditsPanel'
 import { OrganizationPaymentMethodsPanel } from '../payments/OrganizationPaymentMethodsPanel'
@@ -251,10 +251,10 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
   }
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: colors.bg[theme].subtle, padding: 24 }}
-      showsVerticalScrollIndicator={false}
-    >
+    // A plain column inside CmsFormPage (#1098). It was a full-bleed tinted
+    // ScrollView with no gap between fields, so each label sat directly on
+    // the input above it.
+    <Stack gap={16}>
       {/* Name */}
       <Controller
         name="name"
@@ -267,10 +267,19 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               value={field.value}
               onChangeText={handleNameChange}
               placeholder="Enter organization name"
-              style={{ borderColor: errors.name ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default }}
+              style={{
+                borderColor: errors.name
+                  ? theme === 'light'
+                    ? colors.error[300]
+                    : colors.error[700]
+                  : colors.border[theme].default,
+              }}
             />
             {errors.name && (
-              <Text data-testid="name-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+              <Text
+                data-testid="name-error"
+                style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+              >
                 {errors.name.message}
               </Text>
             )}
@@ -295,13 +304,18 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               style={{
                 borderColor:
                   slugHasAvailabilityError || errors.slug
-                    ? theme === "light" ? colors.error[300] : colors.error[700]
+                    ? theme === 'light'
+                      ? colors.error[300]
+                      : colors.error[700]
                     : colors.border[theme].default,
               }}
             />
             <Text style={{ opacity: 0.7 }}>Lowercase, URL-friendly username (hyphens only)</Text>
             {errors.slug && (
-              <Text data-testid="slug-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+              <Text
+                data-testid="slug-error"
+                style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+              >
                 {errors.slug.message}
               </Text>
             )}
@@ -314,16 +328,20 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               </Row>
             )}
             {slugStatus.state === 'available' && slugNeedsValidation && (
-              <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
+              <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>
                 This vanity URL is available.
               </Text>
             )}
             {slugStatus.state === 'invalid' && (
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{slugStatus.message}</Text>
+              <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                {slugStatus.message}
+              </Text>
             )}
             {slugStatus.state === 'taken' && (
               <Stack gap={8}>
-                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{slugStatus.message}</Text>
+                <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                  {slugStatus.message}
+                </Text>
                 {slugStatus.suggestions?.length ? (
                   <Row gap={8} wrap>
                     {slugStatus.suggestions.map((suggestion) => (
@@ -341,7 +359,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               </Stack>
             )}
             {slugStatus.state === 'error' && (
-              <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>{slugStatus.message}</Text>
+              <Text style={{ color: theme === 'light' ? colors.yellow[700] : colors.yellow[300] }}>
+                {slugStatus.message}
+              </Text>
             )}
           </Stack>
         )}
@@ -383,12 +403,18 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               onChangeText={field.onChange}
               placeholder="https://example.com/logo.png"
               style={{
-                borderColor:
-                  errors.logo_url ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default,
+                borderColor: errors.logo_url
+                  ? theme === 'light'
+                    ? colors.error[300]
+                    : colors.error[700]
+                  : colors.border[theme].default,
               }}
             />
             {errors.logo_url && (
-              <Text data-testid="logo-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+              <Text
+                data-testid="logo-error"
+                style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+              >
                 {errors.logo_url.message}
               </Text>
             )}
@@ -414,7 +440,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               ]}
             />
             {errors.visibility && (
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.visibility.message}</Text>
+              <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                {errors.visibility.message}
+              </Text>
             )}
           </Stack>
         )}
@@ -427,8 +455,12 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         render={({ field }) => (
           <Stack data-testid="org-form-locations">
             <OrganizationLocationsInput
-              value={(field.value ?? []) as Parameters<typeof OrganizationLocationsInput>[0]['value']}
-              onChange={field.onChange as Parameters<typeof OrganizationLocationsInput>[0]['onChange']}
+              value={
+                (field.value ?? []) as Parameters<typeof OrganizationLocationsInput>[0]['value']
+              }
+              onChange={
+                field.onChange as Parameters<typeof OrganizationLocationsInput>[0]['onChange']
+              }
               errors={errors.locations?.message}
               disabled={isLoading}
               provider="mapbox"
@@ -477,6 +509,6 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           {isLoading ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}
         </Button>
       </Row>
-    </ScrollView>
+    </Stack>
   )
 }

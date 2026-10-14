@@ -1,51 +1,43 @@
 import {
   useCreateUniversityMutation,
   useUpdateUniversityMutation,
-} from "@scf/core/utils/office-universities-sdk-hooks";
-import { DashboardWidget, useThemeContext } from "@scaffald/ui";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Save, X } from "lucide-react-native";
-import { useToast } from "@scaffald/ui";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import {
-  Button,
-  H4,
-  Input,
-  Text,
-  TextArea,
-  Row,
-  Stack,
-} from "@scaffald/ui";
-import { z } from "zod";
-import { colors } from "@scaffald/ui/tokens";
+} from '@scf/core/utils/office-universities-sdk-hooks'
+import { DashboardWidget, useThemeContext } from '@scaffald/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Plus, Save, X } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { Button, Input, Text, TextArea, Row, Stack } from '@scaffald/ui'
+import { z } from 'zod'
+import { colors } from '@scaffald/ui/tokens'
 
 const universitySchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  slug: z.string().min(1, "Vanity URL is required"),
-  country: z.string().min(1, "Country is required"),
-  alpha_two_code: z.string().length(2, "Must be 2-letter country code"),
+  name: z.string().min(1, 'Name is required'),
+  slug: z.string().min(1, 'Vanity URL is required'),
+  country: z.string().min(1, 'Country is required'),
+  alpha_two_code: z.string().length(2, 'Must be 2-letter country code'),
   state_province: z.string().optional(),
   domains: z.string().optional(),
   web_pages: z.string().optional(),
-});
+})
 
-type UniversityFormData = z.infer<typeof universitySchema>;
+type UniversityFormData = z.infer<typeof universitySchema>
 
 interface OfficeUniversitiesFormProps {
   selectedUniversity?: {
-    id: string;
-    name: string;
-    slug: string;
-    country: string;
-    alpha_two_code: string;
-    state_province: string | null;
-    domains: string[];
-    web_pages: string[];
-    is_active: boolean;
-  } | null;
-  onUniversitySaved: () => void;
-  onCancel: () => void;
+    id: string
+    name: string
+    slug: string
+    country: string
+    alpha_two_code: string
+    state_province: string | null
+    domains: string[]
+    web_pages: string[]
+    is_active: boolean
+  } | null
+  onUniversitySaved: () => void
+  onCancel: () => void
 }
 
 /**
@@ -57,9 +49,9 @@ export function OfficeUniversitiesForm({
   onUniversitySaved,
   onCancel,
 }: OfficeUniversitiesFormProps) {
-  const { theme } = useThemeContext();
-  const [isLoading, setIsLoading] = useState(false);
-  const toast = useToast();
+  const { theme } = useThemeContext()
+  const [isLoading, setIsLoading] = useState(false)
+  const toast = useToast()
 
   const {
     control,
@@ -70,57 +62,55 @@ export function OfficeUniversitiesForm({
   } = useForm<UniversityFormData>({
     resolver: zodResolver(universitySchema),
     defaultValues: {
-      name: "",
-      slug: "",
-      country: "",
-      alpha_two_code: "",
-      state_province: "",
-      domains: "",
-      web_pages: "",
+      name: '',
+      slug: '',
+      country: '',
+      alpha_two_code: '',
+      state_province: '',
+      domains: '',
+      web_pages: '',
     },
-  });
+  })
 
   // Mutations
   const createMutation = useCreateUniversityMutation({
     onSuccess: () => {
       toast.show({
-        title: "Success",
-        message: "University created successfully",
-        variant: "success",
-      });
-      reset();
-      onUniversitySaved();
+        title: 'Success',
+        message: 'University created successfully',
+        variant: 'success',
+      })
+      reset()
+      onUniversitySaved()
     },
     onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to create university";
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create university'
       toast.show({
-        title: "Error",
+        title: 'Error',
         message: errorMessage,
-        variant: "error",
-      });
+        variant: 'error',
+      })
     },
-  });
+  })
 
   const updateMutation = useUpdateUniversityMutation({
     onSuccess: () => {
       toast.show({
-        title: "Success",
-        message: "University updated successfully",
-        variant: "success",
-      });
-      onUniversitySaved();
+        title: 'Success',
+        message: 'University updated successfully',
+        variant: 'success',
+      })
+      onUniversitySaved()
     },
     onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to update university";
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update university'
       toast.show({
-        title: "Error",
+        title: 'Error',
         message: errorMessage,
-        variant: "error",
-      });
+        variant: 'error',
+      })
     },
-  });
+  })
 
   // Load selected university data
   useEffect(() => {
@@ -130,45 +120,42 @@ export function OfficeUniversitiesForm({
         slug: selectedUniversity.slug,
         country: selectedUniversity.country,
         alpha_two_code: selectedUniversity.alpha_two_code,
-        state_province: selectedUniversity.state_province || "",
-        domains: selectedUniversity.domains.join(", "),
-        web_pages: selectedUniversity.web_pages.join(", "),
-      });
+        state_province: selectedUniversity.state_province || '',
+        domains: selectedUniversity.domains.join(', '),
+        web_pages: selectedUniversity.web_pages.join(', '),
+      })
     }
-  }, [selectedUniversity, reset]);
+  }, [selectedUniversity, reset])
 
   // Auto-generate slug from name
-  const handleNameChange = (
-    name: string,
-    onChange: (value: string) => void
-  ) => {
-    onChange(name);
+  const handleNameChange = (name: string, onChange: (value: string) => void) => {
+    onChange(name)
     if (!selectedUniversity) {
       // Only auto-generate slug for new universities
       const slug = name
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "");
-      setValue("slug", slug, { shouldValidate: true });
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+      setValue('slug', slug, { shouldValidate: true })
     }
-  };
+  }
 
   const onSubmit = async (data: UniversityFormData) => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       // Parse comma-separated values into arrays
       const domains = data.domains
         ? data.domains
-            .split(",")
+            .split(',')
             .map((d) => d.trim())
             .filter(Boolean)
-        : [];
+        : []
       const web_pages = data.web_pages
         ? data.web_pages
-            .split(",")
+            .split(',')
             .map((w) => w.trim())
             .filter(Boolean)
-        : [];
+        : []
 
       const payload = {
         name: data.name,
@@ -179,29 +166,29 @@ export function OfficeUniversitiesForm({
         domains,
         web_pages,
         metadata: {},
-      };
+      }
 
       if (selectedUniversity) {
         await updateMutation.mutateAsync({
           id: selectedUniversity.id,
           params: payload,
-        });
+        })
       } else {
-        await createMutation.mutateAsync(payload);
+        await createMutation.mutateAsync(payload)
       }
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
-  const isEditing = !!selectedUniversity;
+  const isEditing = !!selectedUniversity
 
   return (
     <DashboardWidget>
       <Stack gap={16} padding="md">
-        <Row justify="space-between" align="center">
-          <H4>{isEditing ? "Edit University" : "New University"}</H4>
-          {isEditing && (
+        {/* The page header (CmsFormPage) names it now; only Cancel stays (#1098). */}
+        {isEditing && (
+          <Row justify="flex-end" align="center">
             <Button
               size="sm"
               variant="outline"
@@ -211,18 +198,17 @@ export function OfficeUniversitiesForm({
             >
               Cancel
             </Button>
-          )}
-        </Row>
+          </Row>
+        )}
 
         <Stack gap={16}>
           {/* Name */}
           <Stack gap={8}>
             <Text>
-              Name{" "}
+              Name{' '}
               <Text
                 style={{
-                  color:
-                    theme === "light" ? colors.error[700] : colors.error[300],
+                  color: theme === 'light' ? colors.error[700] : colors.error[300],
                 }}
               >
                 *
@@ -236,12 +222,10 @@ export function OfficeUniversitiesForm({
                   data-testid="university-name-input"
                   placeholder="e.g. Harvard University"
                   value={field.value}
-                  onChangeText={(text) =>
-                    handleNameChange(text, field.onChange)
-                  }
+                  onChangeText={(text) => handleNameChange(text, field.onChange)}
                   style={{
                     borderColor: errors.name
-                      ? theme === "light"
+                      ? theme === 'light'
                         ? colors.error[300]
                         : colors.error[700]
                       : colors.border[theme].default,
@@ -253,8 +237,7 @@ export function OfficeUniversitiesForm({
               <Text
                 data-testid="name-error"
                 style={{
-                  color:
-                    theme === "light" ? colors.error[700] : colors.error[300],
+                  color: theme === 'light' ? colors.error[700] : colors.error[300],
                 }}
               >
                 {errors.name.message}
@@ -265,11 +248,10 @@ export function OfficeUniversitiesForm({
           {/* Vanity URL */}
           <Stack gap={8}>
             <Text>
-              Vanity URL{" "}
+              Vanity URL{' '}
               <Text
                 style={{
-                  color:
-                    theme === "light" ? colors.error[700] : colors.error[300],
+                  color: theme === 'light' ? colors.error[700] : colors.error[300],
                 }}
               >
                 *
@@ -289,7 +271,7 @@ export function OfficeUniversitiesForm({
                   onChangeText={field.onChange}
                   style={{
                     borderColor: errors.slug
-                      ? theme === "light"
+                      ? theme === 'light'
                         ? colors.error[300]
                         : colors.error[700]
                       : colors.border[theme].default,
@@ -301,8 +283,7 @@ export function OfficeUniversitiesForm({
               <Text
                 data-testid="slug-error"
                 style={{
-                  color:
-                    theme === "light" ? colors.error[700] : colors.error[300],
+                  color: theme === 'light' ? colors.error[700] : colors.error[300],
                 }}
               >
                 {errors.slug.message}
@@ -313,11 +294,10 @@ export function OfficeUniversitiesForm({
           {/* Country */}
           <Stack gap={8}>
             <Text>
-              Country{" "}
+              Country{' '}
               <Text
                 style={{
-                  color:
-                    theme === "light" ? colors.error[700] : colors.error[300],
+                  color: theme === 'light' ? colors.error[700] : colors.error[300],
                 }}
               >
                 *
@@ -334,7 +314,7 @@ export function OfficeUniversitiesForm({
                   onChangeText={field.onChange}
                   style={{
                     borderColor: errors.country
-                      ? theme === "light"
+                      ? theme === 'light'
                         ? colors.error[300]
                         : colors.error[700]
                       : colors.border[theme].default,
@@ -346,8 +326,7 @@ export function OfficeUniversitiesForm({
               <Text
                 data-testid="country-error"
                 style={{
-                  color:
-                    theme === "light" ? colors.error[700] : colors.error[300],
+                  color: theme === 'light' ? colors.error[700] : colors.error[300],
                 }}
               >
                 {errors.country.message}
@@ -358,11 +337,10 @@ export function OfficeUniversitiesForm({
           {/* Alpha Two Code */}
           <Stack gap={8}>
             <Text>
-              Country Code{" "}
+              Country Code{' '}
               <Text
                 style={{
-                  color:
-                    theme === "light" ? colors.error[700] : colors.error[300],
+                  color: theme === 'light' ? colors.error[700] : colors.error[300],
                 }}
               >
                 *
@@ -382,7 +360,7 @@ export function OfficeUniversitiesForm({
                   onChangeText={(text) => field.onChange(text.toUpperCase())}
                   style={{
                     borderColor: errors.alpha_two_code
-                      ? theme === "light"
+                      ? theme === 'light'
                         ? colors.error[300]
                         : colors.error[700]
                       : colors.border[theme].default,
@@ -395,8 +373,7 @@ export function OfficeUniversitiesForm({
               <Text
                 data-testid="country-code-error"
                 style={{
-                  color:
-                    theme === "light" ? colors.error[700] : colors.error[300],
+                  color: theme === 'light' ? colors.error[700] : colors.error[300],
                 }}
               >
                 {errors.alpha_two_code.message}
@@ -486,11 +463,11 @@ export function OfficeUniversitiesForm({
               loading={isLoading}
               iconStart={isEditing ? Save : Plus}
             >
-              {isLoading ? "Saving..." : isEditing ? "Update" : "Create"}
+              {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
             </Button>
           </Row>
         </Stack>
       </Stack>
     </DashboardWidget>
-  );
+  )
 }
