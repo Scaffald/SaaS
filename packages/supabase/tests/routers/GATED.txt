@@ -44,6 +44,7 @@ office-communities-rest.test.ts
 office-jobs-rest.test.ts
 office-organization-requests-rest.test.ts
 office-settings-rest.test.ts
+office-users-list-rest.test.ts
 office.test.ts
 onet.test.ts
 organizations.test.ts

@@ -6,6 +6,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import { emailsByUserId } from "../../_shared/user-emails.ts";
 import {
   type ApiEnv,
   authMiddleware,
@@ -123,6 +124,11 @@ app.get("/", async (c) => {
     ) || [],
   );
 
+  // Email lives in auth.users, which PostgREST cannot reach; the shared helper
+  // asks auth per id (#1116). Without it, a user with no profile name had a
+  // truncated UUID as the only identity in the CMS workers table.
+  const emails = await emailsByUserId(supabaseAdmin, userIds);
+
   const users = (usersData ?? []).map(
     (user: {
       id: string;
@@ -137,6 +143,7 @@ app.get("/", async (c) => {
         id: user.id,
         username: user.username,
         display_name: user.display_name,
+        email: emails.get(user.id) ?? null,
         first_name:
           (profile as { first_name?: string | null } | undefined)?.first_name ||
           "",
