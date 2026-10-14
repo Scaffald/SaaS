@@ -30,6 +30,12 @@ export type DrawerItemConfig = {
    * Compliance landing on EEO reports.
    */
   matchPrefix?: string
+  /**
+   * Further pathname prefixes this item owns beyond its own — pages that live
+   * at a sibling path but belong to this tab, like the background check under
+   * Profile's Verification tab (its breadcrumbs say so).
+   */
+  alsoOwns?: string[]
   isCompleted?: boolean // Shows checkmark icon when true
   isOnCooldown?: boolean // Shows clock icon when true (overrides checkmark)
 }

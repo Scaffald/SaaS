@@ -277,6 +277,9 @@ export const generateDashboardDrawerItems = (
         key: 'profile-verification',
         titleKey: ROUTES.PROFILE.ID_VERIFICATION.titleKey,
         href: ROUTES.PROFILE.ID_VERIFICATION.path,
+        // The background check is a panel of the Verification page, and its
+        // own pages (initiate, dispute) sit under /profile/background-check.
+        alsoOwns: [ROUTES.PROFILE.BACKGROUND_CHECK.path],
       },
     ],
   })

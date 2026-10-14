@@ -4,11 +4,19 @@ import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { usePathname } from '@scf/core/utils/usePathname'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { useRouter } from 'expo-router'
-import { useCallback, useMemo } from 'react'
-import { ScrollView, View } from 'react-native'
-import { Chip, Tabs } from '@scaffald/ui'
+import { LinearGradient } from 'expo-linear-gradient'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ScrollView,
+  View,
+  type LayoutChangeEvent,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from 'react-native'
+import { Chip, Tabs, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { getNavItems } from './config'
-import { getSectionTabs } from './section-tabs'
+import { getSectionTabs, stripEdgeFades, stripScrollTarget } from './section-tabs'
 import { normalizePath } from './utils'
 
 /**
@@ -52,32 +60,12 @@ export function SectionTabs() {
   // (#980). Five folder tabs at 390px wrapped onto two rows of cards.
   if (!isDesktop) {
     return (
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        testID="section-tabs"
-        accessibilityRole="tablist"
-        style={{ flexGrow: 0 }}
-        contentContainerStyle={{ paddingHorizontal: gutter, paddingVertical: 10, gap: 6 }}
-      >
-        {strip.tabs.map((tab) => {
-          const active = tab.key === strip.activeKey
-          return (
-            <Chip
-              key={tab.key}
-              size="md"
-              tone={active ? 'accent' : 'neutral'}
-              selected={active}
-              onPress={() => go(tab.key)}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: active }}
-              aria-selected={active}
-            >
-              {label(tab)}
-            </Chip>
-          )
-        })}
-      </ScrollView>
+      <PhoneChipStrip
+        tabs={strip.tabs.map((tab) => ({ key: tab.key, label: label(tab) }))}
+        activeKey={strip.activeKey}
+        gutter={gutter}
+        onSelect={go}
+      />
     )
   }
 
@@ -90,6 +78,116 @@ export function SectionTabs() {
           </Tabs.Item>
         ))}
       </Tabs>
+    </View>
+  )
+}
+
+const CHIP_GAP = 6
+const FADE_WIDTH = 24
+
+/**
+ * The phone's chip row. It scrolls sideways, so it has to say so: a fade on
+ * each edge that hides more chips, a trailing gutter matching the leading one
+ * (the last chip ran flush to the screen edge), and the active chip scrolled
+ * on screen so a sub-route deep in the strip shows which tab owns it (#1120).
+ */
+function PhoneChipStrip({
+  tabs,
+  activeKey,
+  gutter,
+  onSelect,
+}: {
+  tabs: { key: string; label: string }[]
+  activeKey: string | null
+  gutter: number
+  onSelect: (key: string) => void
+}) {
+  const { theme } = useThemeContext()
+  const scrollRef = useRef<ScrollView>(null)
+  const chipLayouts = useRef(new Map<string, { x: number; width: number }>())
+  const [viewportWidth, setViewportWidth] = useState(0)
+  const [contentWidth, setContentWidth] = useState(0)
+  const [offsetX, setOffsetX] = useState(0)
+
+  const onScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setOffsetX(event.nativeEvent.contentOffset.x)
+  }, [])
+
+  // Bring the active chip on screen once the row and the chip are measured.
+  const [chipsMeasured, setChipsMeasured] = useState(0)
+  useEffect(() => {
+    if (!activeKey) return
+    const layout = chipLayouts.current.get(activeKey)
+    if (!layout) return
+    const target = stripScrollTarget(layout, viewportWidth, gutter)
+    if (target != null) scrollRef.current?.scrollTo({ x: target, animated: false })
+  }, [activeKey, viewportWidth, gutter, chipsMeasured])
+
+  const fades = stripEdgeFades(offsetX, contentWidth, viewportWidth)
+  // The masthead's ground; the fade runs from clear to it.
+  const ground = colors.bg[theme].default
+
+  return (
+    <View style={{ position: 'relative' }}>
+      <ScrollView
+        ref={scrollRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        testID="section-tabs"
+        accessibilityRole="tablist"
+        style={{ flexGrow: 0 }}
+        // The trailing gutter is a spacer, not paddingRight: a scroll
+        // container's end padding is not reliably part of its scroll width
+        // on web, which is how the last chip came to touch the edge.
+        contentContainerStyle={{ paddingLeft: gutter, paddingVertical: 10, gap: CHIP_GAP }}
+        onLayout={(event: LayoutChangeEvent) => setViewportWidth(event.nativeEvent.layout.width)}
+        onContentSizeChange={(width) => setContentWidth(width)}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+      >
+        {tabs.map((tab) => {
+          const active = tab.key === activeKey
+          return (
+            <View
+              key={tab.key}
+              onLayout={(event: LayoutChangeEvent) => {
+                const { x, width } = event.nativeEvent.layout
+                chipLayouts.current.set(tab.key, { x, width })
+                if (tab.key === activeKey) setChipsMeasured((n) => n + 1)
+              }}
+            >
+              <Chip
+                size="md"
+                tone={active ? 'accent' : 'neutral'}
+                selected={active}
+                onPress={() => onSelect(tab.key)}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: active }}
+                aria-selected={active}
+              >
+                {tab.label}
+              </Chip>
+            </View>
+          )
+        })}
+        <View style={{ width: Math.max(0, gutter - CHIP_GAP) }} />
+      </ScrollView>
+      {fades.start ? (
+        <LinearGradient
+          start={[0, 0]}
+          end={[1, 0]}
+          colors={[ground, `${ground}00`]}
+          style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: FADE_WIDTH, pointerEvents: 'none' }}
+        />
+      ) : null}
+      {fades.end ? (
+        <LinearGradient
+          start={[0, 0]}
+          end={[1, 0]}
+          colors={[`${ground}00`, ground]}
+          style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: FADE_WIDTH, pointerEvents: 'none' }}
+        />
+      ) : null}
     </View>
   )
 }
