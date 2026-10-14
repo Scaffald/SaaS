@@ -78,7 +78,6 @@ const KNOWN_GAPS = new Set([
   "GET /v1/teams/roles",
   "GET /v1/webhooks/:p",
   "GET /v1/webhooks/:p/deliveries",
-  "GET /v1/webhooks/event-types",
   "GET /v1/work-logs/projects/:p/rollup",
   "GET /v1/work-logs/skills/suggestions",
   "PATCH /v1/jobs/:p",
