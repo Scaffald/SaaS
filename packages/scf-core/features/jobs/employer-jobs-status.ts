@@ -79,3 +79,15 @@ export function daysOpen(
   const days = Math.floor((now.getTime() - started.getTime()) / 86_400_000)
   return days >= 0 ? days : null
 }
+
+/**
+ * The word under a row's age.
+ *
+ * It said "open" for anything that had ever been posted, so a closed listing
+ * read "98d OPEN" beside a Closed chip (#1084). The age counts from
+ * `posted_at` whatever the status, so the caption says that and leaves the
+ * status to the chip; a never-posted draft's age counts from `created_at`.
+ */
+export function listingAgeLabel(postedAt: string | null | undefined): string {
+  return postedAt ? 'posted' : 'in draft'
+}

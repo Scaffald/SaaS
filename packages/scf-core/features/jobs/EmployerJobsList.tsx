@@ -19,6 +19,7 @@ import { colors } from '@scaffald/ui/tokens'
 import {
   daysOpen,
   LISTING_FILTERS,
+  listingAgeLabel,
   type ListingFilter,
   listingStatus,
   statusesForListingFilter,
@@ -209,7 +210,7 @@ export function EmployerJobsList() {
                 <Lane
                   key={job.id}
                   age={age != null ? `${age}d` : undefined}
-                  ageLabel={job.posted_at ? 'open' : 'in draft'}
+                  ageLabel={listingAgeLabel(job.posted_at)}
                   title={job.title}
                   subtitle={job.location ?? undefined}
                   columns={[

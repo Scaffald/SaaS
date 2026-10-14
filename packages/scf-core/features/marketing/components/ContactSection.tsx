@@ -35,15 +35,24 @@ function Field({
   label,
   required,
   error,
+  grow,
   children,
 }: {
   label: string
   required?: boolean
   error?: string
+  /**
+   * Share a row's width with its siblings. Only for fields laid out side by
+   * side: `flex: 1` in the form's column becomes `flex: 1 1 0%` on web, so
+   * every field got an equal share of the column's height whatever its
+   * content — the wrapped org-type chips spilled under the next label and
+   * the textarea under the Submit button (#1108).
+   */
+  grow?: boolean
   children: React.ReactNode
 }) {
   return (
-    <Stack gap={6} style={{ flex: 1 }}>
+    <Stack gap={6} style={grow ? { flex: 1 } : undefined}>
       <Row gap={4}>
         <Text size="sm" weight="medium" color={brand.tealPale}>
           {label}
@@ -200,7 +209,7 @@ export function ContactSection({ headingLevel = 2 }: ContactSectionProps) {
             }}
           >
             <Stack gap={20} style={{ flexDirection: isMobile ? 'column' : 'row' }}>
-              <Field label="Name" required error={errorFor('name')}>
+              <Field label="Name" required grow={!isMobile} error={errorFor('name')}>
                 <TextInput
                   value={form.name}
                   onChangeText={set('name')}
@@ -211,7 +220,7 @@ export function ContactSection({ headingLevel = 2 }: ContactSectionProps) {
                   accessibilityLabel="Name"
                 />
               </Field>
-              <Field label="Email" required error={errorFor('email')}>
+              <Field label="Email" required grow={!isMobile} error={errorFor('email')}>
                 <TextInput
                   value={form.email}
                   onChangeText={set('email')}
