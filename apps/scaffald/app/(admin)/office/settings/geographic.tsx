@@ -1,13 +1,23 @@
-import { colors } from '@scaffald/ui/tokens'
 import { useEffect, useState } from 'react'
-import { Button, Card, Input, Spinner, Text, Row, Stack, useToast, useThemeContext } from '@scaffald/ui'
+import {
+  Button,
+  Card,
+  Input,
+  ScreenHeader,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+  useToast,
+} from '@scaffald/ui'
+import type React from 'react'
+import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
 import {
   useGeographicSettings,
   useUpdateGeographicSettings,
 } from '@scf/core/utils/office-settings-sdk-hooks'
 
 export default function GeographicSettingsPage() {
-  const { theme } = useThemeContext()
   const toast = useToast()
   const [threshold, setThreshold] = useState<string>('2.0')
 
@@ -58,97 +68,88 @@ export default function GeographicSettingsPage() {
     updateMutation.mutate({ siteOverlapThresholdPercent: numValue })
   }
 
-  if (isLoading) {
-    return (
-      <Stack padding={16} gap={16} align="center" justify="center">
-        <Text>Geographic Settings</Text>
-        <Spinner />
-      </Stack>
-    )
-  }
+  // OfficeLayout + ScreenHeader, like the rest of the office (#1098): the page
+  // had a bare padded Stack and a small sans title, with a card nested in a
+  // card and the % suffix pushed out of the row.
+  const header = (
+    <ScreenHeader
+      kicker="Settings"
+      title="Geographic settings"
+      tip="Geographic validation for site boundaries."
+    />
+  )
 
-  // A failed read is shown once, with a way out. It used to raise a toast
-  // from inside the effect that fetched, which re-ran the fetch.
-  if (isError) {
-    return (
-      <Stack padding={16} gap={16}>
-        <Text>Geographic Settings</Text>
-        <Text>
+  let content: React.ReactNode
+  if (isLoading) {
+    content = (
+      <Row gap={8} align="center">
+        <Spinner size="sm" />
+        <Text color="secondary">Loading the current threshold…</Text>
+      </Row>
+    )
+  } else if (isError) {
+    // A failed read is shown once, with a way out. It used to raise a toast
+    // from inside the effect that fetched, which re-ran the fetch.
+    content = (
+      <Stack gap={12} align="flex-start">
+        <Text color="secondary">
           {error instanceof Error ? error.message : 'Failed to load the current threshold.'}
         </Text>
-        <Row>
-          <Button variant="outline" onPress={() => refetch()}>
-            Try again
-          </Button>
-        </Row>
+        <Button variant="outline" size="sm" onPress={() => refetch()}>
+          Try again
+        </Button>
       </Stack>
     )
-  }
-
-  return (
-    <Stack padding={16} gap={16}>
-      <Stack gap={8}>
-        <Text>Geographic Settings</Text>
-        <Text color="secondary">Configure geographic validation settings for site boundaries</Text>
-      </Stack>
-      <Stack gap={16} style={{ maxWidth: 600 }}>
+  } else {
+    const parsed = Number.parseFloat(threshold)
+    const outOfRange = Number.isNaN(parsed) || parsed < 0.1 || parsed > 10
+    content = (
+      <Stack gap={16} style={{ maxWidth: 640 }}>
         <Card padding="md">
           <Stack gap={16}>
-            <Stack gap={8}>
-              <Text>Site Overlap Threshold</Text>
+            <Stack gap={6}>
+              <Text weight="semibold">Site overlap threshold</Text>
               <Text color="secondary">
-                When site boundaries overlap by more than this percentage, admins will receive
-                notifications. This helps identify potential data quality issues or survey
-                discrepancies.
+                When site boundaries overlap by more than this percentage, admins are notified. It
+                helps catch data-quality problems and survey discrepancies.
               </Text>
             </Stack>
 
-            <Stack gap={8}>
-              <Text>Threshold Percentage</Text>
+            <Stack gap={6}>
+              <Text>Threshold</Text>
+              {/* A fixed-width field with its unit beside it. Input fills its
+                  parent, so in a Row it took the card and pushed "%" out. */}
               <Row gap={8} align="center">
-                <Input
-                  value={threshold}
-                  onChangeText={setThreshold}
-                  placeholder="2.0"
-                  keyboardType="numeric"
-                  maxLength={5}
-                />
+                <Stack style={{ width: 120 }}>
+                  <Input
+                    value={threshold}
+                    onChangeText={setThreshold}
+                    placeholder="2.0"
+                    keyboardType="numeric"
+                    maxLength={5}
+                    accessibilityLabel="Threshold percentage"
+                  />
+                </Stack>
                 <Text>%</Text>
               </Row>
-              <Text color="tertiary">Range: 0.1% - 10% (Default: 2.0%)</Text>
+              <Text color="tertiary">
+                {outOfRange
+                  ? 'Enter a value from 0.1 to 10.'
+                  : `Overlaps above ${threshold}% notify admins. Range 0.1–10%, default 2.0%.`}
+              </Text>
             </Stack>
 
-            <Card padding="md">
-              <Stack gap={8}>
-                <Text>Current Setting</Text>
-                <Text style={{ color: colors.text[theme].emphasis }}>{threshold}%</Text>
-                <Text color="secondary">
-                  Site overlaps exceeding {threshold}% will trigger admin notifications.
-                </Text>
-              </Stack>
-            </Card>
-
-            <Row justify="flex-end" gap={8}>
-              <Button
-                variant="outline"
-                onPress={() => {
-                  // Reset to default
-                  setThreshold('2.0')
-                }}
-                disabled={isSaving}
-              >
-                Reset to Default
+            <Row justify="flex-end" gap={8} wrap>
+              <Button variant="outline" onPress={() => setThreshold('2.0')} disabled={isSaving}>
+                Reset to default
               </Button>
               <Button
+                variant="filled"
                 color="primary"
                 onPress={handleSave}
-                disabled={
-                  isSaving ||
-                  Number.parseFloat(threshold) < 0.1 ||
-                  Number.parseFloat(threshold) > 10
-                }
+                disabled={isSaving || outOfRange}
               >
-                {isSaving ? <Spinner /> : 'Save Threshold'}
+                {isSaving ? 'Saving…' : 'Save threshold'}
               </Button>
             </Row>
           </Stack>
@@ -156,21 +157,28 @@ export default function GeographicSettingsPage() {
 
         <Card padding="md">
           <Stack gap={8}>
-            <Text>About Site Overlaps</Text>
+            <Text weight="semibold">About site overlaps</Text>
             <Text color="secondary">
-              Site overlaps can occur when:
-              {'\n'}• Multiple projects are assigned to adjacent or overlapping geographic areas
-              {'\n'}• Survey data contains inaccuracies
-              {'\n'}• Site boundaries need adjustment based on new information
-              {'\n\n'}
-              When an overlap is detected, admins receive notifications with options to:
-              {'\n'}• Request survey data verification from project owners
-              {'\n'}• Adjust site boundaries
-              {'\n'}• Dismiss if the overlap is expected/acceptable
+              Overlaps happen when projects are assigned to adjacent or overlapping areas, when
+              survey data is inaccurate, or when boundaries need adjusting. When one is detected,
+              admins can ask the project owner to verify the survey, adjust the boundaries, or
+              dismiss it as expected.
             </Text>
           </Stack>
         </Card>
       </Stack>
-    </Stack>
+    )
+  }
+
+  return (
+    <OfficeLayout
+      leftContent={
+        <Stack gap={16}>
+          {header}
+          {content}
+        </Stack>
+      }
+      leftContainerProps={{ minWidth: '100%' }}
+    />
   )
 }

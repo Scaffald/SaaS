@@ -14,6 +14,7 @@ import { Breadcrumb, type BreadcrumbItemData, Tabs } from '@scaffald/ui'
 const GOLDEN_RATIO_TEMPLATE = 'minmax(300px, 1.618fr) minmax(300px, 1fr)'
 import { useScreenRhythm } from '../../constants/layout'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
+import { findActiveOfficeSection, isPathActive } from './office-sections'
 
 type OfficeLayoutProps = {
   rightContent?: ReactNode
@@ -46,29 +47,6 @@ type OfficeLayoutProps = {
  * />
  * ```
  */
-const isPathActive = (currentPath: string, targetHref: string) => {
-  if (!targetHref) return false
-
-  const normalizedCurrent = currentPath.replace(/\/$/, '')
-  const normalizedTarget = targetHref.replace(/\/$/, '')
-
-  if (normalizedCurrent === normalizedTarget) {
-    return true
-  }
-
-  const base = normalizedTarget.split('/:')[0]
-  if (!base) {
-    return false
-  }
-
-  // For top-level office routes, match exact or sub-paths
-  if (normalizedTarget.startsWith('/office/')) {
-    return normalizedCurrent === base || normalizedCurrent.startsWith(`${base}/`)
-  }
-
-  return normalizedCurrent === base || normalizedCurrent.startsWith(`${base}/`)
-}
-
 export const OfficeLayout = ({
   rightContent,
   leftContent,
@@ -134,11 +112,10 @@ export const OfficeLayout = ({
     href: string
   }
 
-  const activeTopRoute = useMemo(() => {
-    return (
-      topLevelRoutes.find((route) => isPathActive(currentPath, route.path)) ?? topLevelRoutes[0]
-    )
-  }, [currentPath, topLevelRoutes])
+  const activeTopRoute = useMemo(
+    () => findActiveOfficeSection(currentPath, topLevelRoutes),
+    [currentPath, topLevelRoutes]
+  )
 
   const secondaryTabItems = useMemo<TabItem[]>(() => {
     if (!activeTopRoute) {
