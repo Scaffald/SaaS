@@ -138,7 +138,7 @@ export function WorkLogForm({
   return (
     <FormProvider {...form}>
       <ScrollView>
-        <Stack gap={20} padding="md" paddingBottom={32}>
+        <Stack gap={20} paddingBottom={32}>
           <Stack gap={8}>
             <Text>Work Log Details</Text>
             <Text style={{ color: colors.text[theme].secondary }}>

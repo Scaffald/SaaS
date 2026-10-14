@@ -2,7 +2,7 @@ import { TeamInvitationList } from '@scf/core/features/dashboard/components'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { RefreshCw } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Button, Spinner, Text, Row, Stack, useToast } from '@scaffald/ui'
+import { Button, Spinner, Text, Stack, useToast } from '@scaffald/ui'
 import { useMyTeamInvitations, useRespondToTeamInvitation } from '@scaffald/sdk/react'
 
 export default function DashboardTeamInvitationsScreen() {
@@ -42,27 +42,9 @@ export default function DashboardTeamInvitationsScreen() {
   }
 
   const content = (
-    <Stack padding={16} gap={20}>
-      <Stack gap={8}>
-        <Text>Team invitations</Text>
-        <Text color="gray">
-          Review pending invitations from team administrators. Accept to join collaborative hiring
-          spaces or decline to keep your dashboard focused.
-        </Text>
-      </Stack>
-
-      <Row gap={8} justify="flex-end">
-        <Button
-          variant="outline"
-          size="md"
-          iconStart={RefreshCw}
-          onPress={() => invitationsQuery.refetch()}
-          disabled={invitationsQuery.isFetching}
-        >
-          Refresh
-        </Button>
-      </Row>
-
+    // No padding of its own: DashboardPage already supplies the gutter, and
+    // paying it twice inset this screen ~32px per side at 390 (#1126).
+    <Stack gap={20}>
       {invitationsQuery.isLoading ? (
         <Stack align="center" justify="center" gap={8} paddingVertical="lg">
           <Spinner size="lg" />
@@ -78,5 +60,26 @@ export default function DashboardTeamInvitationsScreen() {
     </Stack>
   )
 
-  return <DashboardPage showBreadcrumb={false} pageTitle="Team invitations" leftContent={content} />
+  // The shared header carries the tip and Refresh. This screen drew its own
+  // title in body text, with the tip in low-contrast grey and Refresh on a
+  // right-aligned row of its own.
+  return (
+    <DashboardPage
+      showBreadcrumb={false}
+      pageTitle="Team invitations"
+      screenTip="Review pending invitations from team administrators. Accept to join collaborative hiring spaces or decline to keep your dashboard focused."
+      screenActions={
+        <Button
+          variant="outline"
+          size="sm"
+          iconStart={RefreshCw}
+          onPress={() => invitationsQuery.refetch()}
+          disabled={invitationsQuery.isFetching}
+        >
+          Refresh
+        </Button>
+      }
+      leftContent={content}
+    />
+  )
 }

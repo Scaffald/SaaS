@@ -3,7 +3,7 @@
  * Displays all API keys for an organization with management options
  */
 
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import {
   ScreenHeader,
   Button,
@@ -14,12 +14,49 @@ import {
   Spinner,
   Row,
   Stack,
+  useResponsive,
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { copyToClipboard as copyText } from '@scf/core/utils/clipboard'
 import { Copy, Key, MoreVertical, Plus, Trash2 } from 'lucide-react-native'
 import { format } from 'date-fns'
+
+/** One metadata field: label over value on desktop, label beside value on a phone. */
+function KeyMeta({
+  label,
+  stacked,
+  grow,
+  children,
+}: {
+  label: string
+  stacked: boolean
+  grow?: boolean
+  children: ReactNode
+}) {
+  const { theme } = useThemeContext()
+  const caption = (
+    <Paragraph size="sm" color={colors.text[theme].tertiary}>
+      {label}
+    </Paragraph>
+  )
+  if (stacked) {
+    return (
+      <Row gap={12} justify="space-between" align="flex-start">
+        {caption}
+        <Stack flex={1} align="flex-end">
+          {children}
+        </Stack>
+      </Row>
+    )
+  }
+  return (
+    <Stack gap={4} style={grow ? { flex: 1, minWidth: 160 } : undefined}>
+      {caption}
+      {children}
+    </Stack>
+  )
+}
 
 export interface APIKey {
   id: string
@@ -51,6 +88,7 @@ export function APIKeysList({
   onManageScopes,
 }: APIKeysListProps) {
   const { theme } = useThemeContext()
+  const { isMobile } = useResponsive()
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null)
 
   const copyToClipboard = (text: string, keyId: string) => {
@@ -183,13 +221,14 @@ export function APIKeysList({
                   <Button size="sm" variant="text" iconStart={MoreVertical} />
                 </Row>
 
-                {/* Key Metadata */}
-                <Row gap={16} wrap>
-                  {/* Rate Limit Tier */}
-                  <Stack gap={4}>
-                    <Paragraph size="sm" color={colors.text[theme].tertiary}>
-                      Rate Limit
-                    </Paragraph>
+                {/* Key Metadata. On a phone the five fields shared one
+                    wrapping row and "Scopes" was squeezed to "Scop / es"
+                    (#1126); there they stack as label/value lines. */}
+                <Stack
+                  gap={isMobile ? 10 : 16}
+                  style={isMobile ? undefined : { flexDirection: 'row', flexWrap: 'wrap' }}
+                >
+                  <KeyMeta label="Rate Limit" stacked={isMobile}>
                     <Card
                       style={{
                         backgroundColor: getRateLimitBadgeColor(key.rate_limit_tier),
@@ -203,14 +242,10 @@ export function APIKeysList({
                         {getRateLimitDescription(key.rate_limit_tier)}
                       </Paragraph>
                     </Card>
-                  </Stack>
+                  </KeyMeta>
 
-                  {/* Scopes */}
-                  <Stack gap={4} flex={1}>
-                    <Paragraph size="sm" color={colors.text[theme].tertiary}>
-                      Scopes
-                    </Paragraph>
-                    <Row gap={8} wrap>
+                  <KeyMeta label="Scopes" stacked={isMobile} grow>
+                    <Row gap={8} wrap style={isMobile ? { justifyContent: 'flex-end' } : undefined}>
                       {key.scopes.map((scope) => (
                         <Card
                           key={scope}
@@ -227,45 +262,33 @@ export function APIKeysList({
                         </Card>
                       ))}
                     </Row>
-                  </Stack>
+                  </KeyMeta>
 
-                  {/* Last Used */}
-                  <Stack gap={4}>
-                    <Paragraph size="sm" color={colors.text[theme].tertiary}>
-                      Last Used
-                    </Paragraph>
+                  <KeyMeta label="Last Used" stacked={isMobile}>
                     <Paragraph size="sm">
                       {key.last_used_at
                         ? format(new Date(key.last_used_at), 'MMM d, yyyy HH:mm')
                         : 'Never'}
                     </Paragraph>
-                  </Stack>
+                  </KeyMeta>
 
-                  {/* Created */}
-                  <Stack gap={4}>
-                    <Paragraph size="sm" color={colors.text[theme].tertiary}>
-                      Created
-                    </Paragraph>
+                  <KeyMeta label="Created" stacked={isMobile}>
                     <Paragraph size="sm">
                       {format(new Date(key.created_at), 'MMM d, yyyy')}
                     </Paragraph>
-                  </Stack>
+                  </KeyMeta>
 
-                  {/* Expires */}
                   {key.expires_at && (
-                    <Stack gap={4}>
-                      <Paragraph size="sm" color={colors.text[theme].tertiary}>
-                        Expires
-                      </Paragraph>
+                    <KeyMeta label="Expires" stacked={isMobile}>
                       <Paragraph size="sm" color={colors.fg[theme].warning}>
                         {format(new Date(key.expires_at), 'MMM d, yyyy')}
                       </Paragraph>
-                    </Stack>
+                    </KeyMeta>
                   )}
-                </Row>
+                </Stack>
 
-                {/* Actions */}
-                <Row gap={8}>
+                {/* Actions — wrap, so Revoke never runs into the card edge */}
+                <Row gap={8} wrap>
                   <Button size="sm" variant="outline" onPress={() => onViewUsage(key.id)}>
                     View Usage
                   </Button>
