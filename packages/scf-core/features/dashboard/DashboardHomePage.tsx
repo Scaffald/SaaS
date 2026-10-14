@@ -9,6 +9,7 @@ import { DashboardPage } from './DashboardPage'
 import { DashboardIndexLeft } from './dashboard-index-left'
 import { DashboardIndexRight } from './dashboard-index-right'
 import { useProfileCompletion } from './completion/useProfileCompletion'
+import { homeTip } from './homeTip'
 
 /**
  * Worker home (#1033).
@@ -52,7 +53,7 @@ function useHomeHeader() {
   const { user } = useUser()
   const { data: profile } = useGeneralInfoWidget()
   const { data: metrics } = useEngagementMetrics({ days: 30 })
-  const { completionData } = useProfileCompletion()
+  const { completionData, isError: completionFailed } = useProfileCompletion()
 
   // Local time on purpose: this is the reader's own day, not a stored date.
   // Protected routes render behind the client-side auth gate, so there is no
@@ -70,20 +71,11 @@ function useHomeHeader() {
   const firstName = name?.trim().split(/\s+/)[0]
   const title = firstName ? `${partOfDay(now.getHours())}, ${firstName}.` : `${partOfDay(now.getHours())}.`
 
-  const searches = metrics?.searches ?? 0
-  const total = completionData?.totalItems ?? 0
-  const incomplete = total > 0 && (completionData?.totalComplete ?? 0) < total
-  const found =
-    searches > 0
-      ? `Employers found you ${searches.toLocaleString()} ${searches === 1 ? 'time' : 'times'} in search this month.`
-      : null
-  const tip = found
-    ? incomplete
-      ? `${found} Finishing your profile puts you in front of more of them.`
-      : found
-    : incomplete
-      ? 'Finish your profile so employers searching for your trade can find you.'
-      : 'Your profile is complete. Keep it current and employers searching your trade will find you.'
+  const tip = homeTip({
+    searches: metrics?.searches ?? 0,
+    completion: completionData,
+    completionPending: !completionData && !completionFailed,
+  })
 
   const slug = profile?.slug
   const actions = (
@@ -101,3 +93,4 @@ function useHomeHeader() {
 
   return { kicker, title, tip, actions }
 }
+

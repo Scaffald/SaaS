@@ -13,7 +13,16 @@ import {
   useCreateWebhookMutation,
 } from "@scf/core/utils/webhooks-sdk-hooks";
 import { OfficeLayout } from "@scf/core/components/layouts/OfficeLayout";
-import { Button, Card, Checkbox, Row, Stack, Text, Input } from "@scaffald/ui";
+import {
+  Button,
+  Card,
+  Checkbox,
+  ErrorState,
+  Row,
+  Stack,
+  Text,
+  Input,
+} from "@scaffald/ui";
 import { ROUTES } from "@scf/core/constants/routes";
 import type { WebhookEventType } from "@scf/schemas";
 
@@ -28,7 +37,13 @@ export default function CreateWebhookPage() {
   const [secret, setSecret] = useState("");
 
   // Fetch available event types
-  const { data: eventTypesData } = useWebhookEventTypes();
+  const {
+    data: eventTypesData,
+    isLoading: eventTypesLoading,
+    isError: eventTypesFailed,
+    error: eventTypesError,
+    refetch: refetchEventTypes,
+  } = useWebhookEventTypes();
   const eventTypes = eventTypesData?.data ?? [];
 
   // Create webhook mutation
@@ -213,6 +228,18 @@ export default function CreateWebhookPage() {
                   Select the events you want to receive notifications for
                 </Text>
 
+                {eventTypesLoading ? (
+                  <Text color="secondary">Loading events...</Text>
+                ) : eventTypesFailed || eventTypes.length === 0 ? (
+                  // A failed catalog is not "nothing to subscribe to": the
+                  // missing route behind #1085 rendered as a blank card.
+                  <ErrorState
+                    title="Couldn’t load events"
+                    description="The list of subscribable events did not load, so there is nothing to pick yet."
+                    error={eventTypesError as Error}
+                    retry={() => refetchEventTypes()}
+                  />
+                ) : (
                 <Stack gap={24}>
                   {Object.entries(eventsByCategory).map(
                     ([category, events]) => (
@@ -255,6 +282,7 @@ export default function CreateWebhookPage() {
                     )
                   )}
                 </Stack>
+                )}
 
                 <Text color="tertiary">
                   {selectedEvents.size} event

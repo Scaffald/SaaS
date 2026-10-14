@@ -141,13 +141,16 @@ function DrawerLayoutInner({
     firstName && lastName
       ? `${firstName} ${lastName}`
       : (profileData?.display_name ?? profileData?.username ?? '')
+  // While the profile loads, no initials: the Avatar draws a plain disc. The
+  // "U" fallback is only for a loaded profile with no name, not a placeholder
+  // that reads as someone's initial on first paint (#1083).
   const avatarInitials =
     avatarName
       .split(/\s+/)
       .map((part) => part[0])
       .join('')
       .toUpperCase()
-      .slice(0, 2) || 'U'
+      .slice(0, 2) || (profileData ? 'U' : '')
   const avatarAlt = profileData?.display_name ?? avatarName
   const isVerified = profileData?.idVerificationBadge?.badge_status === 'active'
 

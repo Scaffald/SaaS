@@ -1,5 +1,5 @@
 import type { DrawerItemConfig } from './types'
-import { isActivePath, ownsPath } from './utils'
+import { ownsPath } from './utils'
 
 /**
  * A section's tab strip, resolved from the nav config for one pathname.
@@ -34,12 +34,36 @@ const findOwner = (items: DrawerItemConfig[], pathname: string): DrawerItemConfi
   return null
 }
 
-/** The tab that owns the pathname — the most specific one when several do. */
+const underPrefix = (pathname: string, prefix: string) =>
+  pathname === prefix || pathname.startsWith(`${prefix}/`)
+
+/**
+ * How specifically `tab` claims `pathname`: the length of the longest prefix
+ * it owns that the pathname sits under, or -1 when it does not own it at all.
+ */
+const claimLength = (tab: DrawerItemConfig, pathname: string): number => {
+  let best = ownsPath(tab, pathname) ? (tab.matchPrefix ?? tab.href).length : -1
+  for (const prefix of tab.alsoOwns ?? []) {
+    if (underPrefix(pathname, prefix)) best = Math.max(best, prefix.length)
+  }
+  return best
+}
+
+/**
+ * The tab that owns the pathname, by longest-prefix match: on a sub-route
+ * every tab whose prefix it sits under is a candidate, and the most specific
+ * one wins — so `/assessments/ipip/results` lights the IPIP tab, not the
+ * Assessments index, and a background check lights Verification (#1120).
+ */
 const pickActive = (tabs: DrawerItemConfig[], pathname: string): string | null => {
   let best: DrawerItemConfig | null = null
+  let bestLength = -1
   for (const tab of tabs) {
-    if (!ownsPath(tab, pathname)) continue
-    if (!best || tab.href.length > best.href.length) best = tab
+    const length = claimLength(tab, pathname)
+    if (length > bestLength) {
+      best = tab
+      bestLength = length
+    }
   }
   return best?.key ?? null
 }
@@ -67,4 +91,38 @@ export function getSectionTabs(
     ...(owner.subItems ?? []),
   ]
   return { ownerKey: owner.key, tabs, activeKey: pickActive(tabs, pathname) }
+}
+
+/**
+ * Which edges of a sideways-scrolling tab strip hide more tabs. A strip that
+ * overflowed gave no sign of it at 390px — Assessments cut "Career inter…"
+ * mid-label with nothing to say the row scrolled (#1120) — so each edge with
+ * tabs beyond it gets a fade. One pixel of slack absorbs sub-pixel layout.
+ */
+export function stripEdgeFades(
+  offsetX: number,
+  contentWidth: number,
+  viewportWidth: number
+): { start: boolean; end: boolean } {
+  if (viewportWidth <= 0 || contentWidth <= viewportWidth + 1) return { start: false, end: false }
+  return {
+    start: offsetX > 1,
+    end: offsetX + viewportWidth < contentWidth - 1,
+  }
+}
+
+/**
+ * Where to scroll a strip so its active tab is on screen, or null when it
+ * already is. On a sub-route deep in a long strip (Occupation preferences,
+ * Career explorer) the lit tab sat past the right edge, so the page looked as
+ * if no tab owned it. The tab lands one gutter from the leading edge.
+ */
+export function stripScrollTarget(
+  tab: { x: number; width: number },
+  viewportWidth: number,
+  gutter: number
+): number | null {
+  if (viewportWidth <= 0) return null
+  if (tab.x + tab.width <= viewportWidth - gutter) return null
+  return Math.max(0, tab.x - gutter)
 }

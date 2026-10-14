@@ -35,39 +35,58 @@ const PackageCard = memo(function PackageCard({
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
 
+  // `platform_cost_cents` is what the platform pays the screening provider —
+  // an internal margin shown only in the admin catalog, never to the worker.
+  // The worker pays `retail_cost_cents`.
+  const components = pkg.components ?? []
+
   return (
     <Card
       elevate
       bordered
+      pressable
       backgroundColor={isSelected ? colors.bg[t].selected : colors.bg[t].default}
-      borderColor={isSelected ? colors.text[t].emphasis : colors.border[t].default}
+      borderColor={isSelected ? colors.border[t].selected : colors.border[t].default}
       borderWidth={2}
       radius="lg"
       padding="md"
       style={{ gap: 12 }}
       onPress={onSelect}
+      accessibilityLabel={`${pkg.display_name}, ${formatCurrency(pkg.retail_cost_cents)}${isSelected ? ', selected' : ''}`}
     >
       <Stack gap={8}>
-        <Text color={colors.text[t].secondary}>{pkg.display_name}</Text>
-        <Text color={colors.text[t].secondary}>{pkg.description}</Text>
-        <Row gap={12} align="center">
-          <Text color={colors.text[t].secondary}>{formatCurrency(pkg.retail_cost_cents)}</Text>
-          <Text color={colors.text[t].secondary}>
-            Platform cost: {formatCurrency(pkg.platform_cost_cents)}
+        <Row gap={12} align="flex-start" justify="space-between">
+          <Stack gap={4} flex={1}>
+            <Text size="md" weight="semibold" color={colors.text[t].primary}>
+              {pkg.display_name}
+            </Text>
+            {isSelected && (
+              <Text size="xs" weight="semibold" color={colors.text[t].emphasis}>
+                Selected
+              </Text>
+            )}
+          </Stack>
+          <Text size="lg" weight="semibold" color={colors.text[t].primary}>
+            {formatCurrency(pkg.retail_cost_cents)}
           </Text>
         </Row>
-        <Stack gap={4}>
-          <Text color={colors.text[t].secondary}>Components</Text>
-          {pkg.components?.length ? (
-            pkg.components.map((component: BackgroundCheckPackage['components'][number]) => (
-              <Text key={component.id} color={colors.text[t].secondary}>
+        {pkg.description ? (
+          <Text size="sm" color={colors.text[t].secondary}>
+            {pkg.description}
+          </Text>
+        ) : null}
+        {components.length > 0 && (
+          <Stack gap={4}>
+            <Text size="sm" weight="medium" color={colors.text[t].secondary}>
+              Components
+            </Text>
+            {components.map((component: BackgroundCheckPackage['components'][number]) => (
+              <Text key={component.id} size="sm" color={colors.text[t].secondary}>
                 • {component.display_name}
               </Text>
-            ))
-          ) : (
-            <Text color={colors.text[t].secondary}>Component list coming soon</Text>
-          )}
-        </Stack>
+            ))}
+          </Stack>
+        )}
       </Stack>
     </Card>
   )
