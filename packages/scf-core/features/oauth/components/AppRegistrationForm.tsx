@@ -3,7 +3,17 @@
  * Self-service app registration form
  */
 
-import { Button, Card, Input, Paragraph, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import {
+  Button,
+  Card,
+  Input,
+  Paragraph,
+  Row,
+  ScreenHeader,
+  Stack,
+  Text,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useState } from 'react'
 import { useRegisterAppMutation } from '@scf/core/utils/oauth-sdk-hooks'
@@ -67,14 +77,14 @@ export function AppRegistrationForm() {
 
   if (credentials) {
     return (
-      <Stack flex={1} padding="md" maxWidth={800} alignSelf="center" gap={16}>
-        <Card variant="glass" padding="md">
+      <Stack gap={16} style={{ width: '100%', maxWidth: 720 }}>
+        <ScreenHeader
+          kicker="Developers"
+          title="Application registered"
+          tip="Save your client credentials now. You won't be able to see the client_secret again."
+        />
+        <Card padding="md">
           <Stack gap={12}>
-            <Text size="2xl">App Registration Successful!</Text>
-            <Paragraph size="sm">
-              Save your client credentials now. You won't be able to see the client_secret again.
-            </Paragraph>
-
             <Stack
               gap={8}
               padding="md"
@@ -125,16 +135,16 @@ export function AppRegistrationForm() {
   }
 
   return (
-    <Stack flex={1} padding="md" maxWidth={800} alignSelf="center" gap={16}>
-      <Card variant="glass" padding="md">
+    // Inside the office shell, which supplies the gutter and canvas; this drew
+    // its own padding and a glass card on white, outside any shell (#1098).
+    <Stack gap={16} style={{ width: '100%', maxWidth: 720 }}>
+      <ScreenHeader
+        kicker="Developers"
+        title="Register an OAuth application"
+        tip="Register your application to use Scaffald OAuth 2.0 for single sign-on."
+      />
+      <Card padding="md">
         <Stack gap={16}>
-          <Stack gap={8}>
-            <Text size="2xl">Register OAuth Application</Text>
-            <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
-              Register your application to use Scaffald OAuth 2.0 for Single Sign-On
-            </Paragraph>
-          </Stack>
-
           <Stack gap={12}>
             <Stack gap={4}>
               <Text size="sm">App Name *</Text>
@@ -235,6 +245,8 @@ export function AppRegistrationForm() {
 
           <Row gap={12} justify="flex-end">
             <Button
+              variant="filled"
+              color="primary"
               onPress={handleSubmit}
               disabled={isSubmitting || !appName || !description || !homepageUrl || !developerEmail}
               loading={isSubmitting}
