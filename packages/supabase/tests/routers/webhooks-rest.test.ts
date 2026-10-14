@@ -140,11 +140,10 @@ Deno.test({
     const events = res.body?.data as { value: string; label: string; category: string }[]
     assertEquals(Array.isArray(events), true, 'data is the array of event types')
     assertEquals(events.length > 0, true, 'the catalog is not empty')
-    assertEquals(
-      events.find((e) => e.value === 'job.created'),
-      { value: 'job.created', label: 'Job Created', category: 'job' },
-      'each entry carries value, label and category'
-    )
+    // assertEquals is Object.is, so compare fields rather than two objects.
+    const jobCreated = events.find((e) => e.value === 'job.created')
+    assertEquals(jobCreated?.label, 'Job Created', 'each entry carries a label')
+    assertEquals(jobCreated?.category, 'job', 'each entry carries a category')
   },
 })
 
