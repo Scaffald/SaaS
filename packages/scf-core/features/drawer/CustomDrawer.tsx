@@ -12,6 +12,14 @@ import { useDrawer } from './DrawerContext'
 const DEFAULT_WIDTH = 300
 const EDGE_HIT_SLOP = 32
 const DISMISS_VELOCITY = 500
+/**
+ * How far past its own width the closed panel parks. The panel's shadow
+ * (offset 2 + radius 12) reached into the viewport when it sat at exactly
+ * `-drawerWidth`, leaving a grey strip down the left edge of every screen
+ * (#1087). Parking it further off is the fix rather than animating the shadow
+ * away, because `shadowOpacity` cannot ride the native driver.
+ */
+const SHADOW_CLEARANCE = 24
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
@@ -47,7 +55,7 @@ export function CustomDrawer({
 }: CustomDrawerProps) {
   const { isOpen, close, open } = useDrawer()
   const insets = useSafeAreaInsets()
-  const closedX = -drawerWidth
+  const closedX = -(drawerWidth + SHADOW_CLEARANCE)
   const openX = 0
 
   const translateX = useRef(new Animated.Value(isOpen ? openX : closedX)).current

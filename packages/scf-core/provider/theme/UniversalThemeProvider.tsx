@@ -173,10 +173,13 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
     return <ThemeProvider value={navTheme}>{children as ReactNode}</ThemeProvider>
   }
 
-  // Native: also include status bar
+  // Native: also include status bar. It used to be `hidden` (a starter-template
+  // leftover), which took the clock and battery off every screen (#1086). The
+  // shell pads by the safe-area top inset: unchanged on notched phones, and
+  // 20pt on a home-button phone, where it was 0 while the bar was hidden.
   return (
     <ThemeProvider value={navTheme}>
-      <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} hidden />
+      <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} />
       {children as ReactNode}
     </ThemeProvider>
   )
