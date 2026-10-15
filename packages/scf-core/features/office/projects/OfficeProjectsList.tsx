@@ -11,8 +11,7 @@ import { Eye, EyeOff, Pencil } from "lucide-react-native";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-import { Button, H2, Text, Row, Stack } from "@scaffald/ui";
-import { QuickActionsWidget } from "../components/QuickActionsWidget";
+import { Button, Text, Row, Stack } from "@scaffald/ui";
 import { borderRadius, colors } from '@scaffald/ui/tokens';
 
 type ProjectStatus = "planning" | "active" | "completed" | "on_hold";
@@ -130,7 +129,7 @@ export function OfficeProjectsList({
     ProjectStatus | null | string
   >(null);
 
-  const { data, isLoading, refetch } = useProjects({
+  const { data, isLoading } = useProjects({
     organizationId: selectedOrg || undefined,
     status: (statusFilter as ProjectStatus) || undefined,
     limit: 50,
@@ -266,15 +265,8 @@ export function OfficeProjectsList({
           </Stack>
         </Stack>
       }
-      rightContent={
-        <QuickActionsWidget
-          context="list"
-          resourceName="Project"
-          onCreate={() => router.push(ROUTES.OFFICE.CMS.PROJECTS.CREATE.path)}
-          onRefresh={() => refetch()}
-          isLoading={isLoading}
-        />
-      }
+      // No Quick Actions rail (#1099): it repeated the toolbar's Create and a
+      // Refresh, and cost the table ~400px, clipping its last column at 1440.
     />
   );
 }

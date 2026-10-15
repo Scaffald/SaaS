@@ -30,7 +30,6 @@ import {
   Stack,
 } from '@scaffald/ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
-import { QuickActionsWidget } from './components/QuickActionsWidget'
 import { colors } from '@scaffald/ui/tokens'
 
 type Organization = {
@@ -304,7 +303,6 @@ export function OfficeOrganizationsList() {
         isLoading={isLoading}
         pageSize={50}
         emptyMessage="No organizations found"
-        hideCreateButton
         onRowEdit={handleRowEdit}
         onRowDelete={handleRowDelete}
         getItemName={getItemName}
@@ -421,14 +419,6 @@ export function OfficeOrganizationsList() {
                 </Stack>
               )}
             </DashboardWidget>
-
-            <QuickActionsWidget
-              context="list"
-              resourceName="Organization"
-              onCreate={() => router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.CREATE.path)}
-              onRefresh={refreshRequests}
-              isLoading={isRequestsLoading || isRequestsRefetching}
-            />
           </Stack>
         }
       />
