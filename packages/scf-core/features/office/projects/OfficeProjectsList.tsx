@@ -129,7 +129,7 @@ export function OfficeProjectsList({
     ProjectStatus | null | string
   >(null);
 
-  const { data, isLoading, refetch } = useProjects({
+  const { data, isLoading } = useProjects({
     organizationId: selectedOrg || undefined,
     status: (statusFilter as ProjectStatus) || undefined,
     limit: 50,
