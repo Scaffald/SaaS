@@ -72,13 +72,20 @@ async function rest(
 
 const errorCode = (r: RestResult) => (r.body as { code?: string } | null)?.code
 
+// The `sub` claim, rather than the fixture's cached userId, which other suites
+// sometimes write back empty.
+function subOf(token: string): string {
+  const payload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+  return JSON.parse(atob(payload)).sub
+}
+
 async function signIn() {
   await requireAuthSetup()
   const tokens = await loadCachedTokens()
   assertExists(tokens, 'Cached tokens should exist')
   const nikola = await getAuthToken('nikola@unicorn.love', 'password123')
   assertExists(nikola, 'nikola@unicorn.love should sign in (seeded)')
-  return { userA: tokens!.regular.token, userAId: tokens!.regular.userId, userB: nikola! }
+  return { userA: tokens!.regular.token, userAId: subOf(tokens!.regular.token), userB: nikola! }
 }
 
 // ---------------------------------------------------------------------------
@@ -160,7 +167,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const { userA, userAId, userB } = await signIn()
-    assertExists(userAId, 'user A id (cached token)')
+    assert(userAId, 'user A id (token sub)')
     const token = `probe-${crypto.randomUUID()}`
 
     // Devices are registered by the server (clients hold no USAGE on the id
@@ -215,7 +222,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const { userA, userAId, userB } = await signIn()
-    assertExists(userAId, 'user A id (cached token)')
+    assert(userAId, 'user A id (token sub)')
 
     // The api route creates the row on first read; it reads with the caller's
     // own token, so this is also the regression check that RLS does not break it.
@@ -286,5 +293,96 @@ Deno.test({
       if (r.status !== 200) failures.push(`${schema}.${table} -> ${r.status} ${JSON.stringify(r.body).slice(0, 120)}`)
     }
     assertEquals(failures.join('\n'), '', 'service role should read every table')
+  },
+})
+
+// ---------------------------------------------------------------------------
+// 4. Migration 367 — 310's tightened policies, recorded but never run on prod
+//    and dev. Locally 310 did run, so prove red by recreating prod's `true`
+//    policies by hand (the definitions are in the migration header).
+// ---------------------------------------------------------------------------
+
+Deno.test({
+  name: "DB hardening - a signed-in user cannot rewrite an address outside their projects (367 / 310)",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const { userA } = await signIn()
+    const admin = createAdminClient()
+    const seeded = await admin
+      .schema('core')
+      .from('addresses')
+      .insert({ address: { line1: 'probe' } })
+      .select('id')
+      .single()
+    assertExists(seeded.data, `seed an address: ${JSON.stringify(seeded.error)}`)
+    const id = seeded.data.id
+    try {
+      const update = await rest(`/addresses?id=eq.${id}`, {
+        token: userA,
+        method: 'PATCH',
+        prefer: 'return=representation',
+        body: { address: { line1: 'hijacked' } },
+      })
+      assert(
+        Array.isArray(update.body) && update.body.length === 0,
+        `user A must not update an unrelated address, got ${update.status} ${JSON.stringify(update.body)}`,
+      )
+      const after = await admin.schema('core').from('addresses').select('address').eq('id', id).single()
+      assertEquals((after.data?.address as { line1?: string })?.line1, 'probe', 'address is untouched')
+    } finally {
+      await admin.schema('core').from('addresses').delete().eq('id', id)
+    }
+  },
+})
+
+Deno.test({
+  name: "DB hardening - a signed-in user cannot rate on someone else's review (367 / 310)",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const { userA, userAId } = await signIn()
+    const admin = createAdminClient()
+    const review = await admin
+      .schema('core')
+      .from('reviews')
+      .select('id, review_category_ratings(category)')
+      .neq('author_user_id', userAId)
+      .limit(1)
+      .single()
+    assertExists(review.data, `need a seeded review by someone else: ${JSON.stringify(review.error)}`)
+    const taken = new Set((review.data.review_category_ratings as { category: string }[]).map((r) => r.category))
+    const category =
+      ['skills', 'reliability', 'collaboration', 'professionalism', 'technical'].find((c) => !taken.has(c)) ?? 'skills'
+
+    const r = await rest('/review_category_ratings', {
+      token: userA,
+      method: 'POST',
+      body: { review_id: review.data.id, category, rating: 1 },
+    })
+    try {
+      assertEquals(errorCode(r), '42501', `expected an RLS refusal, got ${r.status} ${JSON.stringify(r.body)}`)
+    } finally {
+      if (r.status === 201 && !taken.has(category)) {
+        await admin.schema('core').from('review_category_ratings').delete().eq('review_id', review.data.id).eq('category', category)
+      }
+    }
+  },
+})
+
+Deno.test({
+  name: 'DB hardening - a signed-in user cannot write an inquiry audit row as someone else (367 / 310)',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const { userA } = await signIn()
+    // The RLS WITH CHECK runs before the foreign keys, so a refusal is 42501;
+    // under prod's old `true` policy the same insert got as far as the FK.
+    const r = await rest('/inquiry_audit_log', {
+      token: userA,
+      method: 'POST',
+      body: { inquiry_id: crypto.randomUUID(), event_type: 'comment_added', actor_id: crypto.randomUUID() },
+    })
+    assertEquals(errorCode(r), '42501', `expected an RLS refusal, got ${r.status} ${JSON.stringify(r.body)}`)
   },
 })

@@ -239,7 +239,22 @@ rewrite each other's push devices (#1144, fixed by 365). After applying a
 security migration, check the object, not the ledger — e.g.
 `select relname, relrowsecurity from pg_class where …`,
 `has_function_privilege('anon', 'core.fn(uuid)', 'execute')` — and paste the
-result in the PR. The catalog fingerprint in #1146 automates this.
+result in the PR. `scripts/db/security-fingerprint.mjs` does this for you:
+
+```bash
+node scripts/db/security-fingerprint.mjs diff local prod   # what differs, by object
+node scripts/db/security-fingerprint.mjs check local       # invariants (CI runs this)
+node scripts/db/security-fingerprint.mjs check prod        # same, on a remote (nightly)
+```
+
+`scripts/apply-migration.sh` prints the before/after diff of every migration
+it applies. `check` fails on a new violation — a client-granted table without
+RLS, an anon-executable SECURITY DEFINER function, a client-readable definer
+view — unless `packages/supabase/security-allowlist.json` names it with a
+reason, and it also fails on an allow-list entry that no longer violates, so
+the PR that fixes an object must delete its entry. On 2026-10-16 the first
+diff of prod against a local replay found 306 and 310 recorded-but-never-run
+as well (fixed by 367, #1146).
 
 ## Environment Variables
 

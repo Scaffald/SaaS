@@ -124,6 +124,13 @@ if [ "$DRY_RUN" = "1" ]; then
   exit 0
 fi
 
+# Recorded is not applied (303, 306, 310 — #1144, #1146). Snapshot the
+# security-relevant catalog either side of the SQL so the effect is printed,
+# not assumed. Best-effort: a fingerprint failure never blocks the migration.
+FP_DIR="$(mktemp -d)"
+FINGERPRINT="scripts/db/security-fingerprint.mjs"
+node "$FINGERPRINT" snapshot "$ENV" > "$FP_DIR/before.json" 2>/dev/null || rm -f "$FP_DIR/before.json"
+
 echo "→ running SQL…"
 run_sql "$(cat "$FILE")" > /dev/null
 echo "  applied."
@@ -133,6 +140,13 @@ run_sql "insert into supabase_migrations.schema_migrations (version, name)
          values ('$VERSION', '$NAME')
          on conflict (version) do nothing" > /dev/null
 echo "  recorded."
+
+if [ -f "$FP_DIR/before.json" ] && node "$FINGERPRINT" snapshot "$ENV" > "$FP_DIR/after.json" 2>/dev/null; then
+  echo
+  echo "→ security-relevant catalog changes (paste into the PR):"
+  node "$FINGERPRINT" diff "$FP_DIR/before.json" "$FP_DIR/after.json" | sed 's/^/    /' || true
+fi
+rm -rf "$FP_DIR"
 
 echo
 echo "✅ $BASENAME applied and recorded for $ENV."
