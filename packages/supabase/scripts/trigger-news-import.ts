@@ -29,20 +29,13 @@ async function triggerNewsImport() {
     // Supabase Edge Functions require both apikey and Authorization headers
     const functionUrl = `${supabaseUrl}/functions/v1/news-import`
 
-    // Use anon key for Authorization header (required by Supabase Edge Function runtime)
-    // The function itself uses service role key from environment variables
+    // news-import accepts only the service role key as the Bearer
+    // (requireServiceAuth); apikey is still what the gateway wants.
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${supabaseServiceKey}`,
     }
-
-    // Add apikey header (required by Supabase Edge Functions)
-    if (supabaseAnonKey) {
-      headers['apikey'] = supabaseAnonKey
-      headers['Authorization'] = `Bearer ${supabaseAnonKey}`
-    } else {
-      // Fallback to service role key if anon key not available
-      headers['Authorization'] = `Bearer ${supabaseServiceKey}`
-    }
+    if (supabaseAnonKey) headers['apikey'] = supabaseAnonKey
 
     console.log(`Calling Edge Function: ${functionUrl}`)
 

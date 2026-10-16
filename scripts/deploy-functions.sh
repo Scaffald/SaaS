@@ -57,17 +57,36 @@ pnpx supabase secrets set --project-ref "$PROJECT_REF" \
 #    function that advances payment_transactions and success_fees when Stripe
 #    says a charge landed was not deployed anywhere, and nothing said so.
 #    payments-reconcile is its backstop, driven by pg_cron (migration 361).
+#    news-import is called nightly by pg_cron (migration 377). It was missing
+#    from this list, so prod ran a 2025-11 build for eleven months (#1155).
+#    packages/supabase/functions/README.md says why every other directory
+#    there is NOT in this list.
+FUNCTIONS=(
+  api job-import news news-import
+  notify-publish notify-send-worker notify-check-receipts
+  notify-digest-daily notify-digest-weekly
+  notify-background-check-expiration notify-id-verification-expiration
+  send-team-invitation webhooks-email
+  stripe-webhook payments-reconcile
+)
+
 echo
 echo "→ Deploying edge functions…"
-pnpx supabase functions deploy \
-  api job-import news \
-  notify-publish notify-send-worker notify-check-receipts \
-  notify-digest-daily notify-digest-weekly \
-  notify-background-check-expiration notify-id-verification-expiration \
-  send-team-invitation webhooks-email \
-  stripe-webhook payments-reconcile \
+pnpx supabase functions deploy "${FUNCTIONS[@]}" \
   --project-ref "$PROJECT_REF" \
   --use-api
+
+# Anything deployed that this list does not ship is code nobody updates — trpc
+# and the forsured auth-* functions sat on projects for months that way (#1233).
+# Warn, don't fail: deleting a deployed function is a deliberate, separate act.
+DEPLOYED="$(curl -s -A scaffald-deploy -H "Authorization: Bearer ${SUPABASE_ACCESS_TOKEN:-}" \
+  "https://api.supabase.com/v1/projects/$PROJECT_REF/functions" \
+  | python3 -c 'import json,sys; print("\n".join(f["slug"] for f in json.load(sys.stdin)))' 2>/dev/null || true)"
+for slug in $DEPLOYED; do
+  if [[ " ${FUNCTIONS[*]} " != *" $slug "* ]]; then
+    echo "⚠️  $slug is deployed on $ENV but not in this script — see packages/supabase/functions/README.md" >&2
+  fi
+done
 
 # 3. Run the full smoke suite (scripts/smoke-remote.sh) so a broken deploy
 #    can't print a green "complete". This replaces the old bare /v1/health

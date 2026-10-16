@@ -2,6 +2,7 @@ import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
 import { createClient } from '@supabase/supabase-js'
 import { parseFeed } from 'https://deno.land/x/rss@1.1.3/mod.ts'
 import { corsHeaders } from '../_shared/cors.ts'
+import { requireServiceAuth } from '../_shared/notifications/auth.ts'
 import type { Database } from '../_shared/database.types.ts'
 
 interface NewsArticle {
@@ -141,6 +142,12 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
+
+  // Only pg_cron (migration 377, Bearer from Vault) and the local trigger
+  // script call this. config.toml sets verify_jwt = false, so without this
+  // gate anyone could make the project fetch every feed on demand.
+  const denied = requireServiceAuth(req)
+  if (denied) return denied
 
   try {
     const supabase = createClient<Database>(
