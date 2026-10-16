@@ -105,21 +105,6 @@ const DEFINER_RPCS: { schema: string; fn: string; query: string }[] = [
   { schema: 'core', fn: 'revoke_oauth_app_tokens', query: `p_oauth_app_id=${ZERO}` },
   { schema: 'public', fn: 'get_pending_webhook_deliveries', query: '' },
   { schema: 'public', fn: 'get_webhooks_for_event', query: `p_organization_id=${ZERO}&p_event_type=probe` },
-  {
-    schema: 'public',
-    fn: 'create_auth_session',
-    query:
-      `p_scaffald_user_id=probe&p_supabase_user_id=${ZERO}&p_access_token=x&p_refresh_token=x` +
-      `&p_token_expires_at=2030-01-01T00:00:00Z&p_user_agent=probe&p_ip_address=127.0.0.1`,
-  },
-  { schema: 'public', fn: 'get_auth_session', query: `p_session_id=${ZERO}` },
-  {
-    schema: 'public',
-    fn: 'update_auth_session_tokens',
-    query: `p_session_id=${ZERO}&p_access_token=x&p_refresh_token=x&p_token_expires_at=2030-01-01T00:00:00Z`,
-  },
-  { schema: 'public', fn: 'delete_auth_session', query: `p_session_id=${ZERO}` },
-  { schema: 'public', fn: 'get_encryption_key', query: '' },
 ]
 
 Deno.test({
@@ -154,6 +139,40 @@ Deno.test({
       token: TEST_SUPABASE_SERVICE_KEY,
     })
     assertEquals(r.status, 200, `service role should execute it, got ${r.status} ${JSON.stringify(r.body)}`)
+  },
+})
+
+// The forsured session store and its hardcoded key were dropped by 375
+// (#1150). Not refused — gone, even for the service role.
+const DROPPED_RPCS: { schema: string; fn: string; query: string }[] = [
+  {
+    schema: 'public',
+    fn: 'create_auth_session',
+    query:
+      `p_scaffald_user_id=probe&p_supabase_user_id=${ZERO}&p_access_token=x&p_refresh_token=x` +
+      `&p_token_expires_at=2030-01-01T00:00:00Z&p_user_agent=probe&p_ip_address=127.0.0.1`,
+  },
+  { schema: 'public', fn: 'get_auth_session', query: `p_session_id=${ZERO}` },
+  {
+    schema: 'public',
+    fn: 'update_auth_session_tokens',
+    query: `p_session_id=${ZERO}&p_access_token=x&p_refresh_token=x&p_token_expires_at=2030-01-01T00:00:00Z`,
+  },
+  { schema: 'public', fn: 'delete_auth_session', query: `p_session_id=${ZERO}` },
+  { schema: 'public', fn: 'get_encryption_key', query: '' },
+]
+
+Deno.test({
+  name: 'DB hardening - the forsured session RPCs no longer exist (#1150)',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const failures: string[] = []
+    for (const { schema, fn, query } of DROPPED_RPCS) {
+      const r = await rest(`/rpc/${fn}${query ? `?${query}` : ''}`, { schema, token: TEST_SUPABASE_SERVICE_KEY })
+      if (errorCode(r) !== 'PGRST202') failures.push(`${schema}.${fn} -> ${r.status} ${JSON.stringify(r.body).slice(0, 100)}`)
+    }
+    assertEquals(failures.join('\n'), '', 'expected PGRST202 (no such function) for every dropped RPC')
   },
 })
 
