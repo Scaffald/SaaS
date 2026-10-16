@@ -15732,54 +15732,6 @@ export type Database = {
         }
         Relationships: []
       }
-      auth_sessions: {
-        Row: {
-          access_token_encrypted: string | null
-          access_token_secret_id: string | null
-          created_at: string
-          id: string
-          ip_address: unknown
-          last_used_at: string
-          refresh_token_encrypted: string | null
-          refresh_token_secret_id: string | null
-          scaffald_user_id: string
-          session_expires_at: string
-          supabase_user_id: string | null
-          token_expires_at: string
-          user_agent: string | null
-        }
-        Insert: {
-          access_token_encrypted?: string | null
-          access_token_secret_id?: string | null
-          created_at?: string
-          id?: string
-          ip_address?: unknown
-          last_used_at?: string
-          refresh_token_encrypted?: string | null
-          refresh_token_secret_id?: string | null
-          scaffald_user_id: string
-          session_expires_at?: string
-          supabase_user_id?: string | null
-          token_expires_at: string
-          user_agent?: string | null
-        }
-        Update: {
-          access_token_encrypted?: string | null
-          access_token_secret_id?: string | null
-          created_at?: string
-          id?: string
-          ip_address?: unknown
-          last_used_at?: string
-          refresh_token_encrypted?: string | null
-          refresh_token_secret_id?: string | null
-          scaffald_user_id?: string
-          session_expires_at?: string
-          supabase_user_id?: string | null
-          token_expires_at?: string
-          user_agent?: string | null
-        }
-        Relationships: []
-      }
       breach_notifications: {
         Row: {
           affected_california_residents: number
@@ -16652,21 +16604,7 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: number
       }
-      cleanup_expired_auth_sessions: { Args: never; Returns: number }
-      create_auth_session: {
-        Args: {
-          p_access_token: string
-          p_ip_address?: unknown
-          p_refresh_token: string
-          p_scaffald_user_id: string
-          p_supabase_user_id: string
-          p_token_expires_at: string
-          p_user_agent?: string
-        }
-        Returns: string
-      }
       dearmor: { Args: { "": string }; Returns: string }
-      delete_auth_session: { Args: { p_session_id: string }; Returns: boolean }
       disablelongtransactions: { Args: never; Returns: string }
       dropgeometrycolumn:
         | {
@@ -16800,20 +16738,6 @@ export type Database = {
         Returns: boolean
       }
       geomfromewkt: { Args: { "": string }; Returns: unknown }
-      get_auth_session: {
-        Args: { p_session_id: string }
-        Returns: {
-          access_token: string
-          last_used_at: string
-          refresh_token: string
-          scaffald_user_id: string
-          session_expires_at: string
-          session_id: string
-          supabase_user_id: string
-          token_expires_at: string
-        }[]
-      }
-      get_encryption_key: { Args: never; Returns: string }
       get_jobs_with_coords: {
         Args: never
         Returns: {
@@ -16902,7 +16826,6 @@ export type Database = {
         }[]
       }
       gettransactionid: { Args: never; Returns: unknown }
-      is_vault_available: { Args: never; Returns: boolean }
       longtransactionsenabled: { Args: never; Returns: boolean }
       pgp_armor_headers: {
         Args: { "": string }
@@ -17552,15 +17475,6 @@ export type Database = {
         Returns: unknown
       }
       unlockrows: { Args: { "": string }; Returns: number }
-      update_auth_session_tokens: {
-        Args: {
-          p_access_token: string
-          p_refresh_token: string
-          p_session_id: string
-          p_token_expires_at: string
-        }
-        Returns: boolean
-      }
       updategeometrysrid: {
         Args: {
           catalogn_name: string
