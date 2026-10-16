@@ -167,14 +167,6 @@ gcp_jwt_path = "supabase/gcloud.json"
 # auth must verify the token in code (e.g. supabase.auth.getUser(token)).
 [functions.api]
 verify_jwt = false
-[functions.auth-logout]
-verify_jwt = false
-[functions.auth-refresh]
-verify_jwt = false
-[functions.auth-session]
-verify_jwt = false
-[functions.auth-token-exchange]
-verify_jwt = false
 [functions.background-check-webhook]
 verify_jwt = false
 [functions.ccpa-deadline-check]
