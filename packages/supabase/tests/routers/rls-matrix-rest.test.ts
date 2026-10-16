@@ -81,6 +81,8 @@ const MATRIX: Row[] = [
   { target: 'onet.occupation_data', expect: { anon: 'none', userA: 'none' }, why: 'onboarding occupation picker' },
   { target: 'data.trades', expect: { anon: 'rows', userA: 'rows' }, why: 'onboarding trade picker' },
   { target: 'data.certifications', expect: { anon: 'none', userA: 'none' }, why: 'certification picker' },
+  { target: 'data.universities', expect: { anon: 'none', userA: 'none' }, why: 'education history picker (not seeded)' },
+  { target: 'data.masterformat', expect: { anon: 'rows', userA: 'rows' }, why: 'CSI MasterFormat skill tree' },
 
   // --- app paths that must keep working ---------------------------------------
   { target: 'core.users', filter: 'id=eq.{self}', expect: { userA: 'rows', orgAdmin: 'rows' }, why: 'own account row' },
