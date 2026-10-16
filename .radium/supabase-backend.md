@@ -63,6 +63,16 @@ RLS is enabled on all tables. Every new table must include:
 2. At minimum: a `service_role` full-access policy and user-scoped select/insert policies
 3. Use `auth.uid()` for user-scoped policies
 
+A `SECURITY DEFINER` function in an exposed schema (`public`, `core`, …) is an
+RPC anyone holding the anon key can call — Postgres grants EXECUTE to `PUBLIC`
+on create. If only the server or cron calls it, end the migration with
+`REVOKE EXECUTE ON FUNCTION … FROM PUBLIC, anon, authenticated;` and
+`GRANT EXECUTE … TO service_role;`. Migration 364 had to do this for thirteen
+functions, including one that returned any Vault secret (#1143).
+
+A table only the server reads still gets RLS, with no client policy: deny-all
+survives a stray hand-made GRANT, which is exactly what dev had (#1145, 366).
+
 ### A `set_updated_at` trigger needs the column, and nothing tells you
 
 `core.set_updated_at()` assigns `NEW.updated_at`. Attach it to a table that has
@@ -221,6 +231,15 @@ that adds the guards and re-tests.
 three envs and fails if any env has drift between local + remote
 migration history. Re-link a project (or break the CI run) only after
 confirming the env is in sync.
+
+**History in sync is not schema in sync.** Migration 303 (enable RLS on the
+notification tables) was recorded on all three projects and had never run on
+any of them; this audit passed for seven months while signed-in users could
+rewrite each other's push devices (#1144, fixed by 365). After applying a
+security migration, check the object, not the ledger — e.g.
+`select relname, relrowsecurity from pg_class where …`,
+`has_function_privilege('anon', 'core.fn(uuid)', 'execute')` — and paste the
+result in the PR. The catalog fingerprint in #1146 automates this.
 
 ## Environment Variables
 
