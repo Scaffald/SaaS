@@ -10,7 +10,6 @@ One-off migration, codemod, and setup scripts. Kept for reference; use standard 
 | `fix-beyond-ui-props.mjs` | Beyond UI migration codemod – size/padding prop conversions |
 | `setup-docs-domain.sh` | One-time docs site domain setup |
 | `setup-docs-domain-github-pages.sh` | One-time GitHub Pages domain config for docs |
-| `test-email-function.sh` | Ad-hoc test for `email-inbound-parse` Edge Function |
 
 ## Preferred Alternatives
 

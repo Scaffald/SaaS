@@ -65,8 +65,6 @@
     "packages/supabase/functions/api/routes/work-logs.ts": 23,
     "packages/supabase/functions/api/routes/workers.ts": 2,
     "packages/supabase/functions/ccpa-deadline-check/index.ts": 2,
-    "packages/supabase/functions/email-inbound-parse/index.ts": 11,
-    "packages/supabase/functions/inbound-conversation-email/index.ts": 5,
     "packages/supabase/functions/job-import/index.ts": 2,
     "packages/supabase/functions/notify-background-check-expiration/index.ts": 3,
     "packages/supabase/functions/notify-id-verification-expiration/index.ts": 2,

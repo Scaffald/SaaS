@@ -14,7 +14,6 @@ audits and investigations are GitHub Issues, not files here (see the root
 
 - [Deployment infrastructure](setup/DEPLOYMENT.md) — DNS, AWS, Supabase branches, CI/CD, GitHub secrets
 - [Resend](setup/RESEND.md) — outbound email transport
-- [SendGrid inbound parse](setup/REQ-13-sendgrid-inbound-setup.md) — inbound email (outbound moved to Resend)
 - [AWS CNAME reclaim](setup/AWS-CNAME-RECLAIM.md) — historical, resolved
 - [SSR deploy and apex cutover](agents/SSR-DEPLOY.md) — how scaffald.com came to serve the SSR app, and the follow-ups
 - [Release process](agents/RELEASE-PROCESS.md) — version tagging across git, the tracker, and TestFlight

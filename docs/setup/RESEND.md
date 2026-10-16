@@ -147,5 +147,6 @@ production.
 
 SendGrid, which was referenced in three separate senders but never had an API
 key in any environment — so no notification email had ever been delivered in
-production. See `docs/setup/REQ-13-sendgrid-inbound-setup.md` for the inbound
-parse setup, which is a separate concern and still describes SendGrid.
+production. Inbound parse (SendGrid → `email-inbound-parse`) belonged to the
+forsured app and was a no-op after the split; the function and its setup doc
+were removed on 2026-10-16 (#1155). Scaffald receives no inbound email.

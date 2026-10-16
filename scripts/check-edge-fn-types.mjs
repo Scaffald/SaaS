@@ -42,7 +42,7 @@
 //     api                    334
 //     trpc                     0
 //     stripe-webhook           0
-//     email-inbound-parse     11
+//     email-inbound-parse     11   (deleted 2026-10-16, forsured no-op)
 //     news-import              0
 //
 // Three functions are already clean. They are now held at zero — a new type
