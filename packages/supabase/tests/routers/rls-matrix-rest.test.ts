@@ -25,7 +25,7 @@
 
 import { assertEquals } from '../shared/assert.ts'
 import { type PersonaName, type Personas, disposePersonas, getPersonas } from '../shared/personas.ts'
-import { TEST_SUPABASE_ANON_KEY, TEST_SUPABASE_URL } from '../shared/setup.ts'
+import { TEST_SUPABASE_ANON_KEY, TEST_SUPABASE_URL, createAdminClient } from '../shared/setup.ts'
 
 type Outcome = 'rows' | 'none' | 'denied'
 
@@ -117,6 +117,19 @@ const MATRIX: Row[] = [
     why: 'public profile pages call it with the visitor client — stays public',
   },
 
+  // --- 370: is_org_member resolves (#1231) -----------------------------------
+  {
+    target: 'core.rpc/is_org_member',
+    filter: `org_id=${Z}&target_user={self}`,
+    expect: { anon: 'denied', userA: 'rows', orgAdmin: 'rows' },
+    why: '39 policies call it; it raised 42702 for every signed-in caller',
+  },
+  {
+    target: 'core.organization_folders',
+    expect: { anon: 'denied', userA: 'none', orgAdmin: 'rows' },
+    why: 'an org admin reads its own folders; an outsider sees none (not a 400)',
+  },
+
   // --- reference data stays public (#1151 must keep this) --------------------
   // The seeds load no O*NET rows and no certifications, so `none` is the
   // healthy outcome there; `denied` would mean the read grant was lost.
@@ -137,6 +150,33 @@ const MATRIX: Row[] = [
   { target: 'core.api_keys', expect: { anon: 'denied', userA: 'none' }, why: 'org API keys' },
   { target: 'public.webhooks', expect: { userA: 'none' }, why: 'org webhooks and their secrets' },
 ]
+
+/**
+ * Rows some matrix entries need and the seeds do not carry. Created with the
+ * service role before the run, removed after it.
+ */
+async function fixtures(personas: Personas): Promise<() => Promise<void>> {
+  const admin = createAdminClient()
+  const { data: ra } = await admin
+    .schema('core')
+    .from('role_assignments')
+    .select('scope_org_id')
+    .eq('user_id', personas.orgAdmin.id)
+    .not('scope_org_id', 'is', null)
+    .limit(1)
+    .single()
+  if (!ra?.scope_org_id) throw new Error('orgAdmin persona has no organization (seeds/010)')
+  const { data: folder, error } = await admin
+    .schema('core')
+    .from('organization_folders')
+    .insert({ organization_id: ra.scope_org_id, name: 'rls-matrix', created_by: personas.orgAdmin.id })
+    .select('id')
+    .single()
+  if (error) throw new Error(`fixture folder: ${error.message}`)
+  return async () => {
+    await admin.schema('core').from('organization_folders').delete().eq('id', folder.id)
+  }
+}
 
 function url(target: string, filter: string | undefined, self: string) {
   const [schema, rest] = [target.slice(0, target.indexOf('.')), target.slice(target.indexOf('.') + 1)]
@@ -170,6 +210,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const personas = await getPersonas()
+    const cleanup = await fixtures(personas)
     try {
       const record = Deno.env.get('RLS_MATRIX_RECORD') === '1'
       const all: PersonaName[] = ['anon', 'userA', 'userB', 'orgAdmin', 'office', 'service']
@@ -188,6 +229,7 @@ Deno.test({
       }
       assertEquals(failures.join('\n'), '', 'persona matrix mismatches')
     } finally {
+      await cleanup()
       await disposePersonas()
     }
   },
