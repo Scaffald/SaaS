@@ -176,6 +176,35 @@ Deno.test({
   },
 })
 
+// Prod, dev and preview had these functions' search_path narrowed to `core`,
+// so the pgcrypto calls inside them (in `public`) raised 42883 — saving a
+// Stripe key from office settings could not work on any remote (#1229, 378).
+// GET runs read-only: rotate_stripe_secret reaching its Vault INSERT (25006)
+// proves gen_random_bytes resolved; nothing is written.
+Deno.test({
+  name: 'DB hardening - pgcrypto resolves inside the Stripe and background-check functions (#1229)',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const rotate = await rest('/rpc/rotate_stripe_secret?p_secret=probe&p_secret_type=key', {
+      token: TEST_SUPABASE_SERVICE_KEY,
+    })
+    assertEquals(errorCode(rotate), '25006', `expected to reach the Vault insert, got ${JSON.stringify(rotate.body)}`)
+
+    const data = encodeURIComponent(JSON.stringify({ probe: 1 }))
+    const enc = await rest(`/rpc/encrypt_background_check_results?p_data=${data}&p_secret=probe-key`, {
+      token: TEST_SUPABASE_SERVICE_KEY,
+    })
+    assertEquals(enc.status, 200, `encrypt should succeed, got ${enc.status} ${JSON.stringify(enc.body)}`)
+
+    const dec = await rest(
+      `/rpc/decrypt_background_check_results?p_encrypted=${encodeURIComponent(enc.body as string)}&p_secret=probe-key`,
+      { token: TEST_SUPABASE_SERVICE_KEY },
+    )
+    assertEquals(JSON.stringify(dec.body), JSON.stringify({ probe: 1 }), `round trip, got ${JSON.stringify(dec.body)}`)
+  },
+})
+
 // ---------------------------------------------------------------------------
 // 2. #1144 — notification devices and preferences are per-user
 // ---------------------------------------------------------------------------
