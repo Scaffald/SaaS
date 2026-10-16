@@ -69,9 +69,7 @@ const MATRIX: Row[] = [
   // --- 306 (via 367): views run as the caller --------------------------------
   {
     target: 'core.v_profile_search',
-    // service is deliberately absent: under security_invoker it is denied
-    // (no SELECT grant on the view) — tracked on #1149, not encoded as intent.
-    expect: { anon: 'denied', userA: 'rows', orgAdmin: 'rows' },
+    expect: { anon: 'denied', userA: 'rows', orgAdmin: 'rows', service: 'rows' },
     why: 'signed-in talent search works; anon no longer reads coordinates and rates',
   },
 
@@ -130,6 +128,13 @@ const MATRIX: Row[] = [
     why: 'an org admin reads its own folders; an outsider sees none (not a 400)',
   },
 
+  // --- 374: the last client-readable definer view (#1149) ---------------------
+  {
+    target: 'public.v_active_cron_jobs',
+    expect: { anon: 'denied', userA: 'denied', office: 'denied' },
+    why: 'every cron command; nothing in the app reads it',
+  },
+
   // --- reference data stays public (#1151 must keep this) --------------------
   // The seeds load no O*NET rows and no certifications, so `none` is the
   // healthy outcome there; `denied` would mean the read grant was lost.
@@ -148,7 +153,7 @@ const MATRIX: Row[] = [
     why: "a worker never sees another worker's applications; an employer sees applicants to its jobs",
   },
   { target: 'core.api_keys', expect: { anon: 'denied', userA: 'none' }, why: 'org API keys' },
-  { target: 'public.webhooks', expect: { userA: 'none' }, why: 'org webhooks and their secrets' },
+  { target: 'public.webhooks', expect: { anon: 'denied', userA: 'none', service: 'none' }, why: 'org webhooks and their secrets; prod had no grants at all until 373' },
 ]
 
 /**
