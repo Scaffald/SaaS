@@ -146,7 +146,11 @@ app.post(
   requireRole("office", "platform"),
   zValidator("json", createBodySchema),
   async (c) => {
-    const supabase = c.get("supabase");
+    // data.universities grants clients SELECT only, on every project, and
+    // the catalog is office-managed: write through the service role, which
+    // requireRole above has already earned (#1230).
+    const supabase = c.get("supabaseAdmin");
+    if (!supabase) return c.json({ error: "Service role required" }, 500);
     const input = c.req.valid("json");
 
     const { data: existing } = await supabase
@@ -190,7 +194,11 @@ app.patch(
   requireRole("office", "platform"),
   zValidator("json", updateBodySchema),
   async (c) => {
-    const supabase = c.get("supabase");
+    // data.universities grants clients SELECT only, on every project, and
+    // the catalog is office-managed: write through the service role, which
+    // requireRole above has already earned (#1230).
+    const supabase = c.get("supabaseAdmin");
+    if (!supabase) return c.json({ error: "Service role required" }, 500);
     const { id } = c.req.param();
     const input = c.req.valid("json");
 
@@ -240,7 +248,11 @@ app.patch(
 
 // DELETE /:id - Delete university (office role)
 app.delete("/:id", requireRole("office", "platform"), async (c) => {
-  const supabase = c.get("supabase");
+  // Service role for the write (see POST) and for the in-use count: with the
+  // caller's JWT, RLS on user_education hid every other user's rows, so the
+  // guard below always counted 0 (#1230).
+  const supabase = c.get("supabaseAdmin");
+  if (!supabase) return c.json({ error: "Service role required" }, 500);
   const { id } = c.req.param();
 
   const { count } = await supabase
