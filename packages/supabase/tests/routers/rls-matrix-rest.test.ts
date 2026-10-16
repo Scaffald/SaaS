@@ -69,9 +69,7 @@ const MATRIX: Row[] = [
   // --- 306 (via 367): views run as the caller --------------------------------
   {
     target: 'core.v_profile_search',
-    // service is deliberately absent: under security_invoker it is denied
-    // (no SELECT grant on the view) — tracked on #1149, not encoded as intent.
-    expect: { anon: 'denied', userA: 'rows', orgAdmin: 'rows' },
+    expect: { anon: 'denied', userA: 'rows', orgAdmin: 'rows', service: 'rows' },
     why: 'signed-in talent search works; anon no longer reads coordinates and rates',
   },
 
@@ -128,6 +126,13 @@ const MATRIX: Row[] = [
     target: 'core.organization_folders',
     expect: { anon: 'denied', userA: 'none', orgAdmin: 'rows' },
     why: 'an org admin reads its own folders; an outsider sees none (not a 400)',
+  },
+
+  // --- 374: the last client-readable definer view (#1149) ---------------------
+  {
+    target: 'public.v_active_cron_jobs',
+    expect: { anon: 'denied', userA: 'denied', office: 'denied' },
+    why: 'every cron command; nothing in the app reads it',
   },
 
   // --- reference data stays public (#1151 must keep this) --------------------

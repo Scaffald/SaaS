@@ -13,10 +13,6 @@
     "definer-function-anon-execute:get_skill_children(uuid)": "Read-only skill tree helper; no write path. Kept public by 369 \u2014 revisit with #1148 if unused.",
     "definer-function-anon-execute:get_skill_details(uuid)": "Read-only skill tree helper; no write path. Kept public by 369 \u2014 revisit with #1148 if unused.",
     "definer-function-anon-execute:get_skill_parent_ids(uuid)": "Read-only skill tree helper; no write path. Kept public by 369 \u2014 revisit with #1148 if unused.",
-    "definer-function-anon-execute:search_parent_skills(text,uuid,integer,text)": "Skill search (skills.ts) with the visitor client. Kept public by 369.",
-    "definer-view-client-select:public.geography_columns": "SECURITY DEFINER view readable by clients. #1149.",
-    "definer-view-client-select:public.geometry_columns": "SECURITY DEFINER view readable by clients. #1149.",
-    "definer-view-client-select:public.v_active_cron_jobs": "SECURITY DEFINER view readable by clients. #1149.",
-    "table-rls-off-with-client-grants:public.spatial_ref_sys": "PostGIS-owned; we cannot ALTER it. Accepted (#1155)."
+    "definer-function-anon-execute:search_parent_skills(text,uuid,integer,text)": "Skill search (skills.ts) with the visitor client. Kept public by 369."
   }
 }

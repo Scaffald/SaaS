@@ -50,6 +50,7 @@ rel as materialized (
   select c.oid, n.nspname, c.relname, c.relkind, c.relrowsecurity, c.relforcerowsecurity, c.reloptions
   from pg_class c join pg_namespace n on n.oid = c.relnamespace join s using (nspname)
   where c.relkind in ('r','p','v','m')
+    and not exists (select 1 from pg_depend d where d.objid = c.oid and d.deptype = 'e')
 ),
 fn as materialized (
   select p.oid, n.nspname, p.oid::regprocedure::text sig, p.prosecdef, p.proconfig, p.prorettype = 'trigger'::regtype is_trigger
