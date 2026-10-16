@@ -18,6 +18,15 @@
 > ratchet that may only grow. `GATED.txt` itself records what is excluded and
 > why.
 
+> **Changing who can read or write something?** Add rows to
+> `tests/routers/rls-matrix-rest.test.ts` *before* the migration, with the
+> outcome you intend per persona (anon, two fresh plain users, an org admin,
+> office, service). Run it red against the current schema, apply the
+> migration, run it green. `RLS_MATRIX_RECORD=1` prints what every persona
+> sees today. Then run `node scripts/db/security-fingerprint.mjs check local`,
+> which CI also runs, and remove any allow-list entry your change fixed (#1146,
+> #1147).
+
 This directory contains the standalone Deno-based test workspace for all Supabase edge function tRPC routers. Suites run against a live local Supabase instance and reuse the utilities that were historically embedded in `packages/supabase/functions/trpc/__tests__`.
 
 ## Directory Overview
