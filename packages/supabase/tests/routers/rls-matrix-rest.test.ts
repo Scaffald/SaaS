@@ -148,7 +148,7 @@ const MATRIX: Row[] = [
     why: "a worker never sees another worker's applications; an employer sees applicants to its jobs",
   },
   { target: 'core.api_keys', expect: { anon: 'denied', userA: 'none' }, why: 'org API keys' },
-  { target: 'public.webhooks', expect: { userA: 'none' }, why: 'org webhooks and their secrets' },
+  { target: 'public.webhooks', expect: { anon: 'denied', userA: 'none', service: 'none' }, why: 'org webhooks and their secrets; prod had no grants at all until 373' },
 ]
 
 /**
