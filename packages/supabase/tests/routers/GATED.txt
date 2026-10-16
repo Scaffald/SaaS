@@ -54,6 +54,7 @@ payments-settlement.test.ts
 prerequisites.test.ts
 resume.test.ts
 reviews.test.ts
+rls-matrix-rest.test.ts
 schema-regression.test.ts
 stripe-settings-rest.test.ts
 webhooks-rest.test.ts
