@@ -138,3 +138,33 @@ jobs:
           fi
 
           echo "${{ matrix.env.name }}: clean — local and remote history in sync."
+
+  # History in sync is not schema in sync. 303, 306 and 310 were recorded on
+  # prod and had never run, and the job above passed every night (#1144,
+  # #1146). This one reads each project's catalog and runs the same invariants
+  # CI runs against a fresh replay. Not on pull_request: a PR that fixes an
+  # allow-listed object removes the entry before it is rolled out, so the
+  # remote is expected to disagree until it is.
+  security-fingerprint:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [dev, preview, prod]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Security invariants on ${{ matrix.env }}
+        run: node scripts/db/security-fingerprint.mjs check ${{ matrix.env }}
+
+      - name: Advisor summary (report-only)
+        if: always()
+        run: |
+          ref=$(node -e "console.log({dev:'pmtdqrfpumqwkdhpgwcz',preview:'uhjkipdwayqfihkanabk',prod:'qmfmpcyxsihhfttvqpbw'}['${{ matrix.env }}'])")
+          curl -sf -A scaffald-drift-audit -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            "https://api.supabase.com/v1/projects/$ref/advisors/security" \
+            | jq -r '.lints | group_by(.level + " " + .name) | map("\(length)\t\(.[0].level)\t\(.[0].name)") | .[]' \
+            | sort -k2,2 -k1,1nr | tee -a "$GITHUB_STEP_SUMMARY"

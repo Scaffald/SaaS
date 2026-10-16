@@ -15,6 +15,8 @@ on:
       - 'packages/supabase/types.ts'
       - 'scripts/test-api-local.ts'
       - 'scripts/types-owned-schemas.mjs'
+      - 'scripts/db/security-fingerprint.mjs'
+      - 'packages/supabase/security-allowlist.json'
       - 'scripts/deno.json'
       # This job runs the Supabase CLI — `supabase start`, `gen types` — so a
       # bump to it breaks the job without touching any path above. #936 did
@@ -35,6 +37,8 @@ on:
       - 'packages/supabase/types.ts'
       - 'scripts/test-api-local.ts'
       - 'scripts/types-owned-schemas.mjs'
+      - 'scripts/db/security-fingerprint.mjs'
+      - 'packages/supabase/security-allowlist.json'
       - 'scripts/deno.json'
       - 'pnpm-workspace.yaml'
       - 'pnpm-lock.yaml'
@@ -123,6 +127,15 @@ jobs:
             exit 1
           fi
           echo "✅ types.ts matches the migrations"'"'
+
+      # The security invariants, read from the catalog a fresh replay produces:
+      # no client-granted table without RLS, no anon-executable SECURITY
+      # DEFINER function, no client-readable definer view — except what
+      # packages/supabase/security-allowlist.json names, and that list may only
+      # shrink (#1146). The ledger said 303, 306 and 310 were applied on prod;
+      # the catalog said otherwise.
+      - name: Security invariants (catalog, not ledger)
+        run: node scripts/db/security-fingerprint.mjs check local
 
       - name: Wait for API
         run: |
