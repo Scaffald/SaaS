@@ -75,6 +75,48 @@ const MATRIX: Row[] = [
     why: 'signed-in talent search works; anon no longer reads coordinates and rates',
   },
 
+  // --- 369: definer functions by class (#1148) ---------------------------------
+  {
+    target: 'core.rpc/process_notification_queue',
+    expect: { anon: 'denied', userA: 'denied', orgAdmin: 'denied' },
+    why: 'a job: pg_cron runs it as postgres; visitors must not fire it',
+  },
+  {
+    target: 'core.rpc/import_external_jobs',
+    expect: { anon: 'denied', userA: 'denied' },
+    why: 'a job that makes outbound HTTP requests',
+  },
+  {
+    target: 'core.rpc/auto_reject_application',
+    filter: `p_application_id=${Z}`,
+    expect: { anon: 'denied', userA: 'denied' },
+    why: 'state change, called only by the api with the service role',
+  },
+  {
+    // is_org_member would be the obvious row, but it raises 42702 today (#1231).
+    target: 'core.rpc/user_has_role',
+    filter: `p_user_id={self}&p_role_name=worker&p_org_id=${Z}`,
+    expect: { anon: 'denied', userA: 'rows' },
+    why: 'RLS helper; only policies TO authenticated call it',
+  },
+  {
+    target: 'core.rpc/pin_review',
+    filter: `p_review_id=${Z}&p_position=1`,
+    expect: { anon: 'denied' },
+    why: 'review pins are a signed-in action',
+  },
+  {
+    target: 'public.rpc/get_organizations_with_coords',
+    expect: { anon: 'rows', userA: 'rows' },
+    why: 'discover map, signed-out included — stays public (allow-listed)',
+  },
+  {
+    target: 'public.rpc/calculate_years_of_experience',
+    filter: 'p_user_id={self}',
+    expect: { anon: 'rows', userA: 'rows' },
+    why: 'public profile pages call it with the visitor client — stays public',
+  },
+
   // --- reference data stays public (#1151 must keep this) --------------------
   // The seeds load no O*NET rows and no certifications, so `none` is the
   // healthy outcome there; `denied` would mean the read grant was lost.
