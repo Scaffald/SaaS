@@ -77,8 +77,9 @@ export function HomeMetrics() {
 
   // Search appearances are the times this worker turned up in someone else's
   // worker search: `search_impressions` rows rolled up per day by the
-  // analytics job. They used to come from `useEngagementMetrics().searches`,
-  // which counts searches the worker ran *themselves* (#1171).
+  // analytics job. They used to come from `useEngagementMetrics().searches`
+  // (now `useOwnActivityMetrics().searchesRun`), which counts searches the
+  // worker ran *themselves* (#1171, #1249).
   const searches = summary?.searchAppearances?.total
   const invitations = invitationData?.invitations?.length ?? 0
 
