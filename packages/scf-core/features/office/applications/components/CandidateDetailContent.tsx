@@ -16,6 +16,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useApplicationMessages } from '@scf/core/utils/jobs-sdk-hooks'
 import { StyleSheet } from 'react-native'
 import {
+  Avatar,
   Button,
   MetricBlock,
   Row,
@@ -31,6 +32,7 @@ import {
   canReject as canRejectStatus,
   countSuffix,
   formatAppliedAgo,
+  initialsOf,
   nextStageFor,
 } from '../candidate-actions'
 import { assigneeLabel, formatScore } from '../row-labels'
@@ -270,6 +272,16 @@ export const CandidateDetailContent = ({
           score at its trailing edge, and one hairline action row. */}
       <ScreenHeader
         back={back}
+        // The prototype's 48px avatar beside the name (employer-cand, #1288).
+        leading={
+          <Avatar
+            size={48}
+            src={application.candidate.photo || undefined}
+            initials={initialsOf(application.candidate.name)}
+            color="gray"
+            alt={application.candidate.name}
+          />
+        }
         kicker={application.job.title}
         title={application.candidate.name}
         actions={

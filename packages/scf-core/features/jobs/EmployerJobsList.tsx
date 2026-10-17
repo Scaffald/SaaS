@@ -231,113 +231,107 @@ export function EmployerJobsList() {
 
               const openPosting = () => router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))
 
-              // The press is on a link-role wrapper rather than Lane's own
-              // onPress, which makes the row a button element with the Edit
-              // button nested inside it — invalid HTML (the same fix as the
-              // pipeline's lanes, #1196). Each inner control stops its own
-              // click from reaching the row.
+              // The row opens the posting. Lane keeps Edit outside its press
+              // area (#1288), and the applicants link is a Pressable of its
+              // own, which takes its click before the row sees it.
               return (
-                <Pressable
+                <Lane
                   key={job.id}
-                  accessibilityRole="link"
-                  accessibilityLabel={`Open ${job.title}`}
                   onPress={openPosting}
-                >
-                  <Lane
-                    age={age != null ? `${age}d` : undefined}
-                    ageLabel={listingAgeLabel(job.posted_at)}
-                    // Title and meta in a fixed-width block so the applicant
-                    // count starts at one x down the list.
-                    title={
-                      <View style={stacked ? undefined : { width: LISTING_TITLE_WIDTH }}>
+                  accessibilityLabel={`Open ${job.title}`}
+                  age={age != null ? `${age}d` : undefined}
+                  ageLabel={listingAgeLabel(job.posted_at)}
+                  // Title and meta in a fixed-width block so the applicant
+                  // count starts at one x down the list.
+                  title={
+                    <View style={stacked ? undefined : { width: LISTING_TITLE_WIDTH }}>
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          fontSize: fontSize.lg,
+                          fontWeight: fontWeight.semibold,
+                          color: colors.text[t].primary,
+                        }}
+                      >
+                        {job.title}
+                      </Text>
+                      {meta ? (
                         <Text
-                          numberOfLines={1}
-                          style={{
-                            fontSize: fontSize.lg,
-                            fontWeight: fontWeight.semibold,
-                            color: colors.text[t].primary,
-                          }}
+                          numberOfLines={stacked ? 2 : 1}
+                          style={{ fontSize: fontSize.md, color: colors.text[t].secondary }}
                         >
-                          {job.title}
+                          {meta}
                         </Text>
-                        {meta ? (
-                          <Text
-                            numberOfLines={stacked ? 2 : 1}
-                            style={{ fontSize: fontSize.md, color: colors.text[t].secondary }}
-                          >
-                            {meta}
-                          </Text>
-                        ) : null}
-                      </View>
-                    }
-                    columns={[
-                      // The count is the way into the pipeline for this posting
-                      // (#1199): it used to be plain text, so an employer read
-                      // "4 applicants" and then had to go and find them.
-                      applicants > 0 ? (
-                        <Pressable
-                          key="applicants"
-                          style={stacked ? undefined : { width: LISTING_APPLICANTS_WIDTH }}
-                          accessibilityRole="link"
-                          accessibilityLabel={`View ${applicants} ${
-                            applicants === 1 ? 'applicant' : 'applicants'
-                          } for ${job.title}`}
-                          onPress={() =>
-                            router.push({
-                              pathname: ROUTES.OFFICE.APPLICATIONS.path,
-                              params: { job: job.id },
-                            })
-                          }
-                        >
-                          <Row gap={8} align="baseline">
-                            <Text
-                              style={{
-                                fontSize: fontSize.lg,
-                                fontWeight: fontWeight.semibold,
-                                fontVariant: ['tabular-nums'],
-                                color: colors.text[t].emphasis,
-                              }}
-                            >
-                              {applicants}
-                            </Text>
-                            <Text style={{ fontSize: fontSize.md, color: colors.text[t].emphasis }}>
-                              View applicants →
-                            </Text>
-                          </Row>
-                        </Pressable>
-                      ) : (
-                        <View
-                          key="applicants"
-                          style={stacked ? undefined : { width: LISTING_APPLICANTS_WIDTH }}
-                        >
-                          <Text style={{ color: colors.text[t].tertiary }}>No applicants yet</Text>
-                        </View>
-                      ),
-                      // Only where the group's title does not already say it.
-                      ...(statusWord
-                        ? [
-                            <Text key="status" style={{ color: statusColor }}>
-                              {statusWord}
-                            </Text>,
-                          ]
-                        : []),
-                    ]}
-                    actions={
-                      // Stacked, a full button under every posting made each one
-                      // five lines tall (#1199); a text button keeps Edit on
-                      // the row without spending a line on its outline.
-                      <Button
-                        size="sm"
-                        variant={stacked ? 'text' : 'outline'}
+                      ) : null}
+                    </View>
+                  }
+                  columns={[
+                    // The count is the way into the pipeline for this posting
+                    // (#1199): it used to be plain text, so an employer read
+                    // "4 applicants" and then had to go and find them.
+                    applicants > 0 ? (
+                      <Pressable
+                        key="applicants"
+                        style={stacked ? undefined : { width: LISTING_APPLICANTS_WIDTH }}
+                        accessibilityRole="link"
+                        accessibilityLabel={`View ${applicants} ${
+                          applicants === 1 ? 'applicant' : 'applicants'
+                        } for ${job.title}`}
                         onPress={() =>
-                          router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
+                          router.push({
+                            pathname: ROUTES.OFFICE.APPLICATIONS.path,
+                            params: { job: job.id },
+                          })
                         }
                       >
-                        Edit
-                      </Button>
-                    }
-                  />
-                </Pressable>
+                        <Row gap={8} align="baseline">
+                          <Text
+                            style={{
+                              fontSize: fontSize.lg,
+                              fontWeight: fontWeight.semibold,
+                              fontVariant: ['tabular-nums'],
+                              color: colors.text[t].emphasis,
+                            }}
+                          >
+                            {applicants}
+                          </Text>
+                          <Text style={{ fontSize: fontSize.md, color: colors.text[t].emphasis }}>
+                            View applicants →
+                          </Text>
+                        </Row>
+                      </Pressable>
+                    ) : (
+                      <View
+                        key="applicants"
+                        style={stacked ? undefined : { width: LISTING_APPLICANTS_WIDTH }}
+                      >
+                        <Text style={{ color: colors.text[t].tertiary }}>No applicants yet</Text>
+                      </View>
+                    ),
+                    // Only where the group's title does not already say it.
+                    ...(statusWord
+                      ? [
+                          <Text key="status" style={{ color: statusColor }}>
+                            {statusWord}
+                          </Text>,
+                        ]
+                      : []),
+                  ]}
+                  actions={
+                    // Stacked, a full button under every posting made each one
+                    // five lines tall (#1199); a text button keeps Edit on
+                    // the row without spending a line on its outline.
+                    <Button
+                      size="sm"
+                      variant={stacked ? 'text' : 'outline'}
+                      onPress={() =>
+                        router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
+                      }
+                    >
+                      Edit
+                    </Button>
+                  }
+                />
               )
             })}
           </LaneGroup>
