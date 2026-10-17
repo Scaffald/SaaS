@@ -10,7 +10,10 @@
 import { describe, expect, it } from 'vitest'
 import {
   buildJobRequirements,
+  formatProfileGaps,
+  profileGaps,
   requirementsSummary,
+  rowRequirementsSummary,
   totalYearsOfExperience,
 } from '../job-requirements'
 
@@ -163,5 +166,103 @@ describe('requirementsSummary', () => {
   it('returns null rather than "0 of 0" when nothing is checkable', () => {
     expect(requirementsSummary([{ id: 'a', label: 'a', status: 'unknown' }])).toBeNull()
     expect(requirementsSummary([])).toBeNull()
+  })
+})
+
+describe('profileGaps (#1183)', () => {
+  const empty = { education: [], experience: [], driversLicenseClasses: null }
+
+  it('names the profile field behind each requirement the profile does not answer yet', () => {
+    const reqs = buildJobRequirements({
+      job: {
+        minimum_education_level: 'high_school',
+        minimum_years_experience: 4,
+        require_drivers_license: true,
+      },
+      profile: empty,
+    })
+    expect(reqs.every((r) => r.status === 'unknown')).toBe(true)
+    expect(profileGaps(reqs)).toEqual(['education', 'experience', 'drivers-license'])
+  })
+
+  it('never offers a profile field for drug tests, travel or background checks', () => {
+    const reqs = buildJobRequirements({
+      job: { require_drug_test: true, travel_percentage: 25, require_background_check: true },
+      profile: empty,
+    })
+    expect(profileGaps(reqs)).toEqual([])
+  })
+
+  it('is not a gap when the entries exist but cannot be ranked', () => {
+    const reqs = buildJobRequirements({
+      job: { minimum_education_level: 'high_school' },
+      profile: { education: [{ degree_type: 'apprenticeship' }] },
+    })
+    expect(reqs[0].status).toBe('unknown')
+    expect(profileGaps(reqs)).toEqual([])
+  })
+
+  it('is not a gap when the licence requirement names a class the app cannot check', () => {
+    const reqs = buildJobRequirements({
+      job: { require_drivers_license: true, drivers_license_type: 'CDL-A' },
+      profile: empty,
+    })
+    expect(profileGaps(reqs)).toEqual([])
+  })
+
+  it('has nothing to offer a signed-out visitor', () => {
+    const reqs = buildJobRequirements({
+      job: { minimum_education_level: 'high_school', minimum_years_experience: 1 },
+      profile: undefined,
+    })
+    expect(profileGaps(reqs)).toEqual([])
+  })
+
+  it('drops a gap once the profile answers it', () => {
+    const reqs = buildJobRequirements({
+      job: { minimum_education_level: 'high_school' },
+      profile: { education: [{ degree_type: 'ged' }] },
+    })
+    expect(reqs[0].status).toBe('met')
+    expect(profileGaps(reqs)).toEqual([])
+  })
+})
+
+describe('formatProfileGaps', () => {
+  it('reads as a phrase for one, two or three gaps', () => {
+    expect(formatProfileGaps(['education'])).toBe('education')
+    expect(formatProfileGaps(['education', 'experience'])).toBe('education and work experience')
+    expect(formatProfileGaps(['education', 'experience', 'drivers-license'])).toBe(
+      "education, work experience and driver's licence",
+    )
+  })
+})
+
+describe('rowRequirementsSummary (#1180)', () => {
+  const profile = {
+    education: [{ degree_type: 'high_school' }],
+    experience: [{ start_date: '2010-01-01', end_date: null, is_current: true }],
+    driversLicenseClasses: ['C'],
+  }
+
+  it('scores a list row the way the detail screen does', () => {
+    expect(
+      rowRequirementsSummary(
+        { minimum_education_level: 'bachelor', minimum_years_experience: 2 },
+        profile,
+      ),
+    ).toEqual({ met: 1, checkable: 2 })
+  })
+
+  it('leaves a licence uncounted when the list payload does not say which class', () => {
+    expect(rowRequirementsSummary({ require_drivers_license: true }, profile)).toBeNull()
+    expect(
+      rowRequirementsSummary({ require_drivers_license: true, drivers_license_type: null }, profile),
+    ).toEqual({ met: 1, checkable: 1 })
+  })
+
+  it('shows no score when signed out or when nothing is checkable', () => {
+    expect(rowRequirementsSummary({ minimum_education_level: 'high_school' }, undefined)).toBeNull()
+    expect(rowRequirementsSummary({ require_drug_test: true }, profile)).toBeNull()
   })
 })

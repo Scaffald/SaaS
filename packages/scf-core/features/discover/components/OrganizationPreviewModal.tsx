@@ -50,13 +50,13 @@ export function OrganizationPreviewModal({
 
   const handleViewJobs = () => {
     // Navigate to jobs view with organization filter
-    router.push(`${ROUTES.JOBS.path}?org=${organizationId}`)
+    router.push(`${ROUTES.JOBS.BROWSE.path}?org=${organizationId}`)
     onOpenChange(false)
   }
 
   const handleOpenInNewTab = () => {
     if (!organizationId) return
-    openExternalLink(`${ROUTES.JOBS.path}?org=${organizationId}`)
+    openExternalLink(`${ROUTES.JOBS.BROWSE.path}?org=${organizationId}`)
   }
 
   const formatAddress = (address: unknown) => {

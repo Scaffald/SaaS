@@ -5,7 +5,7 @@ import {
 } from '@scf/core/utils/jobs-sdk-hooks'
 import { SoftSkillsMatchIndicator } from '@scf/core/features/profile/components/SoftSkillsMatchIndicator'
 import { ROUTES } from '@scf/core/constants/routes'
-import { Button, Chip, useThemeContext } from '@scaffald/ui'
+import { Button, Chip, TextLink, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Check, Clock, ExternalLink, Home, MapPin, Minus, TrendingUp, X } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
@@ -18,7 +18,20 @@ import {
   useExperienceWidget,
   usePreferencesWidget,
 } from '@scf/core/utils/profile-widgets-sdk-hooks'
-import { buildJobRequirements, requirementsSummary } from './job-requirements'
+import {
+  type ProfileGap,
+  buildJobRequirements,
+  formatProfileGaps,
+  profileGaps,
+  requirementsSummary,
+} from './job-requirements'
+
+/** Where each profile gap is filled in (#1183). The licence lives with the employment preferences. */
+const GAP_LINKS: Record<ProfileGap, { label: string; path: string }> = {
+  education: { label: 'Add education', path: ROUTES.PROFILE.EDUCATION.path },
+  experience: { label: 'Add work experience', path: ROUTES.PROFILE.EXPERIENCE.path },
+  'drivers-license': { label: "Add your driver's licence", path: ROUTES.PROFILE.EMPLOYMENT.path },
+}
 import { formatJobLocation } from './job-detail-header'
 import {
   H3,
@@ -210,12 +223,18 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
     enabled: !!jobId && hasSoftSkillsRequirements && !isExternal,
   })
 
+  // Until all three answer, an empty field means "still loading", not "not on
+  // your profile" — scoring before then would flash the add-to-profile prompt
+  // (#1183) at a worker whose profile does say.
+  const profileReady =
+    signedIn && education !== undefined && experience !== undefined && preferences !== undefined
+
   const requirements = useMemo(
     () =>
       job
         ? buildJobRequirements({
             job: job as Parameters<typeof buildJobRequirements>[0]['job'],
-            profile: signedIn
+            profile: profileReady
               ? {
                   education,
                   experience,
@@ -224,9 +243,10 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
               : undefined,
           })
         : [],
-    [job, signedIn, education, experience, preferences]
+    [job, profileReady, education, experience, preferences]
   )
   const summary = useMemo(() => requirementsSummary(requirements), [requirements])
+  const gaps = useMemo(() => profileGaps(requirements), [requirements])
 
   if (isLoading) {
     return (
@@ -373,7 +393,27 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                   )
                 })}
               </Stack>
-              {signedIn && summary === null && (
+              {/* A requirement the profile could answer but doesn't yet is an
+                  invitation, not a limitation: say what to add and link to
+                  it (#1183). The neutral line is kept for postings whose
+                  requirements no profile field covers. */}
+              {gaps.length > 0 && (
+                <Stack gap={6}>
+                  <Text style={{ color: colors.text[t].tertiary }}>
+                    Your profile doesn't list your {formatProfileGaps(gaps)} yet, so{' '}
+                    {gaps.length === 1 ? 'that requirement' : 'those requirements'} can't be
+                    checked.
+                  </Text>
+                  <Row gap={16} wrap>
+                    {gaps.map((gap) => (
+                      <TextLink key={gap} onPress={() => router.push(GAP_LINKS[gap].path)}>
+                        {GAP_LINKS[gap].label}
+                      </TextLink>
+                    ))}
+                  </Row>
+                </Stack>
+              )}
+              {profileReady && summary === null && gaps.length === 0 && (
                 <Text style={{ color: colors.text[t].tertiary }}>
                   None of these can be checked against your profile.
                 </Text>

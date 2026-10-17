@@ -180,7 +180,7 @@ export function ApplicationsList() {
             size="md"
             variant="filled"
             color="primary"
-            onPress={() => router.push(ROUTES.JOBS.path)}
+            onPress={() => router.push(ROUTES.JOBS.BROWSE.path)}
           >
             Browse jobs
           </Button>
