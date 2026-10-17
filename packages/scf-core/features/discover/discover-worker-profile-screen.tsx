@@ -1,4 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import { ConnectionFollowButtonsInline } from '@scf/core/features/connections/components/ConnectionFollowButtonsInline'
 import { ProfileSkillsSection } from '@scf/core/features/profile/components/ProfileSkillsSection'
 import {
   CertificationsWidget,
@@ -7,8 +8,11 @@ import {
   GeneralInfoWidget,
   ReviewsWidget,
 } from '@scf/core/features/profile/widgets'
+import { identityFacts } from '@scf/core/features/profile/utils/identity'
+import { useUserScaffoldScore } from '@scf/core/utils/communities-sdk-hooks'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
+import { useAppMode } from '@scf/core/utils/useAppMode'
 import { type BreadcrumbItemData, DashboardWidget } from '@scaffald/ui'
 import { LinearGradient } from 'expo-linear-gradient'
 import type { ReactNode } from 'react'
@@ -40,6 +44,10 @@ interface DiscoverWorkerProfileScreenResult {
   /** The person's name, so the heading says who this is rather than "Worker Profile". */
   screenTitle: string | null
   screenKicker?: string
+  /** Trade · years · Scaffald score, under the name (#1197). */
+  screenTip?: ReactNode
+  /** Connect / Follow, at header right instead of inside the identity card. */
+  screenActions?: ReactNode
   breadcrumbItems: BreadcrumbItemData[]
 }
 
@@ -176,6 +184,8 @@ export function DiscoverWorkerProfileScreen({
   const safeUserId = typeof userId === 'string' ? userId : null
   const { session } = useSessionContext()
   const currentUserId = session?.user?.id
+  const { mode } = useAppMode()
+  const { data: scoreResponse } = useUserScaffoldScore(safeUserId ?? undefined)
 
   const generalInfoQuery = useGeneralInfoWidget(
     { userId: safeUserId || '' },
@@ -257,13 +267,43 @@ export function DiscoverWorkerProfileScreen({
    * certified to do, the skills they claim, then the history and reviews that
    * support both.
    */
+  // The header carries who this is (#1197): the name once, as the title, and
+  // under it the trade and years and the Scaffald score, the facts the
+  // prototype puts beside the name. The identity card below drops its own
+  // copy of the name and facts.
+  const facts = identityFacts(generalInfo)
+  const score = scoreResponse?.data?.score
+  const screenTip =
+    facts.length > 0 || score != null ? (
+      <Text style={{ color: colors.text[t].secondary }}>
+        {facts.join(' · ')}
+        {facts.length > 0 && score != null ? ' · ' : ''}
+        {score != null ? (
+          <Text style={{ color: colors.text[t].emphasis }}>{`Scaffald score ${score}`}</Text>
+        ) : null}
+      </Text>
+    ) : undefined
+
+  // Connect and Follow were the only actions here, filled, beside a second
+  // review button. Reviews now have one entry point, in the Reviews section.
+  // In employer mode Connect drops to an outline button: an employer is here
+  // to hire. There is no hiring action to promote in its place yet — no
+  // shortlist or contact request outside an application — so none is drawn.
+  const screenActions = isOwnProfile ? undefined : (
+    <ConnectionFollowButtonsInline
+      targetUserId={safeUserId}
+      size="$3"
+      secondary={mode === 'employer'}
+    />
+  )
+
   const content = (
     <Stack gap={16} style={READING_COLUMN}>
       <GeneralInfoWidget
         userId={safeUserId}
         showEdit={false}
-        showButtons={!isOwnProfile}
         isOwnProfile={isOwnProfile}
+        nameInTitle={!isOwnProfile}
       />
       <CertificationsWidget userId={safeUserId} showEdit={false} />
       <ProfileSkillsSection userId={safeUserId} showEdit={false} />
@@ -277,6 +317,8 @@ export function DiscoverWorkerProfileScreen({
     content,
     screenTitle: isOwnProfile ? 'My Profile' : displayName,
     screenKicker: 'Worker',
+    screenTip,
+    screenActions,
     breadcrumbItems,
   }
 }

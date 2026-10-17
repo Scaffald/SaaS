@@ -22,6 +22,12 @@ interface ConnectionFollowButtonsInlineProps {
   targetUserId: string
   isOwnProfile?: boolean
   size?: SizeToken
+  /**
+   * Draw Connect as an outline button. An employer looking at a worker is
+   * there to hire, not to network, so the social action is secondary there
+   * (#1197).
+   */
+  secondary?: boolean
 }
 
 /**
@@ -33,6 +39,7 @@ export function ConnectionFollowButtonsInline({
   targetUserId,
   isOwnProfile = false,
   size = '$4',
+  secondary = false,
 }: ConnectionFollowButtonsInlineProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
@@ -277,7 +284,12 @@ export function ConnectionFollowButtonsInline({
       )}
 
       {connectionButtonState.type === 'pending_sent' && (
-        <Button size={buttonSize} iconStart={Loader2} variant="outline" disabled={isConnectionMutating}>
+        <Button
+          size={buttonSize}
+          iconStart={Loader2}
+          variant="outline"
+          disabled={isConnectionMutating}
+        >
           <Text>Pending</Text>
         </Button>
       )}
@@ -309,6 +321,7 @@ export function ConnectionFollowButtonsInline({
           size={buttonSize}
           iconStart={isConnectionMutating ? Loader2 : UserPlus}
           color="primary"
+          variant={secondary ? 'outline' : undefined}
           onPress={handleConnect}
           disabled={isConnectionMutating}
         >

@@ -1,7 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import { BuildProfileBlock } from '@scf/core/features/dashboard/components'
 import { ProfilePage } from '@scf/core/features/profile/ProfilePage'
 import { ProfileEmploymentLeft } from '@scf/core/features/profile/profile-employment-left'
-import { ProfileEmploymentRight } from '@scf/core/features/profile/profile-employment-right'
 import { ProfileGeneralLeft } from '@scf/core/features/profile/profile-general-left'
 import { ProfileGeneralRight } from '@scf/core/features/profile/profile-general-right'
 import { ImportReviewScreen } from '@scf/core/features/profile-import/components/ImportReviewScreen'
@@ -19,10 +19,14 @@ import {
   Stack,
   Text,
   useResponsive,
+  useThemeContext,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 function ResumeImportContent() {
   const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [modalOpen, setModalOpen] = useState(false)
   const handleResumeUploadComplete = useCallback(
     (resumeId: string) => {
@@ -66,10 +70,12 @@ function ResumeImportContent() {
         </Stack>
       ) : hasUploaded ? (
         <Stack gap={12} padding={16}>
-          <Text weight="bold" color="#065f46">
+          {/* The success foreground token, not a fixed green that sank into
+              the dark ground (#1189). */}
+          <Text weight="bold" style={{ color: colors.fg[t].success }}>
             You've already uploaded a resume.
           </Text>
-          <Text color="#065f46">
+          <Text style={{ color: colors.fg[t].success }}>
             Head over to the review wizard to finish importing the details or upload a new resume to
             replace it.
           </Text>
@@ -115,8 +121,17 @@ function ResumeImportContent() {
 export default function ResumeProfilePage() {
   const { isDesktop } = useResponsive()
 
+  // The tab is named for the résumé, so it opens on the import (#1189). It
+  // was the third section, a full page under the general-info form.
   const leftContent = (
-    <Accordion mode="multiple" defaultValue={['general', 'employment', 'resume']}>
+    <Accordion mode="multiple" defaultValue={['resume', 'general', 'employment']}>
+      <Accordion.Item value="resume">
+        <Accordion.Trigger>Resume Import</Accordion.Trigger>
+        <Accordion.Content>
+          <ResumeImportContent />
+        </Accordion.Content>
+      </Accordion.Item>
+
       <Accordion.Item value="general">
         <Accordion.Trigger>General Information</Accordion.Trigger>
         <Accordion.Content>
@@ -129,23 +144,17 @@ export default function ResumeProfilePage() {
         <Accordion.Trigger>Employment Preferences</Accordion.Trigger>
         <Accordion.Content>
           <ProfileEmploymentLeft />
-          {!isDesktop && <ProfileEmploymentRight />}
-        </Accordion.Content>
-      </Accordion.Item>
-
-      <Accordion.Item value="resume">
-        <Accordion.Trigger>Resume Import</Accordion.Trigger>
-        <Accordion.Content>
-          <ResumeImportContent />
         </Accordion.Content>
       </Accordion.Item>
     </Accordion>
   )
 
+  // One rail: what is left to do, then the public-URL setting. The two cards
+  // that restated the section titles beside the sections are gone (#1190).
   const rightContent = isDesktop ? (
     <Stack gap={24}>
+      <BuildProfileBlock />
       <ProfileGeneralRight />
-      <ProfileEmploymentRight />
     </Stack>
   ) : null
 
