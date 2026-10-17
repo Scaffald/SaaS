@@ -18,8 +18,12 @@ export default function BackgroundCheckInitiateScreen() {
         { route: ROUTES.PROFILE.ID_VERIFICATION },
         { route: ROUTES.PROFILE.BACKGROUND_CHECK.INITIATE },
       ]}
-      screenTitle="Start a background check"
-      screenTip="Pick what gets checked, give consent, and pay. You can stop and come back."
+      // The prototype's header: what this is part of, what it is, and why a
+      // worker would do it (#1191). "You can stop and come back" went — the
+      // wizard keeps its answers in memory only, so leaving loses them.
+      screenKicker="Verification"
+      screenTitle="Background check"
+      screenTip="A clear check adds a verified badge to your profile that employers can see."
       leftContent={<BackgroundCheckWizard />}
     />
   )

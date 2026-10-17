@@ -1,11 +1,12 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useBackgroundChecks } from '@scf/core/utils/background-checks-sdk-hooks'
-import { RefreshCcw } from 'lucide-react-native'
+import { RefreshCcw, ShieldCheck } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Platform } from 'react-native'
 import {
   Button,
+  EmptyState,
   Separator,
   Spinner,
   Text,
@@ -93,6 +94,21 @@ export function CheckStatusDashboard() {
       checkId: check.id,
     })
     router.push(disputePath)
+  }
+
+  // A worker with no checks got a status strip of four zero tabs, an empty
+  // "0 checks" toolbar and a sentence about managing results that did not
+  // exist. One empty state, one way forward (#1192).
+  const hasNoChecks = !checksQuery.isLoading && !checksQuery.isError && counts.total === 0
+  if (hasNoChecks) {
+    return (
+      <EmptyState
+        icon={ShieldCheck}
+        title="No background check yet"
+        description="A clear check adds a verified badge to your profile that employers can see. You choose the package, give consent and pay; we do the rest."
+        action={{ label: 'Start a background check', onPress: handleStartNewCheck }}
+      />
+    )
   }
 
   // The page scrolls already; a second scroll view here made the dashboard a

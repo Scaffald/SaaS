@@ -1,10 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useAwardResultsViewXPMutation } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
-import { AlertCircle, RefreshCcw } from 'lucide-react-native'
+import { AlertCircle, Brain, RefreshCcw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
-import { Button, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, EmptyState, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useIPIPResults } from '../hooks/useIPIPResults'
 import { ChartView } from './ChartView'
@@ -87,13 +87,17 @@ export function IPIPResultsPage() {
   // Handle case where no assessment has been started
   if (!results.scores && results.completedDomains === 0 && !results.isLoading) {
     return (
-      <Stack gap={16} padding={32} align="center">
-        <Text color={colors.text[t].secondary}>No Results Yet</Text>
-        <Text color={colors.text[t].secondary} align="center">
-          Complete the IPIP assessment to see your personality results.
-        </Text>
-        <Button onPress={() => router.push(ROUTES.ASSESSMENTS.IPIP.path)}>Start Assessment</Button>
-      </Stack>
+      // EmptyState, like every other empty list — this was three bare
+      // centred lines with an outline button (#1195).
+      <EmptyState
+        icon={Brain}
+        title="No results yet"
+        description="Finish the personality profile to see how you work across the five traits employers ask about. It saves as you go."
+        action={{
+          label: 'Start the personality profile',
+          onPress: () => router.push(ROUTES.ASSESSMENTS.IPIP.path),
+        }}
+      />
     )
   }
 
@@ -101,15 +105,8 @@ export function IPIPResultsPage() {
   const hasDataErrors = results.scoringError || results.normalizationError || results.narrativeError
 
   return (
-    <Stack gap={24} width="100%" padding="md" style={{ maxWidth: 1000, alignSelf: 'center' }}>
-      {/* Header */}
-      <Stack gap={8}>
-        <Text color={colors.text[t].secondary}>Your Personality Results</Text>
-        <Text color={colors.text[t].secondary}>
-          Discover your Big Five personality traits and how they shape your work style.
-        </Text>
-      </Stack>
-
+    <Stack gap={24} width="100%">
+      {/* No header of its own: the route's ScreenHeader names the page (#1195). */}
       {/* Tab Navigation */}
       <Tabs
         value={activeTab}

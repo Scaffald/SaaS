@@ -1,15 +1,17 @@
 import {
-  DOMAIN_NAMES,
   getCurrentDomain,
-  getDomainProgress,
   getQuestionIndexInDomain,
   isLastQuestionInDomain,
   QUESTIONS_PER_DOMAIN,
 } from '@scf/core/features/ipip-assessment/utils/domainGrouping'
+import { ArrowLeft } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
-import { Button, ProgressBar, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Pressable } from 'react-native'
+import { Button, Heading, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import {
+  displayChoices,
+  formatIPIPItem,
   getChoices,
   getQuestions,
   type IPIPAnswer,
@@ -24,6 +26,8 @@ export interface IPIPTestStepProps {
   language: string
   onSave: (answers: IPIPAnswer[], index: number) => void
   onDomainComplete?: (domain: IPIPDomain, answers: IPIPAnswer[]) => void
+  /** The question on screen changed — the frame's counter follows it. */
+  onIndexChange?: (index: number) => void
   isLoading?: boolean
 }
 
@@ -37,9 +41,10 @@ export function IPIPTestStep({
   language: _language,
   onSave,
   onDomainComplete,
+  onIndexChange,
   isLoading = false,
 }: IPIPTestStepProps) {
-    const { theme } = useThemeContext()
+  const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
   const allQuestions = getQuestions()
   const choices = getChoices()
@@ -72,12 +77,9 @@ export function IPIPTestStep({
   const currentDomain = getCurrentDomain(currentIndex)
   const questionIndexInDomain = getQuestionIndexInDomain(currentIndex)
 
-  // Calculate progress within current domain
-  const answersInDomain = currentDomain
-    ? answers.filter((a) => a.domain === currentDomain).length
-    : 0
-  const domainProgress = currentDomain ? getDomainProgress(answersInDomain) : 0
-  const overallProgress = Math.round((currentIndex / 120) * 100)
+  useEffect(() => {
+    onIndexChange?.(currentIndex)
+  }, [currentIndex, onIndexChange])
 
   useEffect(() => {
     // Sync with initial values
@@ -150,7 +152,9 @@ export function IPIPTestStep({
         padding={32}
         style={{ maxWidth: 800, alignSelf: 'center' }}
       >
-        <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>✓ All Questions Complete!</Text>
+        <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>
+          ✓ All Questions Complete!
+        </Text>
         <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
           You've answered all 120 questions. Great job!
         </Text>
@@ -166,93 +170,78 @@ export function IPIPTestStep({
     )
   }
 
+  // The answer already given to this item, when the worker has come back
+  // to it with Previous.
+  const chosenScore = answers.find((a) => a.id === currentQuestion.id)?.score
+
+  // The item as a heading and the scale as a numbered, ruled list running
+  // 1 Very inaccurate → 5 Very accurate (#1194). It was a domain banner, a
+  // progress bar and a boxed question above five centred outline buttons in
+  // reverse order — Very Accurate first — and the frame around it showed
+  // progress twice more. The frame owns the counter now.
   return (
-    <Stack gap={24} width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
-      {/* Domain Header — the palette's selected surface and teal accent. It
-          picked colors.blue by hand per theme: pale blue in light, navy in
-          dark, in a teal/amber UI (#1028). */}
-      {currentDomain && (
-        <Row
-          gap={8}
-          padding="md"
-          style={{
-            backgroundColor: colors.bg[t].selected,
-            borderRadius: 7,
-            borderWidth: 1,
-            borderColor: colors.border[t].active,
-          }}
-          justify="space-between"
-          align="center"
-        >
-          <Stack gap={4}>
-            <Text style={{ color: colors.text[t].emphasis }}>{DOMAIN_NAMES[currentDomain]}</Text>
-            <Text style={{ color: colors.text[t].secondary }}>
-              Question {questionIndexInDomain + 1} of {QUESTIONS_PER_DOMAIN} in this domain
-            </Text>
-          </Stack>
-          <Text style={{ color: colors.text[t].emphasis }}>{domainProgress}%</Text>
+    <Stack gap={20}>
+      <Heading level={2} serif style={{ color: colors.text[t].primary }}>
+        {formatIPIPItem(currentQuestion.text)}
+      </Heading>
+
+      <Stack
+        accessibilityRole="radiogroup"
+        style={{ borderTopWidth: 1, borderTopColor: colors.border[t].default }}
+      >
+        {displayChoices(currentChoices).map(({ position, label, choice }) => {
+          const isChosen = chosenScore === choice.score
+          return (
+            <Pressable
+              key={`${currentQuestion.id}-${position}`}
+              onPress={() => handleAnswer(choice)}
+              disabled={isLoading}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: isChosen, disabled: isLoading }}
+              accessibilityLabel={`${position}, ${label}`}
+              style={({ pressed }) => ({
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 20,
+                paddingVertical: 16,
+                paddingHorizontal: 6,
+                borderBottomWidth: 1,
+                borderBottomColor: colors.border[t].default,
+                backgroundColor: isChosen
+                  ? colors.bg[t].selected
+                  : pressed
+                    ? colors.bg[t].muted
+                    : 'transparent',
+                opacity: isLoading ? 0.6 : 1,
+              })}
+            >
+              <Text style={{ width: 16, color: colors.text[t].tertiary }}>{position}</Text>
+              <Text
+                style={{
+                  flex: 1,
+                  color: isChosen ? colors.text[t].emphasis : colors.text[t].primary,
+                }}
+              >
+                {label}
+              </Text>
+            </Pressable>
+          )
+        })}
+      </Stack>
+
+      {currentIndex > 0 && (
+        <Row>
+          <Button
+            size="sm"
+            variant="text"
+            iconStart={ArrowLeft}
+            onPress={handlePrevious}
+            disabled={isLoading}
+          >
+            Previous question
+          </Button>
         </Row>
       )}
-
-      {/* Progress Bar */}
-      <Stack gap={8}>
-        <Row justify="space-between" align="center">
-          <Text style={{ color: colors.text[theme].secondary }}>
-            Question {currentIndex + 1} of 120
-          </Text>
-          <Text style={{ color: colors.text[theme].secondary }}>{overallProgress}%</Text>
-        </Row>
-        <ProgressBar value={overallProgress} showLabel={false} showIndicator={false} showHintMessage={false} />
-      </Stack>
-
-      {/* Question */}
-      <Stack
-        gap={16}
-        padding="xl"
-        style={{
-          backgroundColor: colors.bg[theme].subtle,
-          borderRadius: 7,
-          borderWidth: 1,
-          borderColor: colors.border[theme].default,
-        }}
-      >
-        <Text style={{ color: colors.text[theme].secondary, textAlign: 'center', lineHeight: 24 }}>
-          I {currentQuestion.text.toLowerCase()}
-        </Text>
-      </Stack>
-
-      {/* Choices */}
-      <Stack gap={12}>
-        {[...currentChoices].reverse().map((choice) => (
-          <Button
-            key={`${currentQuestion.id}-${choice.score}`}
-            size="lg"
-            variant="outline"
-            onPress={() => handleAnswer(choice)}
-            disabled={isLoading}
-            style={{
-              borderColor: colors.border[theme].default,
-            }}
-          >
-            <Text style={{ color: colors.text[theme].secondary }}>{choice.text}</Text>
-          </Button>
-        ))}
-      </Stack>
-
-      {/* Navigation */}
-      <Row gap={12} justify="space-between">
-        <Button
-          size="md"
-          variant="outline"
-          onPress={handlePrevious}
-          disabled={currentIndex === 0 || isLoading}
-        >
-          Previous
-        </Button>
-        <Text style={{ color: colors.text[theme].secondary, alignSelf: 'center' }}>
-          {answers.length} answers saved
-        </Text>
-      </Row>
     </Stack>
   )
 }

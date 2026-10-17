@@ -1,4 +1,5 @@
-import { AssessmentProgress, AssessmentWizard } from '@scf/core/features/assessments'
+import { ROUTES } from '@scf/core/constants/routes'
+import { AssessmentTakingLayout, AssessmentWizard } from '@scf/core/features/assessments'
 import { LuscherTestStep } from '@scf/core/features/personality-assessment/components/LuscherTestStep'
 import {
   useAssessmentStatus,
@@ -9,10 +10,10 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import { DashboardLayout } from '@scf/core/components/layouts'
 import { useRouteScreenTitle } from '@scf/core/hooks/useRouteScreenTitle'
-import { AssessmentProgressBar, useToast, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { useToast } from '@scaffald/ui'
+import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
-import { Text, Stack } from '@scaffald/ui'
+import { Stack } from '@scaffald/ui'
 import { CooldownStep, ResultsSidebar, ResultsStep } from './components'
 
 type TestStep = 'luscher1' | 'cooldown' | 'luscher2' | 'results'
@@ -31,7 +32,7 @@ type TestStep = 'luscher1' | 'cooldown' | 'luscher2' | 'results'
  */
 export function LuscherTestWizard() {
   const toast = useToast()
-  const { theme } = useThemeContext()
+  const router = useRouter()
   const { title: routeTitle } = useRouteScreenTitle()
 
   const [currentStep, setCurrentStep] = useState<TestStep>('luscher1')
@@ -222,28 +223,11 @@ export function LuscherTestWizard() {
 
   const showResultsSidebar = effectiveCurrentStep === 'results'
 
+  // Only the results have a rail; in progress the test is a single column
+  // and the counter on the kicker's hairline is its one progress readout.
   const railContent = (
     <Stack gap={20} padding="xs">
-      {!showResultsSidebar && (
-        <>
-          {/* No "Weekly Pulse" heading here: the screen header already says it,
-              and the intro step said it a third time (#1175). */}
-          <Text style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 20 }}>
-            Two passes of the same eight colors, a short pause apart.
-          </Text>
-          <AssessmentProgress
-            steps={steps}
-            currentStep={effectiveCurrentStep}
-            completedSteps={completedSteps}
-            completionScore={effectiveCompletionScore}
-            orientation="vertical"
-          />
-        </>
-      )}
-
-      {showResultsSidebar && (
-        <ResultsSidebar xpAwarded={5} nextAvailableAt={availability?.nextAvailableAt || null} />
-      )}
+      <ResultsSidebar xpAwarded={5} nextAvailableAt={availability?.nextAvailableAt || null} />
     </Stack>
   )
 
@@ -262,9 +246,6 @@ export function LuscherTestWizard() {
       animateTransitions
       transitionDirection={directionRef.current}
     >
-      <Stack padding="md" paddingBottom="xs">
-        <AssessmentProgressBar value={effectiveCompletionScore} height={4} />
-      </Stack>
       {isCooldownResultsView ? (
         <ResultsStep
           feedbackMessage="You're showing signs of balanced focus — ideal for steady progress today."
@@ -312,6 +293,32 @@ export function LuscherTestWizard() {
       )}
     </AssessmentWizard>
   )
+
+  // While a pass or the pause is on screen the test is in progress: a
+  // focused column with no section tabs and no rail (#1194). The results
+  // keep the shell and their sidebar.
+  if (!showResultsSidebar) {
+    // Part 1 is saved when it is submitted, and a saved Part 1 resumes at
+    // the pause or Part 2; picks on the first grid are not saved until then.
+    const firstPassSaved = currentStep === 'cooldown' || currentStep === 'luscher2'
+    const counter =
+      currentStep === 'luscher1'
+        ? 'Pass 1 of 2'
+        : currentStep === 'cooldown'
+          ? 'Pause'
+          : 'Pass 2 of 2'
+    return (
+      <AssessmentTakingLayout
+        kicker="Weekly pulse"
+        counter={counter}
+        instruction="Pick colours in the order you prefer them. Two passes of the same eight, a short pause apart."
+        onExit={() => router.push(ROUTES.ASSESSMENTS.path)}
+        exitLabel={firstPassSaved ? 'Save & exit' : 'Exit'}
+      >
+        {wizardContent}
+      </AssessmentTakingLayout>
+    )
+  }
 
   return (
     <DashboardLayout

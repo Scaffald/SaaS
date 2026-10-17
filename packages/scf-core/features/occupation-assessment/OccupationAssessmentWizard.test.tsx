@@ -81,6 +81,22 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
 // Mock AssessmentWizard + companion helpers the wizard imports
 // (useAssessmentSave, toError).
 vi.mock('@scf/core/features/assessments', () => ({
+  AssessmentTakingLayout: ({ children, counter, footerEnd, onExit, exitLabel }: {
+    children: React.ReactNode
+    counter?: string
+    footerEnd?: React.ReactNode
+    onExit: () => void
+    exitLabel?: string
+  }) => (
+    <div data-testid="taking-layout">
+      {counter && <span>{counter}</span>}
+      {children}
+      <button type="button" onClick={onExit}>
+        {exitLabel ?? 'Save & exit'}
+      </button>
+      {footerEnd}
+    </div>
+  ),
   AssessmentWizard: ({ children, title, description, isLoading, error }: {
     children: React.ReactNode
     title?: string
