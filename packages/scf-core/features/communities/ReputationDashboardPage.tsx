@@ -1,5 +1,17 @@
 import { useState } from 'react'
-import { Text, Stack, Row, Separator, Spinner, Button, Input, useThemeContext } from '@scaffald/ui'
+import {
+  Text,
+  Stack,
+  Row,
+  Separator,
+  Spinner,
+  Button,
+  Input,
+  H4,
+  MetricBlock,
+  MetricRow,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 import {
@@ -7,7 +19,6 @@ import {
   useReputationHistory,
   useGiftKarmaMutation,
 } from '@scf/core/utils/communities-sdk-hooks'
-import { ScaffoldScoreBadge } from './components/ScaffoldScoreBadge'
 import { MemberPicker } from './components/MemberPicker'
 import type { CommunityMember } from '@scaffald/sdk/resources/communities'
 
@@ -46,35 +57,16 @@ export function ReputationDashboardPage() {
 
   return (
     <Stack gap={24}>
-      {/* Score Overview */}
-      <Stack gap={8}>
-        <Text style={{ fontSize: 24, fontWeight: '700' }}>Scaffold Score</Text>
-        <Text style={{ color: colors.text[t].secondary }}>
-          Your reputation in the Scaffold community. Earn points by contributing quality content.
-        </Text>
-      </Stack>
-
+      {/* The shell's ScreenHeader carries the title and the explainer, so the
+          page opens on the figures rather than a second hand-sized heading
+          and label/value rows (#1176). */}
       {score && (
-        <Row gap={24} style={{ flexWrap: 'wrap' }}>
-          <Stack align="center" gap={4}>
-            <ScaffoldScoreBadge score={score.score} size={80} />
-            <Text style={{ fontWeight: '600' }}>Score</Text>
-          </Stack>
-          <Stack gap={4}>
-            <Row gap={8}>
-              <Text style={{ color: colors.text[t].secondary }}>Karma Bank:</Text>
-              <Text style={{ fontWeight: '600' }}>{score.karma_bank}</Text>
-            </Row>
-            <Row gap={8}>
-              <Text style={{ color: colors.text[t].secondary }}>Total Earned:</Text>
-              <Text style={{ fontWeight: '600' }}>{score.total_earned}</Text>
-            </Row>
-            <Row gap={8}>
-              <Text style={{ color: colors.text[t].secondary }}>Total Spent:</Text>
-              <Text style={{ fontWeight: '600' }}>{score.total_spent}</Text>
-            </Row>
-          </Stack>
-        </Row>
+        <MetricRow bordered minColumnWidth={140}>
+          <MetricBlock label="Scaffald score" value={score.score} />
+          <MetricBlock label="Karma bank" value={score.karma_bank} />
+          <MetricBlock label="Earned" value={score.total_earned} />
+          <MetricBlock label="Spent" value={score.total_spent} />
+        </MetricRow>
       )}
 
       <Separator />
@@ -91,10 +83,8 @@ export function ReputationDashboardPage() {
         }}
       >
         <Stack gap={4}>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text[t].primary }}>
-            Gift Karma
-          </Text>
-          <Text style={{ fontSize: 14, color: colors.text[t].secondary }}>
+          <H4>Gift karma</H4>
+          <Text size="sm" color="secondary">
             Send karma to community members who helped you. Max 10 per gift, 5 gifts per day.
           </Text>
         </Stack>
@@ -137,13 +127,13 @@ export function ReputationDashboardPage() {
 
       {/* Reputation History */}
       <Stack gap={12}>
-        <Text style={{ fontSize: 18, fontWeight: '600' }}>History ({historyData?.total ?? 0})</Text>
+        <H4>History ({historyData?.total ?? 0})</H4>
         {isHistoryLoading ? (
           <Stack align="center" style={{ paddingVertical: 24 }}>
             <Spinner variant="ios" />
           </Stack>
         ) : events.length === 0 ? (
-          <Text style={{ color: colors.text[t].secondary }}>No reputation events yet.</Text>
+          <Text color="secondary">No reputation events yet.</Text>
         ) : (
           <Stack gap={4}>
             {events.map(
@@ -166,19 +156,22 @@ export function ReputationDashboardPage() {
                   }}
                 >
                   <Stack style={{ flex: 1 }} gap={2}>
-                    <Text style={{ fontSize: 14 }}>
-                      {event.reason || event.action.replace(/_/g, ' ')}
-                    </Text>
-                    <Text style={{ color: colors.text[t].secondary, fontSize: 12 }}>
+                    <Text size="sm">{event.reason || event.action.replace(/_/g, ' ')}</Text>
+                    <Text size="xs" color="secondary">
                       {new Date(event.created_at).toLocaleDateString()}
                     </Text>
                   </Stack>
                   <Text
+                    weight="bold"
                     style={{
-                      fontWeight: '700',
-                      color: event.delta > 0
-                        ? (t === 'dark' ? colors.green[300] : colors.green[600])
-                        : (t === 'dark' ? colors.error[300] : colors.error[600]),
+                      color:
+                        event.delta > 0
+                          ? t === 'dark'
+                            ? colors.green[300]
+                            : colors.green[600]
+                          : t === 'dark'
+                            ? colors.error[300]
+                            : colors.error[600],
                     }}
                   >
                     {event.delta > 0 ? '+' : ''}
