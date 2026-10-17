@@ -3,8 +3,11 @@ import {
   daysOpen,
   LISTING_FILTERS,
   listingAgeLabel,
+  listingMetaLine,
+  listingPayRange,
   listingStatus,
   statusesForListingFilter,
+  statusWordInGroup,
 } from '../employer-jobs-status'
 
 describe('listingStatus', () => {
@@ -94,5 +97,56 @@ describe('listingAgeLabel', () => {
   it('says a never-posted draft is in draft', () => {
     expect(listingAgeLabel(null)).toBe('in draft')
     expect(listingAgeLabel(undefined)).toBe('in draft')
+  })
+})
+
+describe('listingPayRange (#1199)', () => {
+  it('formats an hourly range in whole dollars', () => {
+    expect(listingPayRange(4_000, 5_800, 'hourly')).toBe('$40 – $58/hr')
+  })
+
+  it('formats a salary', () => {
+    expect(listingPayRange(6_500_000, 8_000_000, 'salary')).toBe('$65,000 – $80,000/yr')
+  })
+
+  it('shows one figure when only one end, or both the same, is set', () => {
+    expect(listingPayRange(null, 5_000, 'hourly')).toBe('$50/hr')
+    expect(listingPayRange(5_000, 5_000, 'hourly')).toBe('$50/hr')
+  })
+
+  it('returns null when the posting states no pay', () => {
+    expect(listingPayRange(null, null, 'hourly')).toBeNull()
+  })
+})
+
+describe('listingMetaLine (#1199)', () => {
+  it('joins city, type and pay', () => {
+    expect(
+      listingMetaLine({
+        location: 'Portland, OR',
+        employment_type: 'full_time',
+        pay_range_min_cents: 4_000,
+        pay_range_max_cents: 5_800,
+        pay_range_type: 'hourly',
+      })
+    ).toBe('Portland, OR · Full-time · $40 – $58/hr')
+  })
+
+  it('drops the segments a posting does not have', () => {
+    expect(listingMetaLine({ location: 'Austin, TX' })).toBe('Austin, TX')
+    expect(listingMetaLine({})).toBe('')
+  })
+})
+
+describe('statusWordInGroup (#1199)', () => {
+  it('drops the word its group title already says', () => {
+    expect(statusWordInGroup('open', 'Live')).toBeNull()
+    expect(statusWordInGroup('closed', 'Closed')).toBeNull()
+  })
+
+  it('keeps it where the group holds more than one status', () => {
+    expect(statusWordInGroup('draft', 'Not live')).toBe('Draft')
+    expect(statusWordInGroup('paused', 'Not live')).toBe('Paused')
+    expect(statusWordInGroup('archived', 'Closed')).toBe('Archived')
   })
 })

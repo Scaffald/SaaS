@@ -122,4 +122,21 @@ describe('toATSApplication', () => {
     expect(sparse.id).toBe('app_1')
     expect(typeof sparse.candidate.name).toBe('string')
   })
+
+  it('leaves an unscored application unscored rather than 0 (#1198)', () => {
+    expect(toATSApplication(row({ score_total: null })).score).toBeNull()
+  })
+
+  it('carries the assignee’s name from the list embed (#1198)', () => {
+    const assigned = toATSApplication(
+      row({
+        assigned_to: 'user_9',
+        assignee: { id: 'user_9', display_name: 'Sam Okafor', username: 'sam' },
+      } as unknown as Partial<ApplicationsListItem>)
+    )
+    expect(assigned.team?.assignedUserId).toBe('user_9')
+    expect(assigned.team?.assignedUserName).toBe('Sam Okafor')
+
+    expect(toATSApplication(row()).team?.assignedUserName).toBeNull()
+  })
 })

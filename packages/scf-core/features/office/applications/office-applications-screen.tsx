@@ -9,6 +9,7 @@ import {
   Text,
   useThemeContext,
 } from '@scaffald/ui'
+import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import {
   activeFilterCount,
@@ -20,13 +21,17 @@ import {
 import { ApplicationsFilters } from './components/ApplicationsFilters'
 import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
 import { ApplicationsLanes } from './components/ApplicationsLanes'
+import { ApplicationStatusChangeModal } from './components/ApplicationStatusChangeModal'
 import { formatDays, formatPct } from './transparency-stats'
 import { useTransparencyStats } from './hooks/useTransparencyStats'
 import { ATSMetricsDashboard } from './components/ATSMetricsDashboard'
 import { useApplications } from './hooks/useApplications'
 import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
-import { STATUS_MAP } from './hooks/useApplicationStatusChange'
+import { STATUS_MAP, useApplicationStatusChange } from './hooks/useApplicationStatusChange'
 import { toATSApplication } from './transform'
+import { matchesPipelineSearch } from './row-labels'
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
+import { useUser } from '@scf/core/utils/useUser'
 import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import { useScreenRhythm } from '@scf/core/constants/layout'
 
@@ -44,17 +49,36 @@ export interface OfficeApplicationsScreenProps {
   /** Which view to open on. `/office/ats/metrics` passes 'metrics' — it used
    *  to render this screen on the kanban and rely on the user finding the tab. */
   initialView?: OfficeApplicationsView
+  /**
+   * Open filtered to one job. My Listings' "View applicants" links here with
+   * the job in the query string (#1199), and the filter stays removable as a
+   * chip like any other.
+   */
+  initialJobId?: string | null
 }
 
 export const OfficeApplicationsScreen = ({
   initialView = 'lanes',
+  initialJobId = null,
 }: OfficeApplicationsScreenProps = {}) => {
   const { theme } = useThemeContext()
+  const router = useRouter()
+  const { user } = useUser()
   const { gutter, verticalPadding } = useScreenRhythm()
   const [viewMode, setViewMode] = useState<OfficeApplicationsView>(initialView)
   const [tipCollapsed, setTipCollapsed] = useState(false)
-  const [filters, setFilters] = useState<ApplicationFilterState>(EMPTY_FILTERS)
+  const [filters, setFilters] = useState<ApplicationFilterState>(() => ({
+    ...EMPTY_FILTERS,
+    jobId: initialJobId || null,
+  }))
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [search, setSearch] = useState('')
+
+  // The Lanes view's Move menu goes through the same hook as the Board's, so
+  // a reject confirms in the same modal and a hire opens the same screen
+  // (#1196). One input, not a second code path.
+  const { changeStatus, isChanging, pendingChange, confirmChange, cancelChange } =
+    useApplicationStatusChange()
 
   // Filters go to the server. `filters.status` is a kanban stage name
   // (`new`, `screen`, …) and the API takes its own vocabulary (`pending`,
@@ -103,7 +127,30 @@ export const OfficeApplicationsScreen = ({
   // Score, status and job are all applied by the API now. Filtering here as
   // well would be wrong rather than merely redundant: it would run against the
   // current page only, so a paginated board would silently drop matches.
-  const filteredApplications = transformedApplications
+  //
+  // Search is the exception, and is client-side on purpose: the API has no
+  // text search, so it narrows the loaded page by name and job title (#1198).
+  const filteredApplications = useMemo(
+    () => transformedApplications.filter((app) => matchesPipelineSearch(app, search)),
+    [transformedApplications, search]
+  )
+
+  const pendingApplication = pendingChange
+    ? transformedApplications.find((app) => app.id === pendingChange.applicationId)
+    : null
+
+  const viewSwitch = (
+    <SegmentedControl
+      segments={VIEW_SEGMENTS.map((s) => s.label)}
+      selectedIndex={VIEW_SEGMENTS.findIndex((s) => s.view === viewMode)}
+      onSelectionChange={(i) => setViewMode(VIEW_SEGMENTS[i].view)}
+      testID="applications-view-switch"
+      // Explicit width because SegmentedControl's segments are `flex: 1`
+      // inside a container with no intrinsic width — left to the row it
+      // collapsed to 160px and clipped "Metrics" to "Metr…".
+      style={{ width: 240 }}
+    />
+  )
 
   // The employer's own record — response rate, first response, ghost rate.
   // Showing an employer their own ghost rate is the mechanism that changes
@@ -138,26 +185,10 @@ export const OfficeApplicationsScreen = ({
       <ScreenHeader
         kicker="Employer view — applicant workflow"
         title="Applications"
-        tip="Move candidates between stages with the arrows — the worker sees each move as honest progress, not silence."
+        tip="Open a row to see the candidate, or move them from its Move menu — the worker sees each move as honest progress, not silence."
         collapsed={tipCollapsed}
         onToggleCollapsed={() => setTipCollapsed((v) => !v)}
         style={{ marginBottom: 16 }}
-        // A segmented control, not three Buttons. The old switch gave the
-        // ACTIVE view `variant="outline"` and left the others on the default
-        // filled variant — so the two views you were not looking at rendered
-        // as the primary action and the one you were on looked disabled.
-        actions={
-          <SegmentedControl
-            segments={VIEW_SEGMENTS.map((s) => s.label)}
-            selectedIndex={VIEW_SEGMENTS.findIndex((s) => s.view === viewMode)}
-            onSelectionChange={(i) => setViewMode(VIEW_SEGMENTS[i].view)}
-            testID="applications-view-switch"
-            // Explicit width because SegmentedControl's segments are `flex: 1`
-            // inside a container with no intrinsic width — left to the row it
-            // collapsed to 160px and clipped "Metrics" to "Metr…".
-            style={{ width: 260 }}
-          />
-        }
       >
         {/* The prototype's transparency band, as one compact row (#1177).
             Hidden while loading or errored rather than rendering dashes: an
@@ -231,6 +262,25 @@ export const OfficeApplicationsScreen = ({
           // asserting an empty pipeline before we know anything.
           resultCount={isLoading || isError ? undefined : filteredApplications.length}
           resultNoun="application"
+          searchValue={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search candidates or jobs…"
+          // The view switch and Post a job sit in the toolbar beside search
+          // and Filters & sort, as in the prototype (#1198), rather than in
+          // the header. A segmented control, not three Buttons: the old
+          // switch rendered the two views you were not on as primary actions.
+          actions={
+            <Row gap={8} align="center" wrap>
+              {viewSwitch}
+              <Button
+                size="sm"
+                variant="outline"
+                onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
+              >
+                Post a job
+              </Button>
+            </Row>
+          }
           filtersOpen={filtersOpen}
           onFiltersOpenChange={setFiltersOpen}
           activeFilterCount={activeFilterCount(filters)}
@@ -277,10 +327,38 @@ export const OfficeApplicationsScreen = ({
       ) : viewMode === 'metrics' ? (
         <ATSMetricsDashboard applications={filteredApplications} isLoading={isLoading} />
       ) : viewMode === 'lanes' ? (
-        <ApplicationsLanes applications={filteredApplications} />
+        <ApplicationsLanes
+          applications={filteredApplications}
+          currentUserId={user?.id ?? null}
+          // A row opens the candidate's own page (#1196); before this Lanes
+          // rows were plain Views with no way into a candidate at all.
+          onSelect={(app) =>
+            router.push(buildPath(ROUTES.OFFICE.APPLICATIONS.DETAIL, { applicationId: app.id }))
+          }
+          onMove={(app, toStatus) =>
+            changeStatus({
+              applicationId: app.id,
+              fromStatus: app.status,
+              toStatus,
+              candidateName: app.candidate?.name,
+            })
+          }
+        />
       ) : (
         <ApplicationsKanbanBoard applications={filteredApplications} />
       )}
+
+      {pendingChange ? (
+        <ApplicationStatusChangeModal
+          open
+          onClose={cancelChange}
+          onConfirm={confirmChange}
+          candidateName={pendingApplication?.candidate.name ?? ''}
+          fromStatus={pendingChange.fromStatus}
+          toStatus={pendingChange.toStatus}
+          isLoading={isChanging}
+        />
+      ) : null}
     </Stack>
   )
 }

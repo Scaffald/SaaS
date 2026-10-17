@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { canReject, countSuffix, initialsOf, nextStageFor } from '../candidate-actions'
+import {
+  canReject,
+  countSuffix,
+  formatAppliedAgo,
+  initialsOf,
+  nextStageFor,
+} from '../candidate-actions'
 import type { ApplicationStatus } from '../types'
 
 describe('nextStageFor — §12 #1, the advance button', () => {
@@ -88,5 +94,25 @@ describe('countSuffix — §12 #15, tab counts', () => {
 
   it('stays empty at zero — the absence already says it', () => {
     expect(countSuffix(0)).toBe('')
+  })
+})
+
+describe('formatAppliedAgo (#1200)', () => {
+  const NOW = new Date('2026-10-17T12:00:00Z').getTime()
+  const ago = (days: number) => new Date(NOW - days * 86_400_000).toISOString()
+
+  it('reads as a relative age', () => {
+    expect(formatAppliedAgo(ago(0), NOW)).toBe('today')
+    expect(formatAppliedAgo(ago(1), NOW)).toBe('1d ago')
+    expect(formatAppliedAgo(ago(21), NOW)).toBe('3w ago')
+    expect(formatAppliedAgo(ago(90), NOW)).toBe('3mo ago')
+  })
+
+  it('does not go negative on a clock-skewed future date', () => {
+    expect(formatAppliedAgo(ago(-2), NOW)).toBe('today')
+  })
+
+  it('says nothing it cannot parse', () => {
+    expect(formatAppliedAgo('not a date', NOW)).toBe('—')
   })
 })
