@@ -208,7 +208,7 @@ Deno.test({
 // core.get_secret_value called vault.get_secret(uuid), which no Supabase
 // project has — Vault exposes vault.decrypted_secrets. Every Stripe call reads
 // its key through this function, so all of them would have failed the moment
-// a key was saved (#1259, migration 380). Nothing noticed: Stripe had never
+// a key was saved (#1259, migration 383). Nothing noticed: Stripe had never
 // been configured anywhere.
 Deno.test({
   name: 'DB hardening - the service role can read a stored Stripe secret back (#1259)',

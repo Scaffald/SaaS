@@ -1,5 +1,5 @@
 -- =========================================================
--- 380_get_secret_value_reads_decrypted_secrets.sql
+-- 383_get_secret_value_reads_decrypted_secrets.sql
 --
 -- core.get_secret_value (098) returned vault.get_secret(p_secret_id). No
 -- Supabase project has that function — Vault exposes vault.create_secret,
