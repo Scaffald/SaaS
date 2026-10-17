@@ -59,7 +59,7 @@ const engagementTips: GrowthCard[] = [
     title: 'Apply to one fresh role',
     body: 'Members who apply to at least one role a week are far more likely to land interviews — consistency matters more than volume.',
     ctaLabel: 'Browse jobs',
-    ctaRoute: ROUTES.JOBS.path,
+    ctaRoute: ROUTES.JOBS.BROWSE.path,
   },
 ]
 

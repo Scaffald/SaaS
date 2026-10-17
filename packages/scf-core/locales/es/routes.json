@@ -30,7 +30,6 @@
       "title": "Applications"
     },
     "assessments": {
-      "analytics": "Análisis",
       "ipip": {
         "results": "Assessment Results",
         "shared": "Shared Assessment",
@@ -38,6 +37,7 @@
       },
       "luscher": "Weekly pulse",
       "occupation": "Occupation preferences",
+      "overview": "Resumen",
       "riasec": "Career interests",
       "title": "Assessments"
     },

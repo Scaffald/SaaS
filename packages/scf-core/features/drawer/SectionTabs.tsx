@@ -17,6 +17,7 @@ import {
 import { Chip, Tabs, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { getNavItems } from './config'
+import { useIsFocusMode } from './focus-mode'
 import { getSectionTabs, stripEdgeFades, stripScrollTarget } from './section-tabs'
 import { normalizePath } from './utils'
 
@@ -37,6 +38,8 @@ export function SectionTabs() {
   const { data: memberships } = useOrganizations()
   const { hasOfficeRole } = useUserRoles()
   const { mode } = useAppMode()
+  // A screen in focus mode — an assessment being taken — has no tabs (#1194).
+  const focusMode = useIsFocusMode()
 
   const items = useMemo(
     () => getNavItems(memberships ?? undefined, hasOfficeRole, mode),
@@ -52,7 +55,7 @@ export function SectionTabs() {
     [router, strip]
   )
 
-  if (!strip) return null
+  if (!strip || focusMode) return null
 
   const label = (tab: (typeof strip.tabs)[number]) =>
     tab.titleKey ? t(tab.titleKey) : (tab.title ?? tab.key)

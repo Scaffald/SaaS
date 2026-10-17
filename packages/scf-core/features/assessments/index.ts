@@ -6,8 +6,16 @@ export type {
 export { AssessmentProgress } from './components/AssessmentProgress'
 export type { AssessmentWizardProps } from './components/AssessmentWizard'
 export { AssessmentWizard } from './components/AssessmentWizard'
+export type { AssessmentTakingLayoutProps } from './components/AssessmentTakingLayout'
+export { AssessmentTakingLayout } from './components/AssessmentTakingLayout'
 export { useAssessmentStatus } from './hooks/useAssessmentStatus'
 export { useAssessmentSave } from './hooks/useAssessmentSave'
 export { toError } from './utils/toError'
-export { useAssessmentCatalogue, readCompleted } from './assessment-catalogue'
+export {
+  useAssessmentCatalogue,
+  readCompleted,
+  splitRecommended,
+  entryActionLabel,
+  entryActionRoute,
+} from './assessment-catalogue'
 export type { AssessmentEntry } from './assessment-catalogue'

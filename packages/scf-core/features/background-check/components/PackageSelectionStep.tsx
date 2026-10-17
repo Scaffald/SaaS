@@ -1,8 +1,9 @@
 import type { AppRouter } from '@scf/supabase/client-types'
 import type { inferRouterOutputs } from '@trpc/server'
 import { memo } from 'react'
-import { Button, Card, ScrollView, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { Pressable, View } from 'react-native'
+import { Card, Grid, H3, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors, fontSize } from '@scaffald/ui/tokens'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type BackgroundCheckPackage = RouterOutputs['backgroundChecks']['listPackages'][number]
@@ -12,7 +13,6 @@ interface PackageSelectionStepProps {
   selectedPackageId?: string
   onSelect: (packageId: string) => void
   isLoading: boolean
-  onContinue: () => void
 }
 
 const formatCurrency = (cents: number | null | undefined) => {
@@ -21,6 +21,30 @@ const formatCurrency = (cents: number | null | undefined) => {
     style: 'currency',
     currency: 'USD',
   }).format(cents / 100)
+}
+
+/** The provider's own turnaround, when the catalog has one. */
+function turnaround(pkg: BackgroundCheckPackage): string | null {
+  const days = (pkg as unknown as { estimated_completion_days?: number | null })
+    .estimated_completion_days
+  if (typeof days !== 'number' || days <= 0) return null
+  return days === 1 ? 'Usually 1 day' : `Usually ${days} days`
+}
+
+/** A radio dot: hollow until chosen. */
+function RadioDot({ checked, color }: { checked: boolean; color: string }) {
+  return (
+    <View
+      style={{
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        borderWidth: 1.5,
+        borderColor: color,
+        backgroundColor: checked ? color : 'transparent',
+      }}
+    />
+  )
 }
 
 const PackageCard = memo(function PackageCard({
@@ -39,89 +63,113 @@ const PackageCard = memo(function PackageCard({
   // an internal margin shown only in the admin catalog, never to the worker.
   // The worker pays `retail_cost_cents`.
   const components = pkg.components ?? []
+  const kicker = turnaround(pkg)
+  const selectTone = isSelected ? colors.text[t].emphasis : colors.text[t].tertiary
 
   return (
-    <Card
-      elevate
-      bordered
-      pressable
-      backgroundColor={isSelected ? colors.bg[t].selected : colors.bg[t].default}
-      borderColor={isSelected ? colors.border[t].selected : colors.border[t].default}
-      borderWidth={2}
-      radius="lg"
-      padding="md"
-      style={{ gap: 12 }}
+    // The Card draws the surface; the Pressable around it carries the radio
+    // semantics, which Card has no props for.
+    <Pressable
       onPress={onSelect}
+      accessibilityRole="radio"
+      accessibilityState={{ checked: isSelected }}
       accessibilityLabel={`${pkg.display_name}, ${formatCurrency(pkg.retail_cost_cents)}${isSelected ? ', selected' : ''}`}
+      style={{ height: '100%' }}
     >
-      <Stack gap={8}>
-        <Row gap={12} align="flex-start" justify="space-between">
-          <Stack gap={4} flex={1}>
-            <Text size="md" weight="semibold" color={colors.text[t].primary}>
-              {pkg.display_name}
+      <Card
+        bordered
+        backgroundColor={isSelected ? colors.bg[t].selected : colors.bg[t].default}
+        borderColor={isSelected ? colors.border[t].selected : colors.border[t].default}
+        borderWidth={isSelected ? 2 : 1}
+        radius="md"
+        padding="md"
+        style={{ height: '100%' }}
+      >
+        <Stack gap={10} flex={1}>
+          {kicker ? (
+            <Text
+              style={{
+                fontSize: fontSize.h6,
+                letterSpacing: 1.4,
+                textTransform: 'uppercase',
+                color: colors.text[t].attention,
+              }}
+            >
+              {kicker}
             </Text>
-            {isSelected && (
-              <Text size="xs" weight="semibold" color={colors.text[t].emphasis}>
-                Selected
-              </Text>
-            )}
-          </Stack>
+          ) : null}
           <Text size="lg" weight="semibold" color={colors.text[t].primary}>
+            {pkg.display_name}
+          </Text>
+          <Text size="xl" weight="semibold" color={colors.text[t].primary}>
             {formatCurrency(pkg.retail_cost_cents)}
           </Text>
-        </Row>
-        {pkg.description ? (
-          <Text size="sm" color={colors.text[t].secondary}>
-            {pkg.description}
-          </Text>
-        ) : null}
-        {components.length > 0 && (
-          <Stack gap={4}>
-            <Text size="sm" weight="medium" color={colors.text[t].secondary}>
-              Components
+          {pkg.description ? (
+            <Text size="sm" color={colors.text[t].secondary}>
+              {pkg.description}
             </Text>
-            {components.map((component: BackgroundCheckPackage['components'][number]) => (
-              <Text key={component.id} size="sm" color={colors.text[t].secondary}>
-                • {component.display_name}
+          ) : null}
+          {components.length > 0 && (
+            <Stack gap={4}>
+              <Text size="sm" weight="medium" color={colors.text[t].secondary}>
+                What's checked
               </Text>
-            ))}
-          </Stack>
-        )}
-      </Stack>
-    </Card>
+              {components.map((component: BackgroundCheckPackage['components'][number]) => (
+                <Text key={component.id} size="sm" color={colors.text[t].secondary}>
+                  • {component.display_name}
+                </Text>
+              ))}
+            </Stack>
+          )}
+          <Row gap={8} align="center" style={{ marginTop: 'auto', paddingTop: 4 }}>
+            <RadioDot checked={isSelected} color={selectTone} />
+            <Text size="sm" color={selectTone}>
+              {isSelected ? 'Selected' : 'Select'}
+            </Text>
+          </Row>
+        </Stack>
+      </Card>
+    </Pressable>
   )
 })
 
+/**
+ * Choose a package (#1191).
+ *
+ * The step's title was plain secondary body text, the same as the paragraph
+ * under it, and the packages were four full-width rows with no selected
+ * affordance beyond a tint. Now: a real heading, and a grid of cards that
+ * each say who they are for and what they check, with a radio that reads
+ * Select / Selected. Continue lives in the wizard's footer.
+ */
 export const PackageSelectionStep = memo(function PackageSelectionStep({
   packages,
   selectedPackageId,
   onSelect,
   isLoading,
-  onContinue,
 }: PackageSelectionStepProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
-  const hasSelection = Boolean(selectedPackageId)
 
   return (
-    <Stack gap={16} flex={1}>
-      <Stack gap={8}>
-        <Text color={colors.text[t].secondary}>Choose a background check package</Text>
-        <Text color={colors.text[t].secondary}>
-          Select the screening package that best fits your role. You can review the included
-          components and pricing before continuing.
+    <Stack gap={16}>
+      <Stack gap={4}>
+        <H3 style={{ color: colors.text[t].primary }}>Choose a package</H3>
+        <Text style={{ color: colors.text[t].secondary, fontStyle: 'italic' }}>
+          Every package is run by NationSearch, our screening partner, under the Fair Credit
+          Reporting Act.
         </Text>
       </Stack>
 
-      <ScrollView style={{ flex: 1 }}>
-        <Stack gap={12} paddingBottom={24}>
-          {isLoading && <Text color={colors.text[t].secondary}>Loading packages…</Text>}
-          {!isLoading && (!packages || packages.length === 0) && (
-            <Text color={colors.text[t].secondary}>
-              Packages will be available soon. Please check back later.
-            </Text>
-          )}
-          {packages?.map((pkg) => (
+      {isLoading && <Text color={colors.text[t].secondary}>Loading packages…</Text>}
+      {!isLoading && (!packages || packages.length === 0) && (
+        <Text color={colors.text[t].secondary}>
+          Packages will be available soon. Please check back later.
+        </Text>
+      )}
+      {packages && packages.length > 0 ? (
+        <Grid columns={{ base: 1, md: 2 }} gap={16} rowGap={16} accessibilityRole="radiogroup">
+          {packages.map((pkg) => (
             <PackageCard
               key={pkg.id}
               pkg={pkg}
@@ -129,12 +177,8 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
               onSelect={() => onSelect(pkg.id)}
             />
           ))}
-        </Stack>
-      </ScrollView>
-
-      <Button size="md" color="primary" disabled={!hasSelection} onPress={onContinue}>
-        Continue
-      </Button>
+        </Grid>
+      ) : null}
     </Stack>
   )
 })

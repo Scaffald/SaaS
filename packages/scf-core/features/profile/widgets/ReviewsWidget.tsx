@@ -27,6 +27,7 @@ import {
   ThumbsUp,
 } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
+import { orderReviews } from './review-order'
 import { Pressable } from 'react-native'
 import { colors } from '@scaffald/ui/tokens'
 import { workerPalette } from '@scf/core/components/ui/styles'
@@ -166,6 +167,16 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     setShowReviewModal(false)
   }
 
+  // SC-30: pinned reviews float to the top (in pin order); rest by recency.
+  // Computed before the loading / error / empty returns below: it sat after
+  // them, so a profile whose reviews arrived rendered one more hook than its
+  // loading render and React threw "Rendered more hooks than during the
+  // previous render".
+  const orderedReviews = useMemo(
+    () => orderReviews(reviews ?? [], pinPositionByReviewId),
+    [reviews, pinPositionByReviewId]
+  )
+
   if (isLoading) {
     return (
       <DashboardWidget>
@@ -284,20 +295,6 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
       ? categoryRatings.reduce((sum: number, r: CategoryRating) => sum + r.rating, 0) /
         categoryRatings.length
       : 0
-
-  // SC-30: pinned reviews float to the top (in pin order); rest by recency.
-  const orderedReviews = useMemo(() => {
-    const list = [...reviews]
-    list.sort((a: Review, b: Review) => {
-      const pa = pinPositionByReviewId.get(a.id)
-      const pb = pinPositionByReviewId.get(b.id)
-      if (pa !== undefined && pb !== undefined) return pa - pb
-      if (pa !== undefined) return -1
-      if (pb !== undefined) return 1
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    })
-    return list
-  }, [reviews, pinPositionByReviewId])
 
   const reviewsToShow = showCompact ? orderedReviews.slice(0, 2) : orderedReviews
 
