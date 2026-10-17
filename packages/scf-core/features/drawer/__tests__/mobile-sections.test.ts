@@ -132,8 +132,18 @@ describe('employer tabs point at surfaces that exist', () => {
 
   it('keeps the whole ATS cluster under Screening', () => {
     const i = EMPLOYER_MOBILE_SECTIONS.findIndex((s) => s.key === 'screening')
-    for (const p of ['/office/ats/checks', '/office/ats/admin', '/office/ats/metrics']) {
+    for (const p of [
+      '/office/ats/checks',
+      '/office/ats/admin',
+      '/office/ats/metrics',
+      '/office/communities/verification',
+    ]) {
       expect(activeIndex(p, EMPLOYER_MOBILE_SECTIONS), p).toBe(i)
     }
+  })
+
+  it('lands Screening on the review queue, not the organisation picker (#1203)', () => {
+    const screening = EMPLOYER_MOBILE_SECTIONS.find((s) => s.key === 'screening')
+    expect(screening?.route).toBe('/office/ats/admin')
   })
 })

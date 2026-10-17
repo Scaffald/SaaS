@@ -111,6 +111,7 @@ export default function OfficeLayout() {
             options={{ title: 'Background Check Providers' }}
           />
 
+          <Stack.Screen name="notifications/index" options={{ title: 'Notification operations' }} />
           <Stack.Screen name="storage/index" options={{ title: 'Storage Analytics' }} />
           <Stack.Screen name="payments/index" options={{ title: 'Payment Analytics' }} />
           <Stack.Screen name="transactions/index" options={{ title: 'Transaction History' }} />

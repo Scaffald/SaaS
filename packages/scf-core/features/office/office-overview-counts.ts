@@ -28,6 +28,45 @@ export function boundedCount(rows: unknown, cap: number): BoundedCount | null {
     : { value: rows.length, overflow: false }
 }
 
+/**
+ * Several queues read as one figure — the overview's "Screening queue" is
+ * background checks, ID verifications and community verification together
+ * (#1201). Unknown while any part is unknown: a partial sum would be a smaller
+ * number presented as the whole. At least the sum when any part overflowed.
+ */
+export function sumBoundedCounts(counts: Array<BoundedCount | null>): BoundedCount | null {
+  let value = 0
+  let overflow = false
+  for (const count of counts) {
+    if (count == null) return null
+    value += count.value
+    overflow = overflow || count.overflow
+  }
+  return { value, overflow }
+}
+
+/** Statuses a violation report can no longer be decided from. */
+const CLOSED_REPORT_STATUSES = new Set(['resolved', 'dismissed'])
+
+export function isOpenReport(report: { status: string }): boolean {
+  return !CLOSED_REPORT_STATUSES.has(report.status)
+}
+
+/**
+ * Open violation reports in one page of the list. The endpoint pages at 50 and
+ * the open filter runs here, so when the page is not the whole list the count
+ * is a floor ("12+"), not the total.
+ */
+export function countOpenReports(
+  page: { items: Array<{ status: string }>; totalCount: number } | null | undefined
+): BoundedCount | null {
+  if (!page || !Array.isArray(page.items)) return null
+  return {
+    value: page.items.filter(isOpenReport).length,
+    overflow: page.totalCount > page.items.length,
+  }
+}
+
 /** "—" while unknown, "50+" when the list was full, otherwise the number. */
 export function formatBoundedCount(count: BoundedCount | null): string {
   if (count == null) return '—'

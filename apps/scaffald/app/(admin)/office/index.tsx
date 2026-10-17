@@ -1,15 +1,15 @@
 import { OfficeDeveloperLinks } from '@scf/core/features/office/OfficeDeveloperLinks'
-import { OfficeNotificationsConsole } from '@scf/core/features/office/office-notifications-console'
 import { OfficeOverview } from '@scf/core/features/office/office-overview'
-import { OfficeStorageDashboard } from '@scf/core/features/office/office-storage-dashboard'
 import { OfficeLayout } from '@scf/core/components/layouts'
-import { Separator, Stack } from '@scaffald/ui'
+import { Stack } from '@scaffald/ui'
 
 /**
- * The Office opened straight into the notification delivery queue — an
- * operations table, with no indication of how much was waiting for an
- * administrator. The overview answers that first (#839); the consoles stay
- * below it.
+ * The Office home is the overview and nothing else (#1201). It used to stack
+ * the Notification operations console and the Storage dashboard under it,
+ * several screens of consoles on a phone; notifications has its own route
+ * (/office/notifications) and storage already had one (/office/storage). Both
+ * are linked from the overview's Consoles list. Developer links stay as a
+ * footer.
  */
 export default function OfficeIndex() {
   return (
@@ -17,14 +17,10 @@ export default function OfficeIndex() {
       leftContent={
         <Stack gap={32}>
           <OfficeOverview />
-          <Separator />
-          <OfficeNotificationsConsole />
-          <Separator />
-          <OfficeStorageDashboard />
-          <Separator />
           <OfficeDeveloperLinks />
         </Stack>
       }
+      leftContainerProps={{ minWidth: '100%' }}
     />
   )
 }

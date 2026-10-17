@@ -40,3 +40,29 @@ export function findActiveOfficeSection<T extends { path: string }>(
 ): T | undefined {
   return sections.find((section) => isPathActive(currentPath, section.path))
 }
+
+/**
+ * The sub-tab a path belongs to: the one whose own path, or one of its
+ * `owns` paths, is the longest prefix of it.
+ *
+ * Request a check (/office/ats/request) and the review queue
+ * (/office/ats/admin) are children of Background Checks in the route tree but
+ * do not sit under its path, so they matched no tab and the strip fell back to
+ * whichever tab came first (#1202).
+ */
+export function findActiveSubTab<T extends { href: string; owns?: string[] }>(
+  currentPath: string,
+  items: T[]
+): T | undefined {
+  let best: T | undefined
+  let bestLength = -1
+  for (const item of items) {
+    for (const path of [item.href, ...(item.owns ?? [])]) {
+      if (path.length > bestLength && isPathActive(currentPath, path)) {
+        best = item
+        bestLength = path.length
+      }
+    }
+  }
+  return best
+}
