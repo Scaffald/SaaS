@@ -78,6 +78,18 @@ describe('RiasecQuickAssessment', () => {
     expect(screen.getByText('5')).toBeInTheDocument() // enterprising
   })
 
+  it('shows an unrated dimension as "Not set" (#1173)', () => {
+    const handleChange = vi.fn()
+    renderWithProviders(
+      <RiasecQuickAssessment
+        value={{ ...defaultScores, realistic: null, social: null }}
+        onChange={handleChange}
+      />
+    )
+
+    expect(screen.getAllByText('Not set')).toHaveLength(2)
+  })
+
   it('should call onChange when slider value changes', () => {
     const handleChange = vi.fn()
     renderWithProviders(

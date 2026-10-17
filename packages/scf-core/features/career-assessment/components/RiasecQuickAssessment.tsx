@@ -2,9 +2,12 @@ import { Slider, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { RIASEC_DIMENSIONS, type RiasecScores } from '../config/career-assessment-schema'
 
-interface RiasecQuickAssessmentProps {
-  value: RiasecScores
-  onChange: (scores: RiasecScores) => void
+/** Scores in progress: a dimension the user has not rated yet is null (#1173). */
+type RiasecValue = { [K in keyof RiasecScores]: number | null }
+
+interface RiasecQuickAssessmentProps<T extends RiasecValue> {
+  value: T
+  onChange: (scores: T) => void
   disabled?: boolean
 }
 
@@ -14,15 +17,19 @@ interface RiasecQuickAssessmentProps {
  * Displays 6 interactive sliders for rating RIASEC interest dimensions (1-5 scale)
  * Used for quick career interest assessment
  *
+ * A dimension whose value is null reads "Not set" until the user moves its
+ * slider. The value shows once, in the box beside the label: the slider's
+ * own tooltip repeated it (#1173).
+ *
  * @param value - Current RIASEC scores
  * @param onChange - Callback when scores change
  * @param disabled - Whether sliders are disabled
  */
-export function RiasecQuickAssessment({
+export function RiasecQuickAssessment<T extends RiasecValue>({
   value,
   onChange,
   disabled = false,
-}: RiasecQuickAssessmentProps) {
+}: RiasecQuickAssessmentProps<T>) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
 
@@ -30,7 +37,7 @@ export function RiasecQuickAssessment({
     onChange({
       ...value,
       [key]: newValue,
-    })
+    } as T)
   }
 
   return (
@@ -43,43 +50,52 @@ export function RiasecQuickAssessment({
         </Text>
       </Stack>
 
-      {RIASEC_DIMENSIONS.map((dimension) => (
-        <Stack key={dimension.key} gap={12}>
-          <Row gap={12} align="center">
-            <Stack style={{ flex: 1 }} gap={4}>
-              <Text>{dimension.label}</Text>
-              <Text style={{ color: colors.text[t].secondary }}>{dimension.description}</Text>
-            </Stack>
-            <Row
-              width={60}
-              height={32}
-              align="center"
-              style={{
-                borderWidth: 1,
-                borderColor: colors.border[t].default,
-                paddingHorizontal: 8,
-              }}
-            >
-              <Text>{value[dimension.key]}</Text>
+      {RIASEC_DIMENSIONS.map((dimension) => {
+        const rating = value[dimension.key]
+        return (
+          <Stack key={dimension.key} gap={12}>
+            <Row gap={12} align="center">
+              <Stack style={{ flex: 1 }} gap={4}>
+                <Text>{dimension.label}</Text>
+                <Text style={{ color: colors.text[t].secondary }}>{dimension.description}</Text>
+              </Stack>
+              <Row
+                minWidth={60}
+                height={32}
+                align="center"
+                justify="center"
+                style={{
+                  borderWidth: 1,
+                  borderColor: colors.border[t].default,
+                  paddingHorizontal: 8,
+                }}
+              >
+                {rating == null ? (
+                  <Text style={{ color: colors.text[t].tertiary }}>Not set</Text>
+                ) : (
+                  <Text>{rating}</Text>
+                )}
+              </Row>
             </Row>
-          </Row>
 
-          <Row align="center" gap={12}>
-            <Text style={{ color: colors.text[t].secondary, width: 20 }}>1</Text>
-            <Stack style={{ flex: 1 }}>
-              <Slider
-                value={value[dimension.key]}
-                onValueChange={(newValue) => handleSliderChange(dimension.key, newValue)}
-                min={1}
-                max={5}
-                step={1}
-                disabled={disabled}
-              />
-            </Stack>
-            <Text style={{ color: colors.text[t].secondary, width: 20 }}>5</Text>
-          </Row>
-        </Stack>
-      ))}
+            <Row align="center" gap={12}>
+              <Text style={{ color: colors.text[t].secondary, width: 20 }}>1</Text>
+              <Stack style={{ flex: 1 }}>
+                <Slider
+                  value={rating ?? undefined}
+                  showIndicator={false}
+                  onValueChange={(newValue) => handleSliderChange(dimension.key, newValue)}
+                  min={1}
+                  max={5}
+                  step={1}
+                  disabled={disabled}
+                />
+              </Stack>
+              <Text style={{ color: colors.text[t].secondary, width: 20 }}>5</Text>
+            </Row>
+          </Stack>
+        )
+      })}
 
       <Stack
         gap={8}

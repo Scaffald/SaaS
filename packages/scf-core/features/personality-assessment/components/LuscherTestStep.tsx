@@ -3,8 +3,8 @@ import { Button } from '@scaffald/ui'
 import type { MainColor } from 'luscher-test'
 import { useEffect, useState } from 'react'
 import { Pressable } from 'react-native'
-import { AssessmentHeader, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors, fontSize } from '@scaffald/ui/tokens'
 import { type Color, shuffleColors } from '../lib/luscher/utils'
 
 export interface LuscherTestStepProps {
@@ -17,6 +17,12 @@ export interface LuscherTestStepProps {
 /**
  * LuscherTestStep - Color selection step for personality assessment
  * Displays 8 colors and allows user to select them in order
+ *
+ * The grid opens on the task, as in the prototype: one instruction, the
+ * count ("Pass 1 of 2 · 3 of 8"), the swatches, and a footnote saying what
+ * the exercise is not. It had a kicker and a title of its own ("Round 1",
+ * "First Color Selection") under a screen header that already names the
+ * assessment (#1175).
  */
 export function LuscherTestStep({
   step,
@@ -68,7 +74,8 @@ export function LuscherTestStep({
 
   const isComplete = selectedOrder.length === 8
 
-  const chipLabel = isComplete ? 'All 8 selected' : `${selectedOrder.length} of 8`
+  const pass = step === 'luscher1' ? 1 : 2
+  const chipLabel = `Pass ${pass} of 2 · ${isComplete ? 'All 8 selected' : `${selectedOrder.length} of 8`}`
 
   const shadowStyle = useMemo(
     () => ({
@@ -83,12 +90,17 @@ export function LuscherTestStep({
   return (
     <Stack gap={24} maxWidth={800} width="100%" style={{ marginHorizontal: 'auto' }}>
       <Stack gap={12} align="center">
-        <AssessmentHeader
-          category={step === 'luscher1' ? 'Round 1' : 'Round 2'}
-          title={step === 'luscher1' ? 'First Color Selection' : 'Second Color Selection'}
-          subtitle="Click the colors in order based on what feels best to you right now."
-          align="center"
-        />
+        <Text
+          style={{
+            textAlign: 'center',
+            fontSize: fontSize.lg,
+            fontWeight: '600',
+            lineHeight: 26,
+            color: colors.text[theme].primary,
+          }}
+        >
+          Tap the colors in the order they appeal to you.
+        </Text>
         <Stack
           style={{
             paddingHorizontal: 12,
@@ -152,6 +164,20 @@ export function LuscherTestStep({
           </Button>
         </Row>
       )}
+
+      {/* The prototype's footnote, less its "never scored or ranked": the
+          results step here still shows a verdict, so that half is not ours
+          to claim yet. */}
+      <Text
+        style={{
+          textAlign: 'center',
+          fontSize: fontSize.xs,
+          lineHeight: 18,
+          color: colors.text[theme].tertiary,
+        }}
+      >
+        A reflective exercise inspired by the Lüscher method — not a clinical instrument.
+      </Text>
     </Stack>
   )
 }

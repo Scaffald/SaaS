@@ -109,8 +109,8 @@ vi.mock('@scf/core/features/assessments', () => ({
 // Mock RiasecQuickAssessment
 vi.mock('@scf/core/features/career-assessment/components/RiasecQuickAssessment', () => ({
   RiasecQuickAssessment: ({ value, onChange, disabled }: {
-    value: Record<string, number>
-    onChange: (scores: Record<string, number>) => void
+    value: Record<string, number | null>
+    onChange: (scores: Record<string, number | null>) => void
     disabled?: boolean
   }) => (
     <div data-testid="riasec-assessment">
@@ -120,7 +120,8 @@ vi.mock('@scf/core/features/career-assessment/components/RiasecQuickAssessment',
           type="range"
           min={1}
           max={5}
-          value={val}
+          value={val ?? ''}
+          data-unset={val == null ? 'true' : 'false'}
           disabled={disabled}
           onChange={(e) => onChange({ ...value, [key]: Number(e.target.value) })}
           data-testid={`slider-${key}`}
@@ -203,24 +204,43 @@ describe('RIASECAssessmentWizard', () => {
     expect(screen.getByText('Failed to load')).toBeInTheDocument()
   })
 
-  // TODO: button disabled prop is on the @scaffald/ui Button which the
-  // mock proxies to <button> with onPress→onClick — disabled isn't
-  // forwarded by the stub. Widen the Button mock or assert via
-  // aria-disabled.
-  it.skip('should disable complete button when not all sliders are rated', () => {
+  // The real Button renders a disabled <button>. This was skipped while the
+  // defaults (every slider at 3) made a fresh visit count as fully rated.
+  it('should disable complete button when not all sliders are rated', () => {
     renderWithProviders(<RIASECAssessmentWizard />)
 
-    const completeButton = screen.getByText('Complete Assessment')
+    const completeButton = screen.getByText('Complete Assessment').closest('button')
     expect(completeButton).toBeDisabled()
+
+    fireEvent.change(screen.getByTestId('slider-realistic'), { target: { value: '4' } })
+    expect(screen.getByText('Complete Assessment').closest('button')).toBeDisabled()
+  })
+
+  it('starts with nothing rated (#1173)', () => {
+    renderWithProviders(<RIASECAssessmentWizard />)
+
+    expect(screen.getByText('0 of 6 dimensions rated')).toBeInTheDocument()
+    const realisticSlider = screen.getByTestId('slider-realistic') as HTMLInputElement
+    expect(realisticSlider.getAttribute('data-unset')).toBe('true')
+  })
+
+  it('counts only the dimensions the user set (#1173)', () => {
+    renderWithProviders(<RIASECAssessmentWizard />)
+
+    fireEvent.change(screen.getByTestId('slider-realistic'), { target: { value: '4' } })
+    fireEvent.change(screen.getByTestId('slider-social'), { target: { value: '2' } })
+
+    expect(screen.getByText('2 of 6 dimensions rated')).toBeInTheDocument()
   })
 
   it('should enable complete button when all sliders are rated', () => {
     renderWithProviders(<RIASECAssessmentWizard />)
 
-    // Set all sliders to valid values (1-5)
+    // Set all sliders to valid values (1-5). Not 3: an empty range input
+    // already reports its midpoint, so React sees no change.
     const sliders = screen.getAllByTestId(/slider-/)
     sliders.forEach((slider) => {
-      fireEvent.change(slider, { target: { value: '3' } })
+      fireEvent.change(slider, { target: { value: '4' } })
     })
 
     const completeButton = screen.getByText('Complete Assessment')
