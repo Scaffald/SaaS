@@ -16,6 +16,8 @@ import {
   DashboardWidget,
   DashboardWidgetHeader,
   Input,
+  MetricBlock,
+  MetricRow,
   Modal,
   ModalHeader,
   ModalContent,
@@ -294,6 +296,8 @@ export function CalendarSchedulingScreen() {
     }),
     [slots]
   )
+  // Unknown while the slots load or after a failed load: a dash, not a 0.
+  const slotsKnown = !slotsQuery.isLoading && !slotsQuery.isError
 
   const createSlot = useCreateInterviewSlotMutation()
   const createLink = useCreateSchedulingLinkMutation()
@@ -462,6 +466,16 @@ export function CalendarSchedulingScreen() {
           }
         />
 
+        {/* Figures in a ruled band under the header, the prototype's admin
+            form (#1208). They were three centred glass cards below the
+            Upcoming card, on the Interview Slots tab only. Still derived
+            from the real slots — they were once hardcoded "3" / "1" / "12". */}
+        <MetricRow bordered minColumnWidth={140}>
+          <MetricBlock label="Upcoming" value={slotsKnown ? slotCounts.upcoming : '—'} emphasis />
+          <MetricBlock label="Confirmed" value={slotsKnown ? slotCounts.confirmed : '—'} />
+          <MetricBlock label="Completed" value={slotsKnown ? slotCounts.completed : '—'} />
+        </MetricRow>
+
         {/* Tabs — one scrolling row, not two wrapped ones at 390 (#1032) */}
         <Tabs value={activeTab} onValueChange={setActiveTab} type="line" scrollable>
           <Tabs.Item value="connections">
@@ -514,60 +528,6 @@ export function CalendarSchedulingScreen() {
                     ))}
                   </Stack>
                 </DashboardWidget>
-
-                {/* Stats. Previously hardcoded "3" / "1" / "12" — the first two
-                    happened to match the mock slots, and "12 completed" was
-                    invented outright. Now derived from the real ones. */}
-                <Row gap={12}>
-                  <Card variant="glass" style={{ flex: 1 }} padding="md">
-                    <Stack align="center" gap={4}>
-                      <Text
-                        style={{
-                          color: colors.text[theme].primary,
-                          fontSize: fontSize.xl,
-                          fontWeight: '700',
-                        }}
-                      >
-                        {slotCounts.upcoming}
-                      </Text>
-                      <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>
-                        Upcoming
-                      </Text>
-                    </Stack>
-                  </Card>
-                  <Card variant="glass" style={{ flex: 1 }} padding="md">
-                    <Stack align="center" gap={4}>
-                      <Text
-                        style={{
-                          color: colors.text[theme].primary,
-                          fontSize: fontSize.xl,
-                          fontWeight: '700',
-                        }}
-                      >
-                        {slotCounts.confirmed}
-                      </Text>
-                      <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>
-                        Confirmed
-                      </Text>
-                    </Stack>
-                  </Card>
-                  <Card variant="glass" style={{ flex: 1 }} padding="md">
-                    <Stack align="center" gap={4}>
-                      <Text
-                        style={{
-                          color: colors.text[theme].primary,
-                          fontSize: fontSize.xl,
-                          fontWeight: '700',
-                        }}
-                      >
-                        {slotCounts.completed}
-                      </Text>
-                      <Text style={{ color: colors.text[theme].tertiary, fontSize: fontSize.sm }}>
-                        Completed
-                      </Text>
-                    </Stack>
-                  </Card>
-                </Row>
               </Stack>
             </Tabs.Content>
           </Tabs.Item>
