@@ -12,6 +12,9 @@ export default function NotificationsPage() {
   return (
     <DashboardPage
       showBreadcrumb={false}
+      // A reading column, as the prototype's inbox: at full width a row's
+      // title sat ~1000px from its timestamp (#1160).
+      readingWidth
       pageTitle="Notifications"
       screenKicker={notificationsKicker(mode)}
       screenActions={<NotificationsHeaderActions />}
