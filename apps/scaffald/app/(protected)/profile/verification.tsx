@@ -29,10 +29,8 @@ export default function VerificationScreen() {
 
   return (
     <ProfilePage
-      breadcrumbs={[
-        { route: ROUTES.PROFILE },
-        { route: ROUTES.PROFILE.ID_VERIFICATION },
-      ]}
+      screenKicker="Verification"
+      screenTip="Your ID and background check. A clear check adds a verified badge employers can see."
       leftContent={leftContent}
       rightContent={rightContent}
     />

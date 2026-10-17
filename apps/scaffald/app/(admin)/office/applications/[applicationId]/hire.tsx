@@ -1,4 +1,5 @@
 import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
+import { LoadFailure } from '@scf/core/components/ui'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { HireScreen } from '@scf/core/features/office/applications/hire/HireScreen'
 import { toATSApplication } from '@scf/core/features/office/applications/transform'
@@ -16,7 +17,7 @@ export default function OfficeApplicationHireRoute() {
   const { applicationId } = useLocalSearchParams<{ applicationId?: string }>()
   const id = typeof applicationId === 'string' ? applicationId : ''
 
-  const { data, isLoading, error } = useEmployerApplication(id, { enabled: id.length > 0 })
+  const { data, isLoading, error, refetch } = useEmployerApplication(id, { enabled: id.length > 0 })
 
   // The same transform the board and candidate detail use, so the three cannot
   // disagree about what this application is.
@@ -36,10 +37,12 @@ export default function OfficeApplicationHireRoute() {
 
     if (error) {
       return (
-        <Stack align="center" gap={8}>
-          <Text color="red">Unable to load this candidate</Text>
-          <Text color="secondary">{error.message}</Text>
-        </Stack>
+        <LoadFailure
+          error={error}
+          noun="candidate"
+          retry={() => refetch()}
+          back={{ label: 'Applications', href: ROUTES.OFFICE.APPLICATIONS.path }}
+        />
       )
     }
 

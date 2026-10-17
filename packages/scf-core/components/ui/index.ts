@@ -4,6 +4,7 @@ export {
   type SoftSkillsRadarGridProps,
 } from './SoftSkillsRadarGrid'
 export { StatusBadge } from './StatusBadge'
+export { LoadFailure } from './LoadFailure'
 
 // Shared card building blocks
 export { IconCircle, MetricRow, MetricDot, Pill, OverflowCount, CardHeader } from './CardPrimitives'

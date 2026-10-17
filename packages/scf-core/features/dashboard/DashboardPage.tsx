@@ -6,8 +6,9 @@ import {
   type DashboardBreadcrumbSegment,
 } from '@scf/core/utils/navigation/buildDashboardBreadcrumbs'
 import { DashboardLayout } from '@scf/core/components/layouts'
+import { backFromTrail } from './back-from-trail'
 import type { BreadcrumbItemData } from '@scaffald/ui'
-import { usePathname } from 'expo-router'
+import { usePathname, useRouter } from 'expo-router'
 import type { ComponentProps } from 'react'
 import { useMemo } from 'react'
 
@@ -80,6 +81,7 @@ export function DashboardPage({
   ...layoutProps
 }: DashboardPageProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const matchedRoute = useMemo(() => findRouteForPath(pathname), [pathname])
   const { t, locale } = useTranslation()
 
@@ -138,12 +140,21 @@ export function DashboardPage({
   }, [layoutProps.screenTitle, pageTitle, matchedRoute, t, locale, ...pageTitleDeps])
 
   const hideScreenHeader =
-    layoutProps.hideScreenHeader ??
-    (pathname ? SCREENS_WITHOUT_SHARED_HEADER.has(pathname) : false)
+    layoutProps.hideScreenHeader ?? (pathname ? SCREENS_WITHOUT_SHARED_HEADER.has(pathname) : false)
+
+  // Breadcrumbs are off by default now; a screen that declares a trail gets a
+  // back link to its parent from it instead, unless it set `back` itself.
+  const derivedBack = backFromTrail(computedBreadcrumbItems)
+  const back =
+    layoutProps.back ??
+    (derivedBack
+      ? { label: derivedBack.label, onPress: () => router.push(derivedBack.href as never) }
+      : undefined)
 
   return (
     <DashboardLayout
       {...layoutProps}
+      back={back}
       breadcrumbItems={computedBreadcrumbItems}
       screenTitle={resolvedScreenTitle}
       screenKey={layoutProps.screenKey ?? pathname ?? null}

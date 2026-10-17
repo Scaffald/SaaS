@@ -1,4 +1,5 @@
 import { RouteBuilder } from '@scf/core/constants/routes'
+import { LoadFailure } from '@scf/core/components/ui'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { Building2 } from 'lucide-react-native'
@@ -36,18 +37,13 @@ export default function OrgIndexPage() {
           <Text color="gray">Loading your organizations…</Text>
         </Stack>
       ) : error ? (
-        <Stack gap={12} padding={16}>
-          <Text color="red">Unable to load organizations</Text>
-          <Text color="red">{error.message ?? 'An unexpected error occurred.'}</Text>
-          <Button size="md" onPress={() => refetch()}>
-            Try again
-          </Button>
-        </Stack>
+        <LoadFailure error={error} noun="list of organizations" retry={() => refetch()} />
       ) : orgs.length === 0 ? (
         <Stack gap={12} padding={16}>
           <Text>No organizations yet</Text>
           <Text color="gray">
-            You are not a member of any organizations yet. Accept a team invitation to see organizations here.
+            You are not a member of any organizations yet. Accept a team invitation to see
+            organizations here.
           </Text>
           <Button
             size="md"
@@ -81,5 +77,12 @@ export default function OrgIndexPage() {
     </Stack>
   )
 
-  return <DashboardPage showBreadcrumb={false} pageTitle="My Organizations" leftContent={content} rightContent={null} />
+  return (
+    <DashboardPage
+      showBreadcrumb={false}
+      pageTitle="My Organizations"
+      leftContent={content}
+      rightContent={null}
+    />
+  )
 }

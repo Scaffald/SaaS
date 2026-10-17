@@ -149,14 +149,5 @@ export default function ResumeProfilePage() {
     </Stack>
   ) : null
 
-  return (
-    <ProfilePage
-      breadcrumbs={[
-        { route: ROUTES.PROFILE },
-        { route: ROUTES.PROFILE.RESUME },
-      ]}
-      leftContent={leftContent}
-      rightContent={rightContent}
-    />
-  )
+  return <ProfilePage leftContent={leftContent} rightContent={rightContent} />
 }

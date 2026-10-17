@@ -1,4 +1,5 @@
 import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
+import { LoadFailure } from '@scf/core/components/ui'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { InquiryHistoryTimeline } from '@scf/core/features/inquiries/components/InquiryHistoryTimeline'
 import { InquiryViewOrganization } from '@scf/core/features/inquiries/components/InquiryViewOrganization'
@@ -20,7 +21,7 @@ export default function OfficeApplicationInquiryRoute() {
   const applicationParam = typeof applicationId === 'string' ? applicationId : ''
   const enabled = applicationParam.length > 0
 
-  const { data, isLoading, error } = useInquiryByApplication(applicationParam, { enabled })
+  const { data, isLoading, error, refetch } = useInquiryByApplication(applicationParam, { enabled })
 
   const candidateName = data?.candidate?.displayName || data?.candidate?.username || 'Candidate'
   const jobTitle = data?.job?.title || 'Job'
@@ -39,10 +40,12 @@ export default function OfficeApplicationInquiryRoute() {
 
     if (error) {
       return (
-        <Stack align="center" gap={8}>
-          <Text color="red">Unable to load inquiry</Text>
-          <Text color="secondary">{error.message}</Text>
-        </Stack>
+        <LoadFailure
+          error={error}
+          noun="inquiry"
+          retry={() => refetch()}
+          back={{ label: 'Applications', href: ROUTES.OFFICE.APPLICATIONS.path }}
+        />
       )
     }
 

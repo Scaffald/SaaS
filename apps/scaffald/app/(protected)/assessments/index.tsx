@@ -17,6 +17,8 @@ export default function AssessmentsLandingPage() {
   return (
     <AssessmentsLayout
       showTabs={false}
+      screenKicker="Prove it once — show it everywhere"
+      screenTip="Every assessment you finish becomes a verified result on your profile that employers can see."
       leftContent={
         <Stack gap={24}>
           <AssessmentsHub />

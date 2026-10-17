@@ -8,6 +8,7 @@ import {
   ScreenHeader,
   type BreadcrumbItemData,
   useThemeContext,
+  type ScreenHeaderBack,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useScreenRhythm } from '../../constants/layout'
@@ -23,6 +24,8 @@ type ProfileLayoutProps = {
   leftContent: ReactNode
   /** Whether to show breadcrumb navigation (default: true) */
   showBreadcrumb?: boolean
+  /** "← Parent" above the screen header, for a drill-in (#1163). */
+  back?: ScreenHeaderBack
   /** Manual breadcrumb items to override auto-generation */
   breadcrumbItems?: BreadcrumbItemData[]
   /** Whether to auto-generate breadcrumbs from route (default: true) */
@@ -48,6 +51,7 @@ export const ProfileLayout = ({
   rightContent,
   leftContent,
   showBreadcrumb = false,
+  back,
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
   screenTitle,
@@ -60,13 +64,18 @@ export const ProfileLayout = ({
   const { theme } = useThemeContext()
   const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
   const hasRightContent = rightContent != null
-  const { gutter: contentPadding, verticalPadding, sectionGap, columnGap, rowGap } =
-    useScreenRhythm()
+  const {
+    gutter: contentPadding,
+    verticalPadding,
+    sectionGap,
+    columnGap,
+    rowGap,
+  } = useScreenRhythm()
 
   const routeTitle = useRouteScreenTitle()
   const resolvedTitle = screenTitle !== undefined ? screenTitle : routeTitle.title
   const { collapsed, toggleCollapsed } = useScreenHeaderCollapse(
-    hideScreenHeader ? null : (screenKey ?? routeTitle.routeKey),
+    hideScreenHeader ? null : (screenKey ?? routeTitle.routeKey)
   )
 
   const { breadcrumbs } = useBreadcrumbs({
@@ -76,7 +85,10 @@ export const ProfileLayout = ({
 
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
   const currentIndex = displayBreadcrumbs.length - 1
-  const bgColor = colors.bg[resolvedTheme].emphasis
+  // One ground across every layout (#1159): Profile and Assessments painted
+  // bg.emphasis while Office painted bg.subtle, so the canvas changed colour
+  // between sections.
+  const bgColor = colors.bg[resolvedTheme].subtle
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: bgColor }} showsVerticalScrollIndicator={false}>
@@ -91,6 +103,7 @@ export const ProfileLayout = ({
         {!hideScreenHeader && resolvedTitle ? (
           <Stack paddingHorizontal={contentPadding}>
             <ScreenHeader
+              back={back}
               kicker={screenKicker}
               title={resolvedTitle}
               tip={screenTip}

@@ -41,7 +41,8 @@ export const AssessmentsLayout = ({
   const hasRightContent = rightContent != null
   const { gutter: contentPadding, verticalPadding, sectionGap, columnGap, rowGap } =
     useScreenRhythm()
-  const bgColor = colors.bg[theme].emphasis
+  // One ground across every layout (#1159).
+  const bgColor = colors.bg[theme].subtle
   const routeTitle = useRouteScreenTitle()
   const resolvedTitle = screenTitle !== undefined ? screenTitle : routeTitle.title
   const { collapsed, toggleCollapsed } = useScreenHeaderCollapse(

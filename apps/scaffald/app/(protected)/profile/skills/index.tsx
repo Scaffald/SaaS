@@ -42,14 +42,7 @@ export default function ProfileSkillsPage() {
   return (
     <ProfileSkillsProvider>
       <ProfileCertificationsHighlightProvider>
-        <ProfilePage
-          breadcrumbs={[
-            { route: ROUTES.PROFILE },
-            { route: ROUTES.PROFILE.SKILLS },
-          ]}
-          leftContent={leftContent}
-          rightContent={rightContent}
-        />
+        <ProfilePage leftContent={leftContent} rightContent={rightContent} />
       </ProfileCertificationsHighlightProvider>
     </ProfileSkillsProvider>
   )

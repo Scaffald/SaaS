@@ -1,4 +1,5 @@
 import { RouteBuilder } from '@scf/core/constants/routes'
+import { LoadFailure } from '@scf/core/components/ui'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { Users } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
@@ -17,23 +18,13 @@ export default function DashboardTeamsIndexPage() {
 
   const mainContent = (
     <Stack gap={16}>
-      
-
       {isLoading || isRefetching ? (
         <Stack align="center" justify="center" gap={8}>
           <Spinner size="lg" />
           <Text color="gray">Loading your teams…</Text>
         </Stack>
       ) : error ? (
-        <Stack gap={12} padding={16}>
-          <Text color="red">Unable to load teams</Text>
-          <Text color="red">
-            {error.message ?? 'An unexpected error occurred while loading your teams.'}
-          </Text>
-          <Button size="md" onPress={() => refetch()}>
-            Try again
-          </Button>
-        </Stack>
+        <LoadFailure error={error} noun="list of teams" retry={() => refetch()} />
       ) : teams.length === 0 ? (
         <Stack gap={12} padding={16}>
           <Text>No teams yet</Text>
@@ -103,6 +94,7 @@ export default function DashboardTeamsIndexPage() {
   // that could not wrap at 390 (#1022, #1025).
   return (
     <DashboardPage
+      screenKicker="Your organizations"
       leftContent={mainContent}
       showBreadcrumb={false}
       rightContent={null}

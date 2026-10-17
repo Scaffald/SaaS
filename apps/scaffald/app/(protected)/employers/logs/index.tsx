@@ -3,6 +3,12 @@ import { WorkLogListScreen } from '@scf/core/features/work-logs/screens/WorkLogL
 
 export default function WorkLogsIndexPage() {
   return (
-    <DashboardPage showBreadcrumb={false} leftContent={<WorkLogListScreen />} rightContent={null} />
+    <DashboardPage
+      showBreadcrumb={false}
+      screenKicker="Your organizations"
+      screenTip="Work your crews have logged — hours, tasks and the skills they used."
+      leftContent={<WorkLogListScreen />}
+      rightContent={null}
+    />
   )
 }

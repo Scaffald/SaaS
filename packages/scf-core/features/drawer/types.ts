@@ -49,4 +49,11 @@ export type DrawerLinkProps = {
   // Optional for drawer close functionality if needed
   onNavigate?: (href: string, event?: GestureResponderEvent) => void
   isCollapsed?: boolean
+  /**
+   * Whether this row is the page's section. Decided once for the whole list
+   * (activeNavKey) — two rows can own one page, Office and the employer's
+   * Applications both own /office/applications, and only the more specific
+   * one should light. Falls back to the row's own ownership when omitted.
+   */
+  active?: boolean
 }

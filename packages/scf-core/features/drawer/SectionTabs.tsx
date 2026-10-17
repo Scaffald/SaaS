@@ -1,5 +1,6 @@
 import { useScreenRhythm } from '@scf/core/constants/layout'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
+import { useAppMode } from '@scf/core/utils/useAppMode'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { usePathname } from '@scf/core/utils/usePathname'
 import { useTranslation } from '@scf/core/utils/useTranslation'
@@ -35,10 +36,11 @@ export function SectionTabs() {
   const { gutter, isDesktop } = useScreenRhythm()
   const { data: memberships } = useOrganizations()
   const { hasOfficeRole } = useUserRoles()
+  const { mode } = useAppMode()
 
   const items = useMemo(
-    () => getNavItems(memberships ?? undefined, hasOfficeRole),
-    [memberships, hasOfficeRole]
+    () => getNavItems(memberships ?? undefined, hasOfficeRole, mode),
+    [memberships, hasOfficeRole, mode]
   )
   const strip = useMemo(() => getSectionTabs(pathname, items), [pathname, items])
 
@@ -177,7 +179,14 @@ function PhoneChipStrip({
           start={[0, 0]}
           end={[1, 0]}
           colors={[ground, `${ground}00`]}
-          style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: FADE_WIDTH, pointerEvents: 'none' }}
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: FADE_WIDTH,
+            pointerEvents: 'none',
+          }}
         />
       ) : null}
       {fades.end ? (
@@ -185,7 +194,14 @@ function PhoneChipStrip({
           start={[0, 0]}
           end={[1, 0]}
           colors={[`${ground}00`, ground]}
-          style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: FADE_WIDTH, pointerEvents: 'none' }}
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: FADE_WIDTH,
+            pointerEvents: 'none',
+          }}
         />
       ) : null}
     </View>

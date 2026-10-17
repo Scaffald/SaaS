@@ -16,7 +16,9 @@ import {
   User,
   Users,
 } from 'lucide-react-native'
+import type { AppMode } from '@scf/core/utils/useAppMode'
 import type { DrawerItemConfig } from './types'
+import { ownsPath } from './utils'
 
 /**
  * Per-organization entries under Employers. On an org's own pages the tab
@@ -183,13 +185,9 @@ export const generateDashboardDrawerItems = (
       href: ROUTES.JOBS.APPLICATIONS.path,
     },
   ]
-  if (memberships && memberships.length > 0) {
-    jobSubItems.push({
-      key: 'jobs-my-listings',
-      titleKey: 'navigation.jobsMyListings',
-      href: ROUTES.JOBS.MY_LISTINGS.path,
-    })
-  }
+  // My Listings is the employer's Jobs, in employer mode's own nav (#1157).
+  // It was gated on org membership, so a member using the app as a worker
+  // saw it in their job-seeker tabs.
 
   // The row lands on the signed-in listing, not the public one, which has no
   // drawer (#766) — but it owns everything under /jobs.
@@ -390,18 +388,96 @@ export const getDrawerItems = (memberships?: OrganizationMembership[]): DrawerIt
 
 const OFFICE_ITEM = generateOfficeDrawerItem()
 
+const byKey = (items: DrawerItemConfig[]) => new Map(items.map((item) => [item.key, item]))
+
 /**
- * The whole navigation tree for one person: Office first when they hold the
- * role, then the sections everyone has. The drawer draws the top level; the
- * section tab strip draws the level beneath.
+ * The worker's sections, in the prototype's order: Home, Profile,
+ * Assessments, Jobs, then the employer directory (read-only — no create,
+ * join or own-organisation tabs) and Communities. Find talent is the
+ * employer's; it is not a worker section.
+ */
+const workerNav = (memberships: OrganizationMembership[] | undefined): DrawerItemConfig[] => {
+  const all = byKey(generateDashboardDrawerItems(memberships))
+  const employers = all.get('employers')
+  return [
+    all.get('dashboard'),
+    all.get('profile'),
+    all.get('assessments'),
+    all.get('jobs'),
+    employers && { ...employers, subItems: undefined },
+    all.get('communities'),
+  ].filter((item): item is DrawerItemConfig => Boolean(item))
+}
+
+/**
+ * The employer's sections: Find talent, their own postings, their
+ * applicant pipeline, and their organisations. The pipeline lives at
+ * /office/applications, but in employer mode it is the employer's own
+ * section — not Office, whose tabs are the admin's (Content Management,
+ * Payment Analytics…). The prototype's Recruiting, Stages & rules and Your
+ * stats are not built yet (#843, #844, the employer stats issue), so they
+ * are absent rather than rows that lead nowhere. Home stays until #1117
+ * decides what an employer's Home is.
+ */
+const employerNav = (memberships: OrganizationMembership[] | undefined): DrawerItemConfig[] => {
+  const all = byKey(generateDashboardDrawerItems(memberships))
+  return [
+    all.get('dashboard'),
+    all.get('workers'),
+    {
+      key: 'employer-jobs',
+      titleKey: 'navigation.jobsMyListings',
+      href: ROUTES.JOBS.MY_LISTINGS.path,
+      icon: Briefcase,
+    },
+    {
+      key: 'employer-applications',
+      titleKey: 'routes.office.applications.title',
+      href: ROUTES.OFFICE.APPLICATIONS.path,
+      icon: ClipboardCheck,
+    },
+    all.get('employers'),
+  ].filter((item): item is DrawerItemConfig => Boolean(item))
+}
+
+/**
+ * The whole navigation tree for one person in one mode: Office first when
+ * they hold the role, then the sections of the mode they are using. The
+ * drawer draws the top level; the section tab strip draws the level
+ * beneath. Desktop used to show one list in every mode while the phone bar
+ * switched with it, so the two disagreed (#1157).
  */
 export const getNavItems = (
   memberships: OrganizationMembership[] | undefined,
-  hasOfficeRole: boolean
+  hasOfficeRole: boolean,
+  mode: AppMode = 'worker'
 ): DrawerItemConfig[] => [
   ...(hasOfficeRole ? [OFFICE_ITEM] : []),
-  ...generateDashboardDrawerItems(memberships),
+  ...(mode === 'employer' ? employerNav(memberships) : workerNav(memberships)),
 ]
+
+/**
+ * How specifically a top-level item claims `pathname`: the length of the
+ * prefix it owns it by, or -1 when it does not. Two items can own one page —
+ * Office owns everything under /office, and the employer's Applications owns
+ * /office/applications — and the more specific one is the page's section.
+ */
+const topLevelClaim = (item: DrawerItemConfig, pathname: string): number =>
+  ownsPath(item, pathname) ? (item.matchPrefix ?? item.href).length : -1
+
+/** The one top-level item that owns `pathname`, or null. */
+export const activeNavKey = (items: DrawerItemConfig[], pathname: string): string | null => {
+  let best: DrawerItemConfig | null = null
+  let bestLength = -1
+  for (const item of items) {
+    const length = topLevelClaim(item, pathname)
+    if (length > bestLength) {
+      best = item
+      bestLength = length
+    }
+  }
+  return best?.key ?? null
+}
 
 // ============================================================================
 // Mobile Bottom Nav Configuration
@@ -429,13 +505,16 @@ export type MobileSection = {
 }
 
 /**
- * Mobile primary tabs — 3-tab pill (Home / Jobs / Community).
+ * Mobile primary tabs for the WORKER: Home / Jobs / Apps / Profile, with
+ * More (the drawer) after them — the prototype's worker bar. It used to be
+ * Home / Jobs / Community, which left a worker's two most-visited places —
+ * their applications and their record — behind More, and lit no tab on
+ * /profile or /assessments (#1158). Communities moved into More.
  *
- * Profile, settings, notifications, organizations and assessments are
- * accessed via the drawer (avatar tap). Discover/Workers/Assessments
- * surface as Home-tab widgets in a follow-up.
+ * Jobs claims its pages one by one rather than all of /jobs, so the
+ * applications page belongs to Apps alone.
  *
- * This is the WORKER set. Employer mode gets its own, below.
+ * Employer mode gets its own set, below.
  */
 export const MOBILE_SECTIONS: MobileSection[] = [
   {
@@ -443,11 +522,9 @@ export const MOBILE_SECTIONS: MobileSection[] = [
     label: 'Home',
     icon: Home,
     route: ROUTES.DASHBOARD.path,
-    // Only the dashboard is "Home". Sections without their own tab
-    // (/profile, /employers, /workers, /assessments) used to be listed here,
-    // which left Home lit up while the user was somewhere else entirely —
-    // including employer screens in employer mode (#385). They now match no
-    // tab, and getActiveSectionIndex returns -1 so nothing is highlighted.
+    // Only the dashboard is "Home". Sections without their own tab used to be
+    // listed here, which left Home lit up while the user was somewhere else
+    // entirely — including employer screens in employer mode (#385).
     matchPrefixes: ['/dashboard'],
     subItems: [],
   },
@@ -456,15 +533,24 @@ export const MOBILE_SECTIONS: MobileSection[] = [
     label: 'Jobs',
     icon: Briefcase,
     route: ROUTES.JOBS.BROWSE.path,
-    matchPrefixes: ['/jobs'],
+    matchPrefixes: [ROUTES.JOBS.BROWSE.path, ROUTES.JOBS.SAVED.path, '/jobs/view'],
     subItems: [],
   },
   {
-    key: 'community',
-    label: 'Community',
-    icon: Bookmark,
-    route: ROUTES.COMMUNITIES.path,
-    matchPrefixes: ['/communities'],
+    key: 'applications',
+    label: 'Apps',
+    icon: ClipboardCheck,
+    route: ROUTES.JOBS.APPLICATIONS.path,
+    matchPrefixes: [ROUTES.JOBS.APPLICATIONS.path],
+    subItems: [],
+  },
+  {
+    key: 'profile',
+    label: 'Profile',
+    icon: User,
+    route: ROUTES.PROFILE.path,
+    // Assessments are proof on the record, so they light the record's tab.
+    matchPrefixes: [ROUTES.PROFILE.path, ROUTES.ASSESSMENTS.path],
     subItems: [],
   },
 ]

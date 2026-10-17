@@ -1,4 +1,5 @@
 import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
+import { LoadFailure } from '@scf/core/components/ui'
 import { ROUTES } from '@scf/core/constants/routes'
 import { CandidateDetailContent } from '@scf/core/features/office/applications/components/CandidateDetailContent'
 import { toATSApplication } from '@scf/core/features/office/applications/transform'
@@ -20,7 +21,7 @@ export default function OfficeApplicationDetailRoute() {
   const { applicationId } = useLocalSearchParams<{ applicationId?: string }>()
   const id = typeof applicationId === 'string' ? applicationId : ''
 
-  const { data, isLoading, error } = useEmployerApplication(id, {
+  const { data, isLoading, error, refetch } = useEmployerApplication(id, {
     enabled: id.length > 0,
   })
 
@@ -44,10 +45,12 @@ export default function OfficeApplicationDetailRoute() {
       // caller's organisations, so "not found" here covers both and does not
       // confirm that an id exists.
       return (
-        <Stack align="center" gap={8}>
-          <Text color="red">Unable to load this candidate</Text>
-          <Text color="secondary">{error.message}</Text>
-        </Stack>
+        <LoadFailure
+          error={error}
+          noun="candidate"
+          retry={() => refetch()}
+          back={{ label: 'Applications', href: ROUTES.OFFICE.APPLICATIONS.path }}
+        />
       )
     }
 

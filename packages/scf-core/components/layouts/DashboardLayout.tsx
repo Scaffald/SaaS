@@ -1,10 +1,15 @@
 import type { ReactNode } from 'react'
-import { Platform, ScrollView } from 'react-native'
+import { ScrollView } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Grid, Row, Stack, useThemeContext, useBottomBarContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { Breadcrumb, ScreenHeader, type BreadcrumbItemData } from '@scaffald/ui'
-import { useScreenRhythm } from '../../constants/layout'
+import {
+  Breadcrumb,
+  ScreenHeader,
+  type BreadcrumbItemData,
+  type ScreenHeaderBack,
+} from '@scaffald/ui'
+import { CONTENT_WIDTH, useScreenRhythm } from '../../constants/layout'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { useScreenHeaderCollapse } from '../../hooks/useScreenHeaderCollapse'
 
@@ -37,8 +42,19 @@ type DashboardLayoutProps = {
   screenKey?: string | null
   /** Opt a screen out of the shared header (it draws its own, or wants none). */
   hideScreenHeader?: boolean
-  /** Whether to show breadcrumb navigation (default: true) */
+  /**
+   * Whether to show the breadcrumb trail. Off by default: the prototype has
+   * no breadcrumbs — top-level screens are placed by the nav and their tabs,
+   * and a drill-in gets one named back link instead (`back`, #1163).
+   */
   showBreadcrumb?: boolean
+  /** "← Parent" above the screen header, for a drill-in. */
+  back?: ScreenHeaderBack
+  /**
+   * Narrow, centred reading column (~760px) for screens of prose and single
+   * lists — notifications, settings. Everything else gets the working width.
+   */
+  readingWidth?: boolean
   /** Manual breadcrumb items to override auto-generation */
   breadcrumbItems?: BreadcrumbItemData[]
   /** Whether to auto-generate breadcrumbs from route (default: true) */
@@ -51,7 +67,9 @@ export const DashboardLayout = ({
   rightContent,
   leftContent,
   headerContent,
-  showBreadcrumb = true,
+  showBreadcrumb = false,
+  back,
+  readingWidth = false,
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
   fullWidth = false,
@@ -69,17 +87,22 @@ export const DashboardLayout = ({
   // navBarHeight is 0 when the nav isn't mounted (desktop), so this is a no-op there.
   const { navBarHeight } = useBottomBarContext()
   const { collapsed, toggleCollapsed } = useScreenHeaderCollapse(
-    hideScreenHeader ? null : (screenKey ?? null),
+    hideScreenHeader ? null : (screenKey ?? null)
   )
   const bottomNavInset = navBarHeight > 0 ? navBarHeight + insets.bottom : 0
-  const { gutter: contentPadding, verticalPadding, sectionGap, columnGap, rowGap } =
-    useScreenRhythm()
+  const {
+    gutter: contentPadding,
+    verticalPadding,
+    sectionGap,
+    columnGap,
+    rowGap,
+  } = useScreenRhythm()
   const hasRightContent = rightContent != null
   const columnTemplate = fullWidth || !hasRightContent ? '1fr' : GOLDEN_RATIO_TEMPLATE
 
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({
-    autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,
+    autoGenerate: showBreadcrumb && autoGenerateBreadcrumbs && !breadcrumbItems,
     customItems: breadcrumbItems,
   })
 
@@ -92,20 +115,27 @@ export const DashboardLayout = ({
   // Guard against undefined/invalid theme (e.g. before ThemeProvider resolves or when theme is 'system')
   const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
 
-  // Web: radial gradient for depth behind glass cards. Native: flat warm surface.
-  const bgStyle = Platform.OS === 'web'
-    ? {
-        flex: 1,
-        backgroundImage: colors.bg[resolvedTheme].gradient,
-      } as Record<string, unknown>
-    : { flex: 1, backgroundColor: colors.bg[resolvedTheme].emphasis }
+  // One flat ground, the same in every layout. Web painted a radial gradient
+  // here "for depth behind glass cards" — the glass cards are gone, and the
+  // gradient made every DashboardLayout screen a mottled beige beside Office's
+  // flat canvas, so moving between sections changed the background (#1159).
+  const bgStyle = { flex: 1, backgroundColor: colors.bg[resolvedTheme].subtle }
+  // A centred column instead of content running the full canvas: at 1440 a
+  // notification's title sat ~1000px from its timestamp (#1160).
+  const column = {
+    width: '100%' as const,
+    maxWidth: (readingWidth ? CONTENT_WIDTH.reading : CONTENT_WIDTH.working) + contentPadding * 2,
+    alignSelf: 'center' as const,
+  }
 
   return (
-    <ScrollView
-      style={bgStyle}
-      showsVerticalScrollIndicator={false}
-    >
-      <Stack gap={sectionGap} paddingTop={verticalPadding} paddingBottom={verticalPadding + bottomNavInset}>
+    <ScrollView style={bgStyle} showsVerticalScrollIndicator={false}>
+      <Stack
+        gap={sectionGap}
+        paddingTop={verticalPadding}
+        paddingBottom={verticalPadding + bottomNavInset}
+        style={column}
+      >
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <Row paddingHorizontal={contentPadding}>
@@ -118,6 +148,7 @@ export const DashboardLayout = ({
         {!hideScreenHeader && screenTitle ? (
           <Stack paddingHorizontal={contentPadding}>
             <ScreenHeader
+              back={back}
               kicker={screenKicker}
               title={screenTitle}
               tip={screenTip}
@@ -129,17 +160,11 @@ export const DashboardLayout = ({
         ) : null}
 
         {/* Header — full-width search/filter toolbar */}
-        {headerContent && (
-          <Stack paddingHorizontal={contentPadding}>{headerContent}</Stack>
-        )}
+        {headerContent && <Stack paddingHorizontal={contentPadding}>{headerContent}</Stack>}
 
         {/* Content Area - Two-column golden ratio (lg+) or single column, min 300px per column */}
         <Stack paddingHorizontal={contentPadding}>
-          <Grid
-            columns={{ base: 1, lg: columnTemplate }}
-            gap={columnGap}
-            rowGap={rowGap}
-          >
+          <Grid columns={{ base: 1, lg: columnTemplate }} gap={columnGap} rowGap={rowGap}>
             {leftContent ? <Stack>{leftContent}</Stack> : null}
             {rightContent ? <Stack>{rightContent}</Stack> : null}
           </Grid>

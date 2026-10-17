@@ -5,6 +5,7 @@ import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
+import { useAppMode } from '@scf/core/utils/useAppMode'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { usePathname } from '@scf/core/utils/usePathname'
 import { useUser } from '@scf/core/utils/useUser'
@@ -22,7 +23,7 @@ import { Avatar, Chip, Text, useResponsive, useThemeContext } from '@scaffald/ui
 import { borderRadius, boxShadows, colors, fontSize, lineHeight } from '@scaffald/ui/tokens'
 import { AppearanceControl } from './AppearanceControl'
 import { DrawerLink } from './DrawerLink'
-import { getNavItems } from './config'
+import { activeNavKey, getNavItems } from './config'
 import { MobileDrawerSections } from './MobileDrawerSections'
 import { useAccountContexts, type AccountContext } from './useAccountContexts'
 import { isActivePath, normalizePath } from './utils'
@@ -74,6 +75,7 @@ export const DrawerContent = ({
   const router = useRouter()
   const { user, profile } = useUser()
   const { hasOfficeRole } = useUserRoles()
+  const { mode } = useAppMode()
   const { data: generalInfo } = useGeneralInfoWidget(undefined, {
     staleTime: 5 * 60 * 1000,
   })
@@ -82,9 +84,10 @@ export const DrawerContent = ({
   const collapsed = !isSmall && isCollapsed
 
   const items = useMemo(
-    () => getNavItems(orgMemberships ?? undefined, hasOfficeRole),
-    [orgMemberships, hasOfficeRole]
+    () => getNavItems(orgMemberships ?? undefined, hasOfficeRole, mode),
+    [orgMemberships, hasOfficeRole, mode]
   )
+  const activeKey = useMemo(() => activeNavKey(items, pathname), [items, pathname])
 
   const displayName =
     generalInfo?.display_name?.trim() ||
@@ -208,6 +211,7 @@ export const DrawerContent = ({
             pathname={pathname}
             onNavigate={handleNavigate}
             isCollapsed={collapsed}
+            active={item.key === activeKey}
           />
         ))}
       </ScrollView>

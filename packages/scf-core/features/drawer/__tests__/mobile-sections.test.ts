@@ -79,11 +79,38 @@ describe('the two sets stay out of each other’s routes', () => {
   })
 
   it('returns -1 for a route no tab owns, rather than falling back to Home', () => {
-    // The #385 regression: settings and profile lit up Home.
+    // The #385 regression: settings and profile lit up Home. Profile has its
+    // own worker tab now (#1158), so it is the employer bar that must not
+    // light on it.
     for (const [, sections] of sets) {
       expect(activeIndex('/settings', sections)).toBe(-1)
-      expect(activeIndex('/profile', sections)).toBe(-1)
+      expect(activeIndex('/communities', sections)).toBe(-1)
     }
+    expect(activeIndex('/profile', EMPLOYER_MOBILE_SECTIONS)).toBe(-1)
+  })
+})
+
+describe('the worker bar is the prototype\'s Home / Jobs / Apps / Profile (#1158)', () => {
+  it('has those four tabs, in that order', () => {
+    expect(MOBILE_SECTIONS.map((s) => s.key)).toEqual(['home', 'jobs', 'applications', 'profile'])
+  })
+
+  it('lights Apps on applications, not Jobs', () => {
+    const apps = MOBILE_SECTIONS.findIndex((s) => s.key === 'applications')
+    expect(activeIndex('/jobs/applications', MOBILE_SECTIONS)).toBe(apps)
+    expect(activeIndex('/jobs/applications/abc', MOBILE_SECTIONS)).toBe(apps)
+  })
+
+  it('lights Profile on the record and on assessments', () => {
+    const profile = MOBILE_SECTIONS.findIndex((s) => s.key === 'profile')
+    for (const p of ['/profile', '/profile/skills', '/assessments', '/assessments/ipip']) {
+      expect(activeIndex(p, MOBILE_SECTIONS), p).toBe(profile)
+    }
+  })
+
+  it('keeps job detail under Jobs', () => {
+    const jobs = MOBILE_SECTIONS.findIndex((s) => s.key === 'jobs')
+    expect(activeIndex('/jobs/view/abc', MOBILE_SECTIONS)).toBe(jobs)
   })
 })
 

@@ -33,6 +33,14 @@ export const SCREEN_RHYTHM = {
   rowGap: { desktop: 40, phone: 28 },
 } as const
 
+/**
+ * How wide a screen's content may run, excluding the gutters. The prototype
+ * centres every screen in a column — about 1020–1080px for working screens,
+ * about 760px for reading ones such as Notifications — instead of letting it
+ * run the whole canvas (#1160).
+ */
+export const CONTENT_WIDTH = { working: 1080, reading: 760 } as const
+
 export type ScreenRhythm = {
   gutter: number
   verticalPadding: number

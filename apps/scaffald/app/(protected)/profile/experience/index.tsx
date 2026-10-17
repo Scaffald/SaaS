@@ -29,9 +29,7 @@ export default function ProfileExperiencePage() {
             onEditComplete={() => setEditingEntryId(null)}
           />
           {!isDesktop && (
-            <ProfileEducationRight
-              onEditEntry={(entryId) => setEditingEntryId(entryId)}
-            />
+            <ProfileEducationRight onEditEntry={(entryId) => setEditingEntryId(entryId)} />
           )}
         </Accordion.Content>
       </Accordion.Item>
@@ -41,22 +39,13 @@ export default function ProfileExperiencePage() {
   const rightContent = isDesktop ? (
     <Stack gap={24}>
       <ProfileExperienceRight />
-      <ProfileEducationRight
-        onEditEntry={(entryId) => setEditingEntryId(entryId)}
-      />
+      <ProfileEducationRight onEditEntry={(entryId) => setEditingEntryId(entryId)} />
     </Stack>
   ) : null
 
   return (
     <ExperienceEditProvider>
-      <ProfilePage
-        breadcrumbs={[
-          { route: ROUTES.PROFILE },
-          { route: ROUTES.PROFILE.EXPERIENCE },
-        ]}
-        leftContent={leftContent}
-        rightContent={rightContent}
-      />
+      <ProfilePage leftContent={leftContent} rightContent={rightContent} />
     </ExperienceEditProvider>
   )
 }

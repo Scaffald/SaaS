@@ -22,6 +22,9 @@ const sectionGap = 40
 export default function SettingsPage() {
   return (
     <DashboardPage
+      readingWidth
+      screenKicker="Your account"
+      screenTip="Your public profile, appearance, notifications, privacy and the apps you have connected."
       breadcrumbs={[{ route: ROUTES.DASHBOARD.SETTINGS }]}
       pageTitle="Settings"
       fullWidth
@@ -34,9 +37,8 @@ export default function SettingsPage() {
             <Stack gap={12}>
               <Text size="xl">Public profile</Text>
               <Text color="gray">
-                Your public profile is shareable via a unique URL. Claim a name,
-                review the change history, and share via the Share button on your
-                profile screen.
+                Your public profile is shareable via a unique URL. Claim a name, review the change
+                history, and share via the Share button on your profile screen.
               </Text>
               <VanityUrlSection />
             </Stack>

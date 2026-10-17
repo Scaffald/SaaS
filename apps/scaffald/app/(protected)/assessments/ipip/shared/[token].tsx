@@ -1,11 +1,12 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import { LoadFailure } from '@scf/core/components/ui'
 import { ChartView } from '@scf/core/features/ipip-assessment/components/ChartView'
 import { NarrativeView } from '@scf/core/features/ipip-assessment/components/NarrativeView'
 import { normalizeScores } from '@scf/core/features/ipip-assessment/utils/scoreNormalizer'
 import type { IPIPAnswer } from '@scf/core/features/personality-assessment/lib/ipip'
 import { getResults, getScore } from '@scf/core/features/personality-assessment/lib/ipip'
 import { useSharedPersonalityResults } from '@scf/core/utils/personality-assessment-sdk-hooks'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Button, Tabs, Text, Stack } from '@scaffald/ui'
 
@@ -14,7 +15,6 @@ import { Button, Tabs, Text, Stack } from '@scaffald/ui'
  * Public route for viewing shared IPIP assessment results via token
  */
 export default function SharedIPIPResultsRoute() {
-  const router = useRouter()
   const { token } = useLocalSearchParams<{ token: string }>()
   const [activeTab, setActiveTab] = useState<'narrative' | 'chart'>('narrative')
 
@@ -58,13 +58,11 @@ export default function SharedIPIPResultsRoute() {
 
   if (error || !sharedResults) {
     return (
-      <Stack gap={16} padding={32} align="center">
-        <Text color="red" style={{ fontWeight: '600' }}>
-          {error?.message || 'Results Not Found'}
-        </Text>
-        <Text color="gray">This share link may be invalid, expired, or revoked.</Text>
-        <Button onPress={() => router.push(ROUTES.DASHBOARD.path)}>Return to Dashboard</Button>
-      </Stack>
+      <LoadFailure
+        error={error ?? { statusCode: 404 }}
+        noun="shared result"
+        back={{ label: 'Home', href: ROUTES.DASHBOARD.path }}
+      />
     )
   }
 
