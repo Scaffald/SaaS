@@ -205,6 +205,30 @@ Deno.test({
   },
 })
 
+// core.get_secret_value called vault.get_secret(uuid), which no Supabase
+// project has — Vault exposes vault.decrypted_secrets. Every Stripe call reads
+// its key through this function, so all of them would have failed the moment
+// a key was saved (#1259, migration 380). Nothing noticed: Stripe had never
+// been configured anywhere.
+Deno.test({
+  name: 'DB hardening - the service role can read a stored Stripe secret back (#1259)',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const value = `sk_test_${crypto.randomUUID().replaceAll('-', '')}`
+    // deno-lint-ignore no-explicit-any
+    const core = (createAdminClient() as any).schema('core')
+    const { data: secretId, error } = await core.rpc('rotate_stripe_secret', {
+      p_secret: value,
+      p_secret_type: 'api_key',
+    })
+    if (error) throw new Error(`store: ${error.message}`)
+    const read = await core.rpc('get_secret_value', { p_secret_id: secretId })
+    assertEquals(read.error, null, `read failed: ${JSON.stringify(read.error)}`)
+    assertEquals(read.data, value)
+  },
+})
+
 // ---------------------------------------------------------------------------
 // 2. #1144 — notification devices and preferences are per-user
 // ---------------------------------------------------------------------------

@@ -65,6 +65,7 @@ schema-regression.test.ts
 storage-bucket-limits-rest.test.ts
 stripe-config-rest.test.ts
 stripe-settings-rest.test.ts
+stripe-webhook.test.ts
 webhooks-rest.test.ts
 work-logs-rest.test.ts
 workers.test.ts
