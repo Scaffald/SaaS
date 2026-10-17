@@ -1,5 +1,8 @@
+import { ROUTES } from '@scf/core/constants/routes'
+import { useRouter } from 'expo-router'
+import { ArrowLeft, ArrowRight } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Button, ScrollView, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, H3, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 import { useBackgroundCheckForm } from '../hooks/useBackgroundCheckForm'
@@ -8,6 +11,7 @@ import { DocumentChecklistStep } from './DocumentChecklistStep'
 import { PackageSelectionStep } from './PackageSelectionStep'
 import { PaymentStep } from './PaymentStep'
 import { ProgressIndicator } from './ProgressIndicator'
+import { canContinueFrom, canGoBackFrom, footerActionFor } from '../wizard-steps'
 
 export function BackgroundCheckWizard() {
   const {
@@ -33,6 +37,7 @@ export function BackgroundCheckWizard() {
     isCreatingPaymentSession,
   } = useBackgroundCheckForm()
 
+  const router = useRouter()
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
 
@@ -46,6 +51,14 @@ export function BackgroundCheckWizard() {
     return []
   }, [selectedPackage])
 
+  const footerAction = footerActionFor(currentStep)
+  const canContinue = canContinueFrom(currentStep, {
+    selectedPackageId: state.selectedPackageId,
+    consent: state.consent,
+    requiredDocuments,
+    documents: state.documents,
+  })
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 'packages':
@@ -55,17 +68,10 @@ export function BackgroundCheckWizard() {
             selectedPackageId={state.selectedPackageId}
             onSelect={selectPackage}
             isLoading={packagesQuery.isLoading}
-            onContinue={() => nextStep()}
           />
         )
       case 'consent':
-        return (
-          <ConsentStep
-            consent={state.consent}
-            onChange={updateConsent}
-            onContinue={() => nextStep()}
-          />
-        )
+        return <ConsentStep consent={state.consent} onChange={updateConsent} />
       case 'documents':
         return (
           <DocumentChecklistStep
@@ -84,7 +90,6 @@ export function BackgroundCheckWizard() {
                 removeDocument(`pending://${documentType}`)
               }
             }}
-            onContinue={() => nextStep()}
           />
         )
       case 'payment':
@@ -106,29 +111,25 @@ export function BackgroundCheckWizard() {
         )
       case 'confirmation':
         return (
-          <Stack gap={16} flex={1}>
+          <Stack gap={16}>
             <Stack gap={8}>
-              <Text color={colors.text[t].secondary}>Background Check Submitted</Text>
+              <H3 style={{ color: colors.text[t].primary }}>Background check submitted</H3>
               <Text color={colors.text[t].secondary}>
-                We've started your background check request. We'll notify you when results are
-                ready.
+                We've started your background check. We'll notify you when results are ready.
               </Text>
             </Stack>
 
             <Stack gap={8} backgroundColor={colors.bg[t].muted} padding="md" borderRadius={16}>
-              <Text color={colors.text[t].secondary}>Summary</Text>
+              <Text weight="semibold" color={colors.text[t].primary}>
+                Summary
+              </Text>
               <Text color={colors.text[t].secondary}>
                 Package: {selectedPackage?.display_name ?? 'Pending'}
               </Text>
               <Text color={colors.text[t].secondary}>
                 Cost: ${state.payment.costCents ? (state.payment.costCents / 100).toFixed(2) : '—'}
               </Text>
-              <Text color={colors.text[t].secondary}>Payment: {state.payment.paidBy}</Text>
             </Stack>
-
-            <Button size="md" color="primary" onPress={() => goToStep('packages')}>
-              Start another background check
-            </Button>
           </Stack>
         )
       default:
@@ -163,21 +164,52 @@ export function BackgroundCheckWizard() {
           the profile shell. */}
       <Stack gap={16}>{renderStepContent()}</Stack>
 
+      {/* One footer row on every step: Back · Step n of 5 · the way on (#1191).
+          Each step drew its own full-width Continue — outlined pale teal that
+          read as disabled — above a second row with Back and the count. */}
       <Separator />
 
-      <Row justify="space-between" align="center" gap={12} wrap>
-        <Button
-          size="md"
-          disabled={currentStepIndex === 0 || currentStep === 'confirmation'}
-          onPress={previousStep}
-        >
-          Back
-        </Button>
-        {currentStep !== 'confirmation' && (
-          <Text color={colors.text[t].secondary}>
-            Step {currentStepIndex + 1} of {steps.length}
-          </Text>
-        )}
+      <Row justify="space-between" align="center" gap={12}>
+        <Stack flex={1} align="flex-start">
+          {currentStep !== 'confirmation' && (
+            <Button
+              size="md"
+              variant="text"
+              iconStart={ArrowLeft}
+              disabled={!canGoBackFrom(currentStep, currentStepIndex)}
+              onPress={previousStep}
+            >
+              Back
+            </Button>
+          )}
+        </Stack>
+        <Text color={colors.text[t].secondary}>
+          Step {currentStepIndex + 1} of {steps.length}
+        </Text>
+        <Stack flex={1} align="flex-end">
+          {footerAction === 'continue' && (
+            <Button
+              size="md"
+              variant="filled"
+              color="primary"
+              iconEnd={ArrowRight}
+              disabled={!canContinue}
+              onPress={() => nextStep()}
+            >
+              Continue
+            </Button>
+          )}
+          {footerAction === 'done' && (
+            <Button
+              size="md"
+              variant="filled"
+              color="primary"
+              onPress={() => router.push(ROUTES.PROFILE.ID_VERIFICATION.path as never)}
+            >
+              Back to verification
+            </Button>
+          )}
+        </Stack>
       </Row>
     </Stack>
   )

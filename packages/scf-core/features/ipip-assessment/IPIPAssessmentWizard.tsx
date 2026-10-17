@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { AssessmentWizard, toError } from '@scf/core/features/assessments'
+import { AssessmentTakingLayout, AssessmentWizard, toError } from '@scf/core/features/assessments'
 import { IPIPTestStep } from '@scf/core/features/personality-assessment/components/IPIPTestStep'
 import type { IPIPAnswer, IPIPDomain } from '@scf/core/features/personality-assessment/lib/ipip'
 import {
@@ -8,42 +8,36 @@ import {
   useSaveIPIPProgressMutation,
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
-import { DashboardLayout } from '@scf/core/components/layouts'
-import { useRouteScreenTitle } from '@scf/core/hooks/useRouteScreenTitle'
-import {
-  AssessmentHeader,
-  AssessmentProgressBar,
-  Card,
-  useToast,
-  useThemeContext,
-} from '@scaffald/ui'
+import { Button, Stack, Text, useThemeContext, useToast } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Text, Row, Stack } from '@scaffald/ui'
-import { Brain, BarChart3, Clock, Zap, CheckCircle } from 'lucide-react-native'
-import {
-  DOMAIN_NAMES,
-  DOMAIN_ORDER,
-  getCompletedDomainsCount,
-  QUESTIONS_PER_DOMAIN,
-} from './utils/domainGrouping'
+import { DOMAIN_NAMES, getCompletedDomainsCount } from './utils/domainGrouping'
+
+const TOTAL_QUESTIONS = 120
+const NO_ANSWERS: IPIPAnswer[] = []
+
+const KICKER = 'Work personality — Big Five'
+const INSTRUCTION =
+  'Describe yourself as you honestly are today — not as you wish to be. There are no right answers.'
 
 /**
- * IPIPAssessmentWizard - Two-column Pulse-style wizard for IPIP
+ * IPIPAssessmentWizard — the 120-item personality profile.
+ *
+ * Taking screens are a focused single column: no section tabs, no rail, no
+ * title block — a kicker with the counter, the item, the scale, and Save &
+ * exit (#1194). Progress used to be shown three times around one question.
  */
 export function IPIPAssessmentWizard() {
   const { theme } = useThemeContext()
-  const { title: routeTitle } = useRouteScreenTitle()
   const router = useRouter()
   const toast = useToast()
   const [completedDomain, setCompletedDomain] = useState<IPIPDomain | null>(null)
 
-  const { data: statusData, isLoading, error } = useIPIPStatus()
+  const { isLoading, error } = useIPIPStatus()
   const { data: assessmentData } = useAssessmentStatus()
   const queryClient = useQueryClient()
 
-  const status = (statusData as { data?: { progress?: number } } | undefined)?.data
   const assessment = (
     assessmentData as
       | {
@@ -56,16 +50,28 @@ export function IPIPAssessmentWizard() {
       | undefined
   )?.data
 
+  // Stable when the server has no answers yet: IPIPTestStep resets to its
+  // initial props whenever they change, so a fresh `[]` on every render
+  // would throw the worker back to the saved question each time this
+  // re-rendered — and the counter below re-renders it on every answer.
+  const savedAnswers = assessment?.ipip_answers as IPIPAnswer[] | undefined
+  const initialAnswers = useMemo(() => savedAnswers ?? NO_ANSWERS, [savedAnswers])
+  const [questionIndex, setQuestionIndex] = useState(assessment?.ipip_current_index || 0)
+
   const saveMutation = useSaveIPIPProgressMutation({
-    onSuccess: (_data, _variables, _context) => {
+    // Every answer saves. This used to toast "Questions Complete" and send
+    // the worker to the dashboard on every one of those saves — that is,
+    // after the first answer. Only the save that finishes the test does.
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'ipip', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
+      if ((variables?.current_index ?? 0) < TOTAL_QUESTIONS) return
       toast.show({
-        title: 'Questions Complete',
-        message: 'Your personality assessment has been saved!',
+        title: 'Questions complete',
+        message: 'Your personality profile has been saved.',
         variant: 'success',
       })
-      router.push(ROUTES.DASHBOARD.path)
+      router.push(ROUTES.ASSESSMENTS.IPIP.RESULTS.path)
     },
     onError: (error: { message?: string }) => {
       const errorMessage =
@@ -101,210 +107,76 @@ export function IPIPAssessmentWizard() {
     setCompletedDomain(null)
   }
 
-  const handleTakeBreak = () => {
-    router.push(ROUTES.DASHBOARD.path)
+  // Every answer is saved as it is given, so leaving keeps them.
+  const handleSaveAndExit = () => {
+    router.push(ROUTES.ASSESSMENTS.path)
   }
 
-  const progress = status?.progress || 0
-  const answersCount = (assessment?.ipip_answers as IPIPAnswer[])?.length || 0
-  const completedDomains = getCompletedDomainsCount(answersCount)
-  const completionScore = Math.round((progress / 120) * 100)
+  const completedDomains = getCompletedDomainsCount(initialAnswers.length)
   const queryError = toError(error)
+  const counter =
+    questionIndex < TOTAL_QUESTIONS
+      ? `Question ${questionIndex + 1} of ${TOTAL_QUESTIONS}`
+      : `${TOTAL_QUESTIONS} of ${TOTAL_QUESTIONS} answered`
 
-  // Domain completion overlay
+  const savingNote = (
+    <Text style={{ color: colors.text[theme].tertiary }}>
+      {saveMutation.isPending ? 'Saving…' : 'Saves as you go'}
+    </Text>
+  )
+
+  // Domain completion interstitial
   if (completedDomain) {
-    const wizardContent = (
+    return (
+      <AssessmentTakingLayout
+        kicker={KICKER}
+        counter={`${completedDomains} of 5 sections done`}
+        onExit={handleSaveAndExit}
+        footerEnd={savingNote}
+      >
+        <Stack gap={12}>
+          <Text style={{ color: colors.text[theme].emphasis }}>
+            ✓ {DOMAIN_NAMES[completedDomain]} Complete!
+          </Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            You've completed {completedDomains} of 5 domains
+          </Text>
+          <Stack align="flex-start" paddingTop={8}>
+            <Button size="md" variant="filled" color="primary" onPress={handleContinueToNextDomain}>
+              Continue to Next Domain
+            </Button>
+          </Stack>
+        </Stack>
+      </AssessmentTakingLayout>
+    )
+  }
+
+  return (
+    <AssessmentTakingLayout
+      kicker={KICKER}
+      counter={isLoading || queryError ? undefined : counter}
+      instruction={INSTRUCTION}
+      onExit={handleSaveAndExit}
+      footerEnd={savingNote}
+    >
       <AssessmentWizard
         steps={[{ id: 'questions', label: 'Questions', order: 1 }]}
         currentStep="questions"
-        completionScore={completionScore}
         isLoading={isLoading}
         error={queryError}
         showNext={false}
         showHeader={false}
       >
-        <Stack padding="md" paddingBottom="xs">
-          <AssessmentProgressBar value={completionScore} height={4} />
-        </Stack>
-        <Stack
-          gap={24}
-          width="100%"
-          align="center"
-          padding={32}
-          style={{ maxWidth: 800, alignSelf: 'center' }}
-        >
-          <Stack gap={16} align="center">
-            <Text style={{ color: colors.success[500] }}>
-              ✓ {DOMAIN_NAMES[completedDomain]} Complete!
-            </Text>
-            <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
-              You've completed {completedDomains} of 5 domains
-            </Text>
-            <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
-              Great progress! You're {Math.round((completedDomains / 5) * 100)}% done with the
-              assessment.
-            </Text>
-          </Stack>
-
-          <Stack gap={12} width="100%" maxWidth={400}>
-            <Button size="lg" color="primary" onPress={handleContinueToNextDomain}>
-              Continue to Next Domain
-            </Button>
-            <Button size="md" variant="outline" onPress={handleTakeBreak}>
-              Take a Break
-            </Button>
-          </Stack>
-        </Stack>
-      </AssessmentWizard>
-    )
-
-    return (
-      <DashboardLayout
-        leftContent={wizardContent}
-        rightContent={
-          <RailContent
-            theme={theme}
-            completionScore={completionScore}
-            answersCount={answersCount}
-            completedDomains={completedDomains}
-          />
-        }
-        breadcrumbItems={[
-          { label: 'Assessments', href: '/assessments' },
-          { label: 'Personality (IPIP)' },
-        ]}
-        screenKicker="Assessment"
-        screenTitle={routeTitle}
-        screenTip="How you work, across the five traits employers ask about. 120 questions, and it saves as you go."
-      />
-    )
-  }
-
-  // Main assessment flow
-  const wizardContent = (
-    <AssessmentWizard
-      steps={[{ id: 'questions', label: 'Questions', order: 1 }]}
-      currentStep="questions"
-      completionScore={completionScore}
-      isLoading={isLoading}
-      error={queryError}
-      showNext={false}
-      showHeader={false}
-    >
-      <Stack padding="md" paddingBottom="xs">
-        <AssessmentProgressBar value={completionScore} height={4} />
-      </Stack>
-
-      <IPIPTestStep
-        initialAnswers={(assessment?.ipip_answers as IPIPAnswer[]) || []}
-        currentIndex={assessment?.ipip_current_index || 0}
-        language={assessment?.ipip_language || 'en'}
-        onSave={handleSave}
-        onDomainComplete={handleDomainComplete}
-        isLoading={saveMutation.isPending}
-      />
-    </AssessmentWizard>
-  )
-
-  return (
-    <DashboardLayout
-      leftContent={wizardContent}
-      rightContent={
-        <RailContent
-          theme={theme}
-          completionScore={completionScore}
-          answersCount={answersCount}
-          completedDomains={completedDomains}
+        <IPIPTestStep
+          initialAnswers={initialAnswers}
+          currentIndex={assessment?.ipip_current_index || 0}
+          language={assessment?.ipip_language || 'en'}
+          onSave={handleSave}
+          onDomainComplete={handleDomainComplete}
+          onIndexChange={setQuestionIndex}
+          isLoading={saveMutation.isPending}
         />
-      }
-      breadcrumbItems={[
-        { label: 'Assessments', href: '/assessments' },
-        { label: 'Personality (IPIP)' },
-      ]}
-      screenKicker="Assessment"
-      screenTitle={routeTitle}
-      screenTip="How you work, across the five traits employers ask about. 120 questions, and it saves as you go."
-    />
-  )
-}
-
-/** Sidebar rail content for IPIP assessment */
-function RailContent({
-  theme,
-  completionScore,
-  answersCount,
-  completedDomains,
-}: {
-  theme: 'light' | 'dark'
-  completionScore: number
-  answersCount: number
-  completedDomains: number
-}) {
-  return (
-    <Stack gap={20} padding="xs">
-      <Stack gap={4}>
-        <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>
-          Personality Assessment
-        </Text>
-        <Text style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 20 }}>
-          120 questions across five personality domains. Take breaks anytime — your progress is
-          saved.
-        </Text>
-      </Stack>
-
-      {/* Progress summary */}
-      <Card variant="outlined" padding="md" radius="xl">
-        <Stack gap={12}>
-          <Text style={{ fontWeight: '600', fontSize: 14, color: colors.text[theme].primary }}>
-            Progress
-          </Text>
-          <AssessmentProgressBar value={completionScore} height={6} />
-          <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
-            {answersCount} of 120 questions answered
-          </Text>
-        </Stack>
-      </Card>
-
-      {/* Domain checklist */}
-      <Card variant="outlined" padding="md" radius="xl">
-        <Stack gap={12}>
-          <Text style={{ fontWeight: '600', fontSize: 14, color: colors.text[theme].primary }}>
-            Domains
-          </Text>
-          {DOMAIN_ORDER.map((domain, index) => {
-            const isComplete = index < completedDomains
-            const isCurrent = index === completedDomains
-            return (
-              <Row key={domain} gap={8} align="center">
-                <CheckCircle
-                  size={16}
-                  color={
-                    isComplete
-                      ? colors.success[500]
-                      : isCurrent
-                        ? colors.primary[500]
-                        : colors.text[theme].tertiary
-                  }
-                  fill={isComplete ? colors.success[500] : 'transparent'}
-                />
-                <Text
-                  style={{
-                    fontSize: 13,
-                    color: isComplete
-                      ? colors.text[theme].primary
-                      : isCurrent
-                        ? colors.primary[500]
-                        : colors.text[theme].tertiary,
-                    fontWeight: isCurrent ? '600' : '400',
-                  }}
-                >
-                  {DOMAIN_NAMES[domain]} ({QUESTIONS_PER_DOMAIN}q)
-                </Text>
-              </Row>
-            )
-          })}
-        </Stack>
-      </Card>
-    </Stack>
+      </AssessmentWizard>
+    </AssessmentTakingLayout>
   )
 }

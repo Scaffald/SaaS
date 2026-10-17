@@ -1,53 +1,80 @@
 import { memo } from 'react'
-import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { View } from 'react-native'
+import { Text, Row, useResponsive, useThemeContext } from '@scaffald/ui'
+import { colors, fontSize } from '@scaffald/ui/tokens'
 
 import type { BackgroundCheckWizardStep } from '../hooks/useBackgroundCheckForm'
-
-const STEP_LABELS: Record<BackgroundCheckWizardStep, string> = {
-  packages: 'Package',
-  consent: 'Consent',
-  documents: 'Documents',
-  payment: 'Payment',
-  confirmation: 'Confirmation',
-}
+import { STEP_LABELS, stepNumber } from '../wizard-steps'
 
 interface ProgressIndicatorProps {
   steps: BackgroundCheckWizardStep[]
   currentStep: BackgroundCheckWizardStep
 }
 
+/**
+ * Numbered tabs on a hairline, the current one underlined (#1191).
+ *
+ * This was a row of filled circles — teal for the current step, green for
+ * done, grey for ahead — with every label but the current one in link teal,
+ * so the steps you could not go to looked like the ones you could. The
+ * prototype's stepper is text: a number, a name, and one accent rule under
+ * where you are. Teal, because "you are here" is interaction (.radium
+ * accent rule, #983).
+ */
 export const ProgressIndicator = memo(function ProgressIndicator({
   steps,
   currentStep,
 }: ProgressIndicatorProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
+  const { width } = useResponsive()
+  // Five names do not fit across a phone; there only the current step is
+  // named and the rest keep their number.
+  const compact = width > 0 && width < 640
   const currentIndex = steps.indexOf(currentStep)
 
   return (
-    <Row gap={12} align="center">
+    <Row
+      accessibilityRole="list"
+      style={{ borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
+    >
       {steps.map((step, index) => {
-        const isCompleted = index < currentIndex
         const isActive = index === currentIndex
-        const variant = isActive ? colors.primary[500] : isCompleted ? colors.success[500] : colors.bg[t].muted
+        const isDone = index < currentIndex
+        const tone = isActive
+          ? colors.text[t].emphasis
+          : isDone
+            ? colors.text[t].secondary
+            : colors.text[t].tertiary
+        const showLabel = !compact || isActive
 
         return (
-          <Stack key={step} align="center" gap={4}>
-            <Stack
-              width={36}
-              height={36}
-              backgroundColor={variant}
-              borderWidth={2}
-              borderColor={isActive ? colors.text[t].primary : colors.border[t].default}
-              borderRadius={18}
-              align="center"
-              justify="center"
-            >
-              <Text style={{ color: colors.text[t].secondary }}>{index + 1}</Text>
-            </Stack>
-            <Text style={{ color: isActive ? colors.text[t].primary : colors.primary[500] }}>{STEP_LABELS[step]}</Text>
-          </Stack>
+          <View
+            key={step}
+            accessibilityRole="text"
+            accessibilityLabel={`Step ${index + 1} of ${steps.length}: ${STEP_LABELS[step]}${isActive ? ', current' : isDone ? ', done' : ''}`}
+            style={{
+              flexGrow: showLabel ? 1 : 0,
+              flexShrink: 1,
+              flexBasis: showLabel ? 0 : 'auto',
+              minWidth: 0,
+              paddingTop: 4,
+              paddingBottom: 10,
+              paddingHorizontal: 6,
+              gap: 2,
+              // The underline sits on the row's hairline rather than above it.
+              marginBottom: -1,
+              borderBottomWidth: 2,
+              borderBottomColor: isActive ? colors.border[t].selected : 'transparent',
+            }}
+          >
+            <Text style={{ fontSize: fontSize.xs, color: tone }}>{stepNumber(index)}</Text>
+            {showLabel ? (
+              <Text numberOfLines={1} style={{ color: tone }}>
+                {STEP_LABELS[step]}
+              </Text>
+            ) : null}
+          </View>
         )
       })}
     </Row>

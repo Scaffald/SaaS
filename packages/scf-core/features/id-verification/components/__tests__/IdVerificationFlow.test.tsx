@@ -63,4 +63,13 @@ describe('IdVerificationFlow (#1110)', () => {
     expect(screen.getByText('What happens after payment?')).toBeTruthy()
     expect(screen.getByText(/Purchase a verification/)).toBeTruthy()
   })
+
+  // #1192: the worker's help card offered "a bulk verification plan for your
+  // organization" — employer copy on a worker page.
+  it('keeps the help card to the worker’s own verification', () => {
+    render(<IdVerificationRight />)
+    expect(screen.getByText('Need help?')).toBeTruthy()
+    expect(screen.queryByText(/organization/i)).toBeNull()
+    expect(screen.queryByText(/bulk/i)).toBeNull()
+  })
 })

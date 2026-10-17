@@ -226,20 +226,16 @@ export function IdVerificationRight() {
         </Card>
       )}
 
-      <Card
-        variant="glass"
-        padding="md"
-        bordered
-        style={{
-          backgroundColor: colors.info[theme === 'dark' ? 900 : 50],
-          borderColor: colors.border[theme].info,
-        }}
-      >
+      {/* A neutral hairline card like its neighbour. It was the info palette's
+          blue — off the warm palette — and offered the worker "a bulk
+          verification plan for your organization", which is employer copy
+          (#1192). */}
+      <Card variant="glass" padding="md" bordered>
         <Stack gap={8}>
-          <Text style={{ color: colors.info[theme === 'dark' ? 300 : 700] }}>Need help?</Text>
-          <Text style={{ color: colors.info[theme === 'dark' ? 300 : 600] }}>
-            Email support@scaffald.com if you run into issues with Persona, need an invoice, or want
-            to request a bulk verification plan for your organization.
+          <Text style={{ color: colors.text[theme].primary }}>Need help?</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Email support@scaffald.com if Persona gives you trouble, you need a receipt, or your
+            badge hasn't updated after you finished.
           </Text>
         </Stack>
       </Card>

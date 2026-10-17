@@ -1,33 +1,30 @@
-import { AssessmentWizard, useAssessmentSave, toError } from '@scf/core/features/assessments'
+import {
+  AssessmentTakingLayout,
+  AssessmentWizard,
+  useAssessmentSave,
+  toError,
+} from '@scf/core/features/assessments'
 import { OccupationSearch } from '@scf/core/features/career-assessment/components/OccupationSearch'
 import {
   useOccupationStatus,
   useSaveCareerAssessmentMutation,
 } from '@scf/core/utils/onet-sdk-hooks'
 import { ROUTES } from '@scf/core/constants/routes'
-import { DashboardLayout } from '@scf/core/components/layouts'
-import { useRouteScreenTitle } from '@scf/core/hooks/useRouteScreenTitle'
-import { Plus, X, Briefcase, Target, Search, Zap } from 'lucide-react-native'
-import { useEffect, useMemo, useState } from 'react'
-import {
-  AssessmentHeader,
-  AssessmentProgressBar,
-  Button,
-  Card,
-  Text,
-  Row,
-  Stack,
-  useThemeContext,
-} from '@scaffald/ui'
+import { Plus, X } from 'lucide-react-native'
+import { useEffect, useState } from 'react'
+import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 
 /**
- * OccupationAssessmentWizard - Two-column Pulse-style wizard for Occupation Preferences
+ * OccupationAssessmentWizard — Occupation preferences.
+ *
+ * A focused single column while it is being filled in: no section tabs, no
+ * rail, no title block (#1194). Nothing is saved until Save preferences, so
+ * the way out says "Exit", not "Save & exit".
  */
 export function OccupationAssessmentWizard() {
   const { theme } = useThemeContext()
-  const { title: routeTitle } = useRouteScreenTitle()
   const router = useRouter()
 
   const { data: status, isLoading, error } = useOccupationStatus()
@@ -74,9 +71,6 @@ export function OccupationAssessmentWizard() {
     setTargetOccupations(updated)
   }
 
-  const hasAnyOccupation = currentOccupation || targetOccupations.some((occ) => occ)
-  const completionScore = status?.isCompleted ? 100 : hasAnyOccupation ? 50 : 0
-
   const wizardContent = (
     <AssessmentWizard
       steps={[
@@ -84,17 +78,12 @@ export function OccupationAssessmentWizard() {
         { id: 'targets', label: 'Target Occupations', order: 2 },
       ]}
       currentStep="current"
-      completionScore={completionScore}
       isLoading={isLoading}
       error={toError(error)}
       showNext={false}
       showHeader={false}
     >
-      <Stack padding="md" paddingBottom="xs">
-        <AssessmentProgressBar value={completionScore} height={4} />
-      </Stack>
-
-      <Stack gap={28} maxWidth={800} width="100%" padding="md" style={{ marginHorizontal: 'auto' }}>
+      <Stack gap={28} width="100%">
         {/* Current Occupation */}
         <Stack gap={12}>
           <Stack gap={4}>
@@ -152,77 +141,29 @@ export function OccupationAssessmentWizard() {
             Add Target Occupation
           </Button>
         </Stack>
+      </Stack>
+    </AssessmentWizard>
+  )
 
+  return (
+    <AssessmentTakingLayout
+      kicker="Occupation preferences"
+      instruction="The work you do now, and the work you want next. Both are optional."
+      onExit={() => router.push(ROUTES.ASSESSMENTS.path)}
+      exitLabel="Exit"
+      footerEnd={
         <Button
-          size="lg"
-          variant="light"
+          size="md"
+          variant="filled"
           color="primary"
           onPress={handleComplete}
           disabled={saveMutation.isPending}
         >
           Save Preferences
         </Button>
-      </Stack>
-    </AssessmentWizard>
-  )
-
-  const railContent = (
-    <Stack gap={20} padding="xs">
-      <Stack gap={4}>
-        <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>
-          Occupation Preferences
-        </Text>
-        <Text style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 20 }}>
-          Your occupation preferences help us personalize job recommendations and career guidance.
-        </Text>
-      </Stack>
-
-      {/* Tips */}
-      <Card variant="outlined" padding="md" radius="xl">
-        <Stack gap={8}>
-          <Text style={{ fontWeight: '600', fontSize: 14, color: colors.text[theme].primary }}>
-            Tips
-          </Text>
-          <Text style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 20 }}>
-            Search by job title or keyword. You can add multiple target occupations to broaden your
-            career exploration.
-          </Text>
-        </Stack>
-      </Card>
-
-      {/* Career Explorer link */}
-      <Card variant="outlined" padding="md" radius="xl">
-        <Stack gap={8}>
-          <Text style={{ fontWeight: '600', fontSize: 14, color: colors.text[theme].primary }}>
-            Explore Careers
-          </Text>
-          <Text style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 20 }}>
-            Browse 1,000+ occupations and discover career paths that match your interests.
-          </Text>
-          <Button
-            size="sm"
-            variant="outline"
-            color="primary"
-            onPress={() => router.push(ROUTES.ASSESSMENTS.CAREER_EXPLORER.path)}
-          >
-            Open Career Explorer
-          </Button>
-        </Stack>
-      </Card>
-    </Stack>
-  )
-
-  return (
-    <DashboardLayout
-      leftContent={wizardContent}
-      rightContent={railContent}
-      breadcrumbItems={[
-        { label: 'Assessments', href: '/assessments' },
-        { label: 'Occupation Preferences' },
-      ]}
-      screenKicker="Assessment"
-      screenTitle={routeTitle}
-      screenTip="Rank the trades you want. This is what job matching reads."
-    />
+      }
+    >
+      {wizardContent}
+    </AssessmentTakingLayout>
   )
 }

@@ -1,8 +1,8 @@
-import { useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
 import {
   Button,
-  ListToolbar,
+  Card,
+  H3,
   Row,
   Skeleton,
   SkeletonGroup,
@@ -10,57 +10,32 @@ import {
   Text,
   useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
-import { useAssessmentCatalogue } from '../assessment-catalogue'
+import { colors, fontSize } from '@scaffald/ui/tokens'
+import {
+  entryActionLabel,
+  entryActionRoute,
+  splitRecommended,
+  useAssessmentCatalogue,
+} from '../assessment-catalogue'
 
 /**
- * The assessments hub: one list, with status.
+ * The assessments hub: one recommendation, then the rest on hairlines.
  *
  * It was four marketing cards — a title, a paragraph, a full-width filled
  * button each — and no indication anywhere of which ones the viewer had
- * already done. A worker who had finished three of the four saw the same
- * screen as one who had finished none, with four equally loud calls to
- * action inviting them to start over.
+ * already done (#831). Then it was a list with status, but under a status
+ * strip and a search box with a count, for four items, each with its own
+ * filled "Begin": four equal primaries and nothing recommended (#1193).
  *
- * Rows on hairlines, each saying what it proves, how long it takes and
- * whether it is done, with one action that changes accordingly. The tabs
- * partition the same list rather than filtering a different one.
+ * Now the first assessment not yet taken leads, in its own card with the
+ * screen's one primary action. Everything else is a ruled list with outline
+ * actions. No search or partition: four rows do not need finding.
  */
-
-type HubFilter = 'all' | 'available' | 'completed'
-
-const FILTERS: { key: HubFilter; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'available', label: 'Available' },
-  { key: 'completed', label: 'Completed' },
-]
-
 export function AssessmentsHub() {
   const router = useRouter()
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
-  const [filter, setFilter] = useState<HubFilter>('all')
-  const [search, setSearch] = useState('')
   const { entries, isLoading } = useAssessmentCatalogue()
-
-  const counts = useMemo(
-    () => ({
-      all: entries.length,
-      available: entries.filter((entry) => !entry.complete).length,
-      completed: entries.filter((entry) => entry.complete).length,
-    }),
-    [entries]
-  )
-
-  const visible = useMemo(() => {
-    const term = search.trim().toLowerCase()
-    return entries.filter((entry) => {
-      if (filter === 'available' && entry.complete) return false
-      if (filter === 'completed' && !entry.complete) return false
-      if (!term) return true
-      return `${entry.title} ${entry.proves}`.toLowerCase().includes(term)
-    })
-  }, [entries, filter, search])
 
   if (isLoading) {
     return (
@@ -72,32 +47,51 @@ export function AssessmentsHub() {
     )
   }
 
-  return (
-    <Stack gap={20}>
-      <ListToolbar
-        tabs={FILTERS.map((entry) => ({
-          key: entry.key,
-          label: entry.label,
-          count: counts[entry.key],
-        }))}
-        activeTab={filter}
-        onTabChange={(next) => setFilter(next as HubFilter)}
-        searchValue={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Search assessments…"
-        resultCount={visible.length}
-        resultNoun="assessment"
-      />
+  const { recommended, rest } = splitRecommended(entries)
 
-      {visible.length === 0 ? (
-        <Text style={{ color: colors.text[t].secondary }}>
-          {filter === 'completed'
-            ? "You haven't finished any of these yet."
-            : 'Nothing matches that.'}
-        </Text>
+  return (
+    <Stack gap={24}>
+      {recommended ? (
+        <Stack gap={12}>
+          <H3 style={{ color: colors.text[t].primary }}>Recommended for you</H3>
+          <Card bordered radius="md" padding="lg" borderColor={colors.border[t].attention}>
+            <Stack gap={10}>
+              <Text
+                style={{
+                  fontSize: fontSize.h6,
+                  letterSpacing: 1.4,
+                  textTransform: 'uppercase',
+                  color: colors.text[t].attention,
+                }}
+              >
+                {recommended.estimate}
+              </Text>
+              <Text size="lg" weight="semibold" style={{ color: colors.text[t].primary }}>
+                {recommended.title}
+              </Text>
+              <Text style={{ color: colors.text[t].secondary }}>{recommended.proves}</Text>
+              <Row paddingTop={6}>
+                <Button
+                  size="md"
+                  variant="filled"
+                  color="primary"
+                  onPress={() => router.push(recommended.route as never)}
+                >
+                  Begin assessment
+                </Button>
+              </Row>
+            </Stack>
+          </Card>
+        </Stack>
       ) : (
-        <Stack>
-          {visible.map((entry) => (
+        <Text style={{ color: colors.text[t].secondary }}>
+          You've taken all of them. Review your results, or take one again when things change.
+        </Text>
+      )}
+
+      {rest.length > 0 && (
+        <Stack style={{ borderTopWidth: 1, borderTopColor: colors.border[t].default }}>
+          {rest.map((entry) => (
             <Row
               key={entry.key}
               gap={12}
@@ -122,15 +116,11 @@ export function AssessmentsHub() {
               </Stack>
               <Button
                 size="sm"
-                variant={entry.complete ? 'outline' : 'filled'}
+                variant="outline"
                 color="primary"
-                onPress={() =>
-                  router.push(
-                    entry.resultsRoute && entry.complete ? entry.resultsRoute : entry.route
-                  )
-                }
+                onPress={() => router.push(entryActionRoute(entry) as never)}
               >
-                {entry.complete ? (entry.resultsRoute ? 'Review' : 'Take again') : 'Begin'}
+                {entryActionLabel(entry)}
               </Button>
             </Row>
           ))}

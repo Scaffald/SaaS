@@ -52,6 +52,34 @@ export function readCompleted(status: unknown): boolean {
   )
 }
 
+/**
+ * The hub leads with one assessment, not four equal calls to action (#1193).
+ * The first one not yet taken, in catalogue order, is the recommendation;
+ * everything else is the list beneath it. Nothing is recommended once all
+ * are done.
+ */
+export function splitRecommended(entries: AssessmentEntry[]): {
+  recommended: AssessmentEntry | null
+  rest: AssessmentEntry[]
+} {
+  const recommended = entries.find((entry) => !entry.complete) ?? null
+  return {
+    recommended,
+    rest: recommended ? entries.filter((entry) => entry !== recommended) : entries,
+  }
+}
+
+/** What a row's action says, given whether it is done. */
+export function entryActionLabel(entry: AssessmentEntry): string {
+  if (!entry.complete) return 'Begin'
+  return entry.resultsRoute ? 'Review' : 'Take again'
+}
+
+/** Where a row's action goes: the results, when they have a screen and exist. */
+export function entryActionRoute(entry: AssessmentEntry): string {
+  return entry.resultsRoute && entry.complete ? entry.resultsRoute : entry.route
+}
+
 export function useAssessmentCatalogue(): { entries: AssessmentEntry[]; isLoading: boolean } {
   const { data: pulse, isLoading: loadingPulse } = useLuscherTest1Status()
   const { data: ipip, isLoading: loadingIPIP } = useIPIPStatus()

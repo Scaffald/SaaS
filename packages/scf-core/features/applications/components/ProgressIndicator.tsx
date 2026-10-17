@@ -47,12 +47,22 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
     return 'upcoming'
   }
 
+  // Every line and ring here is drawn in a border or icon token, never a
+  // background one (#1184). The connectors were bg.default / bg.muted: page
+  // colour on the page, so the pending line was a faint smear in light and
+  // near-black on near-black in dark, and a completed one was invisible. A
+  // pending step is an outlined disc, not a grey fill, so it reads as
+  // upcoming rather than disabled. icon.muted is >=3:1 on the ground in both
+  // themes; border.active is the teal of an active/selected state.
+  const pendingLine = colors.icon[theme].muted
+  const doneLine = colors.border[theme].active
+
   return (
     <Row
       gap={8}
       align="center"
       wrap
-      padding="md"
+      paddingVertical={8}
       role="progressbar"
       aria-label="Application progress"
       aria-valuenow={steps.findIndex((s) => s.id === currentStep) + 1}
@@ -64,62 +74,33 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
         const isLast = index === steps.length - 1
         const stepNumber = index + 1
 
-        // Determine if connecting line should be blue (completed) or gray (future)
-        // Line is blue if current step or any previous step is completed/current
-        const isLineCompleted =
-          status === 'completed' ||
-          status === 'current' ||
-          steps.slice(0, index).some((s) => {
-            const prevStatus = getStepStatus(s.id)
-            return prevStatus === 'completed' || prevStatus === 'current'
-          })
+        // The line after a step is drawn as done once that step is.
+        const isLineCompleted = status === 'completed'
 
         return (
           <Row key={step.id} gap={8} align="center" flex={1} minWidth={0}>
             {/* Step Circle */}
             <Stack gap={8} align="center" flexShrink={0}>
-              {status === 'completed' ? (
-                <Stack
-                  width={32}
-                  height={32}
-                  borderRadius={16}
-                  style={{
-                    backgroundColor: colors.bg[theme].default,
-                    borderColor: colors.border[theme].active,
-                    shadowColor: colors.bg[theme].default,
-                    borderWidth: 2,
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 4,
-                  }}
-                  align="center"
-                  justify="center"
-                >
-                  <CheckCircle2 size={20} color={colors.text[theme].secondary} />
-                </Stack>
-              ) : (
-                <Stack
-                  width={32}
-                  height={32}
-                  borderRadius={16}
-                  style={{
-                    backgroundColor:
-                      status === 'current' ? colors.bg[theme].default : colors.bg[theme].muted,
-                    borderColor:
-                      status === 'current'
+              <Stack
+                width={32}
+                height={32}
+                borderRadius={16}
+                style={{
+                  backgroundColor: 'transparent',
+                  borderColor:
+                    status === 'completed'
+                      ? doneLine
+                      : status === 'current'
                         ? colors.text[theme].emphasis
-                        : colors.border[theme].subtle,
-                    shadowColor: status === 'current' ? colors.bg[theme].default : undefined,
-                    borderWidth: status === 'current' ? 2 : 1,
-                    ...(status === 'current' && {
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: 0.2,
-                      shadowRadius: 4,
-                    }),
-                  }}
-                  align="center"
-                  justify="center"
-                >
+                        : pendingLine,
+                  borderWidth: status === 'upcoming' ? 1 : 2,
+                }}
+                align="center"
+                justify="center"
+              >
+                {status === 'completed' ? (
+                  <CheckCircle2 size={20} color={colors.text[theme].emphasis} />
+                ) : (
                   <Text
                     style={{
                       color:
@@ -130,8 +111,8 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                   >
                     {stepNumber}
                   </Text>
-                </Stack>
-              )}
+                )}
+              </Stack>
 
               {/* Step Label */}
               <Text
@@ -156,11 +137,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
               <Stack
                 flex={1}
                 height={2}
-                style={{
-                  backgroundColor: isLineCompleted
-                    ? colors.bg[theme].default
-                    : colors.bg[theme].muted,
-                }}
+                style={{ backgroundColor: isLineCompleted ? doneLine : pendingLine }}
                 marginHorizontal={8}
                 minWidth={20}
               />

@@ -25,6 +25,7 @@ import {
   useMyApplicationForJob,
 } from '@scf/core/utils/jobs-sdk-hooks'
 import { openExternalLink } from '@scf/core/utils/platform'
+import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 
 type JobLocation =
   | string
@@ -82,6 +83,7 @@ export function JobDetailApplyAction({ jobId }: { jobId: string }) {
     enabled: !!jobId && !internalJob && !internalLoading,
   })
   const { data: myApplication } = useMyApplicationForJob(jobId, { enabled: !!jobId && signedIn })
+  const trackEvent = useTrackEngagementMutation()
 
   const externalJob = externalJobsList?.find((job: { id: string }) => job.id === jobId)
   const externalUrl = externalJob?.url ?? null
@@ -142,12 +144,36 @@ export function JobDetailApplyAction({ jobId }: { jobId: string }) {
     )
   }
 
+  // An outside listing with no link has nowhere to apply; the rail says so
+  // and offers the way back. Falling through would open our own form for a
+  // posting that isn't ours.
+  if (externalJob) {
+    return null
+  }
+
   return (
     <Button
       size="sm"
       variant="filled"
       color="primary"
-      onPress={() => router.push(buildPath(ROUTES.JOBS.DETAIL.APPLY, { id: jobId }))}
+      onPress={() => {
+        // This is the only Apply on the screen now that the rail lost its
+        // copy (#1182), so the funnel's start event moved here with it.
+        try {
+          trackEvent.mutate({
+            eventType: 'application_start',
+            targetType: 'job',
+            targetId: jobId,
+            metadata: {
+              job_title: internalJob?.title,
+              organization_name: internalJob?.organization?.name || 'Unknown Organization',
+            },
+          })
+        } catch (error) {
+          console.warn('Failed to track application started:', error)
+        }
+        router.push(buildPath(ROUTES.JOBS.DETAIL.APPLY, { id: jobId }))
+      }}
     >
       Apply
     </Button>

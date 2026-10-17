@@ -61,10 +61,21 @@ function rank(table: Record<string, number>, value: string | null | undefined): 
 
 export type RequirementStatus = 'met' | 'unmet' | 'unknown'
 
+/**
+ * The profile field that would answer an `unknown` requirement if the worker
+ * filled it in (#1183). Only set when the requirement *is* a profile field and
+ * the profile simply doesn't say yet — never for drug tests, travel and the
+ * other things no profile field covers, so the screen can tell "add this" from
+ * "we can't check this" instead of saying the latter about both.
+ */
+export type ProfileGap = 'education' | 'experience' | 'drivers-license'
+
 export interface JobRequirement {
   id: string
   label: string
   status: RequirementStatus
+  /** Set on an `unknown` requirement that the worker's own profile could answer. */
+  gap?: ProfileGap
 }
 
 export interface RequirementInputs {
@@ -128,6 +139,9 @@ export function buildJobRequirements({ job, profile }: RequirementInputs): JobRe
       .map((e) => rank(DEGREE_RANK, e.degree_type))
       .filter((n): n is number => n !== null)
     const best = held.length > 0 ? Math.max(...held) : null
+    // No education entries at all is a profile gap; entries we cannot rank
+    // are a vocabulary mismatch, which adding more would not fix.
+    const noEducation = !!profile && needed !== null && (profile.education ?? []).length === 0
     out.push({
       id: 'education',
       label: formatEducation(job.minimum_education_level),
@@ -135,6 +149,7 @@ export function buildJobRequirements({ job, profile }: RequirementInputs): JobRe
       // vocabularies are free text and a mismatch may be a spelling, not a gap.
       status:
         !profile || needed === null || best === null ? 'unknown' : best >= needed ? 'met' : 'unmet',
+      ...(noEducation ? { gap: 'education' as const } : {}),
     })
   }
 
@@ -154,6 +169,7 @@ export function buildJobRequirements({ job, profile }: RequirementInputs): JobRe
           : years >= job.minimum_years_experience
             ? 'met'
             : 'unmet',
+      ...(profile && years === null ? { gap: 'experience' as const } : {}),
     })
   }
 
@@ -177,6 +193,11 @@ export function buildJobRequirements({ job, profile }: RequirementInputs): JobRe
           : classes.length > 0
             ? 'met'
             : 'unmet',
+      // A named class stays unchecked whatever the profile says, so recording
+      // a licence would not answer it — only a plain requirement is a gap.
+      ...(profile && !job.drivers_license_type && classes == null
+        ? { gap: 'drivers-license' as const }
+        : {}),
     })
   }
 
@@ -222,6 +243,56 @@ export function requirementsSummary(
   const checkable = requirements.filter((r) => r.status !== 'unknown')
   if (checkable.length === 0) return null
   return { met: checkable.filter((r) => r.status === 'met').length, checkable: checkable.length }
+}
+
+/**
+ * The distinct profile fields that would answer this posting's unchecked
+ * requirements, in the order the requirements are listed (#1183).
+ */
+export function profileGaps(requirements: JobRequirement[]): ProfileGap[] {
+  const gaps: ProfileGap[] = []
+  for (const requirement of requirements) {
+    if (requirement.status === 'unknown' && requirement.gap && !gaps.includes(requirement.gap)) {
+      gaps.push(requirement.gap)
+    }
+  }
+  return gaps
+}
+
+const GAP_NOUN: Record<ProfileGap, string> = {
+  education: 'education',
+  experience: 'work experience',
+  'drivers-license': "driver's licence",
+}
+
+/** "education and work experience" — the gaps as one phrase for a sentence. */
+export function formatProfileGaps(gaps: ProfileGap[]): string {
+  const nouns = gaps.map((gap) => GAP_NOUN[gap])
+  if (nouns.length <= 1) return nouns[0] ?? ''
+  return `${nouns.slice(0, -1).join(', ')} and ${nouns[nouns.length - 1]}`
+}
+
+/**
+ * The requirement score for one row of the job list (#1180).
+ *
+ * `GET /v1/jobs` carries the requirement flags but not `drivers_license_type`,
+ * and the detail screen leaves a licence requirement that names a class
+ * unchecked. Scored from the list payload alone, the same posting could read
+ * "1 of 1 met" on the row and "nothing checked" on the detail. So when the
+ * row cannot see the class, the licence requirement is left out of the count
+ * rather than guessed at.
+ */
+export function rowRequirementsSummary(
+  job: RequirementInputs['job'],
+  profile: RequirementInputs['profile']
+): { met: number; checkable: number } | null {
+  if (!profile) return null
+  const requirements = buildJobRequirements({ job, profile }).map((requirement) =>
+    requirement.id === 'drivers-license' && job.drivers_license_type === undefined
+      ? { ...requirement, status: 'unknown' as const }
+      : requirement
+  )
+  return requirementsSummary(requirements)
 }
 
 /**

@@ -81,6 +81,22 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
 // null-passthrough behavior so AssessmentWizard doesn't take the
 // error branch when useRIASECStatus returns error: null).
 vi.mock('@scf/core/features/assessments', () => ({
+  AssessmentTakingLayout: ({ children, counter, footerEnd, onExit, exitLabel }: {
+    children: React.ReactNode
+    counter?: string
+    footerEnd?: React.ReactNode
+    onExit: () => void
+    exitLabel?: string
+  }) => (
+    <div data-testid="taking-layout">
+      {counter && <span>{counter}</span>}
+      {children}
+      <button type="button" onClick={onExit}>
+        {exitLabel ?? 'Save & exit'}
+      </button>
+      {footerEnd}
+    </div>
+  ),
   AssessmentWizard: ({ children, title, description, isLoading, error }: {
     children: React.ReactNode
     title?: string
@@ -209,11 +225,11 @@ describe('RIASECAssessmentWizard', () => {
   it('should disable complete button when not all sliders are rated', () => {
     renderWithProviders(<RIASECAssessmentWizard />)
 
-    const completeButton = screen.getByText('Complete Assessment').closest('button')
+    const completeButton = screen.getByText('Save results').closest('button')
     expect(completeButton).toBeDisabled()
 
     fireEvent.change(screen.getByTestId('slider-realistic'), { target: { value: '4' } })
-    expect(screen.getByText('Complete Assessment').closest('button')).toBeDisabled()
+    expect(screen.getByText('Save results').closest('button')).toBeDisabled()
   })
 
   it('starts with nothing rated (#1173)', () => {
@@ -243,7 +259,7 @@ describe('RIASECAssessmentWizard', () => {
       fireEvent.change(slider, { target: { value: '4' } })
     })
 
-    const completeButton = screen.getByText('Complete Assessment')
+    const completeButton = screen.getByText('Save results')
     expect(completeButton).not.toBeDisabled()
   })
 
@@ -260,7 +276,7 @@ describe('RIASECAssessmentWizard', () => {
       fireEvent.change(slider, { target: { value: '3' } })
     })
 
-    const completeButton = screen.getByText('Complete Assessment')
+    const completeButton = screen.getByText('Save results')
     fireEvent.click(completeButton)
 
     await waitFor(() => {
@@ -287,7 +303,7 @@ describe('RIASECAssessmentWizard', () => {
       fireEvent.change(slider, { target: { value: '3' } })
     })
 
-    const completeButton = screen.getByText('Complete Assessment')
+    const completeButton = screen.getByText('Save results')
     fireEvent.click(completeButton)
 
     await waitFor(() => {

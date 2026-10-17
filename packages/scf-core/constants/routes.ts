@@ -418,9 +418,9 @@ const ROUTES_CONFIG = {
     titleKey: 'routes.dashboard.assessments.title',
     protected: true,
     exact: false,
-    ANALYTICS: {
+    OVERVIEW: {
       path: '/assessments',
-      titleKey: 'routes.dashboard.assessments.analytics',
+      titleKey: 'routes.dashboard.assessments.overview',
       protected: true,
       exact: true,
     },
@@ -901,9 +901,9 @@ const ROUTES_CONFIG = {
       titleKey: 'routes.dashboard.assessments.title',
       protected: true,
       exact: false,
-      ANALYTICS: {
+      OVERVIEW: {
         path: '/assessments',
-        titleKey: 'routes.dashboard.assessments.analytics',
+        titleKey: 'routes.dashboard.assessments.overview',
         protected: true,
         exact: true,
       },

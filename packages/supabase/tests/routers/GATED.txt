@@ -35,6 +35,8 @@ auth-session-regression.test.ts
 auth.test.ts
 background-checks-admin-rest.test.ts
 ccpa.test.ts
+certifications-verification-guard-rest.test.ts
+community-ai-functions.test.ts
 db-access-hardening-rest.test.ts
 employers-rest.test.ts
 employers.test.ts

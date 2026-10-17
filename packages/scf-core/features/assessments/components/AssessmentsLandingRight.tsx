@@ -1,51 +1,40 @@
-import { gap, H3, Text, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { Card, Stack, Text, useThemeContext } from '@scaffald/ui'
+import { colors, fontSize } from '@scaffald/ui/tokens'
 
+/**
+ * The hub's rail: one short card, to the worker, about why.
+ *
+ * It was four headed paragraphs addressed to "coaches, managers, and
+ * teammates", promising summaries in "your dossier and team dashboards" —
+ * neither of which a worker has (#1193). The prototype's rail is a small
+ * "Why this matters" card; its figure ("3.2× more searches") has no source
+ * here, so the card says what is true instead.
+ */
 export const AssessmentsLandingRight = () => {
   const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
   return (
-    <Stack gap={gap.md}>
-      <Stack gap={gap.md}>
-        <Stack gap={gap.xs}>
-          <H3 style={{ color: colors.text[theme].primary }}>Why assessments matter</H3>
-          <Text style={{ color: colors.text[theme].secondary }}>
-            Your answers create a shared language for coaches, managers, and teammates to understand
-            where you are today and how to help you grow.
-          </Text>
-        </Stack>
-
-        <Stack gap={gap.sm}>
-          <Stack gap={gap.xs}>
-            <Text style={{ color: colors.text[theme].secondary }}>Build a complete profile</Text>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              Each assessment fills in part of your strengths map—from how you process feedback to
-              which environments fuel your energy.
-            </Text>
-          </Stack>
-
-          <Stack gap={gap.xs}>
-            <Text style={{ color: colors.text[theme].secondary }}>Drive better matches</Text>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              The more signal we have, the better we can tailor role recommendations, coaching
-              plans, and development sprints that resonate with you.
-            </Text>
-          </Stack>
-
-          <Stack gap={gap.xs}>
-            <Text style={{ color: colors.text[theme].secondary }}>Share actionable insights</Text>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              Summaries flow into your dossier and team dashboards so collaborators know how to
-              support you before the next conversation.
-            </Text>
-          </Stack>
-        </Stack>
-
-        <Text style={{ color: colors.text[theme].secondary }}>
-          Tip: You can retake most assessments anytime your goals change—your latest results will be
-          saved and compared with your historical trends.
+    <Card bordered radius="md" padding="lg">
+      <Stack gap={10}>
+        <Text
+          style={{
+            fontSize: fontSize.h6,
+            letterSpacing: 1.4,
+            textTransform: 'uppercase',
+            color: colors.text[t].attention,
+          }}
+        >
+          Why this matters
+        </Text>
+        <Text style={{ color: colors.text[t].primary }}>
+          Employers see the assessments you've finished on your profile, and job matching reads your
+          occupation preferences. Each one answers a question before anyone has to ask it.
+        </Text>
+        <Text style={{ color: colors.text[t].tertiary, fontStyle: 'italic' }}>
+          You can take any of them again when things change.
         </Text>
       </Stack>
-    </Stack>
+    </Card>
   )
 }
