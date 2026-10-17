@@ -3,103 +3,93 @@ import {
   useSaveDraftMutation,
   useSubmitReviewMutation,
   useMyReviews,
-} from "@scf/core/utils/reviews-sdk-hooks";
-import { useTrackEngagementMutation } from "@scf/core/utils/engagement-sdk-hooks";
-import { ChevronLeft, ChevronRight } from "lucide-react-native";
-import { useEffect, useState } from "react";
-import { Button, Card, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
-import { colors } from "@scaffald/ui/tokens";
-import { useReviewAutoSave } from "../hooks/useReviewAutoSave";
-import { useReviewDraft } from "../hooks/useReviewDraft";
-import { ReviewProgress } from "./ReviewProgress";
-import { ReviewStep1Skills } from "./ReviewStep1Skills";
-import { ReviewStep2SkillsTags } from "./ReviewStep2SkillsTags";
-import { ReviewStep7Summary } from "./ReviewStep7Summary";
-import { ReviewStep8Recommendation } from "./ReviewStep8Recommendation";
-import { ReviewStepCategoryRating } from "./ReviewStepCategoryRating";
-import { ReviewStepCategoryTags } from "./ReviewStepCategoryTags";
+  useSoftSkillsByCategory,
+} from '@scf/core/utils/reviews-sdk-hooks'
+import { useUserSkills } from '@scf/core/utils/user-profiles-sdk-hooks'
+import { LoadFailure } from '@scf/core/components/ui'
+import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
+import { ChevronLeft, ChevronRight } from 'lucide-react-native'
+import { useEffect, useState } from 'react'
+import { Button, Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { useReviewAutoSave } from '../hooks/useReviewAutoSave'
+import { useReviewDraft } from '../hooks/useReviewDraft'
+import { ratableSkillsFromSubject, softSkillsInCategory } from '../lib/review-skill-options'
+import { ReviewProgress } from './ReviewProgress'
+import { ReviewStep1Skills } from './ReviewStep1Skills'
+import { ReviewStep7Summary } from './ReviewStep7Summary'
+import { ReviewStep8Recommendation } from './ReviewStep8Recommendation'
+import { ReviewStepCategoryRating } from './ReviewStepCategoryRating'
+import { ReviewStepCategoryTags } from './ReviewStepCategoryTags'
 
 interface ReviewWizardProps {
-  subjectId: string;
-  subjectName: string;
-  onCancel: () => void;
-  onComplete: (reviewId: string) => void;
+  subjectId: string
+  subjectName: string
+  onCancel: () => void
+  onComplete: (reviewId: string) => void
 }
 
-// Mock soft skills - will be replaced with API data
-const MOCK_RELIABILITY_SKILLS = [
-  { id: "rel1", name: "Deadline management", category: "reliability" },
-  { id: "rel2", name: "Prioritization", category: "reliability" },
-  { id: "rel3", name: "Time management", category: "reliability" },
-  { id: "rel4", name: "Task delegation", category: "reliability" },
-];
-
-const MOCK_COLLABORATION_SKILLS = [
-  { id: "col1", name: "Communication", category: "collaboration" },
-  { id: "col2", name: "Teamwork", category: "collaboration" },
-  { id: "col3", name: "Active listening", category: "collaboration" },
-  { id: "col4", name: "Conflict resolution", category: "collaboration" },
-];
-
-export function ReviewWizard({
-  subjectId,
-  subjectName,
-  onCancel,
-  onComplete,
-}: ReviewWizardProps) {
-  const { theme } = useThemeContext();
-  const t = theme === 'dark' ? 'dark' : 'light';
-  const totalSteps = 8;
-  const [reviewId, setReviewId] = useState<string | null>(null);
-  const [isCreatingDraft, setIsCreatingDraft] = useState(false);
+export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: ReviewWizardProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  const totalSteps = 8
+  const [reviewId, setReviewId] = useState<string | null>(null)
+  const [isCreatingDraft, setIsCreatingDraft] = useState(false)
 
   // Initialize review draft state
   const reviewDraft = useReviewDraft({
     subjectId,
-  });
+  })
 
   // SDK mutations and queries
-  const createDraftMutation = useCreateReviewDraftMutation();
-  const saveDraftMutation = useSaveDraftMutation();
-  const submitReviewMutation = useSubmitReviewMutation();
-  const { data: myReviews, isLoading: isLoadingReviews } = useMyReviews();
+  const createDraftMutation = useCreateReviewDraftMutation()
+  const saveDraftMutation = useSaveDraftMutation()
+  const submitReviewMutation = useSubmitReviewMutation()
+  const { data: myReviews, isLoading: isLoadingReviews } = useMyReviews()
+
+  // What the steps rate and tag: the subject's own skills and the soft-skill
+  // catalog. These were hardcoded lists with made-up ids, the same for
+  // everyone reviewed (#1247).
+  const subjectSkillsQuery = useUserSkills(subjectId)
+  const softSkillsQuery = useSoftSkillsByCategory()
+  const ratableSkills = ratableSkillsFromSubject(subjectSkillsQuery.data)
+  const softSkills = softSkillsQuery.data
 
   // Check for existing draft or create new one on mount
   useEffect(() => {
     const initializeDraft = async () => {
-      if (reviewId) return; // Already initialized
-      if (isLoadingReviews) return; // Wait for reviews to finish loading
-      if (!myReviews) return; // Wait for reviews data
+      if (reviewId) return // Already initialized
+      if (isLoadingReviews) return // Wait for reviews to finish loading
+      if (!myReviews) return // Wait for reviews data
 
-      setIsCreatingDraft(true);
+      setIsCreatingDraft(true)
       try {
         // Check if a draft already exists
         const existingDraft = myReviews.find(
-          (review) =>
-            review.subject_id === subjectId && review.subject_type === "user"
-        );
+          (review) => review.subject_id === subjectId && review.subject_type === 'user'
+        )
 
         if (existingDraft) {
           // Resume existing draft
-          setReviewId(existingDraft.id);
-          console.log("Resuming existing draft:", existingDraft.id);
+          setReviewId(existingDraft.id)
+          console.log('Resuming existing draft:', existingDraft.id)
         } else {
           // Create new draft
           const result = await createDraftMutation.mutateAsync({
             subjectId,
-            subjectType: "user",
-          });
-          setReviewId(result.id);
-          console.log("Created new draft:", result.id);
+            subjectType: 'user',
+          })
+          setReviewId(result.id)
+          console.log('Created new draft:', result.id)
         }
       } catch (error) {
-        console.error("Failed to initialize review draft:", error);
+        console.error('Failed to initialize review draft:', error)
       } finally {
-        setIsCreatingDraft(false);
+        setIsCreatingDraft(false)
       }
-    };
+    }
 
-    initializeDraft();
+    initializeDraft()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     subjectId,
@@ -108,14 +98,14 @@ export function ReviewWizard({
     createDraftMutation.mutateAsync,
     reviewId,
     createDraftMutation,
-  ]); // Run when subjectId, myReviews, or loading state changes
+  ]) // Run when subjectId, myReviews, or loading state changes
 
   // Setup auto-save - only enabled when we have a reviewId
   useReviewAutoSave({
     draft: reviewDraft.getDraft(),
     enabled: !!reviewId && reviewDraft.hasUnsavedChanges,
     onSave: async (draft) => {
-      if (!reviewId) return;
+      if (!reviewId) return
 
       await saveDraftMutation.mutateAsync({
         reviewId,
@@ -134,90 +124,95 @@ export function ReviewWizard({
           recommendation: draft.recommendation,
           currentStep: draft.currentStep,
         },
-      });
+      })
     },
     onSaveSuccess: () => {
-      reviewDraft.markAsSaved();
+      reviewDraft.markAsSaved()
     },
     onSaveError: (error) => {
-      console.error("Failed to auto-save:", error);
+      console.error('Failed to auto-save:', error)
     },
-  });
+  })
 
-  const canGoBack = reviewDraft.currentStep > 1;
-  const canGoForward = reviewDraft.currentStep < totalSteps;
-  const isLastStep = reviewDraft.currentStep === totalSteps;
+  const canGoBack = reviewDraft.currentStep > 1
+  const canGoForward = reviewDraft.currentStep < totalSteps
+  const isLastStep = reviewDraft.currentStep === totalSteps
 
   const handleBack = () => {
-    reviewDraft.goToPreviousStep();
-  };
+    reviewDraft.goToPreviousStep()
+  }
 
   const handleNext = () => {
-    reviewDraft.goToNextStep();
-  };
+    reviewDraft.goToNextStep()
+  }
 
   // Track review submission for engagement analytics
-  const trackEventMutation = useTrackEngagementMutation();
+  const trackEventMutation = useTrackEngagementMutation()
 
   const handleSubmit = async () => {
     if (!reviewId) {
-      console.error("Cannot submit: no review ID");
-      return;
+      console.error('Cannot submit: no review ID')
+      return
     }
 
     try {
-      const draft = reviewDraft.getDraft();
+      const draft = reviewDraft.getDraft()
       await submitReviewMutation.mutateAsync({
         reviewId,
         recommendation: draft.recommendation ? 1 : -1,
-      });
+      })
 
       // Track review submission after successful submit
       try {
         trackEventMutation.mutate({
-          eventType: "review.submitted",
-          targetType: "user",
+          eventType: 'review.submitted',
+          targetType: 'user',
           targetId: subjectId,
           metadata: {
             review_id: reviewId,
             recommendation: draft.recommendation ? 1 : -1,
           },
-        });
+        })
       } catch (error) {
         // Silent error handling - don't impact review submission
-        console.warn("Failed to track review submission:", error);
+        console.warn('Failed to track review submission:', error)
       }
 
-      onComplete(reviewId);
+      onComplete(reviewId)
     } catch (error) {
-      console.error("Failed to submit review:", error);
+      console.error('Failed to submit review:', error)
     }
-  };
+  }
 
-  // Show loading state while creating draft
-  if (isCreatingDraft || !reviewId) {
+  const optionsError = subjectSkillsQuery.error ?? softSkillsQuery.error
+  if (optionsError) {
+    return (
+      <LoadFailure
+        error={optionsError}
+        noun="review form"
+        retry={() => {
+          void subjectSkillsQuery.refetch()
+          void softSkillsQuery.refetch()
+        }}
+      />
+    )
+  }
+
+  // Show loading state while creating draft and loading what it asks about
+  if (isCreatingDraft || !reviewId || subjectSkillsQuery.isLoading || softSkillsQuery.isLoading) {
     return (
       <Card elevate bordered>
-        <Stack
-          gap={16}
-          padding="lg"
-          minHeight={600}
-          justify="center"
-          align="center"
-        >
+        <Stack gap={16} padding="lg" minHeight={600} justify="center" align="center">
           <Text style={{ color: colors.text[t].secondary }}>Preparing review form...</Text>
         </Stack>
       </Card>
-    );
+    )
   }
 
   return (
     <Stack gap={16} padding="lg">
       {/* Progress Indicator */}
-      <ReviewProgress
-        currentStep={reviewDraft.currentStep}
-        totalSteps={totalSteps}
-      />
+      <ReviewProgress currentStep={reviewDraft.currentStep} totalSteps={totalSteps} />
       <Text style={{ color: colors.text[t].secondary }}>Reviewing {subjectName}</Text>
 
       {/* Step Content */}
@@ -226,6 +221,8 @@ export function ReviewWizard({
           {/* Step 1: Technical Skills Rating */}
           {reviewDraft.currentStep === 1 && (
             <ReviewStep1Skills
+              skills={ratableSkills}
+              subjectName={subjectName}
               ratings={reviewDraft.skillsRatings}
               onChange={reviewDraft.updateSkillRating}
             />
@@ -233,7 +230,10 @@ export function ReviewWizard({
 
           {/* Step 2: Skills Tags */}
           {reviewDraft.currentStep === 2 && (
-            <ReviewStep2SkillsTags
+            <ReviewStepCategoryTags
+              title="Technical Skills - Details"
+              description="Select their key strengths and areas to improve"
+              skills={softSkillsInCategory(softSkills, 'technical')}
               strengths={reviewDraft.skillsStrengths}
               improvements={reviewDraft.skillsImprovements}
               onToggleStrength={reviewDraft.toggleSkillStrength}
@@ -257,7 +257,7 @@ export function ReviewWizard({
             <ReviewStepCategoryTags
               title="Reliability - Details"
               description="What are their reliability strengths and areas to improve?"
-              skills={MOCK_RELIABILITY_SKILLS}
+              skills={softSkillsInCategory(softSkills, 'reliability')}
               strengths={reviewDraft.reliabilityStrengths}
               improvements={reviewDraft.reliabilityImprovements}
               onToggleStrength={reviewDraft.toggleReliabilityStrength}
@@ -281,7 +281,7 @@ export function ReviewWizard({
             <ReviewStepCategoryTags
               title="Collaboration - Details"
               description="What are their collaboration strengths and areas to improve?"
-              skills={MOCK_COLLABORATION_SKILLS}
+              skills={softSkillsInCategory(softSkills, 'collaboration')}
               strengths={reviewDraft.collaborationStrengths}
               improvements={reviewDraft.collaborationImprovements}
               onToggleStrength={reviewDraft.toggleCollaborationStrength}
@@ -346,11 +346,9 @@ export function ReviewWizard({
       {/* Auto-save Indicator */}
       <Row justify="center">
         <Text style={{ color: colors.text[t].secondary }}>
-          {reviewDraft.hasUnsavedChanges
-            ? "💾 Saving..."
-            : "✓ All changes saved"}
+          {reviewDraft.hasUnsavedChanges ? '💾 Saving...' : '✓ All changes saved'}
         </Text>
       </Row>
     </Stack>
-  );
+  )
 }

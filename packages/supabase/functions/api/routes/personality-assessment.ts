@@ -1204,7 +1204,7 @@ const saveLuscherTestSessionRoute = createRoute({
   tags: ["Personality Assessment"],
   summary: "Save Luscher test session",
   description:
-    "Save unified Luscher test session (both parts + diary + XP + cooldown)",
+    "Save unified Luscher test session (both parts + diary + cooldown)",
   request: {
     body: {
       content: {
@@ -1321,28 +1321,9 @@ app.openapi(saveLuscherTestSessionRoute, async (c) => {
       }
     }
 
-    // Award +5 Frequency XP
-    const { error: xpError } = await supabase.rpc("increment_frequency_xp", {
-      user_id_param: user.id,
-      xp_amount: 5,
-    });
-
-    // If RPC doesn't exist, update directly
-    if (xpError) {
-      const { data: userData } = await supabase
-        .schema("core")
-        .from("users")
-        .select("frequency_xp")
-        .eq("id", user.id)
-        .single();
-
-      const currentXP = (userData?.frequency_xp as number) || 0;
-      const newXP = currentXP + 5;
-
-      await supabase.schema("core").from("users").update({
-        frequency_xp: newXP,
-      }).eq("id", user.id);
-    }
+    // No XP. This used to add +5 frequency_xp per run, which made a
+    // reflective colour exercise something to farm and contradicted the
+    // "never scored or ranked" footnote on the grid (#1246).
 
     // Create assessment session record
     await supabase
