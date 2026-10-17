@@ -17,7 +17,7 @@ export default function MyListingsRoute() {
 
   return (
     <DashboardPage
-      breadcrumbs={[{ route: ROUTES.JOBS }, { route: ROUTES.JOBS.MY_LISTINGS }]}
+      screenKicker="Employer view — your postings"
       screenTip="Every posting your organisation has, live or not, with how many people have applied."
       screenActions={
         <Button

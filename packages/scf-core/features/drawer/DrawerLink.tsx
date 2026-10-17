@@ -20,9 +20,15 @@ const RULE_WIDTH = 2
  * width of the drawer, so the rule sits flush on the panel's edge the way the
  * prototype's does.
  */
-export const DrawerLink = ({ item, pathname, onNavigate, isCollapsed }: DrawerLinkProps) => {
+export const DrawerLink = ({
+  item,
+  pathname,
+  onNavigate,
+  isCollapsed,
+  active: activeProp,
+}: DrawerLinkProps) => {
   const collapsed = isCollapsed ?? false
-  const active = ownsPath(item, pathname)
+  const active = activeProp ?? ownsPath(item, pathname)
   const Icon = item.icon
   const { t } = useTranslation()
   const { theme } = useThemeContext()

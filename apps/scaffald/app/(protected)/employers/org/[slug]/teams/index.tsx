@@ -1,4 +1,6 @@
+import { ROUTES } from '@scf/core/constants/routes'
 import { RouteBuilder } from '@scf/core/constants/routes'
+import { LoadFailure } from '@scf/core/components/ui'
 import { useOrgBySlug } from '@scf/core/utils/useOrgBySlug'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { useTeams } from '@scf/core/utils/teams-sdk-hooks'
@@ -12,7 +14,13 @@ export default function OrgTeamsIndexPage() {
   const { slug } = useLocalSearchParams<{ slug: string }>()
   const router = useRouter()
   const { org, isLoading: orgLoading } = useOrgBySlug(slug ?? undefined)
-  const { data, isLoading: teamsLoading, error, refetch, isRefetching } = useTeams(
+  const {
+    data,
+    isLoading: teamsLoading,
+    error,
+    refetch,
+    isRefetching,
+  } = useTeams(
     { organizationId: org?.organizationId, includeArchived: false },
     { enabled: !!org?.organizationId }
   )
@@ -26,12 +34,11 @@ export default function OrgTeamsIndexPage() {
       <DashboardPage
         showBreadcrumb={false}
         leftContent={
-          <Stack padding={16} gap={12}>
-            <Text color="red">Organization not found</Text>
-            <Button size="md" variant="outline" onPress={() => router.back()}>
-              Back
-            </Button>
-          </Stack>
+          <LoadFailure
+            error={{ statusCode: 404 }}
+            noun="organization"
+            back={{ label: 'My organizations', href: ROUTES.EMPLOYERS.ORGANIZATIONS.path }}
+          />
         }
         rightContent={null}
       />
@@ -40,28 +47,25 @@ export default function OrgTeamsIndexPage() {
 
   const mainContent = (
     <Stack gap={16}>
-      
-
       {isLoading || isRefetching ? (
         <Stack align="center" justify="center" gap={8}>
           <Spinner size="lg" />
           <Text color="gray">Loading teams…</Text>
         </Stack>
       ) : error ? (
-        <Stack gap={12} padding={16}>
-          <Text color="red">Unable to load teams</Text>
-          <Text color="red">{error.message ?? 'An unexpected error occurred.'}</Text>
-          <Button size="md" onPress={() => refetch()}>
-            Try again
-          </Button>
-        </Stack>
+        <LoadFailure error={error} noun="list of teams" retry={() => refetch()} />
       ) : teams.length === 0 ? (
         <Stack gap={12} padding={16}>
           <Text>No teams yet</Text>
           <Text color="gray">
-            This organization has no teams yet, or you don't have access. Accept an invitation to join a team.
+            This organization has no teams yet, or you don't have access. Accept an invitation to
+            join a team.
           </Text>
-          <Button size="md" variant="outline" onPress={() => router.push(RouteBuilder.orgInvitations())}>
+          <Button
+            size="md"
+            variant="outline"
+            onPress={() => router.push(RouteBuilder.orgInvitations())}
+          >
             View invitations
           </Button>
         </Stack>
@@ -121,7 +125,11 @@ export default function OrgTeamsIndexPage() {
       }
       screenActions={
         slug ? (
-          <Button variant="outline" size="md" onPress={() => router.push(RouteBuilder.orgInvitations())}>
+          <Button
+            variant="outline"
+            size="md"
+            onPress={() => router.push(RouteBuilder.orgInvitations())}
+          >
             Manage invitations
           </Button>
         ) : undefined

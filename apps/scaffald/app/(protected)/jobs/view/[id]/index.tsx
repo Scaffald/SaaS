@@ -48,7 +48,7 @@ export default function JobDetailPage() {
       screenActions={<JobDetailApplyAction jobId={id} />}
       breadcrumbItems={[
         { label: 'Home', href: ROUTES.DASHBOARD.path },
-        { label: 'Jobs', href: ROUTES.JOBS.path },
+        { label: 'Jobs', href: ROUTES.JOBS.BROWSE.path },
         // While the job is loading, show a neutral crumb instead of "Jobs"
         // twice.
         { label: jobTitle ?? 'Job details' },

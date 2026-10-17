@@ -7,8 +7,9 @@ import {
 } from '@scf/core/utils/navigation/buildDashboardBreadcrumbs'
 import { ProfileLayout } from '@scf/core/components/layouts'
 import type { BreadcrumbItemData } from '@scaffald/ui'
-import { usePathname } from 'expo-router'
+import { usePathname, useRouter } from 'expo-router'
 import type { ComponentProps } from 'react'
+import { backFromTrail } from '../dashboard/back-from-trail'
 import { useMemo } from 'react'
 
 type ProfileLayoutProps = ComponentProps<typeof ProfileLayout>
@@ -46,6 +47,7 @@ export function ProfilePage({
   ...layoutProps
 }: ProfilePageProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const matchedRoute = useMemo(() => findRouteForPath(pathname), [pathname])
   const { t, locale } = useTranslation()
 
@@ -82,5 +84,13 @@ export function ProfilePage({
     formatDocumentTitle,
   })
 
-  return <ProfileLayout {...layoutProps} breadcrumbItems={computedBreadcrumbItems} />
+  // Same rule as DashboardPage: a declared trail gives a drill-in its back link.
+  const derivedBack = backFromTrail(computedBreadcrumbItems)
+  const back =
+    layoutProps.back ??
+    (derivedBack
+      ? { label: derivedBack.label, onPress: () => router.push(derivedBack.href as never) }
+      : undefined)
+
+  return <ProfileLayout {...layoutProps} back={back} breadcrumbItems={computedBreadcrumbItems} />
 }

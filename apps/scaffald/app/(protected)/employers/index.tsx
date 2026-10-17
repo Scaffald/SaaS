@@ -7,6 +7,8 @@ export default function DiscoverEmployersPage() {
     <>
       <DashboardPage
         showBreadcrumb={false}
+        screenKicker="The board works for you"
+        screenTip="Search employers the way you search jobs, then open one to see its open roles and record."
         headerContent={header}
         leftContent={left}
         rightContent={right}

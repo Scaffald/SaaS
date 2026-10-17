@@ -1,4 +1,5 @@
 import type { DrawerItemConfig } from './types'
+import { activeNavKey } from './config'
 import { ownsPath } from './utils'
 
 /**
@@ -72,7 +73,11 @@ export function getSectionTabs(
   pathname: string,
   items: DrawerItemConfig[]
 ): SectionTabStrip | null {
-  const section = items.find((item) => ownsPath(item, pathname))
+  // The page's section is the one top-level item that owns it most
+  // specifically — in employer mode /office/applications is the employer's
+  // Applications, not Office, so it gets no admin tab strip (#1157).
+  const sectionKey = activeNavKey(items, pathname)
+  const section = items.find((item) => item.key === sectionKey)
   if (!section?.subItems?.length) return null
 
   const owner = findOwner(section.subItems, pathname)

@@ -6,6 +6,7 @@ export default function DiscoverWorkersPage() {
   return (
     <>
       <DashboardPage
+        screenKicker="Employer view — find talent"
         showBreadcrumb={false}
         screenTip="Search by trade, skill or location. Open anyone to see their proof before you reach out."
         headerContent={header}

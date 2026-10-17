@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getNavItems } from '../config'
+import { activeNavKey, getNavItems } from '../config'
 import { getSectionTabs, stripEdgeFades, stripScrollTarget } from '../section-tabs'
 import type { OrganizationMembership } from '@scf/core/utils/useOrganizations'
 
@@ -12,6 +12,10 @@ const org = {
 const worker = getNavItems(undefined, false)
 const member = getNavItems([org], false)
 const office = getNavItems(undefined, true)
+// Find talent, the employer directory's create/join tabs and each org's own
+// tabs are the employer's — the worker tree no longer has them (#1157).
+const employer = getNavItems([org], false, 'employer')
+const employerAdmin = getNavItems([org], true, 'employer')
 
 const keys = (pathname: string, items = worker) =>
   getSectionTabs(pathname, items)?.tabs.map((t) => t.key)
@@ -31,7 +35,7 @@ describe('getSectionTabs', () => {
   })
 
   it('shows the strip on a detail page with nothing lit', () => {
-    const strip = getSectionTabs('/workers/123', worker)
+    const strip = getSectionTabs('/workers/123', employer)
     expect(strip?.ownerKey).toBe('workers')
     expect(strip?.activeKey).toBeNull()
   })
@@ -43,20 +47,22 @@ describe('getSectionTabs', () => {
 
   it('leaves Notifications to the drawer footer, not the Home tabs', () => {
     expect(keys('/dashboard')).not.toContain('dashboard-notifications')
-    expect(getSectionTabs('/dashboard/notifications', worker)?.activeKey).toBeNull()
+    // No strip at all: Home's tabs with none lit sat over the inbox (#1167).
+    expect(getSectionTabs('/dashboard/notifications', worker)).toBeNull()
+    expect(getSectionTabs('/dashboard/notifications/settings', worker)).toBeNull()
   })
 
   it("hands an organisation page the org's own tabs, with a way back", () => {
-    const strip = getSectionTabs('/employers/org/acme/teams', member)
+    const strip = getSectionTabs('/employers/org/acme/teams', employer)
     expect(strip?.ownerKey).toBe('org-acme')
     expect(strip?.tabs.map((t) => t.key)).toEqual(['org-acme', 'org-acme-teams', 'org-acme-logs'])
     expect(strip?.activeKey).toBe('org-acme-teams')
-    expect(getSectionTabs('/employers/org/acme', member)?.activeKey).toBe('org-acme')
+    expect(getSectionTabs('/employers/org/acme', employer)?.activeKey).toBe('org-acme')
   })
 
   it('keeps Employers tabs on the employer search and join pages', () => {
-    expect(getSectionTabs('/employers/invitations', member)?.activeKey).toBe('employers-join')
-    expect(getSectionTabs('/employers', member)?.ownerKey).toBe('employers')
+    expect(getSectionTabs('/employers/invitations', employer)?.activeKey).toBe('employers-join')
+    expect(getSectionTabs('/employers', employer)?.ownerKey).toBe('employers')
   })
 
   it('lights an Office tab for every page under its prefix', () => {
@@ -83,9 +89,14 @@ describe('getSectionTabs', () => {
     expect(jobs?.href).toBe('/jobs/browse')
   })
 
-  it('only lists My Listings for an organisation member', () => {
+  it("keeps My Listings out of the worker's Jobs tabs, even for a member (#1157)", () => {
     expect(keys('/jobs/saved')).not.toContain('jobs-my-listings')
-    expect(keys('/jobs/saved', member)).toContain('jobs-my-listings')
+    expect(keys('/jobs/saved', member)).not.toContain('jobs-my-listings')
+  })
+
+  it('gives a worker the employer directory with no create, join or own-org tabs', () => {
+    expect(getSectionTabs('/employers', member)).toBeNull()
+    expect(getSectionTabs('/employers/abc', member)).toBeNull()
   })
 
   // #1120: every sub-route lights its parent tab, the most specific one when
@@ -120,7 +131,7 @@ describe('getSectionTabs', () => {
     })
 
     it('still lights nothing where no tab claims the page', () => {
-      expect(active('/workers/123')).toBeNull()
+      expect(active('/workers/123', employer)).toBeNull()
     })
   })
 })
@@ -160,5 +171,45 @@ describe('stripScrollTarget', () => {
 
   it('does nothing before the strip is measured', () => {
     expect(stripScrollTarget({ x: 480, width: 120 }, 0, 16)).toBeNull()
+  })
+})
+
+describe('navigation follows the mode (#1157)', () => {
+  const top = (items: ReturnType<typeof getNavItems>) => items.map((item) => item.key)
+
+  it("gives a worker the prototype's sections", () => {
+    expect(top(worker)).toEqual(['dashboard', 'profile', 'assessments', 'jobs', 'employers', 'communities'])
+  })
+
+  it('gives an employer Find talent, their postings, their pipeline and their organisations', () => {
+    expect(top(employer)).toEqual([
+      'dashboard',
+      'workers',
+      'employer-jobs',
+      'employer-applications',
+      'employers',
+    ])
+  })
+
+  it('puts Office first for an admin, in either mode', () => {
+    expect(top(office)[0]).toBe('office')
+    expect(top(employerAdmin)[0]).toBe('office')
+  })
+
+  it("lights the employer's Applications, not Office, on the pipeline — and draws no admin tabs there", () => {
+    expect(activeNavKey(employerAdmin, '/office/applications')).toBe('employer-applications')
+    expect(activeNavKey(employerAdmin, '/office/applications/abc')).toBe('employer-applications')
+    expect(getSectionTabs('/office/applications', employerAdmin)).toBeNull()
+  })
+
+  it('still gives an admin Office and its tabs everywhere else under /office', () => {
+    expect(activeNavKey(employerAdmin, '/office/cms/jobs')).toBe('office')
+    expect(getSectionTabs('/office/cms/jobs', employerAdmin)?.ownerKey).toBe('office')
+  })
+
+  it('lights exactly one row per page', () => {
+    expect(activeNavKey(worker, '/jobs/applications')).toBe('jobs')
+    expect(activeNavKey(worker, '/dashboard/notifications')).toBeNull()
+    expect(activeNavKey(employer, '/jobs/my-listings')).toBe('employer-jobs')
   })
 })

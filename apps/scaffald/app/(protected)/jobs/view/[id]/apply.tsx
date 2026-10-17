@@ -27,7 +27,7 @@ export default function JobApplyPage() {
       screenKicker={kicker}
       breadcrumbItems={[
         { label: 'Home', href: ROUTES.DASHBOARD.path },
-        { label: 'Jobs', href: ROUTES.JOBS.path },
+        { label: 'Jobs', href: ROUTES.JOBS.BROWSE.path },
         {
           label: job?.title ?? 'Job details',
           href: buildPath(ROUTES.JOBS.DETAIL, { id }),

@@ -24,10 +24,12 @@ export const isActivePath = (pathname: string, href: string, exact?: boolean) =>
     return pathname === '/' || pathname === '/index'
   }
 
-  // Special case for dashboard: expand only on home, news, analytics, and notifications — not settings, user profiles, etc.
+  // Special case for dashboard: Home owns itself, News and Analytics — not
+  // settings, user profiles or Notifications. Notifications is the drawer's
+  // footer row; owning it here lit Home beside it and drew Home's folder tabs,
+  // with none lit, over the inbox and its settings (#1167).
   const dashboardPath = ROUTES.DASHBOARD.path
   const analyticsPath = ROUTES.DASHBOARD.ANALYTICS.path
-  const notificationsPath = ROUTES.DASHBOARD.NOTIFICATIONS.path
   if (href === dashboardPath) {
     return (
       pathname === dashboardPath ||
@@ -35,9 +37,7 @@ export const isActivePath = (pathname: string, href: string, exact?: boolean) =>
       pathname === ROUTES.DASHBOARD.NEWS.path ||
       pathname === analyticsPath ||
       pathname === `${analyticsPath}/index` ||
-      pathname.startsWith(`${analyticsPath}/`) ||
-      pathname === notificationsPath ||
-      pathname.startsWith(`${notificationsPath}/`)
+      pathname.startsWith(`${analyticsPath}/`)
     )
   }
 

@@ -1,4 +1,5 @@
 import { RouteBuilder } from '@scf/core/constants/routes'
+import { LoadFailure } from '@scf/core/components/ui'
 import { useOrgBySlug } from '@scf/core/utils/useOrgBySlug'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -30,13 +31,11 @@ export default function OrgDetailPage() {
       <DashboardPage
         showBreadcrumb={false}
         leftContent={
-          <Stack padding={16} gap={12}>
-            <Text color="red">Organization not found</Text>
-            <Text color="gray">You don't have access to this organization or it doesn't exist.</Text>
-            <Button size="md" variant="outline" onPress={() => router.push(RouteBuilder.orgIndex())}>
-              Back to My Organizations
-            </Button>
-          </Stack>
+          <LoadFailure
+            error={{ statusCode: 404 }}
+            noun="organization"
+            back={{ label: 'My organizations', href: RouteBuilder.orgIndex() }}
+          />
         }
         rightContent={null}
       />

@@ -4,6 +4,7 @@ import { SettingsNotificationsSection } from '@scf/core/features/notifications/S
 export default function NotificationsSettingsPage() {
   return (
     <DashboardPage
+      readingWidth
       showBreadcrumb={false}
       pageTitle="Notification settings"
       screenTip="Stay up to date with applications, opportunities, and platform updates."
