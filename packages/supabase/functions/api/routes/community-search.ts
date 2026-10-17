@@ -49,7 +49,7 @@ const searchProfessionalsRoute = createRoute({
   tags: ["Community Search"],
   summary: "Search professionals",
   description:
-    "Search for trade professionals using natural language. Parses queries into structured filters and ranks by Scaffold Score + skill match.",
+    "Search for trade professionals using natural language. Parses queries into structured filters and ranks by Scaffald score + skill match.",
   request: {
     body: {
       content: { "application/json": { schema: searchRequestSchema } },

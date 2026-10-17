@@ -206,7 +206,7 @@ app.route("/v1/communities/posts", communityPostsRouter); // Community posts (CR
 app.route("/v1/communities/comments", communityCommentsRouter); // Community comments (CRUD, pin/unpin)
 app.route("/v1/communities/ratings", communityRatingsRouter); // Community ratings (rate, list, summary)
 app.route("/v1/communities/interactions", communityInteractionsRouter); // Upvotes + bookmarks
-app.route("/v1/communities/reputation", communityReputationRouter); // Scaffold Score + karma
+app.route("/v1/communities/reputation", communityReputationRouter); // Scaffald score + karma
 app.route("/v1/communities/skills", communitySkillsRouter); // Skill taxonomy (search, tree, ancestors)
 app.route("/v1/communities/verification", communityVerificationRouter); // License verification
 app.route("/v1/office/communities", officeCommunitiesRouter); // Office community verification queue

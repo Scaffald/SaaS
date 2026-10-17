@@ -275,12 +275,11 @@ export function formatProfileGaps(gaps: ProfileGap[]): string {
 /**
  * The requirement score for one row of the job list (#1180).
  *
- * `GET /v1/jobs` carries the requirement flags but not `drivers_license_type`,
- * and the detail screen leaves a licence requirement that names a class
- * unchecked. Scored from the list payload alone, the same posting could read
- * "1 of 1 met" on the row and "nothing checked" on the detail. So when the
- * row cannot see the class, the licence requirement is left out of the count
- * rather than guessed at.
+ * The detail screen leaves a licence requirement that names a class
+ * unchecked, so a row has to know the class to score it the same way.
+ * `GET /v1/jobs` carries `drivers_license_type` since #1282; a payload
+ * without the key (an older cached response) cannot say, so the licence
+ * requirement is left out of the count rather than guessed at.
  */
 export function rowRequirementsSummary(
   job: RequirementInputs['job'],
