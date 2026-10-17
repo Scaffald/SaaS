@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { activeNavKey, EMPLOYER_MOBILE_SECTIONS, getNavItems, SCREENING_LANDING } from '../config'
+import { activeNavKey, getEmployerMobileSections, getNavItems, screeningLanding } from '../config'
 import { getSectionTabs, stripEdgeFades, stripScrollTarget } from '../section-tabs'
 import type { OrganizationMembership } from '@scf/core/utils/useOrganizations'
 
@@ -11,7 +11,9 @@ const org = {
 
 const worker = getNavItems(undefined, false)
 const member = getNavItems([org], false)
-const office = getNavItems(undefined, true)
+const office = getNavItems(undefined, true, 'worker', true)
+// Office staff without the background-check admin role (#1297).
+const officeNoChecks = getNavItems(undefined, true)
 // Find talent, the employer directory's create/join tabs and each org's own
 // tabs are the employer's — the worker tree no longer has them (#1157).
 const employer = getNavItems([org], false, 'employer')
@@ -103,13 +105,27 @@ describe('getSectionTabs', () => {
       )
     })
 
-    it('lands on the review queue, the same page as the phone tab', () => {
-      const screening = office
+    const screeningTab = (items: ReturnType<typeof getNavItems>) =>
+      items
         .find((item) => item.key === 'office')
         ?.subItems?.find((tab) => tab.key === 'office-screening')
-      expect(screening?.href).toBe(SCREENING_LANDING)
-      const phone = EMPLOYER_MOBILE_SECTIONS.find((s) => s.key === 'screening')
-      expect(phone?.route).toBe(SCREENING_LANDING)
+
+    it('lands on the review queue, the same page as the phone tab', () => {
+      expect(screeningTab(office)?.href).toBe(screeningLanding(true))
+      expect(screeningLanding(true)).toBe('/office/ats/admin')
+      const phone = getEmployerMobileSections({ hasOfficeRole: true, isCheckAdmin: true }).find(
+        (s) => s.key === 'screening'
+      )
+      expect(phone?.route).toBe(screeningLanding(true))
+    })
+
+    it("lands staff without the admin role on their organisation's checks, as the phone does (#1297)", () => {
+      // The review queue turns them away with "Admin access required".
+      expect(screeningTab(officeNoChecks)?.href).toBe('/office/ats/checks')
+      const phone = getEmployerMobileSections({ hasOfficeRole: true, isCheckAdmin: false }).find(
+        (s) => s.key === 'screening'
+      )
+      expect(phone?.route).toBe(screeningTab(officeNoChecks)?.href)
     })
 
     it('leaves the other Office tabs their own pages', () => {

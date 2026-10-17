@@ -36,14 +36,15 @@ export function SectionTabs() {
   const { t } = useTranslation()
   const { gutter, isDesktop } = useScreenRhythm()
   const { data: memberships } = useOrganizations()
-  const { hasOfficeRole } = useUserRoles()
+  const { hasOfficeRole, hasRole } = useUserRoles()
+  const isCheckAdmin = hasRole('background_check_admin')
   const { mode } = useAppMode()
   // A screen in focus mode — an assessment being taken — has no tabs (#1194).
   const focusMode = useIsFocusMode()
 
   const items = useMemo(
-    () => getNavItems(memberships ?? undefined, hasOfficeRole, mode),
-    [memberships, hasOfficeRole, mode]
+    () => getNavItems(memberships ?? undefined, hasOfficeRole, mode, isCheckAdmin),
+    [memberships, hasOfficeRole, mode, isCheckAdmin]
   )
   const strip = useMemo(() => getSectionTabs(pathname, items), [pathname, items])
 

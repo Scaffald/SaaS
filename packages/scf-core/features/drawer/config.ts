@@ -288,16 +288,19 @@ export const generateDashboardDrawerItems = (
 }
 
 /**
- * Where Screening lands, on desktop and phone alike: the review queue. The
- * phone tab opened /office/ats/checks (an organisation picker) while the
- * desktop strip opened the queue, so one section had two front doors (#1203).
+ * Where Screening lands, on desktop and phone alike (#1203 — the two used to
+ * disagree, so one section had two front doors). For the background-check
+ * admin that is the review queue. Everyone else is turned away there ("Admin
+ * access required"), so they land on their organisation's own checks instead
+ * (#1297).
  */
-export const SCREENING_LANDING = ROUTES.OFFICE.ATS.CHECKS.ADMIN.path
+export const screeningLanding = (isCheckAdmin: boolean): string =>
+  isCheckAdmin ? ROUTES.OFFICE.ATS.CHECKS.ADMIN.path : ROUTES.OFFICE.ATS.CHECKS.path
 
 /**
  * The Office section. Its sub-items are the Office tab strip.
  */
-export const generateOfficeDrawerItem = (): DrawerItemConfig => ({
+export const generateOfficeDrawerItem = (isCheckAdmin = false): DrawerItemConfig => ({
   key: 'office',
   title: 'Office',
   href: ROUTES.OFFICE.path,
@@ -319,7 +322,7 @@ export const generateOfficeDrawerItem = (): DrawerItemConfig => ({
     {
       key: 'office-screening',
       title: 'Screening',
-      href: SCREENING_LANDING,
+      href: screeningLanding(isCheckAdmin),
       matchPrefix: ROUTES.OFFICE.ATS.path,
       alsoOwns: [ROUTES.OFFICE.COMMUNITIES.VERIFICATION.path],
       icon: ShieldCheck,
@@ -414,8 +417,6 @@ export const getDrawerItems = (memberships?: OrganizationMembership[]): DrawerIt
   return generateDashboardDrawerItems(memberships)
 }
 
-const OFFICE_ITEM = generateOfficeDrawerItem()
-
 const byKey = (items: DrawerItemConfig[]) => new Map(items.map((item) => [item.key, item]))
 
 /**
@@ -478,9 +479,10 @@ const employerNav = (memberships: OrganizationMembership[] | undefined): DrawerI
 export const getNavItems = (
   memberships: OrganizationMembership[] | undefined,
   hasOfficeRole: boolean,
-  mode: AppMode = 'worker'
+  mode: AppMode = 'worker',
+  isCheckAdmin = false
 ): DrawerItemConfig[] => [
-  ...(hasOfficeRole ? [OFFICE_ITEM] : []),
+  ...(hasOfficeRole ? [generateOfficeDrawerItem(isCheckAdmin)] : []),
   ...(mode === 'employer' ? employerNav(memberships) : workerNav(memberships)),
 ]
 
@@ -597,12 +599,26 @@ export const MOBILE_SECTIONS: MobileSection[] = [
  * The prototype's employer bar is Talent / Apps / Jobs / Recruiting / More.
  * Recruiting is deliberately absent here: that surface does not exist yet, and
  * a tab navigating nowhere is worse than one fewer tab. Screening takes the
- * fourth slot instead — it is real, reachable, and something an employer works.
+ * fourth slot instead — for those who can open it (#1297). Every Screening
+ * page sits under /office, which turns away anyone without the office role,
+ * so they get no Screening tab at all; office staff land on the review queue
+ * when they hold the background-check admin role and on their organisation's
+ * checks when they do not, as on desktop.
  *
  * Everything else — profile, settings, notifications, organizations — stays in
  * the drawer, exactly as it does for workers.
  */
-export const EMPLOYER_MOBILE_SECTIONS: MobileSection[] = [
+export type ScreeningAccess = {
+  /** Holds the `office` role, which every /office page requires. */
+  hasOfficeRole: boolean
+  /** Holds `background_check_admin`, which the review queue requires. */
+  isCheckAdmin: boolean
+}
+
+export const getEmployerMobileSections = ({
+  hasOfficeRole,
+  isCheckAdmin,
+}: ScreeningAccess): MobileSection[] => [
   {
     key: 'talent',
     label: 'Talent',
@@ -631,16 +647,20 @@ export const EMPLOYER_MOBILE_SECTIONS: MobileSection[] = [
     matchPrefixes: ['/jobs/my-listings', '/office/cms/jobs'],
     subItems: [],
   },
-  {
-    key: 'screening',
-    label: 'Screening',
-    icon: ShieldCheck,
-    // The same landing as the desktop Office tab (#1203).
-    route: SCREENING_LANDING,
-    // The whole ATS cluster lights this tab, not just its landing — an admin
-    // on /office/ats/checks is still "in Screening" — and so does community
-    // verification, which the desktop Screening tab also owns.
-    matchPrefixes: [ROUTES.OFFICE.ATS.path, ROUTES.OFFICE.COMMUNITIES.VERIFICATION.path],
-    subItems: [],
-  },
+  ...(hasOfficeRole
+    ? [
+        {
+          key: 'screening',
+          label: 'Screening',
+          icon: ShieldCheck,
+          // The same landing as the desktop Office tab (#1203, #1297).
+          route: screeningLanding(isCheckAdmin),
+          // The whole ATS cluster lights this tab, not just its landing — an
+          // admin on /office/ats/checks is still "in Screening" — and so does
+          // community verification, which the desktop Screening tab also owns.
+          matchPrefixes: [ROUTES.OFFICE.ATS.path, ROUTES.OFFICE.COMMUNITIES.VERIFICATION.path],
+          subItems: [],
+        },
+      ]
+    : []),
 ]

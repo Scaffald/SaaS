@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { EMPLOYER_MOBILE_SECTIONS, MOBILE_SECTIONS, type MobileSection } from '../config'
+import { getEmployerMobileSections, MOBILE_SECTIONS, type MobileSection } from '../config'
 
 /**
  * The phone bar mirrors the role you are in. Two things have gone wrong here
@@ -19,9 +19,25 @@ const activeIndex = (pathname: string, sections: MobileSection[]): number =>
     s.matchPrefixes.some((p) => pathname === p || pathname.startsWith(p))
   )
 
+/** The employer bar for each kind of employer: Screening depends on roles (#1297). */
+const EMPLOYER_MOBILE_SECTIONS = getEmployerMobileSections({
+  hasOfficeRole: true,
+  isCheckAdmin: true,
+})
+const EMPLOYER_OFFICE_SECTIONS = getEmployerMobileSections({
+  hasOfficeRole: true,
+  isCheckAdmin: false,
+})
+const EMPLOYER_PLAIN_SECTIONS = getEmployerMobileSections({
+  hasOfficeRole: false,
+  isCheckAdmin: false,
+})
+
 const sets: Array<[string, MobileSection[]]> = [
   ['worker', MOBILE_SECTIONS],
-  ['employer', EMPLOYER_MOBILE_SECTIONS],
+  ['employer (check admin)', EMPLOYER_MOBILE_SECTIONS],
+  ['employer (office, not check admin)', EMPLOYER_OFFICE_SECTIONS],
+  ['employer (no office role)', EMPLOYER_PLAIN_SECTIONS],
 ]
 
 describe.each(sets)('%s tab set', (_name, sections) => {
@@ -145,5 +161,35 @@ describe('employer tabs point at surfaces that exist', () => {
   it('lands Screening on the review queue, not the organisation picker (#1203)', () => {
     const screening = EMPLOYER_MOBILE_SECTIONS.find((s) => s.key === 'screening')
     expect(screening?.route).toBe('/office/ats/admin')
+  })
+})
+
+describe('Screening is offered only to those its pages admit (#1297)', () => {
+  const screening = (sections: MobileSection[]) => sections.find((s) => s.key === 'screening')
+
+  it('lands the background-check admin on the review queue', () => {
+    expect(screening(EMPLOYER_MOBILE_SECTIONS)?.route).toBe('/office/ats/admin')
+  })
+
+  it("lands office staff without the admin role on their organisation's checks", () => {
+    // /office/ats/admin would show them "Admin access required".
+    expect(screening(EMPLOYER_OFFICE_SECTIONS)?.route).toBe('/office/ats/checks')
+  })
+
+  it('gives an employer without the office role no Screening tab', () => {
+    // Every Screening page sits under /office, whose layout sends them back
+    // to the dashboard.
+    expect(screening(EMPLOYER_PLAIN_SECTIONS)).toBeUndefined()
+    expect(EMPLOYER_PLAIN_SECTIONS.map((s) => s.key)).toEqual([
+      'talent',
+      'applications',
+      'employer-jobs',
+    ])
+  })
+
+  it('never sends anyone without the admin role to the review queue', () => {
+    for (const sections of [EMPLOYER_OFFICE_SECTIONS, EMPLOYER_PLAIN_SECTIONS]) {
+      expect(sections.map((s) => s.route)).not.toContain('/office/ats/admin')
+    }
   })
 })

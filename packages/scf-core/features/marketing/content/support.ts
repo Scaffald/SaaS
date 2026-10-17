@@ -3,8 +3,11 @@
  *
  * Read by both the public /support page (marketing shell) and the signed-in
  * /dashboard/support screen (app shell, #1213), so the two cannot drift.
- * Copy ported verbatim from the retired Next.js site (apps/web/app/support).
- * The FAQ answers are user-facing support copy — keep the wording as-is.
+ * Every answer describes the app as it is, with the labels it shows (#1300).
+ * The copy ported from the retired Next.js site described a "Forgot
+ * password?" link, a Settings → Account → Delete Account path and a "⋯ →
+ * Report" menu on jobs and profiles; the app has none of those as written.
+ * When a screen's labels or paths change, change the answer here too.
  */
 
 export const SUPPORT_EMAIL = 'support@scaffald.com'
@@ -13,32 +16,43 @@ export type SupportFaq = { q: string; a: string }
 
 export const SUPPORT_FAQS: readonly SupportFaq[] = [
   {
-    q: 'How do I reset my password?',
-    a: 'On the sign-in screen, tap "Forgot password?" and enter your email address. You will receive a reset link within a few minutes. Check your spam folder if it does not arrive. You can also email support@scaffald.com and we will assist you.',
+    // Sign-in is passwordless first (login-screen.tsx); there is no reset flow.
+    q: 'I forgot my password. How do I sign in?',
+    a: 'You don\'t need a password. On the sign-in screen, enter your email and tap "Email me a sign-in link", or tap "Use one-time code" to get a code instead. You can also continue with Google, or with Apple on iPhone and the web. If you still can\'t get in, email support@scaffald.com and we will help.',
   },
   {
+    // Settings → Account renders AccountDeletionPanel. It files a request and
+    // signs you out; the 30 days is the panel's own promise.
     q: 'How do I delete my account?',
-    a: 'In the app, go to Settings → Account → Delete Account. Your account and all associated data will be permanently deleted within 30 days. Alternatively, email support@scaffald.com with the subject "Delete my account" and we will process your request.',
+    a: 'Open Settings (on a phone, tap More, then Settings; on a larger screen, tap your name at the foot of the menu, then "Account & settings") and choose the Account tab. Under Delete Account, tap "Request Account Deletion", type DELETE to confirm, and tap "Delete Account". You will be signed out straight away, and deletion completes within 30 days. You can also email support@scaffald.com with the subject "Delete my account".',
   },
   {
-    q: 'How do I report a job posting or user?',
-    a: 'On any job posting or user profile, tap the "⋯" (more) menu and select "Report". Choose the reason from the list and submit. Our team reviews all reports within 1–2 business days. For urgent safety concerns, email support@scaffald.com directly.',
+    // ReportAction is on community posts and inquiry messages only; job
+    // postings and profiles have no Report control.
+    q: 'How do I report a post, a message, a job posting or a person?',
+    a: 'On a community post, or a message in an inquiry thread, tap Report, choose what\'s wrong and tap "Send report". Our moderation team reviews every report, and you can block the person too. Job postings and profiles don\'t have a Report button yet: email support@scaffald.com with a link to the posting or profile and tell us what happened.',
   },
   {
     q: 'How do I update my profile or trade certifications?',
-    a: 'Open your profile from the bottom navigation and tap "Edit profile". You can update your trade, certifications, skills, and work history at any time. To add a certification, tap "Add certification" and upload a photo of your credential.',
+    a: 'Open Profile from the menu (on a phone, it is a tab in the bottom bar). Your name, headline and work preferences are under Resumé, your work history and education under Experience, and your certifications under Skills. To add a certification, search the list, or tap "Add Custom Certification" and attach a PDF or photo of your credential. Uploading files works on the web for now.',
   },
   {
+    // Statuses from application-status.ts. No status-change notification is
+    // sent yet, so the answer promises none.
     q: 'I applied for a job — how do I track its status?',
-    a: 'Go to Jobs → My Applications. You will see the current status for each application (Submitted, Viewed, Shortlisted, etc.). You will also receive a push notification when your application status changes.',
+    a: 'Open Jobs → Applications (on a phone, the Apps tab in the bottom bar). Each application shows where it stands: Applied, Under review, Interview, Question for you, Offer, Hired, Not selected or Withdrawn. The tabs at the top narrow the list to active applications, interviews, offers or closed ones.',
   },
   {
+    // The score is community reputation (migrations 313, 315): it starts at
+    // 100 and moves only with community activity.
     q: 'How does the Scaffald score work?',
-    a: 'Your Scaffald score is an algorithmic metric that reflects the completeness of your profile, your verified certifications, your activity on the platform, and feedback from employers and colleagues. A higher score increases your visibility to employers. Keep your profile complete and up to date to maximize your score.',
+    a: 'Your Scaffald score is your community reputation. Everyone starts at 100. It changes with what you do in Communities: publishing posts and comments, giving and receiving ratings, receiving upvotes, and having your licence verified by a community raise it, and unpublishing or deleting a post lowers it. It shows on your profile and your public profile, and employers see it when they view you.',
   },
   {
+    // Public profiles never return email or phone; an employer reads them only
+    // once the success fee for that application is paid (user-profiles.ts).
     q: 'Can employers see my contact information?',
-    a: 'Your email address and phone number are never shared with employers without your explicit action (such as initiating contact). Employers can see your name, headline, trade, city/state, and public profile details.',
+    a: "Not on your profile. Employers see your name, headline, location, experience and the other details on your public profile, never your email address or phone number. When you apply to a job, that employer can see your email and phone only after they pay Scaffald's fee for your application. Anything you include in a résumé or file you attach to an application is visible to that employer.",
   },
 ]
 
