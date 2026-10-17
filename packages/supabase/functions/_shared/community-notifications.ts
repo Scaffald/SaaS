@@ -97,7 +97,7 @@ export async function notifyReputationChange(
       user_id: opts.userId,
       type: 'community.reputation_change',
       severity: 'info',
-      title: 'Scaffold Score Updated',
+      title: 'Scaffald score updated',
       message: `Your score ${direction} by ${Math.abs(opts.delta)} to ${opts.newScore}. ${opts.reason}`,
       cta_label: 'View Score',
       cta_url: '/communities/reputation',

@@ -34,6 +34,12 @@ interface DiscoverJobsLeftProps {
   minSoftSkillsMatch?: number | null
   sortBy?: 'relevance' | 'match_score'
   /**
+   * One employer's postings only — the map's employer preview opens the
+   * listing with `?org=` (#1282). Outside listings are other companies', so
+   * they drop out while it is set.
+   */
+  organizationId?: string
+  /**
    * Reports how many jobs survive the filters, so the toolbar can show the
    * count in the one template the rest of the app uses. The column used to
    * print its own "n Jobs Available" line, which was a second grammar for
@@ -67,6 +73,7 @@ export function DiscoverJobsLeft({
   jobSource = 'all',
   minSoftSkillsMatch,
   sortBy,
+  organizationId,
   onResultCount,
   view = 'list',
 }: DiscoverJobsLeftProps) {
@@ -81,11 +88,14 @@ export function DiscoverJobsLeft({
 
   // The loader's rows seed only the queries they answer: the default (empty)
   // search. A search changes the query key, so it fetches as before.
-  const seedsThisQuery = searchQuery === ''
+  // The loader never scopes to an employer, so its rows would answer an
+  // `?org=` listing with everyone's jobs.
+  const seedsThisQuery = searchQuery === '' && !organizationId
+  const showsExternal = !organizationId && (jobSource === 'all' || jobSource === 'external')
 
   // Fetch external jobs (SDK)
   const { data: externalData, isLoading: externalLoading } = useExternalJobs({
-    enabled: jobSource === 'all' || jobSource === 'external',
+    enabled: showsExternal,
     initialData: seedsThisQuery ? initialJobs?.external : undefined,
   })
 
@@ -103,7 +113,7 @@ export function DiscoverJobsLeft({
 
   // Fetch regular internal jobs (SDK)
   const { data: internalData, isLoading: internalLoading } = usePublishedJobs(
-    { search: searchQuery },
+    { search: searchQuery, organizationId },
     {
       enabled: jobSource === 'all' || jobSource === 'internal',
       initialData: seedsThisQuery ? initialJobs?.internal : undefined,
@@ -126,7 +136,7 @@ export function DiscoverJobsLeft({
   // requirements the viewer meets (#1180).
   const requirementProfile = useRequirementProfile(signedIn)
 
-  const externalJobs = externalData ?? []
+  const externalJobs = showsExternal ? (externalData ?? []) : []
   let internalJobs = internalData?.data ?? []
   const matchingJobs = softSkillsMatchData?.jobs ?? []
 
