@@ -1,8 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import {
-  useOfficeListUsers,
-  useOfficeDeleteUserMutation,
-} from '@scf/core/utils/office-users-sdk-hooks'
+import { useOfficeListUsers } from '@scf/core/utils/office-users-sdk-hooks'
 import type { TableColumnVisibilityOption } from '@scaffald/ui'
 import { type ColumnDef, createColumnHelper, type VisibilityState } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
@@ -10,7 +7,6 @@ import { useMemo, useState } from 'react'
 import {
   Button,
   Stack,
-  TableAddRecordModal,
   TableColumnVisibilityModal,
   Text,
   useThemeContext,
@@ -20,7 +16,8 @@ import { Pressable } from 'react-native'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
 import { workerLabel } from './worker-label'
 import { OfficePageLayout } from './components/OfficePageLayout'
-import { QuickActionsWidget } from './components/QuickActionsWidget'
+import { CellText, type CmsRowAction } from './components/CmsCells'
+import { formatCellDate } from './cms-format'
 import { colors } from '@scaffald/ui/tokens'
 
 type User = {
@@ -64,7 +61,9 @@ function IdCell({ id }: { id: string }) {
   const toast = useToast()
   return (
     <Pressable
-      accessibilityRole="button"
+      // Not role="button": the row is already a <button>, and a nested one is
+      // invalid (see CmsRowMenu).
+      focusable
       accessibilityLabel={`Copy ID ${id}`}
       onPress={async (event) => {
         // The row itself opens the editor; a copy should not.
@@ -96,7 +95,7 @@ const createColumns = () => [
   columnHelper.accessor('created_at', {
     id: 'created_at',
     header: 'Created',
-    cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+    cell: (info) => <CellText tabular>{formatCellDate(info.getValue())}</CellText>,
     meta: {
       label: 'Created',
       hideable: true,
@@ -123,21 +122,10 @@ export interface OfficeUsersListProps {
 export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}) {
   const router = useRouter()
   const [search, setSearch] = useState('')
-  const [addModalOpen, setAddModalOpen] = useState(false)
   const [columnModalOpen, setColumnModalOpen] = useState(false)
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
-  const { data, isLoading, refetch } = useOfficeListUsers()
-
-  const deleteMutation = useOfficeDeleteUserMutation({
-    onSuccess: () => {
-      refetch()
-    },
-  })
-
-  const handleDelete = async (id: string) => {
-    await deleteMutation.mutateAsync(id)
-  }
+  const { data, isLoading, error, refetch } = useOfficeListUsers()
 
   // The api now adds `email` (#1116); the SDK type does not list it yet.
   const users = (data?.users ?? []) as User[]
@@ -157,9 +145,9 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
     router.push(buildPath(ROUTES.OFFICE.CMS.WORKERS.EDIT, { id: user.id }))
   }
 
-  const handleRowDelete = async (user: User) => {
-    await handleDelete(user.id)
-  }
+  const rowActions = (user: User): CmsRowAction[] => [
+    { label: 'Edit', onPress: () => handleRowEdit(user) },
+  ]
 
   const getItemName = (user: User) => workerLabel(user)
 
@@ -196,8 +184,9 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
     <OfficePageLayout
       resultNoun="worker"
       wrapWithOfficeLayout
-      showBreadcrumb
+      kicker="Content management"
       title="Workers"
+      tip="Open a worker to edit their profile. Tap an ID to copy it."
       searchPlaceholder="Search workers by name or email…"
       searchValue={search}
       onSearchChange={setSearch}
@@ -206,25 +195,21 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
       columns={columns as ColumnDef<User, unknown>[]}
       data={filteredUsers as User[]}
       isLoading={isLoading}
+      loadError={
+        error ? { error, retry: () => void refetch(), title: 'Couldn’t load workers' } : undefined
+      }
       pageSize={50}
       emptyMessage="No workers found"
-      hideCreateButton
       columnVisibility={columnVisibility}
       onColumnVisibilityChange={setColumnVisibility}
       onRowEdit={handleRowEdit}
-      onRowDelete={handleRowDelete}
+      rowActions={rowActions}
       getItemName={getItemName}
       itemType="worker"
       hideHeader={!showHeader}
-      rightContent={
-        <QuickActionsWidget
-          context="list"
-          resourceName="Worker"
-          onCreate={() => router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path)}
-          onRefresh={() => refetch()}
-          isLoading={isLoading}
-        />
-      }
+      // Create is in the header, like every CMS list (#1205); the Quick
+      // Actions rail repeated it beside a Refresh and cost the table ~400px
+      // (#1099).
       toolbarActions={
         <Button size="sm" variant="outline" onPress={() => setColumnModalOpen(true)}>
           Columns
@@ -232,17 +217,6 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
       }
       toolbarModals={
         <>
-          <TableAddRecordModal
-            open={addModalOpen}
-            onOpenChange={setAddModalOpen}
-            title="Create worker"
-            description="Quickly add a new worker. The fully featured form is coming soon, but you can jump to the dedicated page now."
-            primaryActionLabel="Open full create flow"
-            onPrimaryAction={() => {
-              setAddModalOpen(false)
-              router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path)
-            }}
-          />
           <TableColumnVisibilityModal
             open={columnModalOpen}
             onOpenChange={setColumnModalOpen}

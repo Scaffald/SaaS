@@ -43,7 +43,7 @@ type OfficeLayoutProps = {
  * ```tsx
  * <OfficeLayout
  *   leftContent={<OfficePageLayout ... />}
- *   rightContent={<QuickActionsWidget ... />}
+ *   rightContent={<Summary ... />}
  * />
  * ```
  */

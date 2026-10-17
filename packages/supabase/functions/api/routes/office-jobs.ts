@@ -120,6 +120,7 @@ app.get("/", zValidator("query", listJobsQuerySchema), async (c) => {
     description,
     status,
     employment_type,
+    job_category,
     remote_option,
     location,
     pay_range_min_cents,

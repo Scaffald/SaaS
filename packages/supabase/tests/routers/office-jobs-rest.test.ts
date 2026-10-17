@@ -112,3 +112,29 @@ Deno.test({
     )
   },
 })
+
+Deno.test({
+  name: 'Office jobs REST - each row carries job_category for the Trade column',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    // The CMS Jobs table gained a Trade column (#1204), read from the job
+    // form's Category. The list's select names its columns one by one and
+    // left this out, so the column would have been blank for every job.
+    await requireAuthSetup()
+    const tokens = await loadCachedTokens()
+    assertExists(tokens, 'Cached tokens should exist')
+    const token = tokens.office?.token ?? ''
+    assertExists(token, 'An office-role token is required')
+
+    const listed = await listOfficeJobs('limit=100', token)
+    assertEquals(listed.status, 200, 'Listing should succeed')
+    for (const job of listed.jobs as Array<Record<string, unknown>>) {
+      assertEquals(
+        'job_category' in job,
+        true,
+        `job ${job.id} should carry job_category (null when unset)`,
+      )
+    }
+  },
+})
