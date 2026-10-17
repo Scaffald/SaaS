@@ -20,6 +20,8 @@ export type NotificationSeverity = 'critical' | 'important' | 'info'
 
 export type NotificationListItem = {
   id: string
+  /** `core.notification_type`, e.g. `job.match` — decides which mode's inbox shows it (#1178). */
+  type?: string
   title: string
   preview: string
   createdAt: string
@@ -31,6 +33,7 @@ export type NotificationListItem = {
 /** Row shape as it arrives from the API, before normalizing. */
 type RawNotification = {
   id?: unknown
+  type?: unknown
   title?: unknown
   body?: unknown
   preview?: unknown
@@ -74,6 +77,7 @@ export function toNotificationItems(
 ): NotificationListItem[] {
   return (response?.data ?? []).map((n) => ({
     id: String(n.id ?? ''),
+    type: typeof n.type === 'string' ? n.type : undefined,
     title: String(n.title ?? ''),
     preview: pickPreview(n),
     createdAt: String(n.created_at ?? ''),
