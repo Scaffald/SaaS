@@ -22,7 +22,12 @@ import {
 } from '../shared/setup.ts'
 import { requireAuthSetup } from '../shared/test-context.ts'
 
-const REST_BASE = `${TEST_SUPABASE_URL}/functions/v1/api/v1`
+// `OFFICE_JOBS_TEST_API_BASE` points the suite at the api function run
+// directly (`http://127.0.0.1:<port>/v1`), the same seam as
+// IDV_TEST_API_BASE: the shared edge runtime serves whichever checkout
+// started the stack, not the one under test.
+const REST_BASE = Deno.env.get('OFFICE_JOBS_TEST_API_BASE') ??
+  `${TEST_SUPABASE_URL}/functions/v1/api/v1`
 
 async function listOfficeJobs(query: string, authToken: string) {
   const response = await fetch(`${REST_BASE}/office/jobs?${query}`, {
