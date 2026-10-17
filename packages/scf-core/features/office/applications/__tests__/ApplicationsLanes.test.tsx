@@ -199,7 +199,7 @@ describe('ApplicationsLanes — opening and moving a row (#1196)', () => {
       </ThemeProvider>,
     )
     for (const id of ['a', 'b']) {
-      expect(screen.getByTestId(`lane-row-${id}`).getAttribute('role')).toBe('link')
+      expect(screen.getByTestId(`lane-row-${id}-open`).getAttribute('role')).toBe('link')
     }
   })
 
@@ -238,6 +238,22 @@ describe('ApplicationsLanes — opening and moving a row (#1196)', () => {
     )
     fireEvent.click(screen.getByLabelText('Move Alice Chen to another stage'))
     expect(onSelect).not.toHaveBeenCalled()
+  })
+
+  it('keeps the Move trigger outside the row press area, so no button nests in another (#1288)', () => {
+    const { container } = render(
+      <ThemeProvider>
+        <ApplicationsLanes
+          applications={[makeApp({ id: 'a' })]}
+          onSelect={() => {}}
+          onMove={() => {}}
+          now={NOW}
+        />
+      </ThemeProvider>,
+    )
+    const move = screen.getByLabelText('Move Alice Chen to another stage')
+    expect(screen.getByTestId('lane-row-a-open').contains(move)).toBe(false)
+    expect(container.querySelector('button button')).toBeNull()
   })
 
   it('has no Move menu without onMove', () => {

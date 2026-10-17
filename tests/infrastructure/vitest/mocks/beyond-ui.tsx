@@ -213,20 +213,11 @@ export const Modal = ({
     ? createElement('div', { role: 'dialog', 'data-testid': 'modal', ...rest }, children)
     : null
 
-export const Tooltip = ({
-  children,
-  ...rest
-}: {
-  children?: ReactNode
-  [key: string]: unknown
-}) => createElement('div', rest, children)
+export const Tooltip = ({ children, ...rest }: { children?: ReactNode; [key: string]: unknown }) =>
+  createElement('div', rest, children)
 
-export const Portal = ({
-  children,
-}: {
-  children?: ReactNode
-  [key: string]: unknown
-}) => createElement(React.Fragment, null, children)
+export const Portal = ({ children }: { children?: ReactNode; [key: string]: unknown }) =>
+  createElement(React.Fragment, null, children)
 
 // Misc
 export const EmptyState = createEl('div')
@@ -284,7 +275,7 @@ export const ResponsiveModal = ({
   visible?: boolean
   [key: string]: unknown
 }) =>
-  (open || visible)
+  open || visible
     ? createElement('div', { role: 'dialog', 'data-testid': 'responsive-modal', ...rest }, children)
     : null
 export const Slider = ({
@@ -323,8 +314,15 @@ export const AssessmentProgressBar = ({
   value?: number
   max?: number
   [key: string]: unknown
-}) => createElement('div', { role: 'progressbar', 'aria-valuenow': value, 'aria-valuemax': max, ...rest })
-export const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? require('react').useLayoutEffect : require('react').useEffect
+}) =>
+  createElement('div', {
+    role: 'progressbar',
+    'aria-valuenow': value,
+    'aria-valuemax': max,
+    ...rest,
+  })
+export const useIsomorphicLayoutEffect =
+  typeof window !== 'undefined' ? require('react').useLayoutEffect : require('react').useEffect
 export const Tabs = Object.assign(createEl('div'), {
   Item: createEl('div'),
   Trigger: createEl('button'),
@@ -368,7 +366,13 @@ export const Progress = ({
   value?: number
   max?: number
   [key: string]: unknown
-}) => createElement('div', { role: 'progressbar', 'aria-valuenow': value, 'aria-valuemax': max, ...rest })
+}) =>
+  createElement('div', {
+    role: 'progressbar',
+    'aria-valuenow': value,
+    'aria-valuemax': max,
+    ...rest,
+  })
 
 export const ProgressBarBase = ({
   value,
@@ -378,7 +382,13 @@ export const ProgressBarBase = ({
   value?: number
   max?: number
   [key: string]: unknown
-}) => createElement('div', { role: 'progressbar', 'aria-valuenow': value, 'aria-valuemax': max, ...rest })
+}) =>
+  createElement('div', {
+    role: 'progressbar',
+    'aria-valuenow': value,
+    'aria-valuemax': max,
+    ...rest,
+  })
 
 export const ProgressBar = ProgressBarBase
 
@@ -394,6 +404,7 @@ export const ProgressBar = ProgressBarBase
 // ---------------------------------------------------------------------------
 
 export const ScreenHeader = ({
+  leading,
   kicker,
   title,
   tip,
@@ -402,6 +413,7 @@ export const ScreenHeader = ({
   actions,
   children,
 }: {
+  leading?: ReactNode
   kicker?: string
   title?: string
   tip?: ReactNode
@@ -413,6 +425,7 @@ export const ScreenHeader = ({
   createElement(
     'header',
     null,
+    leading ?? null,
     kicker ? createElement('p', null, kicker) : null,
     createElement('h2', null, title),
     // Honour the collapse contract: a collapsed tip must not be in the tree.
@@ -421,11 +434,11 @@ export const ScreenHeader = ({
       ? createElement(
           'button',
           { type: 'button', 'aria-label': 'Next tip', onClick: pager.onNext },
-          `${pager.index} / ${pager.total}`,
+          `${pager.index} / ${pager.total}`
         )
       : null,
     actions,
-    children,
+    children
   )
 
 export const ListToolbar = ({
@@ -453,7 +466,7 @@ export const ListToolbar = ({
           null,
           `${resultCount} ${
             resultCount === 1 ? resultNoun : (resultNounPlural ?? `${resultNoun}s`)
-          }`,
+          }`
         )
       : null,
     ...(chips ?? []).map((chip) =>
@@ -469,27 +482,31 @@ export const ListToolbar = ({
                 'aria-label': `Remove ${chip.label} filter`,
                 onClick: chip.onClear,
               },
-              '×',
+              '×'
             )
-          : null,
-      ),
+          : null
+      )
     ),
     actions,
-    children,
+    children
   )
 
 export const MetricBlock = ({
   label,
   value,
   delta,
-}: { label?: string; value?: ReactNode; delta?: ReactNode }) =>
+}: {
+  label?: string
+  value?: ReactNode
+  delta?: ReactNode
+}) =>
   // Label before value before delta — the ordering IS the contract.
   createElement(
     'div',
     null,
     createElement('span', null, label),
     createElement('span', null, value),
-    delta != null ? createElement('span', null, delta) : null,
+    delta != null ? createElement('span', null, delta) : null
   )
 
 export const MetricRow = createEl('div')
@@ -517,7 +534,7 @@ export const LaneGroup = ({
     hint ? createElement('span', null, hint) : null,
     action,
     // Empty state replaces the rows rather than sitting alongside them.
-    count === 0 && emptyState != null ? emptyState : children,
+    count === 0 && emptyState != null ? emptyState : children
   )
 
 export const Lane = ({
@@ -528,6 +545,8 @@ export const Lane = ({
   note,
   actions,
   onPress,
+  accessibilityRole = 'link',
+  accessibilityLabel,
   testID,
 }: {
   age?: string
@@ -537,20 +556,34 @@ export const Lane = ({
   note?: ReactNode
   actions?: ReactNode
   onPress?: () => void
+  accessibilityRole?: 'link' | 'button'
+  accessibilityLabel?: string
   testID?: string
 }) =>
+  // The real Lane's shape (Scaffald/ui, #1288): the press area is a link
+  // holding identity, columns and note, and the actions sit beside it — so a
+  // press on an action never opens the row.
   createElement(
     'div',
-    { 'data-testid': testID, onClick: onPress, role: onPress ? 'button' : undefined },
-    // Age first — a row that does not lead with staleness fails the point.
-    age ? createElement('span', null, age) : null,
-    createElement('span', null, title),
-    subtitle != null ? createElement('span', null, subtitle) : null,
-    ...(columns ?? []).map((col, i) =>
-      createElement('span', { key: `col-${i}` }, col),
+    { 'data-testid': testID },
+    createElement(
+      'div',
+      onPress
+        ? {
+            'data-testid': testID ? `${testID}-open` : undefined,
+            onClick: onPress,
+            role: accessibilityRole,
+            'aria-label': accessibilityLabel,
+          }
+        : null,
+      // Age first — a row that does not lead with staleness fails the point.
+      age ? createElement('span', null, age) : null,
+      createElement('span', null, title),
+      subtitle != null ? createElement('span', null, subtitle) : null,
+      ...(columns ?? []).map((col, i) => createElement('span', { key: `col-${i}` }, col)),
+      note != null ? createElement('span', null, note) : null
     ),
-    note != null ? createElement('span', null, note) : null,
-    actions,
+    actions
   )
 
 // Theme
