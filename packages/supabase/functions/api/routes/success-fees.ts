@@ -12,7 +12,6 @@ import {
   type ApiEnv,
   requireAuth,
 } from "../middleware/auth.ts";
-import type Stripe from "stripe";
 // The shared loader: same Vault key path, plus STRIPE_MOCK_MODE for the REST
 // tests (#937) — this file used to carry its own copy without it.
 import { loadStripeClient } from "../../_shared/id-verification-api.ts";
@@ -27,7 +26,8 @@ type SuccessFeeRecord = {
   application_id: string | null;
   total_hire_value_cents: number;
   job_duration_days: number | null;
-  payment_schedule: "standard" | "short";
+  // 'single' since #1257; the split schedules remain valid for history.
+  payment_schedule: "single" | "standard" | "short";
   upfront_percentage: number;
   final_percentage: number;
   upfront_amount_cents: number;
@@ -135,7 +135,7 @@ function hireValueFromJob(job: {
  */
 function singleChargeSchedule(totalFeeCents: number, hireStartDate: string) {
   return {
-    paymentSchedule: "single" as const,
+    paymentSchedule: "single" as SuccessFeeRecord["payment_schedule"],
     upfrontPercentage: 100,
     finalPercentage: 0,
     upfrontAmountCents: totalFeeCents,
@@ -388,14 +388,10 @@ app.post(
 
     try {
       const stripe = await loadStripeClient(supabaseAdmin);
-      let intent: Stripe.PaymentIntent;
-
-      if (successFee.upfront_payment_intent_id) {
-        intent = await stripe.paymentIntents.retrieve(
-          successFee.upfront_payment_intent_id,
-        );
-      } else {
-        intent = await stripe.paymentIntents.create({
+      const linkedIntentId = successFee.upfront_payment_intent_id;
+      const intent = linkedIntentId
+        ? await stripe.paymentIntents.retrieve(linkedIntentId)
+        : await stripe.paymentIntents.create({
           amount: calculatedSchedule.upfrontAmountCents,
           currency: "usd",
           metadata: {
@@ -406,6 +402,7 @@ app.post(
           automatic_payment_methods: { enabled: true },
         });
 
+      if (!linkedIntentId) {
         const { error: updateError } = await supabaseAdmin
           .schema("core")
           .from("success_fees")
