@@ -331,6 +331,35 @@ export const Tabs = Object.assign(createEl('div'), {
   Content: createEl('div'),
 })
 export const Form = createEl('form')
+/** One tab per segment, so tests can find and pick a segment by role and name. */
+export const SegmentedControl = ({
+  segments,
+  selectedIndex,
+  onSelectionChange,
+  testID,
+}: {
+  segments: string[]
+  selectedIndex: number
+  onSelectionChange: (index: number) => void
+  testID?: string
+}) =>
+  createElement(
+    'div',
+    { role: 'tablist', 'data-testid': testID },
+    segments.map((label, index) =>
+      createElement(
+        'button',
+        {
+          key: `${label}-${index}`,
+          type: 'button',
+          role: 'tab',
+          'aria-selected': index === selectedIndex ? 'true' : 'false',
+          onClick: () => onSelectionChange(index),
+        },
+        label
+      )
+    )
+  )
 export const Progress = ({
   value,
   max,

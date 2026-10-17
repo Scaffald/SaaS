@@ -1,8 +1,9 @@
 /**
- * Support / FAQ.
+ * Support / FAQ — the public page, under the site header.
  *
- * Copy ported verbatim from the retired Next.js site (apps/web/app/support).
- * The FAQ answers are user-facing support copy — keep the wording as-is.
+ * Signed-in users get the same content inside the app shell instead
+ * (AppSupportScreen, /dashboard/support, #1213); the copy lives in
+ * content/support.ts so the two read from one place.
  */
 
 import { Row, Stack, Text } from '@scaffald/ui'
@@ -14,40 +15,7 @@ import { LegalLayout, openEmail, renderTextWithEmails } from '../components/Lega
 import { MarketingHeading } from '../components/MarketingHeading'
 import { brand } from '../theme'
 import { ROUTES } from '@scf/core/constants/routes'
-
-const SUPPORT_EMAIL = 'support@scaffald.com'
-
-const FAQS: Array<{ q: string; a: string }> = [
-  {
-    q: 'How do I reset my password?',
-    a: 'On the sign-in screen, tap "Forgot password?" and enter your email address. You will receive a reset link within a few minutes. Check your spam folder if it does not arrive. You can also email support@scaffald.com and we will assist you.',
-  },
-  {
-    q: 'How do I delete my account?',
-    a: 'In the app, go to Settings → Account → Delete Account. Your account and all associated data will be permanently deleted within 30 days. Alternatively, email support@scaffald.com with the subject "Delete my account" and we will process your request.',
-  },
-  {
-    q: 'How do I report a job posting or user?',
-    a: 'On any job posting or user profile, tap the "⋯" (more) menu and select "Report". Choose the reason from the list and submit. Our team reviews all reports within 1–2 business days. For urgent safety concerns, email support@scaffald.com directly.',
-  },
-  {
-    q: 'How do I update my profile or trade certifications?',
-    a: 'Open your profile from the bottom navigation and tap "Edit profile". You can update your trade, certifications, skills, and work history at any time. To add a certification, tap "Add certification" and upload a photo of your credential.',
-  },
-  {
-    q: 'I applied for a job — how do I track its status?',
-    a: 'Go to Jobs → My Applications. You will see the current status for each application (Submitted, Viewed, Shortlisted, etc.). You will also receive a push notification when your application status changes.',
-  },
-  {
-    q: 'How does the Scaffald score work?',
-    a: 'Your Scaffald score is an algorithmic metric that reflects the completeness of your profile, your verified certifications, your activity on the platform, and feedback from employers and colleagues. A higher score increases your visibility to employers. Keep your profile complete and up to date to maximize your score.',
-  },
-  {
-    q: 'Can employers see my contact information?',
-    a: 'Your email address and phone number are never shared with employers without your explicit action (such as initiating contact). Employers can see your name, headline, trade, city/state, and public profile details.',
-  },
-]
-
+import { SUPPORT_EMAIL, SUPPORT_FAQS } from '../content/support'
 function ContactCard() {
   return (
     <Stack gap={16} padding={24} backgroundColor={brand.deep} borderRadius={16}>
@@ -147,7 +115,7 @@ export function SupportScreen() {
           Frequently asked questions
         </MarketingHeading>
         <Stack gap={12}>
-          {FAQS.map((item) => (
+          {SUPPORT_FAQS.map((item) => (
             <FaqItem key={item.q} question={item.q} answer={item.a} />
           ))}
         </Stack>

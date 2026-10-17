@@ -23,6 +23,7 @@ export default function DashboardLayout() {
         <Stack.Screen name="settings/index" options={{ title: 'Settings' }} />
         <Stack.Screen name="news/index" options={{ title: 'News' }} />
         <Stack.Screen name="notifications/index" options={{ title: 'Notifications' }} />
+        <Stack.Screen name="support" options={{ title: 'Support' }} />
         <Stack.Screen name="analytics/index" options={{ title: 'Analytics' }} />
         <Stack.Screen name="analytics/engagement" options={{ title: 'Engagement' }} />
         <Stack.Screen name="analytics/visibility" options={{ title: 'Visibility' }} />

@@ -9,24 +9,32 @@ import { useTranslation } from '@scf/core/utils/useTranslation'
 import { applyZodErrorMap } from '@scf/core/utils/zodErrorMap'
 import {
   Button,
-  Card,
   Form,
-  H4,
   Input,
   Paragraph,
+  SegmentedControl,
   Stack,
   useThemeContext,
   useToast,
 } from '@scaffald/ui'
-import { colors, spacing } from '@scaffald/ui/tokens'
+import { colors, fontScale, spacing } from '@scaffald/ui/tokens'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { AuthChangeEvent, Session } from '@supabase/auth-js'
 import { Lock, Mail } from 'lucide-react-native'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { type Href, Link, useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, FormProvider, type Resolver, useForm } from 'react-hook-form'
-import { Pressable, Text } from 'react-native'
+import { Platform, Pressable, Text, type TextStyle } from 'react-native'
 import { z } from 'zod'
+import {
+  AUTH_MODES,
+  type AuthMode,
+  canUsePassword,
+  initialAuthMode,
+  modeDescriptionKey,
+  primaryActionKey,
+} from './auth-entry'
+import { IntentBanner } from './components/IntentBanner'
 import { SocialLogin } from './components/SocialLogin'
 
 applyZodErrorMap()
@@ -52,23 +60,39 @@ export const LoginScreen = () => {
     oauth_error?: string
     oauth_error_code?: string
     oauth_error_description?: string
+    intent?: string
   }>()
   const router = useRouter()
   useRedirectAfterSignIn()
   useSurfaceOAuthCallbackError(params)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [usePassword, setUsePassword] = useState(false)
+  // Sign in / Create account (#1210). Read once: the URL is rewritten below
+  // when an `email` param is stripped, and the tab must not jump back then.
+  const [mode, setMode] = useState<AuthMode>(() => initialAuthMode(params ?? {}))
   const requestMagicLink = useRequestMagicLinkMutation()
   const { t } = useTranslation()
   const { theme } = useThemeContext()
-  const textTertiary = colors.text[theme].tertiary
 
-  // The glass card is always a warm near-white surface regardless of theme.
-  // Dark-mode text tokens (light colors) fail contrast on it (~1.2:1).
-  // Force light-mode dark text for all content rendered inside the card.
-  const cardTextSecondary = colors.text.light.secondary   // #3c352c — 7.7:1 on glass
-  const cardTextTertiary = colors.text.light.tertiary     // #6e6760 — 3.6:1 on glass
-  const cardLinkColor = colors.primary[700]               // #034550 — 6.8:1 on glass
+  // The card is now the page's own surface (AuthCard), not a fixed
+  // near-white glass panel, so the text follows the theme.
+  const textSecondary = colors.text[theme].secondary
+  const textTertiary = colors.text[theme].tertiary
+  const linkColor = colors.text[theme].emphasis
+  const fieldLabelStyle: TextStyle = {
+    fontSize: fontScale.step1,
+    letterSpacing: 1.3,
+    textTransform: 'uppercase',
+    color: textTertiary,
+  }
+  const passwordOffered = canUsePassword(mode)
+  const passwordActive = usePassword && passwordOffered
+
+  const selectMode = (next: AuthMode) => {
+    setMode(next)
+    if (!canUsePassword(next)) setUsePassword(false)
+    form.clearErrors()
+  }
 
   useEffect(() => {
     if (params?.email) {
@@ -180,174 +204,197 @@ export const LoginScreen = () => {
   // Sign-in is not gated on a consent checkbox anymore. The passive legal
   // notice below the form is browsewrap; the actual clickwrap acceptance
   // (versioned, audited) happens in onboarding / the /legal-update screen.
-  const handleSubmit = form.handleSubmit(usePassword ? signInWithPassword : sendMagicLink)
+  // Both tabs send the same magic link; only Sign in offers the password.
+  const handleSubmit = form.handleSubmit(passwordActive ? signInWithPassword : sendMagicLink)
+  const pending = isSubmitting || requestMagicLink.isPending
+
+  const linkStyle: TextStyle = {
+    color: linkColor,
+    textDecorationLine: 'underline',
+    textAlign: 'center',
+  }
 
   return (
     <FormProvider {...form}>
-      <Stack
-        gap={spacing[20]}
-        padding={spacing[20]}
-        align="center"
-        style={{ width: '100%', maxWidth: 440 }}
-      >
-        <Stack gap={spacing[8]} align="flex-start" style={{ width: '100%' }}>
-          {/* H4 (17px), not H5 (14px): this is the card's title, and H5 is the
-              body-size step. The inline `fontFamily` that used to sit here
-              hard-coded `RobotoSerif_400Regular`, which overrode getFontFamily
-              and pinned the screen to the body serif — the display face could
-              never reach it. Let the token system resolve the face. */}
-          <H4 serif weight="regular" style={{ color: colors.text[theme].primary }}>
-            {t('auth.login.title')}
-          </H4>
-          <Paragraph size="sm" style={{ color: textTertiary }}>
-            {t('auth.login.description')}
-          </Paragraph>
-        </Stack>
+      <Stack gap={spacing[16]} style={{ width: '100%' }}>
+        {/* The prototype's Sign in / Create account switch (#1210). It sets
+            what the card says and which extra paths it offers; the email
+            link underneath signs a known address in and makes an account
+            for a new one either way. */}
+        <SegmentedControl
+          segments={AUTH_MODES.map((m) =>
+            m === 'create' ? t('auth.login.modeCreate') : t('auth.login.modeSignIn')
+          )}
+          selectedIndex={AUTH_MODES.indexOf(mode)}
+          onSelectionChange={(i) => selectMode(AUTH_MODES[i] ?? 'signin')}
+          testID="auth-mode"
+        />
 
-        <Card variant="glass" radius="lg" elevation="md" padding="lg" style={{ width: '100%' }}>
-          <Form onSubmit={handleSubmit} gap={spacing[20]}>
-            <Stack gap={spacing[20]}>
+        <IntentBanner />
+
+        <Paragraph size="sm" style={{ color: textSecondary }}>
+          {t(modeDescriptionKey(mode))}
+        </Paragraph>
+
+        <Form onSubmit={handleSubmit} gap={spacing[16]}>
+          <Stack gap={spacing[16]}>
+            <Controller
+              control={form.control}
+              name="email"
+              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                <Input
+                  label={t('auth.login.emailLabel')}
+                  labelStyle={fieldLabelStyle}
+                  placeholder={t('auth.login.emailPlaceholder')}
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  iconStart={Mail}
+                  error={!!error}
+                  errorMessage={error?.message}
+                />
+              )}
+            />
+
+            {passwordActive && (
               <Controller
                 control={form.control}
-                name="email"
+                name="password"
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <Input
-                    placeholder={t('auth.login.emailPlaceholder')}
-                    value={value}
+                    label={t('auth.login.passwordLabel')}
+                    labelStyle={fieldLabelStyle}
+                    placeholder={t('auth.login.passwordPlaceholder')}
+                    value={value ?? ''}
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    keyboardType="email-address"
+                    secureTextEntry
                     autoCapitalize="none"
-                    autoComplete="email"
-                    iconStart={Mail}
+                    autoComplete="current-password"
+                    iconStart={Lock}
                     error={!!error}
                     errorMessage={error?.message}
                   />
                 )}
               />
+            )}
 
-              {usePassword && (
-                <Controller
-                  control={form.control}
-                  name="password"
-                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                    <Input
-                      placeholder={t('auth.login.passwordPlaceholder')}
-                      value={value ?? ''}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      secureTextEntry
-                      autoCapitalize="none"
-                      autoComplete="current-password"
-                      iconStart={Lock}
-                      error={!!error}
-                      errorMessage={error?.message}
-                    />
-                  )}
-                />
-              )}
+            <Button
+              onPress={handleSubmit}
+              disabled={pending}
+              color="primary"
+              variant="filled"
+              style={{
+                alignSelf: 'stretch',
+                opacity: pending ? 0.5 : 1,
+              }}
+            >
+              {t(primaryActionKey(mode, usePassword, pending))}
+            </Button>
 
-              <Button
-                onPress={handleSubmit}
-                disabled={isSubmitting || requestMagicLink.isPending}
-                color="primary"
-                variant="filled"
-                style={{
-                  alignSelf: 'stretch',
-                  opacity: isSubmitting || requestMagicLink.isPending ? 0.5 : 1,
-                }}
-              >
-                {isSubmitting || requestMagicLink.isPending
-                  ? usePassword
-                    ? t('auth.login.passwordSigningIn')
-                    : t('auth.login.sending')
-                  : usePassword
-                    ? t('auth.login.passwordSignIn')
-                    : t('auth.login.submitButton')}
-              </Button>
-
+            {passwordOffered && (
               <Pressable
                 onPress={() => {
                   setUsePassword(!usePassword)
                   form.clearErrors()
                 }}
                 accessibilityRole="button"
-                accessibilityLabel={usePassword ? t('auth.login.switchToMagicLink') : t('auth.login.switchToPassword')}
+                accessibilityLabel={
+                  usePassword ? t('auth.login.switchToMagicLink') : t('auth.login.switchToPassword')
+                }
               >
-                <Paragraph
-                  size="sm"
-                  style={{
-                    color: cardLinkColor,
-                    textDecorationLine: 'underline',
-                    textAlign: 'center',
-                  }}
-                >
-                  {usePassword ? t('auth.login.switchToMagicLink') : t('auth.login.switchToPassword')}
+                <Paragraph size="sm" style={linkStyle}>
+                  {usePassword
+                    ? t('auth.login.switchToMagicLink')
+                    : t('auth.login.switchToPassword')}
                 </Paragraph>
               </Pressable>
+            )}
 
-              <SocialLogin />
-              <Paragraph size="sm" style={{ color: cardTextSecondary }}>
-                {t('auth.login.socialDescription')}
-              </Paragraph>
-
-              {/* SC-66: cross-device OTP entry. Routes to /auth/verify with
-                  no email param; MagicLinkPending renders an inline email
-                  Input + uses it for verifyOtp. */}
+            {/* SC-66: cross-device OTP entry. Routes to /auth/verify with
+                no email param; MagicLinkPending renders an inline email
+                Input + uses it for verifyOtp. */}
+            {passwordOffered && (
               <Pressable
                 onPress={() => router.push(ROUTES.AUTH.VERIFY.path)}
                 accessibilityRole="link"
                 accessibilityLabel={t('auth.login.useOneTimeCode')}
               >
-                <Paragraph
-                  size="sm"
-                  style={{
-                    color: cardLinkColor,
-                    textDecorationLine: 'underline',
-                    textAlign: 'center',
-                  }}
-                >
+                <Paragraph size="sm" style={linkStyle}>
                   {t('auth.login.useOneTimeCode')}
                 </Paragraph>
               </Pressable>
+            )}
 
-              {/* Passive legal notice (browsewrap). The versioned clickwrap
-                  acceptance lives in onboarding and the /legal-update screen;
-                  cookies are handled by the cookie banner. */}
-              <Paragraph
-                size="xs"
-                testID="login-legal-notice"
-                style={{ color: cardTextTertiary, lineHeight: 18, textAlign: 'center' }}
+            <SocialLogin />
+            <Paragraph size="xs" style={{ color: textTertiary, lineHeight: 18 }}>
+              {t('auth.login.socialDescription')}
+            </Paragraph>
+
+            {/* Passive legal notice (browsewrap). The versioned clickwrap
+                acceptance lives in onboarding and the /legal-update screen;
+                cookies are handled by the cookie banner. */}
+            <Paragraph
+              size="xs"
+              testID="login-legal-notice"
+              style={{ color: textTertiary, lineHeight: 18, textAlign: 'center' }}
+            >
+              {t('auth.login.legalNotice.prefix')}
+              <Text
+                style={{
+                  color: linkColor,
+                  textDecorationLine: 'underline',
+                  fontSize: 12,
+                  lineHeight: 18,
+                }}
+                onPress={() => router.push(ROUTES.LEGAL.TERMS.path)}
               >
-                {t('auth.login.legalNotice.prefix')}
-                <Text
-                  style={{
-                    color: cardLinkColor,
-                    textDecorationLine: 'underline',
-                    fontSize: 12,
-                    lineHeight: 18,
-                  }}
-                  onPress={() => router.push(ROUTES.LEGAL.TERMS.path)}
-                >
-                  {t('auth.login.legalNotice.terms')}
-                </Text>
-                {t('auth.login.legalNotice.and')}
-                <Text
-                  style={{
-                    color: cardLinkColor,
-                    textDecorationLine: 'underline',
-                    fontSize: 12,
-                    lineHeight: 18,
-                  }}
-                  onPress={() => router.push(ROUTES.LEGAL.PRIVACY.path)}
-                >
-                  {t('auth.login.legalNotice.privacy')}
-                </Text>
-                {t('auth.login.legalNotice.suffix')}
-              </Paragraph>
-            </Stack>
-          </Form>
-        </Card>
+                {t('auth.login.legalNotice.terms')}
+              </Text>
+              {t('auth.login.legalNotice.and')}
+              <Text
+                style={{
+                  color: linkColor,
+                  textDecorationLine: 'underline',
+                  fontSize: 12,
+                  lineHeight: 18,
+                }}
+                onPress={() => router.push(ROUTES.LEGAL.PRIVACY.path)}
+              >
+                {t('auth.login.legalNotice.privacy')}
+              </Text>
+              {t('auth.login.legalNotice.suffix')}
+            </Paragraph>
+
+            {/* The prototype's footer line (#1210). Its "Workers stay
+                anonymous until they accept contact" is not true today — an
+                employer sees a worker's name — so the line promises only what
+                the product keeps: contact details stay private. The way back
+                to the marketing site is a web affordance; the native app has
+                no site to return to. */}
+            <Paragraph
+              size="xs"
+              testID="login-privacy-notice"
+              style={{ color: textTertiary, lineHeight: 18, textAlign: 'center' }}
+            >
+              {t('auth.login.privacyNotice')}
+              {Platform.OS === 'web' ? (
+                <>
+                  {' '}
+                  <Link
+                    href={ROUTES.HOME.path as Href}
+                    style={{ color: linkColor, textDecorationLine: 'underline' }}
+                  >
+                    {t('auth.login.backToSite')}
+                  </Link>
+                </>
+              ) : null}
+            </Paragraph>
+          </Stack>
+        </Form>
       </Stack>
       {/* LoadingOverlay removed: its mount/unmount cycle steals TextInput
          focus on iOS native due to full-screen absolute positioning with
@@ -363,13 +410,11 @@ function useRedirectAfterSignIn() {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      (event: AuthChangeEvent, _session: Session | null) => {
-        if (event === 'SIGNED_IN') {
-          router.replace(ROUTES.HOME.path)
-        }
+    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, _session: Session | null) => {
+      if (event === 'SIGNED_IN') {
+        router.replace(ROUTES.HOME.path)
       }
-    )
+    })
     return () => {
       subscription.unsubscribe()
     }
