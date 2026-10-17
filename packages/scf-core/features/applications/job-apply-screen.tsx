@@ -72,7 +72,7 @@ export function JobApplyScreen({ jobId }: { jobId: string }) {
         <Text style={{ color: colors.text[t].secondary }}>
           This job is no longer accepting applications.
         </Text>
-        <Button variant="outline" size="sm" onPress={() => router.push(ROUTES.JOBS.path)}>
+        <Button variant="outline" size="sm" onPress={() => router.push(ROUTES.JOBS.BROWSE.path)}>
           Browse jobs
         </Button>
       </Stack>
@@ -87,7 +87,7 @@ export function JobApplyScreen({ jobId }: { jobId: string }) {
       onViewApplication={(applicationId) =>
         router.push(buildPath(ROUTES.JOBS.APPLICATIONS.DETAIL, { applicationId }))
       }
-      onReturnToJobs={() => router.push(ROUTES.JOBS.path)}
+      onReturnToJobs={() => router.push(ROUTES.JOBS.BROWSE.path)}
     />
   )
 }

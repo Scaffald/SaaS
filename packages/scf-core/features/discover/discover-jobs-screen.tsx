@@ -16,6 +16,7 @@ import { useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { colors } from '@scaffald/ui/tokens'
 import { Check } from 'lucide-react-native'
+import { useLocalSearchParams } from 'expo-router'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import type { FilterPillConfig } from '@scf/core/components/toolbarFilters'
 import { useToolbarFilters } from '@scf/core/components/toolbarFilters'
@@ -86,7 +87,14 @@ export type DiscoverJobsScreenOptions = {
 }
 
 export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = {}) {
-  const [searchQuery, setSearchQuery] = useState('')
+  // Universal search's "See all" lands here with `?search=` (#1179); it was
+  // ignored, so the listing opened unfiltered. Seeds the field once — typing
+  // afterwards is the screen's own state, as before.
+  const params = useLocalSearchParams<{ search?: string | string[] }>()
+  const initialSearch = Array.isArray(params.search)
+    ? (params.search[0] ?? '')
+    : (params.search ?? '')
+  const [searchQuery, setSearchQuery] = useState(initialSearch)
   const debouncedSearch = useDebounce(searchQuery, 300)
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([])
@@ -222,7 +230,11 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
         isActive: selectedJobTypes.length > 0,
         onPress: () => {},
         popoverContent: (
-          <ToggleList options={jobTypes} selected={selectedJobTypes} onChange={setSelectedJobTypes} />
+          <ToggleList
+            options={jobTypes}
+            selected={selectedJobTypes}
+            onChange={setSelectedJobTypes}
+          />
         ),
       })
     }
@@ -293,12 +305,9 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
       : null
   const toolbarPills = useMemo(
     () => (sortPill ? [...filterPills, sortPill] : filterPills),
-    [filterPills, sortPill],
+    [filterPills, sortPill]
   )
-  const { filterContent, chips, activeFilterCount } = useToolbarFilters(
-    toolbarPills,
-    openFilters,
-  )
+  const { filterContent, chips, activeFilterCount } = useToolbarFilters(toolbarPills, openFilters)
 
   const header = isMobile ? null : (
     <ListToolbar
@@ -348,7 +357,7 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
     header,
     left: (
       <DiscoverJobsLeft
-          onResultCount={setResultCount}
+        onResultCount={setResultCount}
         view={isMobile ? 'list' : view}
         initialJobs={initialJobs}
         searchQuery={debouncedSearch}

@@ -34,10 +34,7 @@ export function useUniversalSearch(rawQuery: string): {
   const query = rawQuery.trim()
   const hasQuery = query.length >= 2
 
-  const {
-    data: jobsData,
-    isFetching: jobsLoading,
-  } = usePublishedJobs(
+  const { data: jobsData, isFetching: jobsLoading } = usePublishedJobs(
     { search: query, limit: PER_GROUP_LIMIT },
     { enabled: hasQuery }
   )
@@ -59,7 +56,8 @@ export function useUniversalSearch(rawQuery: string): {
       {
         onSuccess: (resp) => {
           if (cancelled) return
-          const skills = (resp as { skills?: { id: string; name: string; code?: string }[] })?.skills ?? []
+          const skills =
+            (resp as { skills?: { id: string; name: string; code?: string }[] })?.skills ?? []
           setSkillResults(
             skills.map((s) => ({
               id: s.id,
@@ -95,8 +93,7 @@ export function useUniversalSearch(rawQuery: string): {
   const groups = useMemo<UniversalSearchGroup[]>(() => {
     // jobs.list() resolves to { data, total } — this read `.jobs`, so the
     // Jobs group was permanently empty and search was a dead end (#381).
-    const jobs =
-      (jobsData as { data?: Record<string, unknown>[] } | undefined)?.data ?? []
+    const jobs = (jobsData as { data?: Record<string, unknown>[] } | undefined)?.data ?? []
     const jobResults: UniversalSearchResult[] = jobs.slice(0, PER_GROUP_LIMIT).map((job) => {
       const j = job as {
         id: string
@@ -120,7 +117,10 @@ export function useUniversalSearch(rawQuery: string): {
         label: 'Jobs',
         results: jobResults,
         isLoading: jobsLoading,
-        seeAllRoute: jobResults.length > 0 ? `${ROUTES.JOBS.path}?search=${encodeURIComponent(query)}` : undefined,
+        seeAllRoute:
+          jobResults.length > 0
+            ? `${ROUTES.JOBS.BROWSE.path}?search=${encodeURIComponent(query)}`
+            : undefined,
       },
       {
         type: 'skill',
@@ -132,8 +132,7 @@ export function useUniversalSearch(rawQuery: string): {
   }, [jobsData, jobsLoading, skillResults, skillsLoading, query])
 
   const isLoading = hasQuery && (jobsLoading || skillsLoading)
-  const isEmpty =
-    hasQuery && !isLoading && groups.every((g) => g.results.length === 0)
+  const isEmpty = hasQuery && !isLoading && groups.every((g) => g.results.length === 0)
 
   return { query, groups, isLoading, isEmpty }
 }

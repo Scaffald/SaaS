@@ -14,6 +14,7 @@ import { colors } from '@scaffald/ui/tokens'
 import { type ExternalJob, ExternalJobCard } from './components/ExternalJobCard'
 import { type InternalJob, InternalJobCard } from './components/InternalJobCard'
 import { JobListRow } from './components/JobListRow'
+import { useRequirementProfile } from './hooks/useRequirementProfile'
 
 /**
  * What the public `/jobs` route loader hands the screen: the same two
@@ -120,6 +121,10 @@ export function DiscoverJobsLeft({
     { limit: 100, offset: 0 },
     { enabled: !!session?.access_token }
   )
+  const signedIn = !!session?.access_token
+  // One profile read for the whole list, so each row can say how many of its
+  // requirements the viewer meets (#1180).
+  const requirementProfile = useRequirementProfile(signedIn)
 
   const externalJobs = externalData ?? []
   let internalJobs = internalData?.data ?? []
@@ -294,7 +299,12 @@ export function DiscoverJobsLeft({
           <Stack style={{ borderTopWidth: 1, borderTopColor: colors.border[t].default }}>
             {filteredJobs.map((item) =>
               item.type === 'external' ? (
-                <JobListRow key={`external-${item.job.id}`} kind="external" job={item.job} />
+                <JobListRow
+                  key={`external-${item.job.id}`}
+                  kind="external"
+                  job={item.job}
+                  signedIn={signedIn}
+                />
               ) : (
                 <JobListRow
                   key={`internal-${item.job.id}`}
@@ -302,6 +312,8 @@ export function DiscoverJobsLeft({
                   job={item.job}
                   hasApplied={appliedJobIds.has(item.job.id)}
                   applicationId={applicationIdByJobId.get(item.job.id)}
+                  profile={requirementProfile}
+                  signedIn={signedIn}
                 />
               )
             )}
