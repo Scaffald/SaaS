@@ -400,14 +400,22 @@ app.post(
         .eq("stripe_payment_intent_id", intent.id)
         .maybeSingle();
       if (ledgerError) {
-        return toError(c, `Failed to load the payment record: ${ledgerError.message}`, 500);
+        return toError(
+          c,
+          `Failed to load the payment record: ${ledgerError.message}`,
+          500,
+        );
       }
       if (
         ledgerRow?.transaction_type !== "id_verification" ||
         ledgerRow.user_id !== workerUserId ||
         ledgerRow.amount_cents !== intent.amount
       ) {
-        return toError(c, "This payment does not match an ID verification request.", 400);
+        return toError(
+          c,
+          "This payment does not match an ID verification request.",
+          400,
+        );
       }
 
       const initiatedByUserId = metadata.initiated_by_user_id?.length

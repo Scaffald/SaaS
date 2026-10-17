@@ -41,7 +41,6 @@ type SuccessFeeRecord = {
   created_at: string;
 };
 
-
 // biome-ignore lint/suspicious/noExplicitAny: Supabase client/result typed as any
 async function ensureOrganizationAccess(
   supabaseAdmin: any,
@@ -308,7 +307,8 @@ app.post(
     const hireValueCents = hireValueFromJob(job);
     if (!hireValueCents) {
       return c.json({
-        error: "The job has no pay range, so the success fee cannot be calculated.",
+        error:
+          "The job has no pay range, so the success fee cannot be calculated.",
       }, 400);
     }
 
