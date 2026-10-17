@@ -19,7 +19,6 @@ import { WorkerPreviewModal } from './components/WorkerPreviewModal'
 import { WorkersBottomToolbar } from './components/WorkersBottomToolbar'
 import type { WorkerSortBy } from './components/WorkersBottomToolbar'
 import { DiscoverWorkersLeft } from './discover-workers-left'
-import { DiscoverWorkersRight } from './discover-workers-right'
 import { useToolbarFilters } from '@scf/core/components/toolbarFilters'
 
 const VIEW_SEGMENTS = ['List', 'Map']
@@ -201,7 +200,6 @@ export function DiscoverWorkersScreen() {
         />
       </>
     ),
-    right: <DiscoverWorkersRight />,
     footer,
   }
 }

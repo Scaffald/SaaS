@@ -319,7 +319,7 @@ export function ATSMetricsDashboard({ applications, isLoading = false }: ATSMetr
 
         {/*
           Four figures the organisation reads about itself, on one hairline
-          band — the same pattern as the "Candidates can see in" band above,
+          band — the same pattern as the transparency band above,
           which is the point: these are the private counterpart of those. They
           were four tinted tiles with a coloured icon each, and the icons were
           hardcoded hex (#6366f1, #3b82f6, #10b981, #f59e0b) that belonged to

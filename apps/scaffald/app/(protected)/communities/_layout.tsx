@@ -21,7 +21,7 @@ export default function CommunitiesSectionLayout() {
         <Stack.Screen name="index" options={{ title: 'Communities' }} />
         <Stack.Screen name="connections/index" options={{ title: 'Connections' }} />
         <Stack.Screen name="bookmarks" options={{ title: 'Bookmarks' }} />
-        <Stack.Screen name="reputation" options={{ title: 'Scaffold Score' }} />
+        <Stack.Screen name="reputation" options={{ title: 'Scaffald score' }} />
         <Stack.Screen name="[slug]" options={{ title: 'Community' }} />
       </DrawerLayout>
     </ErrorBoundary>

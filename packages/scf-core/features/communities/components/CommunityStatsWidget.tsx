@@ -1,9 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { Pressable } from 'react-native'
-import {
-  useMyCommunities,
-  useScaffoldScore,
-} from '@scf/core/utils/communities-sdk-hooks'
+import { useMyCommunities, useScaffoldScore } from '@scf/core/utils/communities-sdk-hooks'
 import { useConnections } from '@scf/core/utils/engagement-sdk-hooks'
 import {
   DashboardWidget,
@@ -126,7 +123,7 @@ export function CommunityStatsWidget() {
         <Stack style={{ height: 1, backgroundColor: colors.border[t].default }} />
         <StatRow
           icon={<Award size={16} color={colors.icon[t].default} />}
-          label="Scaffold Score"
+          label="Scaffald score"
           value={score}
           theme={t}
           onPress={() => router.push(ROUTES.COMMUNITIES.REPUTATION.path)}
