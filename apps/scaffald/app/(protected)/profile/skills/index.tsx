@@ -1,4 +1,4 @@
-import { ROUTES } from '@scf/core/constants/routes'
+import { BuildProfileBlock } from '@scf/core/features/dashboard/components'
 import {
   ProfileSkillsLeft,
   ProfileSkillsProvider,
@@ -26,16 +26,19 @@ export default function ProfileSkillsPage() {
         <Accordion.Trigger>Certifications</Accordion.Trigger>
         <Accordion.Content>
           <ProfileCertificationsLeft />
-          {!isDesktop && <ProfileCertificationsRight />}
+          {!isDesktop && <ProfileCertificationsRight showEmpty={false} />}
         </Accordion.Content>
       </Accordion.Item>
     </Accordion>
   )
 
+  // The rail is what is left to do, then the lists the picker on the left
+  // feeds: your skills, and your certifications with their proof (#1190).
   const rightContent = isDesktop ? (
     <Stack gap={24}>
+      <BuildProfileBlock />
       <ProfileSkillsRight />
-      <ProfileCertificationsRight />
+      <ProfileCertificationsRight showEmpty={false} />
     </Stack>
   ) : null
 

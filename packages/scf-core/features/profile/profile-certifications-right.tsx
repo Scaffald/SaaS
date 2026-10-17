@@ -5,7 +5,6 @@ import {
 } from '@scf/core/utils/profile-certifications-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { ProfileSectionIntro } from '@scf/core/features/profile/components'
 import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { workerPalette } from '@scf/core/components/ui/styles'
@@ -38,11 +37,22 @@ interface CertificationTree {
   depth2ByParent: Record<string, UserCertification[]>
 }
 
+interface ProfileCertificationsRightProps {
+  /**
+   * Draw the "no certifications yet" card. The skills page turns it off: the
+   * certification picker beside it already has the section's empty state,
+   * and one section gets one (#1190).
+   */
+  showEmpty?: boolean
+}
+
 /**
  * Profile Certifications Right Component
  * Displays all certifications at all depth levels with proof management
  */
-export function ProfileCertificationsRight() {
+export function ProfileCertificationsRight({
+  showEmpty = true,
+}: ProfileCertificationsRightProps = {}) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : ('light' as const)
   const pal = workerPalette[t]
@@ -216,13 +226,12 @@ export function ProfileCertificationsRight() {
     }
   }
 
+  // The "Certifications — search for a certification to add it" intro card
+  // that opened both branches restated the section beside it (#1190).
   if (allCerts.length === 0) {
+    if (!showEmpty) return null
     return (
       <Stack gap={16}>
-        <ProfileSectionIntro
-          title="Certifications"
-          description="Search for a certification to add it. You can attach proof (file or URL) and manage them here."
-        />
         <DashboardWidget>
           <Stack gap={16} align="center" paddingTop={32}>
             <Award size={48} color={colors.text[theme].secondary} />
@@ -240,10 +249,6 @@ export function ProfileCertificationsRight() {
 
   return (
     <Stack gap={16}>
-      <ProfileSectionIntro
-        title="Certifications"
-        description="Search for a certification to add it. You can attach proof (file or URL) and manage them here."
-      />
       <DashboardWidget>
         <Stack gap={16}>
           <H4>Your Certifications</H4>
