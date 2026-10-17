@@ -11,6 +11,8 @@ import { Row, Spinner, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { colors, fontSize, fontWeight } from '@scaffald/ui/tokens'
 import { ROUTES } from '@scf/core/constants/routes'
 import { useNotifications, useUnreadCount } from '@scf/core/utils/notifications-sdk-hooks'
+import { useAppMode } from '@scf/core/utils/useAppMode'
+import { filterNotificationsForMode } from './audience'
 import { NotificationRow } from './components/NotificationRow'
 import { toNotificationItems } from './normalize'
 import { useMarkAllNotificationsRead, useOpenNotification } from './useNotificationActions'
@@ -83,10 +85,17 @@ export function NotificationsHeaderActions() {
 export function NotificationsCenterScreen() {
   const { theme } = useThemeContext()
   const query = useNotifications({ limit: LIST_LIMIT })
-  const items = useMemo(() => toNotificationItems(query.data), [query.data])
+  // The inbox is scoped to the role in use, as the prototype's worker and
+  // employer views are (#1178). Wait for the stored mode rather than flash the
+  // worker list at someone who is in employer mode.
+  const { mode, isLoading: modeLoading } = useAppMode()
+  const items = useMemo(
+    () => filterNotificationsForMode(toNotificationItems(query.data), mode),
+    [query.data, mode]
+  )
   const openNotification = useOpenNotification()
 
-  if (query.isLoading) {
+  if (query.isLoading || modeLoading) {
     return (
       <Stack align="center" justify="center" gap={12} style={{ paddingVertical: 48 }}>
         <Spinner size="lg" />

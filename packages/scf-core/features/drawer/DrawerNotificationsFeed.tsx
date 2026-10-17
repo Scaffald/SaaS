@@ -24,6 +24,8 @@ import { Row, Stack, Text, TextLink, useThemeContext } from '@scaffald/ui'
 import { colors, fontSize } from '@scaffald/ui/tokens'
 import { useNotifications, useUnreadCount } from '@scf/core/utils/notifications-sdk-hooks'
 import { toNotificationItems } from '@scf/core/features/notifications/normalize'
+import { filterNotificationsForMode } from '@scf/core/features/notifications/audience'
+import { useAppMode } from '@scf/core/utils/useAppMode'
 import { NotificationRow } from '@scf/core/features/notifications/components/NotificationRow'
 import {
   useMarkAllNotificationsRead,
@@ -44,9 +46,12 @@ export function DrawerNotificationsFeed({ onNavigate }: DrawerNotificationsFeedP
   const router = useRouter()
 
   const notificationsQuery = useNotifications({ limit: FEED_LIMIT })
+  // Same role scoping as the full page (#1178), so "See all" opens the list
+  // this feed previews.
+  const { mode } = useAppMode()
   const items = useMemo(
-    () => toNotificationItems(notificationsQuery.data),
-    [notificationsQuery.data]
+    () => filterNotificationsForMode(toNotificationItems(notificationsQuery.data), mode),
+    [notificationsQuery.data, mode]
   )
   const openNotification = useOpenNotification(onNavigate)
   const unreadCount = useUnreadCount().data?.data?.unread_count ?? 0

@@ -52,6 +52,22 @@ const paginationSchema = z.object({
   total_pages: z.number().int(),
 });
 
+/**
+ * Types that report on the platform rather than to a person (#1178).
+ * `core.notify_admins_of_cron_failure` writes `system.cron_failure` into every
+ * super-admin's personal feed, one row per failed run, so the inbox and its
+ * unread badge filled with identical operations alerts. They stay out of the
+ * personal list and count; Office reads them with `scope=operations`.
+ * `system.digest_*` is not here: a digest is a personal summary.
+ * Mirrored in scf-core features/notifications/audience.ts.
+ */
+const OPERATIONAL_NOTIFICATION_TYPES = ["system.cron_failure"] as const;
+
+/** PostgREST `in` list; the values contain dots, so quote them. */
+const OPERATIONAL_TYPES_LIST = `(${
+  OPERATIONAL_NOTIFICATION_TYPES.map((t) => `"${t}"`).join(",")
+})`;
+
 // Request schemas
 const listNotificationsQuerySchema = z.object({
   read: z
@@ -59,6 +75,8 @@ const listNotificationsQuerySchema = z.object({
     .transform((v) => (v === "true" ? true : v === "false" ? false : undefined))
     .optional(),
   type: notificationTypeSchema.optional(),
+  /** `personal` (default) leaves out operational types; `operations` returns only them. */
+  scope: z.enum(["personal", "operations"]).optional().default("personal"),
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().positive().max(100).optional().default(20),
 });
@@ -215,7 +233,7 @@ const listNotificationsRoute = createRoute({
 app.openapi(listNotificationsRoute, async (c) => {
   const supabase = c.get("supabase");
   const user = c.get("user");
-  const { read, type, page, limit } = c.req.valid("query");
+  const { read, type, scope, page, limit } = c.req.valid("query");
 
   if (!user) {
     return c.json({ error: "Unauthorized" }, 401);
@@ -237,6 +255,10 @@ app.openapi(listNotificationsRoute, async (c) => {
   if (type) {
     query = query.eq("type", type);
   }
+
+  query = scope === "operations"
+    ? query.in("type", [...OPERATIONAL_NOTIFICATION_TYPES])
+    : query.not("type", "in", OPERATIONAL_TYPES_LIST);
 
   const { data: notifications, count, error } = await query.range(
     offset,
@@ -304,7 +326,9 @@ app.openapi(getUnreadCountRoute, async (c) => {
     .from("notifications")
     .select("*", { count: "exact", head: true })
     .eq("user_id", user.id)
-    .eq("read", false);
+    .eq("read", false)
+    // The badge counts what the inbox shows (#1178).
+    .not("type", "in", OPERATIONAL_TYPES_LIST);
 
   if (error) {
     console.error("Error getting unread count:", error);
