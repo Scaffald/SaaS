@@ -125,17 +125,38 @@ function getScoreLabel(score: number): string {
 // Sub-Components
 // ============================================================================
 
-function MatchScoreBar({ score, maxScore, label }: { score: number; maxScore: number; label: string }) {
+function MatchScoreBar({
+  score,
+  maxScore,
+  label,
+}: {
+  score: number
+  maxScore: number
+  label: string
+}) {
   const { theme } = useThemeContext()
   const pct = Math.round((score / maxScore) * 100)
 
   return (
     <Row gap={6} align="center">
       <Text style={{ width: 64, color: colors.text[theme].tertiary, fontSize: 10 }}>{label}</Text>
-      <Stack style={{ flex: 1, height: 4, backgroundColor: colors.bg[theme].muted, borderRadius: 2 }}>
-        <Stack style={{ width: `${pct}%`, height: 4, backgroundColor: colors.fg[theme].active, borderRadius: 2 }} />
+      <Stack
+        style={{ flex: 1, height: 4, backgroundColor: colors.bg[theme].muted, borderRadius: 2 }}
+      >
+        <Stack
+          style={{
+            width: `${pct}%`,
+            height: 4,
+            backgroundColor: colors.fg[theme].active,
+            borderRadius: 2,
+          }}
+        />
       </Stack>
-      <Text style={{ width: 24, textAlign: 'right', color: colors.text[theme].tertiary, fontSize: 10 }}>{score}</Text>
+      <Text
+        style={{ width: 24, textAlign: 'right', color: colors.text[theme].tertiary, fontSize: 10 }}
+      >
+        {score}
+      </Text>
     </Row>
   )
 }
@@ -162,7 +183,9 @@ function JobRecommendationCard({ job, onPress }: { job: RecommendedJob; onPress:
               justifyContent: 'center',
             }}
           >
-            <Text style={{ color: scoreColor, fontWeight: '700', fontSize: 14 }}>{job.total_score}</Text>
+            <Text style={{ color: scoreColor, fontWeight: '700', fontSize: 14 }}>
+              {job.total_score}
+            </Text>
           </Stack>
           <Stack style={{ flex: 1 }} gap={2}>
             <Text style={{ color: colors.text[theme].primary, fontWeight: '600', fontSize: 14 }}>
@@ -192,7 +215,17 @@ function JobRecommendationCard({ job, onPress }: { job: RecommendedJob; onPress:
         {/* Top match reasons */}
         <Row gap={4} style={{ paddingLeft: 46, flexWrap: 'wrap' }}>
           {job.match_reasons.slice(0, 2).map((reason) => (
-            <Stack key={reason} style={{ backgroundColor: colors.bg[theme].default, borderRadius: 4, paddingHorizontal: 6, paddingVertical: 1, borderWidth: 1, borderColor: colors.border[theme].default }}>
+            <Stack
+              key={reason}
+              style={{
+                backgroundColor: colors.bg[theme].default,
+                borderRadius: 4,
+                paddingHorizontal: 6,
+                paddingVertical: 1,
+                borderWidth: 1,
+                borderColor: colors.border[theme].default,
+              }}
+            >
               <Text style={{ fontSize: 10, color: colors.text[theme].tertiary }}>{reason}</Text>
             </Stack>
           ))}
@@ -231,11 +264,7 @@ export function RecommendedJobsWidget() {
       <DashboardWidgetHeader
         title="Recommended Jobs"
         action={
-          <Button
-            size="sm"
-            variant="outline"
-            onPress={() => router.push(ROUTES.JOBS.path)}
-          >
+          <Button size="sm" variant="outline" onPress={() => router.push(ROUTES.JOBS.BROWSE.path)}>
             View All
           </Button>
         }

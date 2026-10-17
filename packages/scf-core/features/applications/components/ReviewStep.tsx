@@ -64,7 +64,7 @@ export function ReviewStep({
   const { theme } = useThemeContext()
 
   return (
-    <Stack gap={24} width="100%" maxWidth={800} padding="md">
+    <Stack gap={24} width="100%" maxWidth={800}>
       {/* Header */}
       <Stack gap={8}>
         <Text style={{ color: colors.text[theme].secondary }}>Review Your Application</Text>

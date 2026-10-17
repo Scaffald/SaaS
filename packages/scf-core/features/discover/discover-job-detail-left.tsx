@@ -6,21 +6,20 @@ import {
   useMyApplicationForJob,
 } from '@scf/core/utils/jobs-sdk-hooks'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
-import { ExternalLink } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useRef } from 'react'
 import {
   Button,
   H3,
+  Separator,
   Skeleton,
-  SkeletonBox,
   SkeletonText,
   Text,
+  TextLink,
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { openExternalLink } from '@scf/core/utils/platform'
 import { useUser } from '@scf/core/utils/useUser'
 
 interface DiscoverJobDetailLeftProps {
@@ -28,12 +27,14 @@ interface DiscoverJobDetailLeftProps {
 }
 
 /**
- * The apply panel beside a job posting.
+ * The rail beside a job posting: who is hiring, and what applying involves.
  *
- * It used to *be* the application: a four-step wizard, or a modal for
- * postings with no custom questions, rendered inside a 38% column. Applying
- * is a screen now (#829), so this is the call to action for it — the panel
- * states what applying involves and opens the form at its own address.
+ * It used to *be* the application — a four-step wizard in a 38% column —
+ * then, once applying became a screen (#829), a boxed card with its own
+ * filled Apply. That put two primaries about 250px apart, since the header
+ * carries `JobDetailApplyAction` (#1182). The header keeps the one Apply;
+ * this rail is unboxed notes, as the redesign draws them, and the employer's
+ * name finally leads somewhere (#1181).
  *
  * The component keeps its historical name: `discover-job-detail-screen`
  * deliberately renders it as the *right* column (#392), and renaming both
@@ -53,7 +54,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   })
 
   // Signed out this endpoint 401s, and the public job page renders this
-  // panel too — two failed requests per anonymous view before the gate.
+  // rail too — two failed requests per anonymous view before the gate.
   const { user } = useUser()
   const signedIn = !!user
   const { data: myApplication } = useMyApplicationForJob(jobId, {
@@ -103,7 +104,6 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
       <Stack gap={16}>
         <Skeleton width={200} height={22} shape="text" />
         <SkeletonText lines={2} lastLineWidth="60%" />
-        <SkeletonBox width="100%" height={44} borderRadius={8} />
       </Stack>
     )
   }
@@ -116,151 +116,84 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     )
   }
 
-  const panel = (children: React.ReactNode) => (
-    <Stack
-      gap={12}
-      padding="md"
-      borderRadius={12}
-      borderWidth={1}
-      borderColor={colors.border[t].default}
-      style={{ backgroundColor: colors.bg[t].subtle }}
-      align="flex-start"
-    >
-      {children}
+  const note = (title: string, body: string, extra?: React.ReactNode) => (
+    <Stack gap={8} align="flex-start">
+      <H3>{title}</H3>
+      <Text style={{ color: colors.text[t].secondary }}>{body}</Text>
+      {extra}
     </Stack>
   )
 
-  // Internal posting — the application form is a screen under this one.
+  // Internal posting — the application form is a screen under this one,
+  // opened from the header's Apply.
   if (!isExternal && 'organization' in job) {
-    if (myApplication?.submitted_at) {
-      return panel(
-        <>
-          <H3>You've applied</H3>
-          <Text style={{ color: colors.text[t].secondary }}>
-            Your application for this role has been sent to the employer.
-          </Text>
-          <Button
-            size="md"
-            variant="filled"
-            color="primary"
-            onPress={() =>
-              router.push(
-                buildPath(ROUTES.JOBS.APPLICATIONS.DETAIL, {
-                  applicationId: myApplication.id,
-                })
-              )
-            }
-          >
-            View status
-          </Button>
-        </>
-      )
-    }
-
-    if (myApplication) {
-      return panel(
-        <>
-          <H3>Finish your application</H3>
-          <Text style={{ color: colors.text[t].secondary }}>
-            Your answers are saved, but the employer won't see your application until you submit
-            it.
-          </Text>
-          <Button
-            size="md"
-            variant="filled"
-            color="primary"
-            onPress={() => router.push(buildPath(ROUTES.JOBS.DETAIL.APPLY, { id: job.id }))}
-          >
-            Continue application
-          </Button>
-        </>
-      )
-    }
-
-    return panel(
-      <>
-        <H3>Apply to {job.title}</H3>
-        <Text style={{ color: colors.text[t].secondary }}>
-          A few screening questions, anything the employer asks for, and your documents. Your
-          answers save as you go, so you can finish later.
+    const organization = job.organization
+    const employerId = organization?.id
+    const employer = organization?.name ? (
+      <Stack gap={8} align="flex-start">
+        <H3>Hiring</H3>
+        <Text style={{ color: colors.text[t].primary, fontWeight: '600' }}>
+          {organization.name}
         </Text>
-        <Button
-          size="md"
-          variant="filled"
-          color="primary"
-          onPress={() => {
-            // The apply route is protected; sending a signed-out visitor
-            // there would bounce them through a redirect to land on the
-            // same sign-in screen. Go straight there instead.
-            if (!signedIn) {
-              router.push(ROUTES.AUTH.LOGIN.path)
-              return
-            }
-            try {
-              trackEventMutation.mutate({
-                eventType: 'application_start',
-                targetType: 'job',
-                targetId: job.id,
-                metadata: {
-                  job_title: job.title,
-                  organization_name: job.organization?.name || 'Unknown Organization',
-                },
-              })
-            } catch (error) {
-              // Silent error handling - don't impact user flow
-              console.warn('Failed to track application started:', error)
-            }
-            router.push(buildPath(ROUTES.JOBS.DETAIL.APPLY, { id: job.id }))
-          }}
-        >
-          Apply
-        </Button>
-      </>
+        {/* /employers/<id> is a signed-in screen; a signed-out visitor would
+            only be bounced to sign-in, so the name stays plain for them. */}
+        {signedIn && employerId ? (
+          <TextLink
+            onPress={() => router.push(buildPath(ROUTES.EMPLOYERS.DETAIL, { id: employerId }))}
+            accessibilityLabel={`See ${organization.name}'s employer page`}
+          >
+            See the employer's page
+          </TextLink>
+        ) : null}
+      </Stack>
+    ) : null
+
+    const applying = myApplication?.submitted_at
+      ? note(
+          "You've applied",
+          'Your application for this role has been sent to the employer. Its status is under Applications.'
+        )
+      : myApplication
+        ? note(
+            'Finish your application',
+            "Your answers are saved, but the employer won't see your application until you submit it."
+          )
+        : note(
+            'What applying involves',
+            'A few screening questions, anything the employer asks for, and your documents. Your answers save as you go, so you can finish later.'
+          )
+
+    return (
+      <Stack gap={20}>
+        {employer}
+        {employer ? <Separator /> : null}
+        {applying}
+      </Stack>
     )
   }
 
-  // External posting with a link out
+  // External posting with a link out — the header's Apply opens it.
   if (isExternal && 'company_name' in job && job.url) {
-    return panel(
-      <>
-        <H3>Apply to this position</H3>
-        <Text style={{ color: colors.text[t].secondary }}>
-          This job is hosted on an external site. Applying opens their own application page.
-        </Text>
-        <Button
-          size="md"
-          variant="filled"
-          color="primary"
-          iconStart={ExternalLink}
-          onPress={() => {
-            captureEvent('job_external_link_clicked', {
-              job_id: job.id,
-              url: job.url || null,
-            })
-            if (job.url) openExternalLink(job.url)
-          }}
-        >
-          Apply on external site
-        </Button>
-      </>
+    return note(
+      'Applying',
+      `This job is hosted on ${job.company_name ? `${job.company_name}'s` : 'an external'} site. Apply opens their own application page.`
     )
   }
 
   // External posting with no link at all — a dead end, so it keeps the one
-  // way out. The duplicate back buttons alongside the apply CTAs were
-  // removed (#392) because the breadcrumb and the OS back gesture cover
-  // those; here there is nothing else.
+  // way out, back to the listing the viewer came from: the signed-in one
+  // inside the shell, or the public one for a visitor (#1179).
   if (isExternal) {
-    return panel(
-      <>
-        <H3>No application link</H3>
-        <Text style={{ color: colors.text[t].secondary }}>
-          This listing did not include a way to apply.
-        </Text>
-        <Button size="md" variant="outline" onPress={() => router.push(ROUTES.JOBS.path)}>
-          Browse jobs
-        </Button>
-      </>
+    return note(
+      'No application link',
+      'This listing did not include a way to apply.',
+      <Button
+        size="md"
+        variant="outline"
+        onPress={() => router.push(signedIn ? ROUTES.JOBS.BROWSE.path : ROUTES.JOBS.path)}
+      >
+        Browse jobs
+      </Button>
     )
   }
 
