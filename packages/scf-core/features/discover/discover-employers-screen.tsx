@@ -1,7 +1,7 @@
 import { useEmployers } from '@scf/core/utils/employers-sdk-hooks'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useCallback, useMemo, useState } from 'react'
-import { ListToolbar, useResponsive } from '@scaffald/ui'
+import { ListToolbar, SegmentedControl, useResponsive } from '@scaffald/ui'
 import type { FilterPillConfig } from '@scf/core/components/toolbarFilters'
 import { EmployersBottomToolbar } from './components/EmployersBottomToolbar'
 import { DiscoverEmployersLeft } from './discover-employers-left'
@@ -9,6 +9,9 @@ import { DiscoverEmployersRight } from './discover-employers-right'
 import { getAvailableIndustries, getSelectedIndustryCounts } from './utils/employerFilters'
 import type { Employer } from './components/EmployerCard'
 import { useToolbarFilters } from '@scf/core/components/toolbarFilters'
+
+const VIEW_VALUES = ['list', 'cards'] as const
+const VIEW_LABELS = ['List', 'Cards']
 
 /**
  * Transform API EmployerRecord to component Employer type
@@ -29,7 +32,9 @@ function transformEmployerRecord(record: unknown): Employer | unknown {
     employee_count_range: (data.employee_count_range as string | null) ?? null,
     annual_revenue_range: (data.annual_revenue_range as string | null) ?? null,
     address: data.address ?? null,
+    // Embedded by GET /v1/employers; the table itself carries only industry_id.
     industries: data.industries ?? null,
+    open_roles_count: typeof data.open_roles_count === 'number' ? data.open_roles_count : null,
     created_at: (data.created_at as string) ?? new Date().toISOString(),
   } as Employer
 }
@@ -47,6 +52,8 @@ export function DiscoverEmployersScreen() {
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
 
   const { isMobile } = useResponsive()
+  // Rows by default, as on the jobs board (#1035, #1185).
+  const [view, setView] = useState<'list' | 'cards'>('list')
 
   // Fetch all employers (no filters) to build industry name-to-ID mapping
   // React Query will cache this, so it won't cause duplicate requests
@@ -132,11 +139,12 @@ export function DiscoverEmployersScreen() {
     pills.push({
       id: 'industry',
       label: 'Industry',
-      value: selectedIndustries.length > 0
-        ? selectedIndustries.length === 1
-          ? selectedIndustries[0]
-          : `${selectedIndustries.length} selected`
-        : undefined,
+      value:
+        selectedIndustries.length > 0
+          ? selectedIndustries.length === 1
+            ? selectedIndustries[0]
+            : `${selectedIndustries.length} selected`
+          : undefined,
       isActive: selectedIndustries.length > 0,
       onPress: () => {},
     })
@@ -147,10 +155,7 @@ export function DiscoverEmployersScreen() {
   // Header — desktop+ only
   const [filtersOpen, setFiltersOpen] = useState(false)
   const openFilters = useCallback(() => setFiltersOpen(true), [])
-  const { filterContent, chips, activeFilterCount } = useToolbarFilters(
-    filterPills,
-    openFilters,
-  )
+  const { filterContent, chips, activeFilterCount } = useToolbarFilters(filterPills, openFilters)
 
   const header = isMobile ? null : (
     <ListToolbar
@@ -165,6 +170,15 @@ export function DiscoverEmployersScreen() {
       onClearAll={hasActiveFilters ? handleClearFilters : undefined}
       resultCount={employers.length}
       resultNoun="employer"
+      actions={
+        <SegmentedControl
+          segments={VIEW_LABELS}
+          selectedIndex={VIEW_VALUES.indexOf(view)}
+          onSelectionChange={(index) => setView(VIEW_VALUES[index] ?? 'list')}
+          // Same floor as the jobs toolbar: without it "Cards" truncates.
+          style={{ minWidth: 150 }}
+        />
+      }
     />
   )
 
@@ -187,6 +201,7 @@ export function DiscoverEmployersScreen() {
       <DiscoverEmployersLeft
         employers={employers}
         isLoading={isLoading}
+        view={isMobile ? 'list' : view}
       />
     ),
     right: (
