@@ -1,10 +1,6 @@
+import { AuthCard } from '@scf/core/features/auth/components/AuthCard'
 import { MagicLinkPending } from '@scf/core/features/auth/components/MagicLinkPending'
-import { WelcomeScreen } from '@scf/core/features/auth/welcome-screen'
-import { Row, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
 import { useLocalSearchParams } from 'expo-router'
-import { useWindowDimensions } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Screen() {
   const params = useLocalSearchParams<{ email?: string }>()
@@ -12,25 +8,12 @@ export default function Screen() {
   // "Use one-time code" link on the login screen. MagicLinkPending
   // renders an inline email Input in that case.
   const email = typeof params.email === 'string' && params.email.trim() ? params.email : undefined
-  const { width } = useWindowDimensions()
-  const isSmallScreen = width < 640
-  const { theme } = useThemeContext()
-  const screenBg = { flex: 1, backgroundColor: colors.bg[theme].default }
 
+  // The same card as /auth (#1210), so sending the link does not swap the
+  // frame the visitor was just looking at.
   return (
-    <SafeAreaView style={screenBg} edges={['top', 'bottom', 'left', 'right']}>
-      {isSmallScreen ? (
-        <MagicLinkPending email={email} />
-      ) : (
-        <Row flex={1}>
-          <Stack flex={3} style={{ minWidth: 0 }}>
-            <WelcomeScreen brandedPanel />
-          </Stack>
-          <Stack flex={2} justify="center" align="center" padding={24} style={{ minWidth: 0 }}>
-            <MagicLinkPending email={email} />
-          </Stack>
-        </Row>
-      )}
-    </SafeAreaView>
+    <AuthCard>
+      <MagicLinkPending email={email} />
+    </AuthCard>
   )
 }

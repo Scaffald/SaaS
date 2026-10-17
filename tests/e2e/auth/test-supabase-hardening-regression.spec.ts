@@ -175,8 +175,8 @@ test.describe('Supabase Hardening Regression — Public', () => {
 
     await dismissCookieBanner(page)
 
-    // Auth page should load — heading is "Login"
-    await expect(page.getByRole('heading', { name: /login/i })).toBeVisible()
+    // Auth page should load — it opens on the Sign in tab (#1210)
+    await expect(page.getByRole('tab', { name: 'Sign in' })).toBeVisible()
 
     // No auth-related console errors
     const authErrors = errors.filter((e) =>

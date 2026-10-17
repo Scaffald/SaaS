@@ -150,6 +150,17 @@ const ROUTES_CONFIG = {
     },
   },
 
+  /**
+   * The public support page, under the site header. A signed-in visitor is
+   * sent on to DASHBOARD.SUPPORT, the same help inside the app shell (#1213).
+   */
+  SUPPORT: {
+    path: '/support',
+    titleKey: 'routes.support',
+    protected: false,
+    exact: true,
+  },
+
   PUBLIC_PROFILE: {
     path: '/users/:slug',
     titleKey: 'routes.publicProfile',
@@ -971,6 +982,13 @@ const ROUTES_CONFIG = {
     NOTIFICATIONS_SETTINGS: {
       path: '/dashboard/notifications/settings',
       titleKey: 'routes.dashboard.settings.notifications',
+      protected: true,
+      exact: true,
+    },
+    /** Support inside the app shell, for a signed-in user (#1213). */
+    SUPPORT: {
+      path: '/dashboard/support',
+      titleKey: 'routes.dashboard.support',
       protected: true,
       exact: true,
     },

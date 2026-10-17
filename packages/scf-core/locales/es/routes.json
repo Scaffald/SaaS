@@ -53,8 +53,8 @@
         "title": "Employers"
       },
       "jobs": {
-        "detail": "Job Details",
         "apply": "Apply",
+        "detail": "Job Details",
         "title": "Jobs"
       },
       "map": "Map",
@@ -100,6 +100,7 @@
       "security": "Security Settings",
       "title": "Settings"
     },
+    "support": "Soporte",
     "teams": {
       "detail": "Team Details",
       "invitations": "Team Invitations",
@@ -117,10 +118,10 @@
   "legalUpdate": "Actualización de términos",
   "office": {
     "applications": {
-      "inquiry": "Inquiry Detail",
-      "title": "Applications",
       "detail": "Detalle del candidato",
-      "hire": "Contratar"
+      "hire": "Contratar",
+      "inquiry": "Inquiry Detail",
+      "title": "Applications"
     },
     "ats": {
       "checks": {
@@ -211,6 +212,7 @@
   },
   "publicProfile": "Perfil público",
   "search": "Buscar",
+  "support": "Soporte",
   "teams": {
     "invitations": {
       "accept": "Accept Team Invitation"

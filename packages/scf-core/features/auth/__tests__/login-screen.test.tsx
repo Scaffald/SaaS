@@ -41,14 +41,19 @@ vi.mock('@scf/core/utils/useTranslation', () => ({
   }),
 }))
 
+const mockParams = vi.hoisted(() => ({
+  current: { email: 'USER@Example.com' } as Record<string, string>,
+}))
+
 vi.mock('expo-router', () => ({
   useRouter: () => ({
     replace: mockReplace,
     push: mockPush,
   }),
-  useLocalSearchParams: () => ({
-    email: 'USER@Example.com',
-  }),
+  useLocalSearchParams: () => mockParams.current,
+  Link: ({ children, href }: { children: ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  ),
 }))
 
 vi.mock('@scf/core/utils/useUser', () => ({
@@ -100,6 +105,7 @@ vi.mock('@scf/core/utils/supabase/client', () => ({
 
 describe('LoginScreen', () => {
   beforeEach(() => {
+    mockParams.current = { email: 'USER@Example.com' }
     process.env.EXPO_PUBLIC_URL = 'https://example.com/auth'
     mockReplace.mockClear()
     mockPush.mockClear()
@@ -223,6 +229,80 @@ describe('LoginScreen', () => {
 
     await waitFor(() => {
       expect(mockMutateAsync).toHaveBeenCalled()
+    })
+  })
+
+  // #1210: the Sign in / Create account switch.
+  describe('Sign in / Create account', () => {
+    it('opens on Sign in, with the password and one-time-code paths', async () => {
+      const { LoginScreen } = await import('../login-screen')
+      const { getByRole, getByText } = render(<LoginScreen />)
+
+      expect(getByRole('tab', { name: 'auth.login.modeSignIn' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+      expect(getByText('auth.login.switchToPassword')).toBeInTheDocument()
+      expect(getByText('auth.login.useOneTimeCode')).toBeInTheDocument()
+    })
+
+    it('the password path still signs in with a password', async () => {
+      const { LoginScreen } = await import('../login-screen')
+      const { getByText, getByPlaceholderText } = render(<LoginScreen />)
+
+      fireEvent.click(getByText('auth.login.switchToPassword'))
+      expect(getByPlaceholderText('auth.login.passwordPlaceholder')).toBeInTheDocument()
+      expect(getByText('auth.login.passwordSignIn')).toBeInTheDocument()
+    })
+
+    it('Create account drops the password path and sends the same magic link', async () => {
+      const { LoginScreen } = await import('../login-screen')
+      mockMutateAsync.mockResolvedValue({ mode: 'magic_link' })
+      const { getByRole, getByText, queryByText, queryByPlaceholderText, getByPlaceholderText } =
+        render(<LoginScreen />)
+
+      // Choose the password path first, then switch tabs: it must not linger.
+      fireEvent.click(getByText('auth.login.switchToPassword'))
+      fireEvent.click(getByRole('tab', { name: 'auth.login.modeCreate' }))
+
+      expect(queryByPlaceholderText('auth.login.passwordPlaceholder')).toBeNull()
+      expect(queryByText('auth.login.switchToPassword')).toBeNull()
+      expect(queryByText('auth.login.useOneTimeCode')).toBeNull()
+      expect(getByText('auth.login.createDescription')).toBeInTheDocument()
+
+      fireEvent.change(getByPlaceholderText('your@email.acme'), {
+        target: { value: 'New@Example.com' },
+      })
+      fireEvent.click(getByRole('button', { name: 'auth.login.createButton' }))
+
+      await waitFor(() => {
+        expect(mockMutateAsync).toHaveBeenCalledWith({
+          email: 'new@example.com',
+          redirectTo: 'https://example.com/auth',
+        })
+      })
+    })
+
+    it('opens on Create account when the landing CTA carried an intent', async () => {
+      mockParams.current = { intent: 'worker' }
+      const { LoginScreen } = await import('../login-screen')
+      const { getByRole } = render(<LoginScreen />)
+
+      expect(getByRole('tab', { name: 'auth.login.modeCreate' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('ends on the privacy line and a way back to the site', async () => {
+      const { LoginScreen } = await import('../login-screen')
+      const { getByTestId, getByText } = render(<LoginScreen />)
+
+      expect(getByTestId('login-privacy-notice')).toHaveTextContent('auth.login.privacyNotice')
+      expect(getByText('auth.login.backToSite').closest('a')).toHaveAttribute(
+        'href',
+        ROUTES.HOME.path
+      )
     })
   })
 })

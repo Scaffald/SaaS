@@ -428,8 +428,8 @@ async function resolveStorageState(browser) {
     const passwordInput = page.locator('input[type="password"]').first()
     await passwordInput.waitFor({ timeout: 5000 })
     await passwordInput.fill(PASSWORD)
-    await page.getByText('I agree to the').first().click()
-    await page.getByText('Sign in', { exact: true }).first().click()
+    // The tab and the submit button both read "Sign in"; the button is last (#1210).
+    await page.getByText('Sign in', { exact: true }).last().click()
   } else {
     console.log(
       '\n  ┌──────────────────────────────────────────────────────────────┐\n' +
