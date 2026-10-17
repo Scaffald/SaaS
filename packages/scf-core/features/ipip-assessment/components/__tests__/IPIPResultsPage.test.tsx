@@ -116,9 +116,11 @@ describe('IPIPResultsPage', () => {
   })
 
   it('renders the empty state when no answers have been saved yet', () => {
-    render(<IPIPResultsPage />, { wrapper: TestQueryWrapper })
+    const { container } = render(<IPIPResultsPage />, { wrapper: TestQueryWrapper })
 
-    expect(screen.getByText(/No Results Yet/i)).toBeVisible()
+    // EmptyState (#1195); the shared @scaffald/ui mock renders it as a stub
+    // carrying its props.
+    expect(container.querySelector('[title="No results yet"]')).toBeTruthy()
     expect(screen.queryByTestId('narrative-view')).not.toBeInTheDocument()
   })
 

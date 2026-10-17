@@ -1,30 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import type { ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
 import { PackageSelectionStep } from '../PackageSelectionStep'
-
-// The shared @scaffald/ui mock wires onPress on every Card. The real Card only
-// does when `pressable` is set — without it the package cards ignored taps and
-// nothing could be selected — so mirror that contract here.
-vi.mock('@scaffald/ui', async () => {
-  const actual = await vi.importActual<Record<string, unknown>>('@scaffald/ui')
-  return {
-    ...actual,
-    Card: ({
-      children,
-      pressable,
-      onPress,
-    }: {
-      children: ReactNode
-      pressable?: boolean
-      onPress?: () => void
-    }) => (
-      // biome-ignore lint/a11y/useKeyWithClickEvents: test stand-in for a Pressable
-      <div onClick={pressable ? onPress : undefined}>{children}</div>
-    ),
-  }
-})
 
 type Packages = Parameters<typeof PackageSelectionStep>[0]['packages']
 
@@ -47,7 +24,6 @@ const renderStep = (packages: Packages, selectedPackageId?: string) => {
       selectedPackageId={selectedPackageId}
       onSelect={onSelect}
       isLoading={false}
-      onContinue={vi.fn()}
     />
   )
   return { onSelect }
@@ -63,13 +39,13 @@ describe('PackageSelectionStep (#1109)', () => {
 
   it('hides the components block when the list is empty', () => {
     renderStep([pkg()])
-    expect(screen.queryByText('Components')).toBeNull()
+    expect(screen.queryByText("What's checked")).toBeNull()
     expect(screen.queryByText(/coming soon/i)).toBeNull()
   })
 
   it('lists components when there are some', () => {
     renderStep([pkg({ components: [{ id: 'c1', display_name: 'SSN/Address Trace' }] })])
-    expect(screen.getByText('Components')).toBeTruthy()
+    expect(screen.getByText("What's checked")).toBeTruthy()
     expect(screen.getByText('• SSN/Address Trace')).toBeTruthy()
   })
 
@@ -83,5 +59,24 @@ describe('PackageSelectionStep (#1109)', () => {
   it('labels the selected card', () => {
     renderStep([pkg()], 'pkg-entry')
     expect(screen.getByText('Selected')).toBeTruthy()
+  })
+
+  // #1191: a radio affordance on every card, not just a tint on the chosen one.
+  it('offers Select on every card and exposes radio state', () => {
+    renderStep([pkg(), pkg({ id: 'pkg-exp', display_name: 'Experience Level Package' })], 'pkg-exp')
+    expect(screen.getAllByText('Select')).toHaveLength(1)
+    expect(screen.getAllByText('Selected')).toHaveLength(1)
+    expect(screen.getAllByRole('radio')).toHaveLength(2)
+    expect(screen.getByRole('radio', { name: /Experience Level Package.*selected/ })).toBeTruthy()
+  })
+
+  it('titles the step with a heading', () => {
+    renderStep([pkg()])
+    expect(screen.getByRole('heading', { name: 'Choose a package' })).toBeTruthy()
+  })
+
+  it('shows the provider turnaround as the card kicker when the catalog has one', () => {
+    renderStep([pkg({ estimated_completion_days: 5 })])
+    expect(screen.getByText('Usually 5 days')).toBeTruthy()
   })
 })

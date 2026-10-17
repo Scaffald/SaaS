@@ -1,6 +1,6 @@
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
 import { memo, useEffect } from 'react'
-import { Button, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, H3, Text, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 import type { PaymentDetails } from '../hooks/useBackgroundCheckForm'
@@ -44,7 +44,7 @@ export const PaymentStep = memo(function PaymentStep({
   onPaymentSuccess,
 }: PaymentStepProps) {
   const { theme } = useThemeContext()
-  const t = theme === 'dark' ? 'dark' : 'light' as const
+  const t = theme === 'dark' ? 'dark' : ('light' as const)
 
   useEffect(() => {
     if (payment.paidBy !== 'worker') {
@@ -57,7 +57,7 @@ export const PaymentStep = memo(function PaymentStep({
   return (
     <Stack gap={16} flex={1}>
       <Stack gap={8}>
-        <Text style={{ color: colors.text[t].secondary }}>Payment & Authorization</Text>
+        <H3 style={{ color: colors.text[t].primary }}>Payment</H3>
         <Text style={{ color: colors.text[t].secondary }}>
           Pay for your screening securely with Stripe. Charges are non-refundable and required
           before we can submit your background check.
@@ -65,16 +65,24 @@ export const PaymentStep = memo(function PaymentStep({
       </Stack>
 
       <Stack gap={8} style={{ backgroundColor: colors.bg[t].muted }} padding="md" borderRadius={16}>
-        <Text style={{ color: colors.text[t].secondary }}>Total Due</Text>
-        <Text style={{ color: colors.text[t].secondary }}>{formatCurrency(payment.costCents)}</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Total due</Text>
+        <Text size="xl" weight="semibold" style={{ color: colors.text[t].primary }}>
+          {formatCurrency(payment.costCents)}
+        </Text>
         <Text style={{ color: colors.text[t].secondary }}>
           Package: {selectedPackage?.display_name ?? 'Select a package to continue'}
         </Text>
       </Stack>
 
       {submitError && (
-        <Stack style={{ backgroundColor: t === 'dark' ? colors.error[900] : colors.error[50] }} padding="sm" borderRadius={12}>
-          <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>{submitError.message}</Text>
+        <Stack
+          style={{ backgroundColor: t === 'dark' ? colors.error[900] : colors.error[50] }}
+          padding="sm"
+          borderRadius={12}
+        >
+          <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>
+            {submitError.message}
+          </Text>
         </Stack>
       )}
 

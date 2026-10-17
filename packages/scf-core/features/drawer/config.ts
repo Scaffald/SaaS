@@ -211,8 +211,8 @@ export const generateDashboardDrawerItems = (
     subItems: [
       {
         key: 'assessments-index',
-        titleKey: ROUTES.ASSESSMENTS.ANALYTICS.titleKey,
-        href: ROUTES.ASSESSMENTS.ANALYTICS.path,
+        titleKey: ROUTES.ASSESSMENTS.OVERVIEW.titleKey,
+        href: ROUTES.ASSESSMENTS.OVERVIEW.path,
       },
       {
         key: 'assessments-pulse',
