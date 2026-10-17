@@ -240,7 +240,7 @@ export function APIKeysList({
             {shown.map((scope) => (
               <StatusBadge key={scope}>{scope}</StatusBadge>
             ))}
-            {hidden > 0 ? <Text style={{ color: muted, fontSize: 12 }}>+{hidden}</Text> : null}
+            {hidden > 0 ? <Text style={{ color: muted, fontSize: fontSize.xs }}>+{hidden}</Text> : null}
           </Row>
         )
       },
@@ -269,7 +269,7 @@ export function APIKeysList({
           <Stack gap={2}>
             <StatusBadge variant={tag.variant}>{tag.label}</StatusBadge>
             {expires && tag.label === 'Active' ? (
-              <Text style={{ color: muted, fontSize: 12 }}>Expires {expires}</Text>
+              <Text style={{ color: muted, fontSize: fontSize.xs }}>Expires {expires}</Text>
             ) : null}
           </Stack>
         )

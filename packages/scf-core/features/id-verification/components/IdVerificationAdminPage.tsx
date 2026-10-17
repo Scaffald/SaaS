@@ -20,7 +20,7 @@ import {
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { colors, fontSize } from '@scaffald/ui/tokens'
 import { StatusBadge } from '@scf/core/components/ui/StatusBadge'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
@@ -210,7 +210,7 @@ export function IdVerificationAdminPage({
     <Stack gap={6} style={{ minWidth: 240 }}>
       <Text
         style={{
-          fontSize: 11,
+          fontSize: fontSize.xxs,
           letterSpacing: 1.4,
           textTransform: 'uppercase',
           color: colors.text[t].tertiary,
