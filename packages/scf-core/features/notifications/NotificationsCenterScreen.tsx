@@ -10,11 +10,12 @@ import { Info, Settings as SettingsIcon } from 'lucide-react-native'
 import { Row, Spinner, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { colors, fontSize, fontWeight } from '@scaffald/ui/tokens'
 import { ROUTES } from '@scf/core/constants/routes'
-import { useNotifications, useUnreadCount } from '@scf/core/utils/notifications-sdk-hooks'
+import { useNotifications } from '@scf/core/utils/notifications-sdk-hooks'
 import { useAppMode } from '@scf/core/utils/useAppMode'
 import { filterNotificationsForMode } from './audience'
 import { NotificationRow } from './components/NotificationRow'
 import { toNotificationItems } from './normalize'
+import { useModeUnreadCount } from './useModeUnreadCount'
 import { useMarkAllNotificationsRead, useOpenNotification } from './useNotificationActions'
 
 const LIST_LIMIT = 50
@@ -26,7 +27,8 @@ const LIST_LIMIT = 50
 export function NotificationsHeaderActions() {
   const router = useRouter()
   const { theme } = useThemeContext()
-  const unreadCount = useUnreadCount().data?.data?.unread_count ?? 0
+  // This mode's unread rows, matching the list below it (#1250).
+  const { count: unreadCount } = useModeUnreadCount()
   const markAllRead = useMarkAllNotificationsRead()
 
   return (

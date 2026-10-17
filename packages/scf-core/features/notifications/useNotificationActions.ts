@@ -5,7 +5,10 @@
  * Both write the read state into the cached list rows and the unread count
  * before the request lands, so the row's dot and the masthead badge change on
  * the tap rather than one round trip later. Settling refetches both, which
- * also restores the truth if the request failed.
+ * also restores the truth if the request failed. The badge itself is counted
+ * from a `LIST_KEY` query of unread rows (`useModeUnreadCount`, #1250), so the
+ * row write is what moves it; the unread-count cache is kept for any caller of
+ * `useUnreadCount`.
  *
  * The optimistic path deliberately covers `LIST_KEY` only — both surfaces use
  * `useNotifications`, and nothing uses `useNotificationsListInfinite`.

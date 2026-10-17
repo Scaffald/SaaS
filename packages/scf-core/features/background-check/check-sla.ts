@@ -111,10 +111,7 @@ export interface QueueMetrics {
   medianDaysOpen: number | null
 }
 
-export function computeQueueMetrics(
-  checks: TimedCheck[],
-  now: number = Date.now(),
-): QueueMetrics {
+export function computeQueueMetrics(checks: TimedCheck[], now: number = Date.now()): QueueMetrics {
   const open = checks.filter((c) => !isTerminal(c.status))
 
   const ages = open
@@ -144,4 +141,56 @@ export function slaLabel(check: TimedCheck, now: number = Date.now()): string | 
   if (remaining < 0) return `${Math.abs(remaining)}d over`
   if (remaining === 0) return 'due today'
   return `${remaining}d left`
+}
+
+/**
+ * The admin checks endpoint's maximum page. The queue figures are read off one
+ * page of the list because there is no count or summary endpoint for checks.
+ */
+export const CHECK_QUEUE_CAP = 200
+
+/** A figure read off a capped list: `overflow` means "at least `value`". */
+export interface QueueFigure {
+  value: number
+  overflow: boolean
+}
+
+export interface BoundedQueueMetrics {
+  openCount: QueueFigure
+  overSlaCount: QueueFigure
+  dueTodayCount: QueueFigure
+  /** Median of the fetched open cases; with `overflow` it is of the newest page only. */
+  medianDaysOpen: number | null
+  /** The page came back full, so there may be cases beyond it. */
+  overflow: boolean
+}
+
+/**
+ * Queue figures for a page fetched with `limit: cap`.
+ *
+ * The admin page counted `rows.length` of a default 50-row page, so Open cases
+ * and Over SLA silently stopped at 50 (#1248). The endpoint's maximum is 200,
+ * so one extra row cannot be asked for to tell "exactly 200" from "more": a
+ * full page reads as a floor ("200+"). Office and the admin page both count
+ * through here with the same cap, so they show the same figures.
+ */
+export function computeBoundedQueueMetrics(
+  checks: TimedCheck[],
+  cap: number = CHECK_QUEUE_CAP,
+  now: number = Date.now()
+): BoundedQueueMetrics {
+  const queue = computeQueueMetrics(checks, now)
+  const overflow = checks.length >= cap
+  return {
+    openCount: { value: queue.openCount, overflow },
+    overSlaCount: { value: queue.overSlaCount, overflow },
+    dueTodayCount: { value: queue.dueTodayCount, overflow },
+    medianDaysOpen: queue.medianDaysOpen,
+    overflow,
+  }
+}
+
+/** "200+" for a floor, otherwise the number. */
+export function formatQueueFigure(figure: QueueFigure): string {
+  return figure.overflow ? `${figure.value}+` : String(figure.value)
 }
