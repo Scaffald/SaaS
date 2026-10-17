@@ -1,5 +1,5 @@
 -- =========================================================
--- 379_background_check_package_trade_copy.sql
+-- 382_background_check_package_trade_copy.sql
 --
 -- The worker's package step (/profile/background-check/initiate) shows each
 -- package's description as the card body. 035 seeded them for an office
