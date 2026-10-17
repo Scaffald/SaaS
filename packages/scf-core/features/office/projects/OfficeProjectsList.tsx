@@ -1,272 +1,270 @@
-import { ROUTES, buildPath } from "@scf/core/constants/routes";
-import { useProjects } from "@scf/core/utils/projects-sdk-hooks";
-import { useAllOrganizations } from "@scf/core/utils/useAllOrganizations";
-import { OfficeLayout } from "@scf/core/components/layouts";
-import {
-  ResponsiveSelect,
-  ScreenHeader,
-  useThemeContext,
-} from "@scaffald/ui";
-import { Eye, EyeOff, Pencil } from "lucide-react-native";
-import { createColumnHelper } from "@tanstack/react-table";
-import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
-import { Button, Text, Row, Stack } from "@scaffald/ui";
-import { borderRadius, colors } from '@scaffald/ui/tokens';
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
+import { useProjects } from '@scf/core/utils/projects-sdk-hooks'
+import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
+import { StatusBadge } from '@scf/core/components/ui'
+import { ResponsiveSelect, useThemeContext, type ListToolbarFilterChip } from '@scaffald/ui'
+import { Eye, EyeOff } from 'lucide-react-native'
+import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import { useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Text, Row } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { OfficePageLayout } from '../components/OfficePageLayout'
+import { CellText, type CmsRowAction } from '../components/CmsCells'
+import { formatCellDate, projectStatus } from '../cms-format'
 
-type ProjectStatus = "planning" | "active" | "completed" | "on_hold";
+type ProjectStatus = 'planning' | 'active' | 'completed' | 'on_hold'
 
 type Project = {
-  id: string;
-  name: string;
-  description: string | null;
-  status: ProjectStatus;
-  start_date: string | null;
-  end_date: string | null;
-  location_visibility:
-    | "public"
-    | "authenticated"
-    | "organization_only"
-    | "private";
-  location_visibility_override: boolean;
-  created_at: string;
-  updated_at: string;
-  organization: {
-    id: string;
-    name: string;
-    slug: string;
-  } | null;
-};
+  id: string
+  name: string
+  description: string | null
+  status: ProjectStatus
+  organization_id: string
+  start_date: string | null
+  end_date: string | null
+  location_visibility: 'public' | 'authenticated' | 'organization_only' | 'private'
+  location_visibility_override: boolean
+  created_at: string
+  updated_at: string
+}
 
-const columnHelper = createColumnHelper<Project>();
+/** A row: the project plus its organization's name, resolved once. */
+type ProjectRow = Project & { organizationName: string | null }
 
-const getVisibilityIcon = (visibility: Project["location_visibility"]) => {
-  switch (visibility) {
-    case "public":
-    case "authenticated":
-      return Eye;
-    case "organization_only":
-    case "private":
-      return EyeOff;
-    default:
-      return EyeOff;
-  }
-};
+const columnHelper = createColumnHelper<ProjectRow>()
 
-const getVisibilityLabel = (visibility: Project["location_visibility"]) => {
-  switch (visibility) {
-    case "public":
-      return "Public";
-    case "authenticated":
-      return "Authenticated";
-    case "organization_only":
-      return "Organization Only";
-    case "private":
-      return "Private";
-    default:
-      return "Unknown";
-  }
-};
+const VISIBILITY_LABELS: Record<Project['location_visibility'], string> = {
+  public: 'Public',
+  authenticated: 'Signed-in users',
+  organization_only: 'Organization only',
+  private: 'Private',
+}
 
-const createColumns = (
-  _router: ReturnType<typeof useRouter>,
-  theme: "light" | "dark"
-) => [
-  columnHelper.accessor("name", {
-    header: "Name",
-    cell: (info) => info.getValue(),
+const STATUS_OPTIONS = [
+  { value: 'planning', label: 'Planning' },
+  { value: 'active', label: 'Active' },
+  { value: 'on_hold', label: 'On hold' },
+  { value: 'completed', label: 'Completed' },
+]
+
+function VisibilityCell({ project }: { project: ProjectRow }) {
+  const { theme } = useThemeContext()
+  const visibility = project.location_visibility
+  const Icon = visibility === 'public' || visibility === 'authenticated' ? Eye : EyeOff
+  return (
+    <Row gap={6} align="center" style={{ minWidth: 0 }}>
+      <Icon size={14} color={colors.text[theme].tertiary} />
+      <CellText>
+        {project.location_visibility_override
+          ? `${VISIBILITY_LABELS[visibility] ?? visibility} (override)`
+          : (VISIBILITY_LABELS[visibility] ?? visibility)}
+      </CellText>
+    </Row>
+  )
+}
+
+const createColumns = () => [
+  columnHelper.accessor('name', {
+    header: 'Name',
+    cell: (info) => <CellText strong>{info.getValue()}</CellText>,
+    meta: { width: '30%' },
   }),
-  columnHelper.accessor("status", {
-    header: "Status",
+  // The cards printed the raw organization_id here (#1205).
+  columnHelper.accessor('organizationName', {
+    header: 'Organization',
+    cell: (info) => <CellText>{info.getValue()}</CellText>,
+  }),
+  columnHelper.accessor('status', {
+    header: 'Status',
     cell: (info) => {
-      const status = info.getValue();
-      return status.charAt(0).toUpperCase() + status.slice(1);
+      const status = projectStatus(info.getValue())
+      return <StatusBadge variant={status.variant}>{status.label}</StatusBadge>
     },
+    meta: { width: 112 },
   }),
-  columnHelper.accessor("organization", {
-    header: "Organization",
-    cell: (info) => info.getValue()?.name || "-",
+  columnHelper.accessor('location_visibility', {
+    header: 'Location visibility',
+    cell: (info) => <VisibilityCell project={info.row.original} />,
   }),
-  columnHelper.accessor("location_visibility", {
-    header: "Visibility",
-    cell: (info) => {
-      const visibility = info.getValue();
-      const Icon = getVisibilityIcon(visibility);
-      const label = getVisibilityLabel(visibility);
-      const hasOverride = info.row.original.location_visibility_override;
-
-      return (
-        <Row gap={8} align="center">
-          <Icon size="md" />
-          <Text>{label}</Text>
-          {hasOverride && (
-            <Text
-              style={{
-                color:
-                  theme === "light" ? colors.yellow[700] : colors.yellow[300],
-              }}
-            >
-              (Override)
-            </Text>
-          )}
-        </Row>
-      );
-    },
+  columnHelper.accessor('updated_at', {
+    header: 'Updated',
+    cell: (info) => (
+      <CellText tabular>{formatCellDate(info.getValue() ?? info.row.original.created_at)}</CellText>
+    ),
+    meta: { width: 120 },
   }),
-  // Actions column removed - using RowActionOverlay instead
-];
+]
 
-export function OfficeProjectsList({
-  showHeader = true,
-}: {
-  showHeader?: boolean;
-}) {
-  const { theme } = useThemeContext();
-  const router = useRouter();
-  const { data: organizationsData } = useAllOrganizations();
-  const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<
-    ProjectStatus | null | string
-  >(null);
+/**
+ * The CMS Projects list. It was the one CMS screen that was not a table: a
+ * column of bordered cards under two loose dropdowns with no search, and its
+ * own filled Create at the end of the filter row (#1205, #1209). It now opens
+ * like every other CMS list — header with Create, one toolbar, a table.
+ */
+export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean }) {
+  const { theme } = useThemeContext()
+  const router = useRouter()
+  const { data: organizationsData } = useAllOrganizations()
+  const [search, setSearch] = useState('')
+  const [selectedOrg, setSelectedOrg] = useState<string | null>(null)
+  const [statusFilter, setStatusFilter] = useState<ProjectStatus | null>(null)
 
-  const { data, isLoading } = useProjects({
+  const { data, isLoading, error, refetch } = useProjects({
     organizationId: selectedOrg || undefined,
-    status: (statusFilter as ProjectStatus) || undefined,
+    status: statusFilter || undefined,
     limit: 50,
     offset: 0,
-  });
+  })
 
-  const _columns = useMemo(() => createColumns(router, theme), [router, theme]);
+  const organizations = useMemo(
+    () =>
+      (
+        (organizationsData?.organizations ?? []) as Array<{
+          id: string
+          name: string
+        }>
+      )
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [organizationsData?.organizations]
+  )
+  const organizationNames = useMemo(
+    () => new Map(organizations.map((org) => [org.id, org.name])),
+    [organizations]
+  )
 
-  const projects = data?.projects || [];
+  const rows: ProjectRow[] = useMemo(() => {
+    const projects = (data?.projects ?? []) as Project[]
+    const query = search.trim().toLowerCase()
+    return projects
+      .map((project) => ({
+        ...project,
+        organizationName: organizationNames.get(project.organization_id) ?? null,
+      }))
+      .filter(
+        (project) =>
+          !query ||
+          project.name.toLowerCase().includes(query) ||
+          (project.organizationName ?? '').toLowerCase().includes(query)
+      )
+  }, [data?.projects, organizationNames, search])
 
-  const _handleRowEdit = (project: Project) => {
-    router.push(
-      buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: project.id })
-    );
-  };
+  const columns = useMemo(() => createColumns(), [])
 
-  const _getItemName = (project: Project) => project.name;
+  const handleRowEdit = (project: ProjectRow) => {
+    router.push(buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: project.id }))
+  }
+
+  const rowActions = (project: ProjectRow): CmsRowAction[] => [
+    {
+      label: 'Open',
+      onPress: () => router.push(buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL, { id: project.id })),
+    },
+    { label: 'Edit', onPress: () => handleRowEdit(project) },
+  ]
+
+  const filterChips: ListToolbarFilterChip[] = [
+    ...(selectedOrg
+      ? [
+          {
+            id: 'organization',
+            label: 'Organization',
+            value: organizationNames.get(selectedOrg) ?? 'Selected',
+            active: true,
+            onPress: () => {},
+            onClear: () => setSelectedOrg(null),
+          },
+        ]
+      : []),
+    ...(statusFilter
+      ? [
+          {
+            id: 'status',
+            label: 'Status',
+            value: projectStatus(statusFilter).label,
+            active: true,
+            onPress: () => {},
+            onClear: () => setStatusFilter(null),
+          },
+        ]
+      : []),
+  ]
+
+  const filterContent = (
+    <Row gap={12} align="center" wrap>
+      <Row gap={8} align="center">
+        <Text style={{ color: colors.text[theme].secondary }}>Organization</Text>
+        <ResponsiveSelect
+          value={selectedOrg ?? 'all'}
+          onValueChange={(value: string) => setSelectedOrg(value === 'all' ? null : value)}
+          placeholder="All organizations"
+          size="sm"
+          options={[
+            { value: 'all', label: 'All organizations' },
+            ...organizations.map((org) => ({ value: org.id, label: org.name })),
+          ]}
+        />
+      </Row>
+      <Row gap={8} align="center">
+        <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
+        <ResponsiveSelect
+          value={statusFilter ?? 'all'}
+          onValueChange={(value: string) =>
+            setStatusFilter(value === 'all' ? null : (value as ProjectStatus))
+          }
+          placeholder="All statuses"
+          size="sm"
+          options={[{ value: 'all', label: 'All statuses' }, ...STATUS_OPTIONS]}
+        />
+      </Row>
+    </Row>
+  )
 
   return (
-    <OfficeLayout
-      showBreadcrumb
-      // No gutter on the inner Stack: this screen wraps itself in
-      // OfficeLayout, which already supplies one. Paying it twice put the
-      // title 32px right of every other Office list.
-      leftContent={
-        <Stack flex={1} gap={16}>
-          {showHeader && (
-            /* The shared header, like every other Office list. This drew its
-               own H2 and description, which is a fourth way to open a screen
-               in a section that now has one. */
-            <ScreenHeader
-              title="Projects"
-              tip="Manage construction projects with geographic data"
-            />
-          )}
-          <Stack gap={16}>
-            <Row gap={16} align="center" justify="space-between" wrap>
-              <Row gap={16} align="center" wrap>
-                {organizationsData && (
-                  <Row width={200}>
-                    <ResponsiveSelect
-                      value={selectedOrg || ""}
-                      onValueChange={setSelectedOrg}
-                      placeholder="All Organizations"
-                      size="sm"
-                      options={[
-                        { value: "", label: "All Organizations" },
-                        ...(organizationsData?.organizations ?? []).map(
-                          (org: { id: string; name: string }) => ({
-                            value: org.id,
-                            label: org.name,
-                          })
-                        ),
-                      ]}
-                    />
-                  </Row>
-                )}
-
-                <Row width={150}>
-                  <ResponsiveSelect
-                    value={statusFilter || ""}
-                    onValueChange={setStatusFilter}
-                    placeholder="All Statuses"
-                    size="sm"
-                    options={[
-                      { value: "", label: "All Statuses" },
-                      { value: "planning", label: "Planning" },
-                      { value: "active", label: "Active" },
-                      { value: "completed", label: "Completed" },
-                      { value: "on_hold", label: "On Hold" },
-                    ]}
-                  />
-                </Row>
-              </Row>
-
-              <Button
-                onPress={() =>
-                  router.push(ROUTES.OFFICE.CMS.PROJECTS.CREATE.path)
-                }
-                color="primary"
-                variant="filled"
-              >
-                Create Project
-              </Button>
-            </Row>
-
-            {isLoading ? (
-              <Text>Loading projects...</Text>
-            ) : projects.length === 0 ? (
-              <Text>No projects found</Text>
-            ) : (
-              <Stack gap={8}>
-                {projects.map((project: (typeof projects)[0]) => (
-                  <Row
-                    key={project.id}
-                    padding="md"
-                    style={{ backgroundColor: colors.bg[theme].default }}
-                    borderRadius={borderRadius.l}
-                    justify="space-between"
-                    align="center"
-                    borderWidth={1}
-                    borderColor={colors.border[theme].default}
-                  >
-                    <Stack gap={4} flex={1}>
-                      <Text>{project.name}</Text>
-                      <Text style={{ color: colors.text[theme].tertiary }}>
-                        {project.organization_id ?? "No organization"} •{" "}
-                        {project.status}
-                      </Text>
-                    </Stack>
-                    <Row gap={8} align="center">
-                      {getVisibilityIcon(project.location_visibility)({
-                        size: 16,
-                      })}
-                      <Button
-                        size="sm"
-                        iconStart={Pencil}
-                        onPress={() => {
-                          router.push(
-                            buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, {
-                              id: project.id,
-                            })
-                          );
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    </Row>
-                  </Row>
-                ))}
-              </Stack>
-            )}
-          </Stack>
-        </Stack>
+    <OfficePageLayout
+      resultNoun="project"
+      wrapWithOfficeLayout
+      kicker="Content management"
+      title="Projects"
+      tip="Construction projects by organization. Location visibility decides who can see where a project is."
+      searchPlaceholder="Search projects or organizations…"
+      searchValue={search}
+      onSearchChange={setSearch}
+      createButtonLabel="Create project"
+      onCreateClick={() => router.push(ROUTES.OFFICE.CMS.PROJECTS.CREATE.path)}
+      columns={columns as ColumnDef<ProjectRow, unknown>[]}
+      data={rows}
+      isLoading={isLoading}
+      loadError={
+        error
+          ? {
+              error,
+              retry: () => void refetch(),
+              title: 'Couldn’t load projects',
+            }
+          : undefined
+      }
+      pageSize={50}
+      emptyMessage="No projects found"
+      hideHeader={!showHeader}
+      onRowEdit={handleRowEdit}
+      rowActions={rowActions}
+      getItemName={(project: ProjectRow) => project.name}
+      itemType="project"
+      filterContent={filterContent}
+      activeFilterCount={(selectedOrg ? 1 : 0) + (statusFilter ? 1 : 0)}
+      filterChips={filterChips}
+      onClearFilters={
+        selectedOrg || statusFilter
+          ? () => {
+              setSelectedOrg(null)
+              setStatusFilter(null)
+            }
+          : undefined
       }
       // No Quick Actions rail (#1099): it repeated the toolbar's Create and a
       // Refresh, and cost the table ~400px, clipping its last column at 1440.
     />
-  );
+  )
 }

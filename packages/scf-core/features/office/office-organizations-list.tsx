@@ -2,7 +2,6 @@ import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import {
   useOfficeOrganizationsList,
   useOfficeOrganizationRequests,
-  useDeleteOfficeOrganizationMutation,
   useReviewOrganizationRequestMutation,
 } from '@scf/core/utils/office-organizations-sdk-hooks'
 import {
@@ -18,19 +17,11 @@ import { useToast } from '@scaffald/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import {
-  Button,
-  Label,
-  Paragraph,
-  Separator,
-  Spinner,
-  Text,
-  TextArea,
-  Row,
-  Stack,
-} from '@scaffald/ui'
+import { Button, Label, Paragraph, Separator, Text, TextArea, Row, Stack } from '@scaffald/ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
-import { colors } from '@scaffald/ui/tokens'
+import { CellText, type CmsRowAction } from './components/CmsCells'
+import { formatCellDate } from './cms-format'
+import { colors, fontWeight } from '@scaffald/ui/tokens'
 
 type Organization = {
   id: string
@@ -66,27 +57,26 @@ const columnHelper = createColumnHelper<Organization>()
 const createColumns = (_router: ReturnType<typeof useRouter>) => [
   columnHelper.accessor('name', {
     header: 'Name',
-    cell: (info) => info.getValue(),
+    cell: (info) => <CellText strong>{info.getValue()}</CellText>,
     meta: {
-      width: '$25',
+      width: '32%',
     },
   }),
   columnHelper.accessor('industry_name', {
     header: 'Industry',
-    cell: (info) => info.getValue() || '-',
+    cell: (info) => <CellText>{info.getValue()}</CellText>,
   }),
   columnHelper.accessor('visibility', {
     header: 'Visibility',
     cell: (info) => {
       const visibility = info.getValue()
-      return visibility.charAt(0).toUpperCase() + visibility.slice(1)
+      return <CellText>{visibility.charAt(0).toUpperCase() + visibility.slice(1)}</CellText>
     },
   }),
   columnHelper.accessor('created_at', {
     header: 'Created',
-    cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+    cell: (info) => <CellText tabular>{formatCellDate(info.getValue())}</CellText>,
   }),
-  // Actions column removed - using RowActionOverlay instead
 ]
 
 export function OfficeOrganizationsList() {
@@ -108,7 +98,7 @@ export function OfficeOrganizationsList() {
   const [rejectError, setRejectError] = useState<string | null>(null)
   const toast = useToast()
 
-  const { data, isLoading, refetch } = useOfficeOrganizationsList({ limit: 50, offset: 0 })
+  const { data, isLoading, error, refetch } = useOfficeOrganizationsList({ limit: 50, offset: 0 })
   const {
     data: requestData,
     isLoading: isRequestsLoading,
@@ -116,12 +106,6 @@ export function OfficeOrganizationsList() {
     isRefetching: isRequestsRefetching,
     refetch: refetchRequests,
   } = useOfficeOrganizationRequests({ status: 'pending', limit: 25 })
-
-  const deleteMutation = useDeleteOfficeOrganizationMutation({
-    onSuccess: () => {
-      refetch()
-    },
-  })
 
   const reviewMutation = useReviewOrganizationRequestMutation({
     onSuccess: async () => {
@@ -136,10 +120,6 @@ export function OfficeOrganizationsList() {
       })
     },
   })
-
-  const handleDelete = async (id: string) => {
-    await deleteMutation.mutateAsync(id)
-  }
 
   const resetRejectDialog = () => {
     setRejectDialog({
@@ -225,9 +205,9 @@ export function OfficeOrganizationsList() {
     router.push(buildPath(ROUTES.OFFICE.CMS.ORGANIZATIONS.EDIT, { id: org.id }))
   }
 
-  const handleRowDelete = async (org: Organization) => {
-    await handleDelete(org.id)
-  }
+  const rowActions = (org: Organization): CmsRowAction[] => [
+    { label: 'Edit', onPress: () => handleRowEdit(org) },
+  ]
 
   const getItemName = (org: Organization) => org.name
 
@@ -291,135 +271,121 @@ export function OfficeOrganizationsList() {
       <OfficePageLayout
         resultNoun="organization"
         wrapWithOfficeLayout
-        showBreadcrumb
+        kicker="Content management"
         title="Organizations"
-        searchPlaceholder="Search organizations..."
+        tip="Employers on Scaffald. Requests to add a new company wait for approval here."
+        searchPlaceholder="Search organizations…"
         searchValue={search}
         onSearchChange={setSearch}
-        createButtonLabel="Create Organization"
+        createButtonLabel="Create organization"
         onCreateClick={() => router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.CREATE.path)}
         columns={columns as ColumnDef<Organization, unknown>[]}
         data={filteredOrganizations}
         isLoading={isLoading}
+        loadError={
+          error
+            ? { error, retry: () => void refetch(), title: 'Couldn’t load organizations' }
+            : undefined
+        }
         pageSize={50}
         emptyMessage="No organizations found"
         onRowEdit={handleRowEdit}
-        onRowDelete={handleRowDelete}
+        rowActions={rowActions}
         getItemName={getItemName}
         itemType="organization"
-        rightContent={
-          <Stack gap={16}>
+        // The moderation queue sits under the header, full width, and only
+        // when there is something in it. It was a right rail — "Moderation
+        // Summary" with three counts and a Refresh, then "Pending Approvals"
+        // — which squeezed the table to ~900px and pushed Create into the
+        // left column beside the title, unlike every other CMS list (#1205,
+        // #1099).
+        headerContent={
+          isRequestsLoading ? null : isRequestsError ? (
+            // Not "no requests": the 500 behind #1017 said "Check back
+            // soon!" while real requests waited unreviewed (#1021).
+            <DashboardWidget gap={8}>
+              <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                Couldn’t load pending requests — there may be some waiting.
+              </Text>
+              <Row>
+                <Button size="sm" variant="outline" onPress={() => refetchRequests()}>
+                  Retry
+                </Button>
+              </Row>
+            </DashboardWidget>
+          ) : pendingRequests.length > 0 ? (
             <DashboardWidget gap={16}>
-              <Row justify="space-between" align="center">
-                <Text>Moderation Summary</Text>
+              <Row justify="space-between" align="center" gap={12} wrap>
+                <Stack gap={2}>
+                  <Text style={{ fontWeight: fontWeight.semibold }}>
+                    {pendingRequests.length === 1
+                      ? '1 organization waiting for approval'
+                      : `${pendingRequests.length} organizations waiting for approval`}
+                  </Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>
+                    {moderationCounts.approved} approved · {moderationCounts.rejected} rejected so
+                    far
+                  </Text>
+                </Stack>
                 <Button
                   size="sm"
                   variant="outline"
                   iconStart={RefreshCw}
-                  disabled={isRequestsLoading || isRequestsRefetching}
+                  disabled={isRequestsRefetching}
                   onPress={refreshRequests}
                 >
                   Refresh
                 </Button>
               </Row>
-              <Row gap={16}>
-                <Stack gap={4}>
-                  <Text style={{ color: colors.text[theme].secondary }}>Pending</Text>
-                  <Text>{moderationCounts.pending}</Text>
-                </Stack>
-                <Stack gap={4}>
-                  <Text style={{ color: colors.text[theme].secondary }}>Approved</Text>
-                  <Text
-                    style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}
-                  >
-                    {moderationCounts.approved}
-                  </Text>
-                </Stack>
-                <Stack gap={4}>
-                  <Text style={{ color: colors.text[theme].secondary }}>Rejected</Text>
-                  <Text
-                    style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
-                  >
-                    {moderationCounts.rejected}
-                  </Text>
-                </Stack>
-              </Row>
-            </DashboardWidget>
-
-            <DashboardWidget gap={16}>
-              <Text>Pending Approvals</Text>
-              {isRequestsLoading ? (
-                <Row justify="center" paddingVertical={16}>
-                  <Spinner variant="ios" size="lg" />
-                </Row>
-              ) : isRequestsError ? (
-                // Not "no requests": the 500 behind #1017 said "Check back
-                // soon!" while real requests waited unreviewed (#1021).
-                <Stack gap={8}>
-                  <Text
-                    style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
-                  >
-                    Couldn’t load pending requests — there may be some waiting.
-                  </Text>
-                  <Button size="sm" variant="outline" onPress={() => refetchRequests()}>
-                    Retry
-                  </Button>
-                </Stack>
-              ) : pendingRequests.length === 0 ? (
-                <Text style={{ color: colors.text[theme].secondary }}>
-                  No pending organization requests. Check back soon!
-                </Text>
-              ) : (
-                <Stack gap={16}>
-                  {pendingRequests.map((request, index) => (
-                    <Stack key={request.id} gap={12}>
-                      <Stack gap={6}>
-                        <Text>{request.name}</Text>
-                        <Text style={{ color: colors.text[theme].secondary }}>
-                          Vanity URL: {request.slug}
+              <Stack gap={16}>
+                {pendingRequests.map((request, index) => (
+                  <Stack key={request.id} gap={12}>
+                    <Stack gap={6}>
+                      <Text>{request.name}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        Vanity URL: {request.slug}
+                      </Text>
+                      {request.website ? (
+                        <Text style={{ color: colors.text[theme].emphasis }}>
+                          {request.website}
                         </Text>
-                        {request.website ? (
-                          <Text style={{ color: colors.text[theme].emphasis }}>
-                            {request.website}
-                          </Text>
-                        ) : null}
-                        <Text style={{ color: colors.text[theme].secondary }}>
-                          Submitted {new Date(request.created_at).toLocaleString()}
-                        </Text>
-                        {request.notes ? (
-                          <Paragraph style={{ color: colors.text[theme].secondary }}>
-                            Notes: {request.notes}
-                          </Paragraph>
-                        ) : null}
-                      </Stack>
-                      <Row gap={8}>
-                        <Button
-                          size="sm"
-                          color="success"
-                          iconStart={isProcessingAction(request.id) ? Loader2 : Check}
-                          disabled={reviewMutation.isPending}
-                          onPress={() => handleApprove(request)}
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          color="error"
-                          iconStart={XIcon}
-                          disabled={reviewMutation.isPending}
-                          onPress={() => openRejectDialog(request)}
-                        >
-                          Reject
-                        </Button>
-                      </Row>
-                      {index < pendingRequests.length - 1 ? <Separator /> : null}
+                      ) : null}
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        Submitted {new Date(request.created_at).toLocaleString()}
+                      </Text>
+                      {request.notes ? (
+                        <Paragraph style={{ color: colors.text[theme].secondary }}>
+                          Notes: {request.notes}
+                        </Paragraph>
+                      ) : null}
                     </Stack>
-                  ))}
-                </Stack>
-              )}
+                    <Row gap={8}>
+                      <Button
+                        size="sm"
+                        color="success"
+                        iconStart={isProcessingAction(request.id) ? Loader2 : Check}
+                        disabled={reviewMutation.isPending}
+                        onPress={() => handleApprove(request)}
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        color="error"
+                        iconStart={XIcon}
+                        disabled={reviewMutation.isPending}
+                        onPress={() => openRejectDialog(request)}
+                      >
+                        Reject
+                      </Button>
+                    </Row>
+                    {index < pendingRequests.length - 1 ? <Separator /> : null}
+                  </Stack>
+                ))}
+              </Stack>
             </DashboardWidget>
-          </Stack>
+          ) : null
         }
       />
     </>

@@ -15,11 +15,18 @@ import {
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
 import { Plus } from 'lucide-react-native'
+import { CmsRowMenu, type CmsRowAction } from './CmsCells'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
 import type { Dispatch, ReactNode, SetStateAction } from 'react'
 
 interface OfficePageLayoutProps<TData> {
+  /** Uppercase context line above the title — "Content management" on CMS lists. */
+  kicker?: string
   title: string
+  /** One sentence under the title: what the list is for, or how to read it. */
+  tip?: ReactNode
+  /** Full-width under the tip, inside the header: a queue that needs acting on. */
+  headerContent?: ReactNode
   searchPlaceholder: string
   searchValue: string
   onSearchChange: Dispatch<SetStateAction<string>>
@@ -93,10 +100,22 @@ interface OfficePageLayoutProps<TData> {
   afterContent?: ReactNode
   /** Optional children rendered between the action bar/search and the table */
   children?: ReactNode
+  /**
+   * The actions for one row, drawn as a visible ⋯ menu in a trailing column.
+   * Omit for a list whose rows only open.
+   */
+  rowActions?: (row: TData) => CmsRowAction[]
+  /** Replaces the table — a board view that keeps the same header and toolbar. */
+  body?: ReactNode
 }
 
 export function OfficePageLayout<TData>({
+  kicker,
   title,
+  tip,
+  headerContent,
+  rowActions,
+  body,
   searchPlaceholder,
   searchValue,
   onSearchChange,
@@ -143,6 +162,28 @@ export function OfficePageLayout<TData>({
   // No gutter here: OfficeLayout supplies it. This used to add its own 8px on
   // top, which is why Office titles sat 8px to the right of every other
   // screen's.
+  const baseColumns = columnsFromTanStack(columns as ColumnDef<Record<string, unknown>, unknown>[])
+  const tableColumns = rowActions
+    ? [
+        ...baseColumns,
+        {
+          id: '__actions',
+          // Titled, not blank: the stacked (phone) layout drops untitled
+          // columns, which took the menu with it below 768px.
+          title: 'Actions',
+          width: 80,
+          align: 'right' as const,
+          sortable: false,
+          render: (_value: unknown, row: Record<string, unknown>) => (
+            <CmsRowMenu
+              actions={rowActions(row as TData)}
+              itemName={_getItemName?.(row as TData) ?? _itemType}
+            />
+          ),
+        },
+      ]
+    : baseColumns
+
   const content = (
     <Stack flex={1} gap={16}>
       {beforeContent}
@@ -152,7 +193,9 @@ export function OfficePageLayout<TData>({
            actions slot because page-level primary actions live at header
            right, always — not inside the filter bar. */
         <ScreenHeader
+          kicker={kicker}
           title={title}
+          tip={tip}
           actions={
             !hideCreateButton ? (
               <Button iconStart={Plus} onPress={onCreateClick}>
@@ -160,7 +203,9 @@ export function OfficePageLayout<TData>({
               </Button>
             ) : undefined
           }
-        />
+        >
+          {headerContent}
+        </ScreenHeader>
       )}
 
       {/* The one search row: search, a Filters & sort flyout when the screen
@@ -191,7 +236,9 @@ export function OfficePageLayout<TData>({
 
       {children}
 
-      {loadError ? (
+      {body ? (
+        body
+      ) : loadError ? (
         <ErrorState
           title={loadError.title ?? 'Couldn’t load this list'}
           description="It did not load — an empty list here would not mean there is nothing."
@@ -200,7 +247,7 @@ export function OfficePageLayout<TData>({
         />
       ) : (
         <Table
-          columns={columnsFromTanStack(columns as ColumnDef<Record<string, unknown>, unknown>[])}
+          columns={tableColumns}
           data={data as Array<Record<string, unknown> & { id?: string }>}
           loading={isLoading}
           renderLoading={() => (
@@ -213,9 +260,12 @@ export function OfficePageLayout<TData>({
           emptyMessage={emptyMessage}
           columnVisibility={columnVisibility as Record<string, boolean> | undefined}
           onRowPress={
-            onRowView || onRowEdit || _onRowDelete || _onRowDuplicate
+            onRowView || onRowEdit
               ? (row) => {
-                  onRowView?.(row as TData)
+                  // A row opens its record. Lists that pass only an editor
+                  // (every CMS list) were inert: this called onRowView alone.
+                  const open = onRowView ?? onRowEdit
+                  open?.(row as TData)
                 }
               : undefined
           }

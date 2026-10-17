@@ -1,195 +1,189 @@
-import { ROUTES, buildPath } from "@scf/core/constants/routes";
-import { TEAM_VISIBILITIES, teamRoleKeySchema } from "@scf/schemas";
-import { useToast, useThemeContext } from "@scaffald/ui";
-import type { CellContext, ColumnDef } from "@tanstack/react-table";
-import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
-import { Spinner, Text, Row, Stack } from "@scaffald/ui";
-import { OfficePageLayout } from "../components/OfficePageLayout";
-import { useTeams, useArchiveTeam } from "@scaffald/sdk/react";
-import type { Team } from "@scaffald/sdk";
-import { borderRadius, colors } from '@scaffald/ui/tokens';
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
+import { useOfficeOrganizations } from '@scf/core/utils/office-organizations-sdk-hooks'
+import { ResponsiveSelect, useThemeContext, type ListToolbarFilterChip } from '@scaffald/ui'
+import type { CellContext, ColumnDef } from '@tanstack/react-table'
+import { useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Text, Row } from '@scaffald/ui'
+import { OfficePageLayout } from '../components/OfficePageLayout'
+import { CellText, type CmsRowAction } from '../components/CmsCells'
+import { formatCellDate } from '../cms-format'
+import { filterTeamRows, toTeamRow, type TeamRow } from './team-rows'
+import { useTeams } from '@scaffald/sdk/react'
+import { colors } from '@scaffald/ui/tokens'
 
-type TeamVisibility = (typeof TEAM_VISIBILITIES)[number];
-type TeamRoleKey = ReturnType<(typeof teamRoleKeySchema)["parse"]>;
+const VISIBILITY_LABELS: Record<TeamRow['visibility'], string> = {
+  public: 'Public',
+  organization: 'Organization',
+  private: 'Private',
+}
 
-type TeamRecord = Team;
-
-type TeamRow = {
-  id: string;
-  name: string;
-  visibility: TeamVisibility;
-  defaultRoleName?: string | null;
-  defaultRoleKey?: TeamRoleKey | null;
-  updatedAt?: string;
-};
-
-const createColumns = (
-  _router: ReturnType<typeof useRouter>
-): ColumnDef<TeamRow, unknown>[] => [
+// Every organization gets a "Default Team", so the name alone told eighteen
+// rows apart by nothing (#1206). The Organization column says whose it is.
+const createColumns = (): ColumnDef<TeamRow, unknown>[] => [
   {
-    accessorKey: "name",
-    header: "Team Name",
-    cell: ({ row }: CellContext<TeamRow, unknown>) => row.original.name,
-    meta: {
-      width: "$20",
-    },
+    accessorKey: 'name',
+    header: 'Team',
+    cell: ({ row }: CellContext<TeamRow, unknown>) => (
+      <CellText strong>{row.original.name}</CellText>
+    ),
   },
   {
-    accessorKey: "visibility",
-    header: "Visibility",
-    cell: ({ row }: CellContext<TeamRow, unknown>) => {
-      const value = row.original.visibility;
-      return value.charAt(0).toUpperCase() + value.slice(1);
-    },
+    accessorKey: 'organizationName',
+    header: 'Organization',
+    cell: ({ row }: CellContext<TeamRow, unknown>) => (
+      <CellText>{row.original.organizationName}</CellText>
+    ),
+    meta: { width: '28%' },
   },
   {
-    accessorKey: "defaultRoleName",
-    header: "Default Role",
-    cell: ({ row }: CellContext<TeamRow, unknown>) =>
-      row.original.defaultRoleName ?? row.original.defaultRoleKey ?? "Member",
+    accessorKey: 'visibility',
+    header: 'Visibility',
+    cell: ({ row }: CellContext<TeamRow, unknown>) => (
+      <CellText>{VISIBILITY_LABELS[row.original.visibility]}</CellText>
+    ),
   },
   {
-    accessorKey: "updatedAt",
-    header: "Updated",
-    cell: ({ row }: CellContext<TeamRow, unknown>) => {
-      const value = row.original.updatedAt;
-      return value ? new Date(value).toLocaleDateString() : "—";
-    },
+    accessorKey: 'defaultRole',
+    header: 'Default role',
+    cell: ({ row }: CellContext<TeamRow, unknown>) => (
+      <CellText>{row.original.defaultRole}</CellText>
+    ),
   },
-  // Actions column removed - using RowActionOverlay instead
-];
+  {
+    accessorKey: 'updatedAt',
+    header: 'Updated',
+    cell: ({ row }: CellContext<TeamRow, unknown>) => (
+      <CellText tabular>{formatCellDate(row.original.updatedAt)}</CellText>
+    ),
+    meta: { width: 120 },
+  },
+]
 
 export function OfficeTeamsList() {
-  const { theme } = useThemeContext();
-  const router = useRouter();
-  const toast = useToast();
-  const [search, setSearch] = useState("");
+  const { theme } = useThemeContext()
+  const router = useRouter()
+  const [search, setSearch] = useState('')
+  const [organizationFilter, setOrganizationFilter] = useState<string | null>(null)
 
-  const { data, isLoading, refetch } = useTeams({
+  const { data, isLoading, error, refetch } = useTeams({
     includeArchived: false,
-  });
+  })
+  const { data: organizationsData } = useOfficeOrganizations()
 
-  const archiveMutation = useArchiveTeam({
-    onSuccess: () => {
-      toast.show({
-        title: "Team archived",
-        message: "The team is no longer visible to members.",
-      });
-      void refetch();
-    },
-    onError: (error: unknown) => {
-      const _message =
-        error instanceof Error ? error.message : "Please try again shortly.";
-      toast.show({
-        title: "Unable to archive team",
-        message: _message,
-        variant: "error",
-      });
-    },
-  });
+  const organizations = useMemo(
+    () =>
+      (organizationsData?.organizations ?? []) as Array<{
+        id: string
+        name: string
+      }>,
+    [organizationsData?.organizations]
+  )
 
-  const teams: TeamRow[] = useMemo(() => {
-    if (!data?.teams?.length) {
-      return [];
-    }
+  const organizationNames = useMemo(
+    () => new Map(organizations.map((org) => [org.id, org.name])),
+    [organizations]
+  )
 
-    return (data.teams as TeamRecord[]).map((team) => {
-      const parsedVisibility = TEAM_VISIBILITIES.includes(
-        team.visibility as TeamVisibility
-      )
-        ? (team.visibility as TeamVisibility)
-        : "organization";
+  const teams: TeamRow[] = useMemo(
+    () =>
+      ((data?.teams ?? []) as unknown as Record<string, unknown>[]).map((team) =>
+        toTeamRow(team, organizationNames)
+      ),
+    [data?.teams, organizationNames]
+  )
 
-      return {
-        id: team.id,
-        name: team.name ?? "Untitled Team",
-        visibility: parsedVisibility,
-        defaultRoleName: team.defaultRole?.name ?? null,
-        defaultRoleKey: team.defaultRole?.key
-          ? teamRoleKeySchema.parse(team.defaultRole.key)
-          : null,
-        updatedAt: team.updatedAt ?? undefined,
-      };
-    });
-  }, [data?.teams]);
+  const filteredTeams = useMemo(
+    () => filterTeamRows(teams, search, organizationFilter),
+    [teams, search, organizationFilter]
+  )
 
-  const filteredTeams = useMemo(() => {
-    if (!search.trim()) {
-      return teams;
-    }
+  // Only the organizations that own a team: a filter option that always
+  // returns nothing is a dead end.
+  const organizationOptions = useMemo(() => {
+    const owning = new Set(teams.map((team) => team.organizationId))
+    return organizations
+      .filter((org) => owning.has(org.id))
+      .sort((a, b) => a.name.localeCompare(b.name))
+  }, [organizations, teams])
 
-    const query = search.toLowerCase();
-    return teams.filter(
-      (team) =>
-        team.name.toLowerCase().includes(query) ||
-        (team.defaultRoleName ?? "").toLowerCase().includes(query) ||
-        (team.defaultRoleKey ?? "").toLowerCase().includes(query)
-    );
-  }, [teams, search]);
-
-  const archiveTeam = archiveMutation.mutateAsync;
-
-  const columns = useMemo(() => createColumns(router), [router]);
+  const columns = useMemo(() => createColumns(), [])
 
   const handleRowEdit = (team: TeamRow) => {
-    router.push(
-      buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.EDIT, { id: team.id })
-    );
-  };
+    router.push(buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.EDIT, { id: team.id }))
+  }
 
-  const handleRowDelete = async (team: TeamRow) => {
-    await archiveTeam({
-      id: team.id,
-      params: {
-        reason: "Archived from office dashboard",
-      },
-    });
-  };
+  const rowActions = (team: TeamRow): CmsRowAction[] => [
+    {
+      label: 'Open',
+      onPress: () => router.push(buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL, { id: team.id })),
+    },
+    { label: 'Edit', onPress: () => handleRowEdit(team) },
+    // Archive belongs where it can be confirmed, not one tap from a row.
+  ]
 
-  const getItemName = (team: TeamRow) => team.name;
+  const selectedOrganization = organizationFilter
+    ? organizationNames.get(organizationFilter)
+    : undefined
+  const filterChips: ListToolbarFilterChip[] = organizationFilter
+    ? [
+        {
+          id: 'organization',
+          label: 'Organization',
+          value: selectedOrganization ?? 'Selected',
+          active: true,
+          onPress: () => {},
+          onClear: () => setOrganizationFilter(null),
+        },
+      ]
+    : []
 
   return (
     <OfficePageLayout
       resultNoun="team"
       wrapWithOfficeLayout
-      showBreadcrumb
+      kicker="Content management"
       title="Teams"
-      searchPlaceholder="Search teams..."
+      tip="Every organization starts with a Default Team; filter by organization to see one company’s teams."
+      searchPlaceholder="Search teams or organizations…"
       searchValue={search}
       onSearchChange={setSearch}
-      createButtonLabel="Create Team"
+      createButtonLabel="Create team"
       onCreateClick={() => router.push(ROUTES.OFFICE.CMS.TEAMS.CREATE.path)}
       columns={columns}
       data={filteredTeams}
-      isLoading={isLoading || archiveMutation.isPending}
+      isLoading={isLoading}
+      loadError={
+        error ? { error, retry: () => void refetch(), title: 'Couldn’t load teams' } : undefined
+      }
       emptyMessage="No teams found"
       onRowEdit={handleRowEdit}
-      onRowDelete={handleRowDelete}
-      getItemName={getItemName}
+      rowActions={rowActions}
+      getItemName={(team: TeamRow) => team.name}
       itemType="team"
+      filterContent={
+        <Row gap={8} align="center">
+          <Text style={{ color: colors.text[theme].secondary }}>Organization</Text>
+          <ResponsiveSelect
+            value={organizationFilter ?? 'all'}
+            onValueChange={(value: string) => setOrganizationFilter(value === 'all' ? null : value)}
+            placeholder="All organizations"
+            size="sm"
+            options={[
+              { value: 'all', label: 'All organizations' },
+              ...organizationOptions.map((org) => ({
+                value: org.id,
+                label: org.name,
+              })),
+            ]}
+          />
+        </Row>
+      }
+      activeFilterCount={organizationFilter ? 1 : 0}
+      filterChips={filterChips}
+      onClearFilters={organizationFilter ? () => setOrganizationFilter(null) : undefined}
       // No Quick Actions rail (#1099): it repeated the toolbar's Create and a
       // Refresh, and cost the table ~400px, clipping its last column at 1440.
-      afterContent={
-        archiveMutation.isPending ? (
-          <Stack
-            style={{
-              backgroundColor: colors.bg[theme].subtle,
-              alignSelf: "flex-end",
-              padding: 8,
-              borderRadius: borderRadius.l,
-              shadowColor: colors.text[theme].tertiary,
-              marginRight: 16,
-              marginBottom: 16,
-            }}
-          >
-            <Row gap={12} align="center">
-              <Spinner variant="ios" size="sm" />
-              <Text>Archiving team...</Text>
-            </Row>
-          </Stack>
-        ) : null
-      }
     />
-  );
+  )
 }

@@ -22,7 +22,12 @@ import {
 } from '../shared/setup.ts'
 import { requireAuthSetup } from '../shared/test-context.ts'
 
-const REST_BASE = `${TEST_SUPABASE_URL}/functions/v1/api/v1`
+// `OFFICE_JOBS_TEST_API_BASE` points the suite at the api function run
+// directly (`http://127.0.0.1:<port>/v1`), the same seam as
+// IDV_TEST_API_BASE: the shared edge runtime serves whichever checkout
+// started the stack, not the one under test.
+const REST_BASE = Deno.env.get('OFFICE_JOBS_TEST_API_BASE') ??
+  `${TEST_SUPABASE_URL}/functions/v1/api/v1`
 
 async function listOfficeJobs(query: string, authToken: string) {
   const response = await fetch(`${REST_BASE}/office/jobs?${query}`, {
@@ -110,5 +115,31 @@ Deno.test({
       400,
       'An unrecognised boolean should be rejected rather than read as true',
     )
+  },
+})
+
+Deno.test({
+  name: 'Office jobs REST - each row carries job_category for the Trade column',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    // The CMS Jobs table gained a Trade column (#1204), read from the job
+    // form's Category. The list's select names its columns one by one and
+    // left this out, so the column would have been blank for every job.
+    await requireAuthSetup()
+    const tokens = await loadCachedTokens()
+    assertExists(tokens, 'Cached tokens should exist')
+    const token = tokens.office?.token ?? ''
+    assertExists(token, 'An office-role token is required')
+
+    const listed = await listOfficeJobs('limit=100', token)
+    assertEquals(listed.status, 200, 'Listing should succeed')
+    for (const job of listed.jobs as Array<Record<string, unknown>>) {
+      assertEquals(
+        'job_category' in job,
+        true,
+        `job ${job.id} should carry job_category (null when unset)`,
+      )
+    }
   },
 })
