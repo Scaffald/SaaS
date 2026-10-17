@@ -11,7 +11,17 @@ import {
 import { formatNotificationTime } from '@scf/core/features/notifications/components/NotificationRow'
 import { AlertCircle, RefreshCw } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
-import { Button, H3, H4, ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import {
+  Button,
+  H4,
+  ScreenHeader,
+  ScrollView,
+  Separator,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+} from '@scaffald/ui'
 import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 interface NotificationDelivery {
@@ -50,7 +60,12 @@ const DELIVERY_STATUSES = [
   'blocked',
 ] as const
 
-type DeliveryStatus = (typeof DELIVERY_STATUSES)[number]
+export type DeliveryStatus = (typeof DELIVERY_STATUSES)[number]
+
+/** Narrows a route param to a delivery filter, so a link can open on one. */
+export function isDeliveryStatus(value: unknown): value is DeliveryStatus {
+  return typeof value === 'string' && (DELIVERY_STATUSES as readonly string[]).includes(value)
+}
 
 function formatDate(value: string | null | undefined) {
   if (!value) return '—'
@@ -143,9 +158,14 @@ function SystemAlerts() {
   )
 }
 
-export function OfficeNotificationsConsole() {
+export function OfficeNotificationsConsole({
+  initialStatus = 'queued',
+}: {
+  /** The delivery filter to open on — the Office home links here on `failed`. */
+  initialStatus?: DeliveryStatus
+} = {}) {
   const { theme } = useThemeContext()
-  const [status, setStatus] = useState<DeliveryStatus>('queued')
+  const [status, setStatus] = useState<DeliveryStatus>(initialStatus)
 
   const deliveriesQuery = useNotificationDeliveries({ status, limit: 50 })
   const digestQuery = useNotificationDigestQueue({ limit: 50 })
@@ -155,16 +175,14 @@ export function OfficeNotificationsConsole() {
 
   return (
     <Stack gap={24}>
-      {/* A real heading, at the level the page's other sections use (#839):
-          this was a bare `Text`, so the console had no place in the document
-          outline and the Overview's H2 was followed by nothing until the
-          storage dashboard's. */}
-      <Stack gap={8}>
-        <H3>Notification operations</H3>
-        <Text style={{ color: colors.text[theme].secondary }}>
-          Monitor delivery workers, inspect failures, and triage digest backlogs.
-        </Text>
-      </Stack>
+      {/* Its own screen now (#1201), so it opens on the shared header. It was
+          a section of the Office home, under the overview and above the
+          storage dashboard, several screens deep on a phone. */}
+      <ScreenHeader
+        kicker="Office"
+        title="Notification operations"
+        tip="Monitor delivery workers, inspect failures, and triage digest backlogs."
+      />
 
       <SystemAlerts />
 

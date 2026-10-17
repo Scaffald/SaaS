@@ -57,7 +57,13 @@ export function NotificationsHeaderActions() {
         </Pressable>
       ) : null}
       <Pressable
-        onPress={() => router.push(ROUTES.DASHBOARD.NOTIFICATIONS_SETTINGS.path)}
+        // Settings' Notifications tab owns the preferences (#1212).
+        onPress={() =>
+          router.push({
+            pathname: ROUTES.DASHBOARD.SETTINGS.path,
+            params: { section: 'notifications' },
+          })
+        }
         accessibilityRole="button"
         accessibilityLabel="Notification settings"
         hitSlop={8}

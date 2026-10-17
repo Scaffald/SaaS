@@ -7,10 +7,14 @@
  * @see Issue #91 (Source-of-Hire Tracking)
  * @see Issue #92 (Time-to-Hire Reporting)
  */
-import { OfficeApplicationsScreen } from '@scf/core/features/office/applications/office-applications-screen'
+import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
+import { ATSMetricsScreen } from '@scf/core/features/office/applications/ATSMetricsScreen'
 
+// Inside OfficeLayout, so the ATS sub-tab strip stays up (#1203). This route
+// rendered the full Applications screen on its Metrics view, which has no
+// strip, so the ATS Metrics tab took you out of the section.
 export default function ATSMetricsRoute() {
-  // Opens on the metrics view. This route previously rendered the same screen
-  // on its default kanban view and left the user to find the tab themselves.
-  return <OfficeApplicationsScreen initialView="metrics" />
+  return (
+    <OfficeLayout leftContent={<ATSMetricsScreen />} leftContainerProps={{ minWidth: '100%' }} />
+  )
 }

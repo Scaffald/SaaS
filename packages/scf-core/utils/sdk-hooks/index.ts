@@ -148,6 +148,7 @@ export {
 // stripe-settings-sdk-hooks: skip useUpdateApiKeyMutation (already in api-keys-sdk-hooks above).
 export {
   useStripeSettings,
+  useStripePublicConfig,
   useUpdatePublishableKeyMutation,
   useUpdateTestModeMutation,
   useUpdateWebhookSecretMutation,

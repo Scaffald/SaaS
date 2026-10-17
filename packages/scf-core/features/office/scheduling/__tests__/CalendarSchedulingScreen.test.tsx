@@ -82,8 +82,19 @@ vi.mock('@scaffald/ui', async () => {
     Content: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
   })
 
+  // The figures are a MetricRow under the header since #1208: label, then value.
+  const MetricRow = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+  const MetricBlock = ({ label, value }: { label: string; value: ReactNode }) => (
+    <div>
+      <span>{label}</span>
+      <span>{value}</span>
+    </div>
+  )
+
   return {
     ...actual,
+    MetricRow,
+    MetricBlock,
     Stack,
     Row: Stack,
     Text,
@@ -211,7 +222,7 @@ describe('CalendarSchedulingScreen — real scheduling data', () => {
     expect(screen.getByText(/no interviews proposed yet/i)).toBeInTheDocument()
   })
 
-  it('derives the stat tiles from real slots', () => {
+  it('derives the metric row from real slots', () => {
     slotsQuery.data = [
       SLOT,
       { ...SLOT, id: 'slot_2', status: 'confirmed' },
@@ -223,9 +234,18 @@ describe('CalendarSchedulingScreen — real scheduling data', () => {
 
     render(<CalendarSchedulingScreen />)
 
-    expect(screen.getByText('Upcoming').previousSibling).toHaveTextContent('2')
-    expect(screen.getByText('Confirmed').previousSibling).toHaveTextContent('1')
-    expect(screen.getByText('Completed').previousSibling).toHaveTextContent('2')
+    expect(screen.getByText('Upcoming').nextSibling).toHaveTextContent('2')
+    expect(screen.getByText('Confirmed').nextSibling).toHaveTextContent('1')
+    expect(screen.getByText('Completed').nextSibling).toHaveTextContent('2')
+  })
+
+  it('shows the figures as unknown, not zero, while the slots load (#1208)', () => {
+    slotsQuery.isLoading = true
+
+    render(<CalendarSchedulingScreen />)
+
+    expect(screen.getByText('Upcoming').nextSibling).toHaveTextContent('—')
+    expect(screen.getByText('Completed').nextSibling).toHaveTextContent('—')
   })
 
   it('shows the route a candidate can actually open', () => {

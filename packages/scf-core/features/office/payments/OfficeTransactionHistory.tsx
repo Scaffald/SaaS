@@ -2,11 +2,12 @@ import { usePaymentTransactions, useExportTransactions } from '@scf/core/utils/p
 import type { PaymentTransaction } from '@scaffald/sdk'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { downloadFile } from '@scf/core/utils/platform'
-import { ScreenHeader, ResponsiveSelect, Table, useThemeContext } from '@scaffald/ui'
+import { ListToolbar, ScreenHeader, ResponsiveSelect, Table, useThemeContext } from '@scaffald/ui'
 import { Download, FileText, RefreshCw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { type FilterPillConfig, useToolbarFilters } from '@scf/core/components/toolbarFilters'
 import { Button, Card, ErrorState, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { TransactionReceiptModal } from './TransactionReceiptModal'
 import { colors } from '@scaffald/ui/tokens'
@@ -51,6 +52,29 @@ const getStatusColor = (status: string, theme: 'light' | 'dark') => {
   }
 }
 
+const STATUS_OPTIONS = [
+  { value: '', label: 'All statuses' },
+  { value: 'succeeded', label: 'Succeeded' },
+  { value: 'failed', label: 'Failed' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'refunded', label: 'Refunded' },
+  { value: 'cancelled', label: 'Cancelled' },
+]
+
+const TYPE_OPTIONS = [
+  { value: '', label: 'All types' },
+  { value: 'success_fee_upfront', label: 'Success fee (upfront)' },
+  { value: 'success_fee_final', label: 'Success fee (final)' },
+  { value: 'background_check', label: 'Background check' },
+  { value: 'background_check_shared', label: 'Background check (shared)' },
+  { value: 'id_verification', label: 'ID verification' },
+  { value: 'credit_deposit', label: 'Credit deposit' },
+  { value: 'credit_refund', label: 'Credit refund' },
+]
+
+const optionLabel = (options: { value: string; label: string }[], value: string | undefined) =>
+  options.find((option) => option.value === value)?.label
+
 export function OfficeTransactionHistory() {
   const { gutter, verticalPadding } = useScreenRhythm()
   const { theme } = useThemeContext()
@@ -58,12 +82,53 @@ export function OfficeTransactionHistory() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>()
   const [transactionTypeFilter, setTransactionTypeFilter] = useState<string | undefined>()
   const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null)
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const openFilters = useCallback(() => setFiltersOpen(true), [])
+
+  const filterPills = useMemo<FilterPillConfig[]>(
+    () => [
+      {
+        id: 'status',
+        label: 'Status',
+        value: optionLabel(STATUS_OPTIONS, statusFilter),
+        isActive: Boolean(statusFilter),
+        onPress: openFilters,
+        popoverContent: (
+          <ResponsiveSelect
+            value={statusFilter ?? ''}
+            onValueChange={(value) => setStatusFilter(value || undefined)}
+            placeholder="All statuses"
+            options={STATUS_OPTIONS}
+          />
+        ),
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        value: optionLabel(TYPE_OPTIONS, transactionTypeFilter),
+        isActive: Boolean(transactionTypeFilter),
+        onPress: openFilters,
+        popoverContent: (
+          <ResponsiveSelect
+            value={transactionTypeFilter ?? ''}
+            onValueChange={(value) => setTransactionTypeFilter(value || undefined)}
+            placeholder="All types"
+            options={TYPE_OPTIONS}
+          />
+        ),
+      },
+    ],
+    [statusFilter, transactionTypeFilter, openFilters]
+  )
+  const toolbarFilters = useToolbarFilters(filterPills, openFilters)
 
   const transactionsQuery = usePaymentTransactions({
     organizationId: selectedOrganizationId,
     status: statusFilter,
     transactionType: transactionTypeFilter,
   })
+
+  const hasRows = (transactionsQuery.data?.totalCount ?? 0) > 0
 
   const exportCsvMutation = useExportTransactions({
     format: 'csv',
@@ -165,7 +230,9 @@ export function OfficeTransactionHistory() {
               variant="outline"
               iconStart={Download}
               onPress={handleExportCsv}
-              disabled={exportCsvMutation.isFetching}
+              // Nothing to export from an empty (or not yet loaded) result:
+              // the button used to stay live and download a header row (#1209).
+              disabled={exportCsvMutation.isFetching || !hasRows}
             >
               Export CSV
             </Button>
@@ -182,56 +249,30 @@ export function OfficeTransactionHistory() {
         }
       />
 
-      {/* Filters */}
-      <Card
-        borderWidth={1}
-        borderColor={colors.border[theme].default}
-        style={{ backgroundColor: colors.bg[theme].subtle }}
-        padding="sm"
-      >
-        <Row gap={12} wrap>
-          <Stack gap={4} width={200}>
-            <Text style={{ color: colors.text[theme].secondary }}>Status</Text>
-            <ResponsiveSelect
-              value={statusFilter ?? ''}
-              onValueChange={(value) => setStatusFilter(value || undefined)}
-              placeholder="All Statuses"
-              options={[
-                { value: '', label: 'All Statuses' },
-                { value: 'succeeded', label: 'Succeeded' },
-                { value: 'failed', label: 'Failed' },
-                { value: 'pending', label: 'Pending' },
-                { value: 'refunded', label: 'Refunded' },
-                { value: 'cancelled', label: 'Cancelled' },
-              ]}
-            />
-          </Stack>
-          <Stack gap={4} width={200}>
-            <Text style={{ color: colors.text[theme].secondary }}>Type</Text>
-            <ResponsiveSelect
-              value={transactionTypeFilter ?? ''}
-              onValueChange={(value) => setTransactionTypeFilter(value || undefined)}
-              placeholder="All Types"
-              options={[
-                { value: '', label: 'All Types' },
-                {
-                  value: 'success_fee_upfront',
-                  label: 'Success Fee (Upfront)',
-                },
-                { value: 'success_fee_final', label: 'Success Fee (Final)' },
-                { value: 'background_check', label: 'Background Check' },
-                {
-                  value: 'background_check_shared',
-                  label: 'Background Check (Shared)',
-                },
-                { value: 'id_verification', label: 'ID Verification' },
-                { value: 'credit_deposit', label: 'Credit Deposit' },
-                { value: 'credit_refund', label: 'Credit Refund' },
-              ]}
-            />
-          </Stack>
-        </Row>
-      </Card>
+      {/* The one toolbar row (#1209): the Status and Type selects live in
+          the Filters & sort flyout, the applied ones show as chips, and the
+          count sits at the right. They were two labelled selects in a grey
+          card. No search field: the transactions endpoint takes no search
+          term, and filtering only the loaded page would pass a partial
+          answer off as the whole. */}
+      <ListToolbar
+        filterContent={toolbarFilters.filterContent}
+        activeFilterCount={toolbarFilters.activeFilterCount}
+        chips={toolbarFilters.chips}
+        onClearAll={
+          toolbarFilters.activeFilterCount > 0
+            ? () => {
+                setStatusFilter(undefined)
+                setTransactionTypeFilter(undefined)
+              }
+            : undefined
+        }
+        filtersOpen={filtersOpen}
+        onFiltersOpenChange={setFiltersOpen}
+        // Unknown while loading or after a failed load — not "0 transactions".
+        resultCount={transactionsQuery.data?.totalCount}
+        resultNoun="transaction"
+      />
 
       {transactionsQuery.isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>
@@ -272,12 +313,15 @@ export function OfficeTransactionHistory() {
             pageSize={25}
             emptyMessage="No transactions found."
           />
-          {transactionsQuery.data && transactionsQuery.data.totalCount > 0 && (
-            <Text style={{ color: colors.text[theme].secondary, marginTop: 12 }}>
-              Showing {transactionsQuery.data.items.length} of {transactionsQuery.data.totalCount}{' '}
-              transactions
-            </Text>
-          )}
+          {/* The toolbar carries the total; this only says when the table
+              holds fewer rows than that. */}
+          {transactionsQuery.data &&
+            transactionsQuery.data.items.length < transactionsQuery.data.totalCount && (
+              <Text style={{ color: colors.text[theme].secondary, marginTop: 12 }}>
+                Showing {transactionsQuery.data.items.length} of {transactionsQuery.data.totalCount}{' '}
+                transactions
+              </Text>
+            )}
         </Card>
       )}
 

@@ -1,5 +1,29 @@
 import { describe, expect, it } from 'vitest'
-import { findActiveOfficeSection } from '../office-sections'
+import { findActiveOfficeSection, findActiveSubTab } from '../office-sections'
+
+describe('findActiveSubTab', () => {
+  const tabs = [
+    { href: '/office/ats/checks', owns: ['/office/ats/request', '/office/ats/admin'] },
+    { href: '/office/ats/id-verifications' },
+    { href: '/office/ats/metrics' },
+  ]
+
+  it('lights a tab on its own page', () => {
+    expect(findActiveSubTab('/office/ats/metrics', tabs)?.href).toBe('/office/ats/metrics')
+  })
+
+  // #1202: request and admin are Background Checks' children in the route
+  // tree, but sit beside its path rather than under it.
+  it('lights a tab on a child page that lives at a sibling path', () => {
+    expect(findActiveSubTab('/office/ats/request', tabs)?.href).toBe('/office/ats/checks')
+    expect(findActiveSubTab('/office/ats/admin', tabs)?.href).toBe('/office/ats/checks')
+  })
+
+  it('lights nothing for a page no tab owns', () => {
+    expect(findActiveSubTab('/office/ats/scheduling', tabs)).toBeUndefined()
+    expect(findActiveSubTab('/office/ats/checksum', tabs)).toBeUndefined()
+  })
+})
 
 const sections = [{ path: '/office/cms' }, { path: '/office/ats' }, { path: '/office/applications' }]
 

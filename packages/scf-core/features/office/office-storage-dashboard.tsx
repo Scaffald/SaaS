@@ -9,7 +9,7 @@ import { colors } from '@scaffald/ui/tokens'
 import {
   Button,
   Card,
-  Input,
+  ListToolbar,
   MetricBlock,
   MetricRow,
   type MetricTone,
@@ -244,7 +244,8 @@ export function OfficeStorageDashboard() {
           one of the two screens the route sweep found with no heading in the
           accessibility tree at all (#860). */}
       <ScreenHeader
-        title="Storage Analytics"
+        kicker="Administration"
+        title="Storage analytics"
         tip="Monitor how workers consume storage across work logs, portfolios, and certifications."
         actions={
           <Button
@@ -309,47 +310,38 @@ export function OfficeStorageDashboard() {
             </Stack>
           </Card>
 
-          {/* The table's own surface is bg.default; a subtle card around it drew a
-              white table inside a grey frame (Scaffald/SaaS#1102). One surface. */}
-          <Card
-            borderWidth={1}
-            borderColor={colors.border[theme].default}
-            style={{ backgroundColor: colors.bg[theme].default }}
-            padding="md"
-          >
-            <Stack gap={12}>
-              <Row justify="space-between" align="center">
-                <Text>Top users by storage consumption</Text>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onPress={() => analyticsQuery.refetch()}
-                  disabled={analyticsQuery.isRefetching}
-                >
-                  Refresh table
-                </Button>
-              </Row>
-              <Input
-                placeholder="Search by name, username, or user ID…"
-                value={search}
-                onChangeText={setSearch}
-              />
-              <Table
-                columns={tableColumns}
-                data={filteredRows}
-                loading={analyticsQuery.isRefetching}
-                renderLoading={() => (
-                  <Stack align="center" justify="center" paddingVertical={24} gap={8}>
-                    <Spinner variant="ios" size="lg" />
-                    <Text style={{ color: colors.text[theme].secondary }}>Loading…</Text>
-                  </Stack>
-                )}
-                pageSize={25}
-                emptyMessage="No storage usage records found"
-                getRowId={(row) => String((row as StorageTableRow).userId)}
-              />
-            </Stack>
-          </Card>
+          {/* The list opens the way every office list does (#1209): the one
+              toolbar row (search with its icon, then the count), ruled
+              underneath. It had an icon-less Input inside a card and a
+              second "Refresh table" button that refetched the same query as
+              the header's Refresh. */}
+          <Stack gap={12}>
+            <Text style={{ color: colors.text[theme].primary, fontWeight: '600' }}>
+              Top users by storage consumption
+            </Text>
+            <ListToolbar
+              searchValue={search}
+              onSearchChange={setSearch}
+              searchPlaceholder="Search by name, username, or user ID…"
+              // A failed load is not "0 users" (#1021).
+              resultCount={analyticsQuery.isError ? undefined : filteredRows.length}
+              resultNoun="user"
+            />
+            <Table
+              columns={tableColumns}
+              data={filteredRows}
+              loading={analyticsQuery.isRefetching}
+              renderLoading={() => (
+                <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+                  <Spinner variant="ios" size="lg" />
+                  <Text style={{ color: colors.text[theme].secondary }}>Loading…</Text>
+                </Stack>
+              )}
+              pageSize={25}
+              emptyMessage="No storage usage records found"
+              getRowId={(row) => String((row as StorageTableRow).userId)}
+            />
+          </Stack>
         </>
       )}
     </Stack>

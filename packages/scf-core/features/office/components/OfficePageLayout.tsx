@@ -10,6 +10,7 @@ import {
   Text,
   type BreadcrumbItemData,
   type ListToolbarFilterChip,
+  type ListToolbarProps,
 } from '@scaffald/ui'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
@@ -33,6 +34,13 @@ interface OfficePageLayoutProps<TData> {
   filterContent?: ReactNode
   /** Drives the "· n" on the Filters & sort button. */
   activeFilterCount?: number
+  /** The list's own partition (Active / Expired …) as folder tabs on the toolbar. */
+  toolbarTabs?: ListToolbarProps['tabs']
+  /** Controlled flyout state, so a chip can open the flyout its filter lives in. */
+  filtersOpen?: boolean
+  onFiltersOpenChange?: (open: boolean) => void
+  activeToolbarTab?: string
+  onToolbarTabChange?: (key: string) => void
   /** The active filters, shown as chips under the search row. */
   filterChips?: ListToolbarFilterChip[]
   /** Clears every filter. Renders "Clear all" when present. */
@@ -139,6 +147,11 @@ export function OfficePageLayout<TData>({
   children,
   filterContent,
   activeFilterCount,
+  toolbarTabs,
+  filtersOpen,
+  onFiltersOpenChange,
+  activeToolbarTab,
+  onToolbarTabChange,
   filterChips,
   onClearFilters,
   resultNoun = 'result',
@@ -200,11 +213,16 @@ export function OfficePageLayout<TData>({
           two of its own idioms here — a bare `Input` and a `TableActionBar`
           with its own search, add button and "Show" control. */}
       <ListToolbar
+        tabs={toolbarTabs}
+        activeTab={activeToolbarTab}
+        onTabChange={onToolbarTabChange}
         searchValue={searchValue}
         onSearchChange={onSearchChange}
         searchPlaceholder={searchPlaceholder}
         filterContent={filterContent}
         activeFilterCount={activeFilterCount}
+        filtersOpen={filtersOpen}
+        onFiltersOpenChange={onFiltersOpenChange}
         chips={filterChips}
         onClearAll={onClearFilters}
         // The count is unknown while loading — "0 users" over a spinner

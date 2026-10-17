@@ -18,7 +18,6 @@ import { colors } from '@scaffald/ui/tokens'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { ScrollView } from 'react-native'
 import { ResponsiveSelect, ScreenHeader } from '@scaffald/ui'
 import { Button, Input, Label, Spinner, Text, TextArea, Row, Stack } from '@scaffald/ui'
 
@@ -259,235 +258,232 @@ export function OrganizationBackgroundCheckRequestForm() {
     )
   }
 
+  // No ScrollView of its own: OfficeLayout scrolls (#1202), and a nested one
+  // with `flex: 1` collapses inside it on native. The layout also supplies the
+  // gutter; a second 16px inset narrowed every field at 390 (#1126).
   return (
-    <ScrollView style={{ flex: 1 }}>
-      {/* The layout supplies the gutter; a second 16px inset narrowed every
-          field at 390 (#1126). The title was secondary body text. */}
-      <Stack flex={1} gap={16}>
-        <ScreenHeader
-          kicker="Screening"
-          title="Request a background check"
-          tip="Invite a worker to complete the required screening package on behalf of your organization."
-        />
+    <Stack flex={1} gap={16}>
+      <ScreenHeader
+        kicker="Screening"
+        title="Request a background check"
+        tip="Invite a worker to complete the required screening package on behalf of your organization."
+      />
 
-        <Stack gap={12}>
-          <Stack gap={8}>
-            <ResponsiveSelect
-              value={organizationId ?? ''}
-              onValueChange={(value) => {
-                setOrganizationId(value)
-                setSelectedJobId(null)
-              }}
-              placeholder={
-                organizationId
-                  ? (organizations.find((org) => org.id === organizationId)?.name ??
-                    'Select organization')
-                  : 'Select organization'
-              }
-              label="Organization"
-              options={organizations.map((org) => ({
-                value: org.id as string,
-                label: (org.name as string) ?? 'Untitled organization',
-              }))}
-            />
-          </Stack>
-
-          <Stack gap={8}>
-            <ResponsiveSelect
-              value={selectedPackageId ?? ''}
-              onValueChange={(value) => setSelectedPackageId(value)}
-              placeholder={
-                selectedPackage
-                  ? `${selectedPackage.display_name} (${formatCurrency(
-                      selectedPackage.retail_cost_cents
-                    )})`
-                  : 'Select package'
-              }
-              label="Background check package"
-              options={packages.map((pkg) => ({
-                value: pkg.id,
-                label: `${pkg.display_name} · ${formatCurrency(pkg.retail_cost_cents)}`,
-              }))}
-            />
-            {selectedPackage?.description ? (
-              <Text style={{ color: colors.text[theme].secondary }}>
-                {selectedPackage.description}
-              </Text>
-            ) : null}
-          </Stack>
-
-          {/* One "Worker" label for the pair: the search narrows the select
-              below it. The select repeated the label, so the form read
-              Worker / Worker (#1126). */}
-          <Stack gap={8}>
-            <Label htmlFor="worker-search">Worker</Label>
-            <Input
-              id="worker-search"
-              placeholder="Search workers by name or email…"
-              value={workerSearch}
-              onChangeText={setWorkerSearch}
-              autoCapitalize="none"
-            />
-            <ResponsiveSelect
-              value={selectedWorkerId ?? ''}
-              onValueChange={(value) => setSelectedWorkerId(value)}
-              placeholder={
-                selectedWorker
-                  ? selectedWorker.display_name
-                  : workersQuery.isLoading
-                    ? 'Loading workers…'
-                    : 'Select worker'
-              }
-              options={
-                workers.length === 0
-                  ? [
-                      {
-                        value: 'placeholder',
-                        label: 'No workers found',
-                        disabled: true,
-                      },
-                    ]
-                  : workers.map((worker) => {
-                      const displayName = worker.display_name || worker.id.substring(0, 8)
-                      return {
-                        value: worker.id as string,
-                        label: displayName,
-                      }
-                    })
-              }
-            />
-          </Stack>
-
-          <Stack gap={8}>
-            <ResponsiveSelect
-              value={selectedJobId ?? ''}
-              onValueChange={(value) => setSelectedJobId(value || null)}
-              placeholder={
-                selectedJob
-                  ? (selectedJob.title ?? `Job ${selectedJob.id.substring(0, 8)}`)
-                  : 'Select job'
-              }
-              label="Related job (optional)"
-              options={[
-                { value: '', label: 'Not tied to a job' },
-                ...jobs.map((job) => ({
-                  value: job.id as string,
-                  label: (job.title as string) ?? 'Untitled job',
-                })),
-              ]}
-            />
-          </Stack>
-
-          <Stack gap={8}>
-            <Label htmlFor="additional-notes">Internal notes (optional)</Label>
-            <TextArea
-              id="additional-notes"
-              placeholder="Share any context for your compliance team. These notes stay internal."
-              value={notes}
-              onChangeText={setNotes}
-              rows={4}
-            />
-          </Stack>
-
-          <Stack
-            gap={8}
-            padding="sm"
-            style={{ backgroundColor: colors.bg[theme].muted }}
-            borderRadius={16}
-          >
-            <Row gap={8} align="center">
-              <CircleAlert size={18} color={colors.text[theme].secondary} />
-              <Text color={colors.text[theme].secondary}>Cost summary</Text>
-            </Row>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              Package cost:{' '}
-              <Text style={{ color: colors.text[theme].secondary }}>
-                {formatCurrency(costCents)}
-              </Text>
-            </Text>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              Charges are collected immediately via Stripe. Screenings are submitted after payment
-              succeeds.
-            </Text>
-          </Stack>
-
-          {requestError && (
-            <Stack
-              style={{
-                backgroundColor: theme === 'light' ? colors.error[50] : colors.error[900],
-              }}
-              padding="sm"
-              borderRadius={16}
-            >
-              <Text
-                style={{
-                  color: theme === 'light' ? colors.error[700] : colors.error[300],
-                }}
-              >
-                {requestError}
-              </Text>
-            </Stack>
-          )}
-
-          {paymentSession && (
-            <Stack gap={8}>
-              <Text style={{ color: colors.text[theme].secondary }}>Complete payment</Text>
-              <PaymentIntentForm
-                clientSecret={paymentSession.clientSecret}
-                amountCents={paymentSession.amountCents}
-                description={`Background check for ${
-                  selectedWorker?.display_name ?? 'selected worker'
-                }`}
-                submitLabel={confirmPaymentMutation.isPending ? 'Processing…' : 'Pay & send invite'}
-                disabled={confirmPaymentMutation.isPending}
-                onSuccess={handlePaymentSuccess}
-              />
-            </Stack>
-          )}
+      <Stack gap={12}>
+        <Stack gap={8}>
+          <ResponsiveSelect
+            value={organizationId ?? ''}
+            onValueChange={(value) => {
+              setOrganizationId(value)
+              setSelectedJobId(null)
+            }}
+            placeholder={
+              organizationId
+                ? (organizations.find((org) => org.id === organizationId)?.name ??
+                  'Select organization')
+                : 'Select organization'
+            }
+            label="Organization"
+            options={organizations.map((org) => ({
+              value: org.id as string,
+              label: (org.name as string) ?? 'Untitled organization',
+            }))}
+          />
         </Stack>
 
-        <Row gap={12}>
-          <Stack flex={1}>
-            <Button
-              size="md"
-              variant="outline"
-              disabled={requestPaymentMutation.isPending || confirmPaymentMutation.isPending}
-              onPress={() => router.back()}
-            >
-              Cancel
-            </Button>
-          </Stack>
-          {!paymentSession && (
-            <Stack flex={1}>
-              <Button
-                size="md"
-                color="primary"
-                onPress={handleSubmit}
-                disabled={requestPaymentMutation.isPending}
-              >
-                {requestPaymentMutation.isPending ? 'Preparing payment…' : 'Continue to payment'}
-              </Button>
-            </Stack>
-          )}
-        </Row>
-        {paymentSession && (
-          <Stack marginTop={8}>
-            <Button
-              size="sm"
-              variant="outline"
-              onPress={() => {
-                if (!confirmPaymentMutation.isPending) {
-                  setPaymentSession(null)
-                  setRequestError(null)
-                }
+        <Stack gap={8}>
+          <ResponsiveSelect
+            value={selectedPackageId ?? ''}
+            onValueChange={(value) => setSelectedPackageId(value)}
+            placeholder={
+              selectedPackage
+                ? `${selectedPackage.display_name} (${formatCurrency(
+                    selectedPackage.retail_cost_cents
+                  )})`
+                : 'Select package'
+            }
+            label="Background check package"
+            options={packages.map((pkg) => ({
+              value: pkg.id,
+              label: `${pkg.display_name} · ${formatCurrency(pkg.retail_cost_cents)}`,
+            }))}
+          />
+          {selectedPackage?.description ? (
+            <Text style={{ color: colors.text[theme].secondary }}>
+              {selectedPackage.description}
+            </Text>
+          ) : null}
+        </Stack>
+
+        {/* One "Worker" label for the pair: the search narrows the select
+            below it. The select repeated the label, so the form read
+            Worker / Worker (#1126). */}
+        <Stack gap={8}>
+          <Label htmlFor="worker-search">Worker</Label>
+          <Input
+            id="worker-search"
+            placeholder="Search workers by name or email…"
+            value={workerSearch}
+            onChangeText={setWorkerSearch}
+            autoCapitalize="none"
+          />
+          <ResponsiveSelect
+            value={selectedWorkerId ?? ''}
+            onValueChange={(value) => setSelectedWorkerId(value)}
+            placeholder={
+              selectedWorker
+                ? selectedWorker.display_name
+                : workersQuery.isLoading
+                  ? 'Loading workers…'
+                  : 'Select worker'
+            }
+            options={
+              workers.length === 0
+                ? [
+                    {
+                      value: 'placeholder',
+                      label: 'No workers found',
+                      disabled: true,
+                    },
+                  ]
+                : workers.map((worker) => {
+                    const displayName = worker.display_name || worker.id.substring(0, 8)
+                    return {
+                      value: worker.id as string,
+                      label: displayName,
+                    }
+                  })
+            }
+          />
+        </Stack>
+
+        <Stack gap={8}>
+          <ResponsiveSelect
+            value={selectedJobId ?? ''}
+            onValueChange={(value) => setSelectedJobId(value || null)}
+            placeholder={
+              selectedJob
+                ? (selectedJob.title ?? `Job ${selectedJob.id.substring(0, 8)}`)
+                : 'Select job'
+            }
+            label="Related job (optional)"
+            options={[
+              { value: '', label: 'Not tied to a job' },
+              ...jobs.map((job) => ({
+                value: job.id as string,
+                label: (job.title as string) ?? 'Untitled job',
+              })),
+            ]}
+          />
+        </Stack>
+
+        <Stack gap={8}>
+          <Label htmlFor="additional-notes">Internal notes (optional)</Label>
+          <TextArea
+            id="additional-notes"
+            placeholder="Share any context for your compliance team. These notes stay internal."
+            value={notes}
+            onChangeText={setNotes}
+            rows={4}
+          />
+        </Stack>
+
+        <Stack
+          gap={8}
+          padding="sm"
+          style={{ backgroundColor: colors.bg[theme].muted }}
+          borderRadius={16}
+        >
+          <Row gap={8} align="center">
+            <CircleAlert size={18} color={colors.text[theme].secondary} />
+            <Text color={colors.text[theme].secondary}>Cost summary</Text>
+          </Row>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Package cost:{' '}
+            <Text style={{ color: colors.text[theme].secondary }}>{formatCurrency(costCents)}</Text>
+          </Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Charges are collected immediately via Stripe. Screenings are submitted after payment
+            succeeds.
+          </Text>
+        </Stack>
+
+        {requestError && (
+          <Stack
+            style={{
+              backgroundColor: theme === 'light' ? colors.error[50] : colors.error[900],
+            }}
+            padding="sm"
+            borderRadius={16}
+          >
+            <Text
+              style={{
+                color: theme === 'light' ? colors.error[700] : colors.error[300],
               }}
-              disabled={confirmPaymentMutation.isPending}
             >
-              Reset payment form
-            </Button>
+              {requestError}
+            </Text>
+          </Stack>
+        )}
+
+        {paymentSession && (
+          <Stack gap={8}>
+            <Text style={{ color: colors.text[theme].secondary }}>Complete payment</Text>
+            <PaymentIntentForm
+              clientSecret={paymentSession.clientSecret}
+              amountCents={paymentSession.amountCents}
+              description={`Background check for ${
+                selectedWorker?.display_name ?? 'selected worker'
+              }`}
+              submitLabel={confirmPaymentMutation.isPending ? 'Processing…' : 'Pay & send invite'}
+              disabled={confirmPaymentMutation.isPending}
+              onSuccess={handlePaymentSuccess}
+            />
           </Stack>
         )}
       </Stack>
-    </ScrollView>
+
+      <Row gap={12}>
+        <Stack flex={1}>
+          <Button
+            size="md"
+            variant="outline"
+            disabled={requestPaymentMutation.isPending || confirmPaymentMutation.isPending}
+            onPress={() => router.back()}
+          >
+            Cancel
+          </Button>
+        </Stack>
+        {!paymentSession && (
+          <Stack flex={1}>
+            <Button
+              size="md"
+              color="primary"
+              onPress={handleSubmit}
+              disabled={requestPaymentMutation.isPending}
+            >
+              {requestPaymentMutation.isPending ? 'Preparing payment…' : 'Continue to payment'}
+            </Button>
+          </Stack>
+        )}
+      </Row>
+      {paymentSession && (
+        <Stack marginTop={8}>
+          <Button
+            size="sm"
+            variant="outline"
+            onPress={() => {
+              if (!confirmPaymentMutation.isPending) {
+                setPaymentSession(null)
+                setRequestError(null)
+              }
+            }}
+            disabled={confirmPaymentMutation.isPending}
+          >
+            Reset payment form
+          </Button>
+        </Stack>
+      )}
+    </Stack>
   )
 }

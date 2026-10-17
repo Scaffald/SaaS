@@ -14,7 +14,7 @@ import { Breadcrumb, type BreadcrumbItemData, Tabs } from '@scaffald/ui'
 const GOLDEN_RATIO_TEMPLATE = 'minmax(300px, 1.618fr) minmax(300px, 1fr)'
 import { useScreenRhythm } from '../../constants/layout'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
-import { findActiveOfficeSection, isPathActive } from './office-sections'
+import { findActiveOfficeSection, findActiveSubTab } from './office-sections'
 
 type OfficeLayoutProps = {
   rightContent?: ReactNode
@@ -110,6 +110,8 @@ export const OfficeLayout = ({
     key: string
     label: string
     href: string
+    /** The tab's child pages, which light it too (#1202). */
+    owns: string[]
   }
 
   const activeTopRoute = useMemo(
@@ -150,6 +152,9 @@ export const OfficeLayout = ({
         key: route.path,
         label: t(route.titleKey),
         href: route.path,
+        owns: getChildRoutes(route.path)
+          .map((child) => child.path)
+          .filter((path) => !path.includes('/:')),
       }))
   }, [activeTopRoute, t])
 
@@ -157,7 +162,7 @@ export const OfficeLayout = ({
     if (secondaryTabItems.length === 0) {
       return ''
     }
-    const activeItem = secondaryTabItems.find((item) => isPathActive(currentPath, item.href))
+    const activeItem = findActiveSubTab(currentPath, secondaryTabItems)
     return activeItem?.key ?? secondaryTabItems[0]?.key ?? ''
   }, [currentPath, secondaryTabItems])
 

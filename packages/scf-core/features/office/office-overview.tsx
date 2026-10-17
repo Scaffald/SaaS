@@ -5,29 +5,37 @@ import { useViolationReports } from '@scf/core/utils/legal-agreements-sdk-hooks'
 import { useNotificationDeliveries } from '@scf/core/utils/notifications-admin-sdk-hooks'
 import { useAdminChecks } from '@scf/core/utils/background-checks-sdk-hooks'
 import { useIdVerificationList } from '@scf/core/utils/id-verification-sdk-hooks'
+import { useOfficeListUsers } from '@scf/core/utils/office-users-sdk-hooks'
+import { useOfficeOrganizationsList } from '@scf/core/utils/office-organizations-sdk-hooks'
+import { usePublishedJobs } from '@scf/core/utils/jobs-sdk-hooks'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import {
+  Card,
+  Grid,
   H3,
   MetricBlock,
   MetricRow,
   ScreenHeader,
-  Separator,
   Stack,
   Row,
   Text,
+  TextLink,
   useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { colors, fontSize } from '@scaffald/ui/tokens'
 import { ChevronRight } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { useMemo } from 'react'
+import { type ReactNode, useMemo } from 'react'
 import { Pressable } from 'react-native'
 import {
   type BoundedCount,
   boundedCount,
+  countOpenReports,
   countPendingIdVerifications,
   formatBoundedCount,
+  sumBoundedCounts,
 } from './office-overview-counts'
+import { openReportRows, type PreviewRow, screeningPreviewRows } from './office-overview-preview'
 
 /** Rows fetched to count failed deliveries. One over the cap — see `boundedCount`. */
 const FAILED_DELIVERY_CAP = 50
@@ -35,22 +43,23 @@ const FAILED_DELIVERY_CAP = 50
 const CHECKS_CAP = 200
 /** The ID verification list's own maximum page. */
 const ID_VERIFICATIONS_CAP = 200
+/** Items each preview card shows before "View all". */
+const PREVIEW_ROWS = 4
 
 /**
- * What the Office opens on (#839).
+ * What the Office opens on: the platform at a glance, then what is waiting on
+ * an administrator (#839, #1170, #1201).
  *
- * `/office` opened straight into the notification delivery queue — an
- * operations table — with the storage dashboard and a list of developer links
- * below it. Nothing on the page said how much was waiting for an
- * administrator, and the queues that do need a person were each somewhere
- * else entirely.
+ * It used to stack the whole Notification operations console and the Storage
+ * dashboard (also /office/storage) under three queue figures, several screens
+ * of consoles at 390. The prototype's admin Overview is a header, a band of
+ * figures, and two cards — the screening queue and open reports — each with
+ * "View all". The consoles are a list of links underneath; notifications has
+ * its own route now.
  *
- * The counts first, then what needs a decision, then the consoles.
- *
- * Screening is part of that (#1170). The page read only community
- * verification, violation reports and failed deliveries, so with six
- * background checks open and every one of them over SLA on /office/ats/admin,
- * it said "Nothing is waiting on an administrator right now."
+ * Every figure is a real count. Totals come from endpoints that return an
+ * exact count; queues read off a capped list say so ("200+"); anything not
+ * loaded yet is a dash, never a zero.
  */
 export function OfficeOverview() {
   const { theme } = useThemeContext()
@@ -61,7 +70,15 @@ export function OfficeOverview() {
   // is turned away at /office/ats/admin, so it is not their queue to be shown.
   const isCheckAdmin = hasRole('background_check_admin')
 
-  const verificationQuery = useVerificationQueue({ limit: 1 })
+  // Platform totals. Each endpoint returns an exact `count`, not a page length.
+  // Users is every account — the list Content Management → Workers shows, and
+  // the same query, so the two agree. Live postings is the public board: open
+  // and not confidential.
+  const usersQuery = useOfficeListUsers()
+  const organizationsQuery = useOfficeOrganizationsList({ limit: 1, offset: 0 })
+  const postingsQuery = usePublishedJobs({ limit: 1 })
+
+  const verificationQuery = useVerificationQueue({ limit: PREVIEW_ROWS })
   const violationsQuery = useViolationReports(undefined, { staleTime: 30_000 })
   const deliveriesQuery = useNotificationDeliveries({
     status: 'failed',
@@ -80,15 +97,14 @@ export function OfficeOverview() {
     status: 'active',
   })
 
-  const pendingVerifications = verificationQuery.data?.total ?? null
+  const workers = usersQuery.data ? usersQuery.data.total : null
+  const employers = organizationsQuery.data ? organizationsQuery.data.total : null
+  const livePostings = postingsQuery.data ? postingsQuery.data.total : null
 
-  const openViolations = useMemo(() => {
-    const reports = violationsQuery.data?.items
-    if (!Array.isArray(reports)) return null
-    // Anything not yet resolved or dismissed is still somebody's decision.
-    return reports.filter((report) => report.status !== 'resolved' && report.status !== 'dismissed')
-      .length
-  }, [violationsQuery.data])
+  const pendingVerifications: BoundedCount | null =
+    verificationQuery.data == null ? null : { value: verificationQuery.data.total, overflow: false }
+
+  const openReports = useMemo(() => countOpenReports(violationsQuery.data), [violationsQuery.data])
 
   // There is no count endpoint for deliveries, so this is honest about the
   // list it was read from: "50+" rather than a number that stops at 50.
@@ -115,162 +131,270 @@ export function OfficeOverview() {
     return { value: countPendingIdVerifications(data.items), overflow: data.hasMore }
   }, [idVerificationsQuery.data])
 
-  const queues: Array<{
-    key: string
-    label: string
-    hint: string
-    count: BoundedCount | null
-    route: string
-  }> = [
-    ...(isCheckAdmin
-      ? [
-          {
-            key: 'background-checks',
-            label: 'Background checks',
-            hint:
-              checks && checks.overSla.value > 0
-                ? `Open cases. ${formatBoundedCount(checks.overSla)} over SLA and need chasing.`
-                : 'Open cases waiting on a processor.',
-            count: checks?.open ?? null,
-            route: ROUTES.OFFICE.ATS.CHECKS.ADMIN.path,
-          },
-        ]
-      : []),
-    {
-      key: 'id-verifications',
-      label: 'ID verifications',
-      hint: 'Paid identity checks with no result yet.',
-      count: pendingIds,
-      route: ROUTES.OFFICE.ATS.ID_VERIFICATIONS.path,
-    },
-    {
-      key: 'verification',
-      label: 'Community verification',
-      hint: 'People waiting to be let into a trade community.',
-      count: pendingVerifications == null ? null : { value: pendingVerifications, overflow: false },
-      route: ROUTES.OFFICE.COMMUNITIES.VERIFICATION.path,
-    },
-    {
-      key: 'violations',
-      label: 'Violation reports',
-      hint: 'Reports raised against a posting or a person.',
-      count: openViolations == null ? null : { value: openViolations, overflow: false },
-      route: ROUTES.OFFICE.VIOLATIONS.path,
-    },
-    {
-      key: 'deliveries',
-      label: 'Failed notifications',
-      hint: 'Messages the platform could not deliver.',
-      count: failedDeliveries,
-      route: ROUTES.OFFICE.path,
-    },
-  ]
+  // The screening queue is everything waiting on a screening decision: open
+  // background checks (for whoever works them), ID checks with no result, and
+  // trade licences waiting on community verification.
+  const screeningQueue = useMemo(
+    () =>
+      isLoadingRoles
+        ? null
+        : sumBoundedCounts([
+            ...(isCheckAdmin ? [checks?.open ?? null] : []),
+            pendingIds,
+            pendingVerifications,
+          ]),
+    [isLoadingRoles, isCheckAdmin, checks, pendingIds, pendingVerifications]
+  )
+  const overSla = checks && checks.overSla.value > 0 ? checks.overSla : null
 
-  const waiting = queues.filter((queue) => (queue.count?.value ?? 0) > 0)
-  // "Nothing is waiting" is a claim about every queue. While any count is still
-  // unknown — loading, failed, or roles not resolved — it cannot be made.
-  const everyQueueKnown = !isLoadingRoles && queues.every((queue) => queue.count != null)
-  const anyQueueFailed = [
-    verificationQuery,
-    violationsQuery,
-    deliveriesQuery,
-    idVerificationsQuery,
-    ...(isCheckAdmin ? [checksQuery] : []),
-  ].some((query) => query.isError)
+  const screeningRows = useMemo(
+    () =>
+      screeningPreviewRows(
+        isCheckAdmin ? (checksQuery.data ?? []) : [],
+        verificationQuery.data?.data ?? [],
+        PREVIEW_ROWS
+      ),
+    [isCheckAdmin, checksQuery.data, verificationQuery.data]
+  )
+  const reportRows = useMemo(
+    () => openReportRows(violationsQuery.data?.items ?? [], PREVIEW_ROWS),
+    [violationsQuery.data]
+  )
+
+  const screeningLoading =
+    isLoadingRoles || verificationQuery.isLoading || (isCheckAdmin && checksQuery.isLoading)
+  const screeningFailed = verificationQuery.isError || (isCheckAdmin && checksQuery.isError)
+
+  // A check admin's queue starts at the review queue; anyone else's at the
+  // community verification queue, the one they can act on.
+  const screeningHref = isCheckAdmin
+    ? ROUTES.OFFICE.ATS.CHECKS.ADMIN.path
+    : ROUTES.OFFICE.COMMUNITIES.VERIFICATION.path
 
   return (
     <Stack gap={24}>
       <ScreenHeader
         kicker="Administration"
-        title="Office"
-        tip="What is waiting on someone here, and the consoles behind it."
+        title="Overview"
+        tip="The platform at a glance, and what is waiting on an administrator."
       />
 
-      {/*
-        Counts the page can already answer. Rendered as a band rather than
-        tiles so it reads the same as the employer's own numbers.
-      */}
       <MetricRow bordered minColumnWidth={150}>
-        {isCheckAdmin ? (
-          <MetricBlock
-            label="Background checks open"
-            value={formatBoundedCount(checks?.open ?? null)}
-            delta={
-              checks && checks.overSla.value > 0
-                ? `${formatBoundedCount(checks.overSla)} over SLA`
-                : undefined
-            }
-            tone={checks && checks.overSla.value > 0 ? 'attention' : 'neutral'}
-            emphasis={(checks?.overSla.value ?? 0) > 0}
-          />
-        ) : null}
+        <MetricBlock label="Workers" value={formatCount(workers)} />
+        <MetricBlock label="Employers" value={formatCount(employers)} />
+        <MetricBlock label="Live postings" value={formatCount(livePostings)} />
         <MetricBlock
-          label="ID verifications pending"
-          value={formatBoundedCount(pendingIds)}
-          emphasis={(pendingIds?.value ?? 0) > 0}
+          label="Screening queue"
+          value={formatBoundedCount(screeningQueue)}
+          delta={overSla ? `${formatBoundedCount(overSla)} over SLA` : undefined}
+          tone={overSla ? 'attention' : 'neutral'}
+          emphasis={(screeningQueue?.value ?? 0) > 0}
         />
         <MetricBlock
-          label="Awaiting verification"
-          value={formatCount(pendingVerifications)}
-          emphasis={(pendingVerifications ?? 0) > 0}
-        />
-        <MetricBlock
-          label="Open violation reports"
-          value={formatCount(openViolations)}
+          label="Open reports"
+          value={formatBoundedCount(openReports)}
           tone="attention"
-          emphasis={(openViolations ?? 0) > 0}
-        />
-        <MetricBlock
-          label="Failed notifications"
-          value={formatBoundedCount(failedDeliveries)}
-          tone="attention"
-          emphasis={(failedDeliveries?.value ?? 0) > 0}
+          emphasis={(openReports?.value ?? 0) > 0}
         />
       </MetricRow>
 
-      <Separator />
+      <Grid columns={{ base: 1, lg: 2 }} gap={16} rowGap={16}>
+        <PreviewCard
+          title="Screening queue"
+          viewAllLabel="View all screening"
+          onViewAll={() => router.push(screeningHref)}
+          rows={screeningRows}
+          loading={screeningLoading}
+          failed={screeningFailed}
+          empty={
+            (pendingIds?.value ?? 0) > 0
+              ? 'Nothing else is waiting.'
+              : 'No one is waiting on screening.'
+          }
+          footer={
+            (pendingIds?.value ?? 0) > 0 ? (
+              <TextLink onPress={() => router.push(ROUTES.OFFICE.ATS.ID_VERIFICATIONS.path)}>
+                {`${formatBoundedCount(pendingIds)} ID ${
+                  pendingIds?.value === 1 && !pendingIds.overflow ? 'check' : 'checks'
+                } with no result yet`}
+              </TextLink>
+            ) : null
+          }
+          onRowPress={(row) => router.push(row.route)}
+        />
+        <PreviewCard
+          title="Open reports"
+          viewAllLabel="View all reports"
+          onViewAll={() => router.push(ROUTES.OFFICE.VIOLATIONS.path)}
+          rows={reportRows}
+          loading={violationsQuery.isLoading}
+          failed={violationsQuery.isError}
+          empty="No reports are open."
+          onRowPress={(row) => router.push(row.route)}
+        />
+      </Grid>
 
-      <Stack gap={12}>
-        <H3>Needs a decision</H3>
-        {waiting.length > 0 ? (
+      <Stack gap={4}>
+        <H3>Consoles</H3>
+        <ConsoleLink
+          t={t}
+          label="Notification operations"
+          hint={
+            (failedDeliveries?.value ?? 0) > 0
+              ? `${formatBoundedCount(failedDeliveries)} failed deliveries, plus system alerts and the digest backlog.`
+              : 'Delivery queue, system alerts and the digest backlog.'
+          }
+          attention={(failedDeliveries?.value ?? 0) > 0}
+          onPress={() =>
+            router.push(
+              (failedDeliveries?.value ?? 0) > 0
+                ? { pathname: ROUTES.OFFICE.NOTIFICATIONS.path, params: { status: 'failed' } }
+                : ROUTES.OFFICE.NOTIFICATIONS.path
+            )
+          }
+        />
+        <ConsoleLink
+          t={t}
+          label="Storage analytics"
+          hint="How workers use storage across work logs, portfolios and certifications."
+          onPress={() => router.push(ROUTES.OFFICE.STORAGE.path)}
+        />
+      </Stack>
+    </Stack>
+  )
+}
+
+/** One console in the list under the cards. */
+function ConsoleLink({
+  label,
+  hint,
+  attention = false,
+  onPress,
+  t,
+}: {
+  t: 'light' | 'dark'
+  label: string
+  hint: string
+  attention?: boolean
+  onPress: () => void
+}) {
+  return (
+    <Pressable onPress={onPress} accessibilityRole="link" accessibilityLabel={label}>
+      <Row
+        gap={12}
+        align="center"
+        paddingVertical={12}
+        style={{ borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
+      >
+        <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
+          <Text style={{ color: colors.text[t].primary }}>{label}</Text>
+          <Text style={{ color: attention ? colors.text[t].attention : colors.text[t].tertiary }}>
+            {hint}
+          </Text>
+        </Stack>
+        <ChevronRight size={16} color={colors.icon[t].muted} />
+      </Row>
+    </Pressable>
+  )
+}
+
+/**
+ * One of the two cards under the figures: a few items from a queue, and a way
+ * to the whole of it. The prototype puts Clear / Flag on each screening row;
+ * those decisions need the case in front of you, so a row opens its queue.
+ */
+function PreviewCard({
+  title,
+  viewAllLabel,
+  onViewAll,
+  rows,
+  loading,
+  failed,
+  empty,
+  footer,
+  onRowPress,
+}: {
+  title: string
+  viewAllLabel: string
+  onViewAll: () => void
+  rows: PreviewRow[]
+  loading: boolean
+  failed: boolean
+  empty: string
+  footer?: ReactNode
+  onRowPress: (row: PreviewRow) => void
+}) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
+  return (
+    <Card variant="outlined" padding="md">
+      <Stack gap={8}>
+        <Row justify="space-between" align="center" gap={12}>
+          <H3>{title}</H3>
+          <TextLink onPress={onViewAll} accessibilityLabel={viewAllLabel}>
+            View all
+          </TextLink>
+        </Row>
+
+        {rows.length > 0 ? (
           <Stack gap={0}>
-            {waiting.map((queue) => (
-              <Pressable key={queue.key} onPress={() => router.push(queue.route)}>
+            {rows.map((row) => (
+              <Pressable
+                key={row.key}
+                onPress={() => onRowPress(row)}
+                accessibilityRole="link"
+                accessibilityLabel={`${row.tag}: ${row.title}`}
+              >
                 <Row
                   gap={12}
                   align="center"
-                  paddingVertical={12}
-                  style={{
-                    borderBottomWidth: 1,
-                    borderBottomColor: colors.border[t].default,
-                  }}
+                  paddingVertical={10}
+                  style={{ borderTopWidth: 1, borderTopColor: colors.border[t].subtle }}
                 >
                   <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
-                    <Text style={{ color: colors.text[t].primary }}>{queue.label}</Text>
-                    <Text style={{ color: colors.text[t].tertiary }}>{queue.hint}</Text>
+                    <Text numberOfLines={1} style={{ color: colors.text[t].primary }}>
+                      {row.title}
+                    </Text>
+                    <Text
+                      numberOfLines={1}
+                      style={{ color: colors.text[t].tertiary, fontSize: fontSize.sm }}
+                    >
+                      {[row.tag, row.detail].filter(Boolean).join(' · ')}
+                    </Text>
                   </Stack>
-                  <Text style={{ color: colors.text[t].attention }}>
-                    {formatBoundedCount(queue.count)}
-                  </Text>
+                  {row.note ? (
+                    <Text
+                      style={{
+                        fontSize: fontSize.sm,
+                        color: row.attention ? colors.text[t].attention : colors.text[t].secondary,
+                      }}
+                    >
+                      {row.note}
+                    </Text>
+                  ) : null}
                   <ChevronRight size={16} color={colors.icon[t].muted} />
                 </Row>
               </Pressable>
             ))}
           </Stack>
-        ) : null}
-        {anyQueueFailed ? (
+        ) : (
           <Text style={{ color: colors.text[t].secondary }}>
-            Some queues could not be counted, so this list may be incomplete.
+            {failed ? 'This queue could not be loaded.' : loading ? 'Loading…' : empty}
           </Text>
-        ) : waiting.length === 0 && everyQueueKnown ? (
+        )}
+
+        {/* Some rows can still have loaded when one source failed; say so
+            rather than let a short list pass for the whole queue. */}
+        {failed && rows.length > 0 ? (
           <Text style={{ color: colors.text[t].secondary }}>
-            Nothing is waiting on an administrator right now.
+            Part of this queue could not be loaded, so it may be incomplete.
           </Text>
-        ) : waiting.length === 0 ? (
-          <Text style={{ color: colors.text[t].tertiary }}>Counting…</Text>
         ) : null}
+
+        {footer}
       </Stack>
-    </Stack>
+    </Card>
   )
 }
 

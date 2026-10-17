@@ -288,6 +288,13 @@ export const generateDashboardDrawerItems = (
 }
 
 /**
+ * Where Screening lands, on desktop and phone alike: the review queue. The
+ * phone tab opened /office/ats/checks (an organisation picker) while the
+ * desktop strip opened the queue, so one section had two front doors (#1203).
+ */
+export const SCREENING_LANDING = ROUTES.OFFICE.ATS.CHECKS.ADMIN.path
+
+/**
  * The Office section. Its sub-items are the Office tab strip.
  */
 export const generateOfficeDrawerItem = (): DrawerItemConfig => ({
@@ -296,6 +303,27 @@ export const generateOfficeDrawerItem = (): DrawerItemConfig => ({
   href: ROUTES.OFFICE.path,
   icon: Building2,
   subItems: [
+    // The prototype's admin sections open on Overview then Screening. /office
+    // had no tab of its own, so the strip lit nothing on the Office home and
+    // offered no way back to it.
+    {
+      key: 'office-overview',
+      title: 'Overview',
+      href: ROUTES.OFFICE.path,
+      exact: true,
+      icon: BarChart3,
+    },
+    // Nothing owned /office/ats/*, so every screening page lit no tab (#1203).
+    // Community verification is a screening queue too — its screen says so —
+    // though it lives under /office/communities.
+    {
+      key: 'office-screening',
+      title: 'Screening',
+      href: SCREENING_LANDING,
+      matchPrefix: ROUTES.OFFICE.ATS.path,
+      alsoOwns: [ROUTES.OFFICE.COMMUNITIES.VERIFICATION.path],
+      icon: ShieldCheck,
+    },
     {
       key: 'office-cms',
       titleKey: 'routes.office.cms.title',
@@ -607,10 +635,12 @@ export const EMPLOYER_MOBILE_SECTIONS: MobileSection[] = [
     key: 'screening',
     label: 'Screening',
     icon: ShieldCheck,
-    route: ROUTES.OFFICE.ATS.CHECKS.path,
-    // The whole ATS cluster lights this tab, not just /checks — an admin deep
-    // in /office/ats/admin is still "in Screening".
-    matchPrefixes: ['/office/ats'],
+    // The same landing as the desktop Office tab (#1203).
+    route: SCREENING_LANDING,
+    // The whole ATS cluster lights this tab, not just its landing — an admin
+    // on /office/ats/checks is still "in Screening" — and so does community
+    // verification, which the desktop Screening tab also owns.
+    matchPrefixes: [ROUTES.OFFICE.ATS.path, ROUTES.OFFICE.COMMUNITIES.VERIFICATION.path],
     subItems: [],
   },
 ]

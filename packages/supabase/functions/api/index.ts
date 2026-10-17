@@ -57,6 +57,7 @@ import officeCertificationsRouter from "./routes/office-certifications.ts";
 import idVerificationRouter from "./routes/id-verification.ts";
 import successFeesRouter from "./routes/success-fees.ts";
 import stripeSettingsRouter from "./routes/stripe-settings.ts";
+import stripeConfigRouter from "./routes/stripe-config.ts";
 import newsRouter from "./routes/news.ts";
 import documentsStorageRouter from "./routes/documents-storage.ts";
 import legalAgreementsRouter from "./routes/legal-agreements.ts";
@@ -190,6 +191,7 @@ app.route("/v1/office/certifications", officeCertificationsRouter); // Certifica
 app.route("/v1/id-verification", idVerificationRouter); // ID verification (pricing, request, confirm, status, list, revoke)
 app.route("/v1/success-fees", successFeesRouter); // Success fees (status, create, confirm-upfront)
 app.route("/v1/stripe-settings", stripeSettingsRouter); // Stripe settings (office role)
+app.route("/v1/stripe-config", stripeConfigRouter); // Publishable key + mode for any signed-in payer (#1258)
 app.route("/v1/news", newsRouter); // Cached news articles by industry
 app.route("/v1/documents/storage-preference", documentsStorageRouter); // User document storage preference
 app.route("/v1/legal-agreements", legalAgreementsRouter); // Legal agreements / violation reports (office)

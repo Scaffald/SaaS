@@ -7,7 +7,7 @@
  */
 
 import { Pressable, View } from 'react-native'
-import { Row, Stack, Text, useThemeContext, useToast } from '@scaffald/ui'
+import { H4, Row, Stack, Text, useThemeContext, useToast } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useBlockedUsers, useUnblockUserMutation } from '@scf/core/utils/moderation-sdk-hooks'
 
@@ -23,7 +23,7 @@ export function BlockedUsersSection() {
   return (
     <Stack gap={12}>
       <Stack gap={4}>
-        <Text style={{ fontSize: 17, fontWeight: '600' }}>Blocked people</Text>
+        <H4>Blocked people</H4>
         <Text style={muted}>
           Blocking works both ways — neither of you sees the other's messages or posts.
         </Text>
@@ -82,9 +82,7 @@ export function BlockedUsersSection() {
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 disabled={unblock.isPending}
               >
-                <Text style={{ fontSize: 15, color: colors.text[theme].primary }}>
-                  Unblock
-                </Text>
+                <Text style={{ fontSize: 15, color: colors.text[theme].primary }}>Unblock</Text>
               </Pressable>
             </Row>
           ))}

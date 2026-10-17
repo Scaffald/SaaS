@@ -171,8 +171,7 @@ const DYNAMIC_ROUTES = [
 ]
 
 // ---------- Auth ----------
-// Drive the login form at a DESKTOP viewport (bypasses small-screen
-// WelcomeScreen onboarding), save storageState including auth tokens AND
+// Drive the login form at a DESKTOP viewport, save storageState including auth tokens AND
 // cookie-consent flag, then reuse it for the iPhone audit pass.
 async function performLoginAndSaveState(browser) {
   const context = await browser.newContext({
@@ -216,8 +215,9 @@ async function performLoginAndSaveState(browser) {
   await passwordInput.fill(PASSWORD)
 
   // After the toggle the link below reads "Use email link instead", so the
-  // only remaining "Sign in" text is the submit button.
-  await page.getByText('Sign in', { exact: true }).first().click()
+  // "Sign in" texts are the Sign in / Create account tab (first) and the
+  // submit button (last, #1210).
+  await page.getByText('Sign in', { exact: true }).last().click()
 
   // Race the post-login redirect against a visible auth error. The common
   // failure is "Failed to fetch" — the app can't reach its Supabase backend

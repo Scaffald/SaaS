@@ -1,4 +1,4 @@
-import { Row, Text } from '@scaffald/ui'
+import { Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useLocalSearchParams } from 'expo-router'
 import { View } from 'react-native'
@@ -10,11 +10,17 @@ import { useTranslation } from '../../../utils/useTranslation'
  * The landing CTAs are explicit ("Create Your Worker Profile" vs "Register your
  * Organization") but both land on the same sign-in screen, which silently
  * discarded that intent. Carrying `?intent=` through and restating it keeps the
- * flow coherent.
+ * flow coherent. The card also opens on Create account for these visitors
+ * (`initialAuthMode`, #1210).
+ *
+ * Drawn as a ruled note in the theme's selected tint: it sits inside the auth
+ * card now, which follows the theme, so fixed light-mode colours would vanish
+ * on the dark card.
  */
 export function IntentBanner() {
   const { intent } = useLocalSearchParams<{ intent?: string }>()
   const { t } = useTranslation()
+  const { theme } = useThemeContext()
 
   if (intent !== 'worker' && intent !== 'org') return null
 
@@ -23,20 +29,17 @@ export function IntentBanner() {
   return (
     <View
       style={{
-        backgroundColor: 'rgba(29,114,130,0.10)',
-        borderWidth: 1,
-        borderColor: 'rgba(29,114,130,0.28)',
-        borderRadius: 7,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        backgroundColor: colors.bg[theme].selected,
+        borderLeftWidth: 2,
+        borderLeftColor: colors.border[theme].selected,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
         width: '100%',
       }}
     >
-      <Row gap={8} align="center">
-        <Text size="sm" style={{ color: colors.text.light.secondary, flex: 1 }}>
-          {message}
-        </Text>
-      </Row>
+      <Text size="sm" style={{ color: colors.text[theme].secondary }}>
+        {message}
+      </Text>
     </View>
   )
 }

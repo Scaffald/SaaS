@@ -20,13 +20,8 @@ const paymentsRouter = new Hono<ApiEnv>();
 // Default deny: a non-office path needs its own reviewed route.
 paymentsRouter.use("*", requireRole("office", "platform"));
 
-// Pinned deliberately: this integration is written against the 2025-11-17
-// response shapes. stripe@20.4.1 types `apiVersion` as `LatestApiVersion`
-// (2026-02-25.clover), so pinning any earlier version is a type error even
-// though the Stripe API supports it — hence the cast. Moving the runtime
-// version is a behavioural change against a live payment provider and belongs
-// with the SDK upgrade in #454, not with a build fix.
-const STRIPE_API_VERSION = "2025-11-17.clover" as Stripe.LatestApiVersion;
+// One Stripe API version for every caller (#1259, #454).
+import { STRIPE_API_VERSION } from "../../_shared/payments/stripe-client.ts";
 let StripeClass: typeof import("stripe").default | null = null;
 
 async function getStripeClass(): Promise<typeof import("stripe").default> {

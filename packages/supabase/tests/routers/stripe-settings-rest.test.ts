@@ -22,7 +22,8 @@ import {
 } from '../shared/setup.ts'
 import { requireAuthSetup } from '../shared/test-context.ts'
 
-const ENDPOINT = `${TEST_SUPABASE_URL}/functions/v1/api/v1/stripe-settings`
+// STRIPE_SETTINGS_TEST_API_BASE points the suite at a worktree's api on :8000.
+const ENDPOINT = `${Deno.env.get('STRIPE_SETTINGS_TEST_API_BASE') ?? `${TEST_SUPABASE_URL}/functions/v1/api/v1`}/stripe-settings`
 
 async function call(path: string, token: string, init: RequestInit = {}) {
   const response = await fetch(`${ENDPOINT}${path}`, {
@@ -96,5 +97,92 @@ Deno.test({
     assertExists(tokens, 'Cached tokens should exist')
     const { status } = await call('', tokens.regular.token)
     assertEquals(status, 403, 'payment configuration is office-only')
+  },
+})
+
+/**
+ * #1259: test_mode was only a stored flag. Nothing stopped a live secret key
+ * being saved while the platform said "test mode" (real charges from a
+ * screen labelled test), or a test key in live mode (charges that never
+ * settle). Saving a key now requires its prefix to match the mode, and the
+ * mode cannot be switched away from the stored key's.
+ */
+// deno-lint-ignore no-explicit-any
+const core = () => (createAdminClient() as any).schema('core')
+const fakeKey = (mode: 'live' | 'test') => `sk_${mode}_${'x'.repeat(40)}`
+
+Deno.test({
+  name: 'Stripe settings REST - a live key is refused in test mode, and a non-secret key always (#1259)',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    await requireAuthSetup()
+    const tokens = await loadCachedTokens()
+    assertExists(tokens?.office, 'An office-role token is required')
+    const { data: before } = await core()
+      .from('stripe_settings')
+      .select('api_key_secret_id, test_mode')
+      .eq('settings_name', 'stripe')
+      .single()
+    await core().from('stripe_settings').update({ test_mode: true }).eq('settings_name', 'stripe')
+    try {
+      for (const secret of [fakeKey('live'), `pk_test_${'x'.repeat(40)}`]) {
+        const res = await call('/api-key', tokens!.office!.token, {
+          method: 'PUT',
+          body: JSON.stringify({ secret }),
+        })
+        assertEquals(res.status, 400, `${secret.slice(0, 8)}… must be refused, got ${res.status} ${JSON.stringify(res.body)}`)
+      }
+      const { data: after } = await core()
+        .from('stripe_settings')
+        .select('api_key_secret_id')
+        .eq('settings_name', 'stripe')
+        .single()
+      assertEquals(after.api_key_secret_id, before.api_key_secret_id, 'no refused key was linked')
+    } finally {
+      await core()
+        .from('stripe_settings')
+        .update({ api_key_secret_id: before.api_key_secret_id, test_mode: before.test_mode })
+        .eq('settings_name', 'stripe')
+    }
+  },
+})
+
+Deno.test({
+  name: "Stripe settings REST - the mode cannot be switched away from the stored key's (#1259)",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    await requireAuthSetup()
+    const tokens = await loadCachedTokens()
+    assertExists(tokens?.office, 'An office-role token is required')
+    const { data: before } = await core()
+      .from('stripe_settings')
+      .select('api_key_secret_id, test_mode')
+      .eq('settings_name', 'stripe')
+      .single()
+    const { data: secretId, error } = await core().rpc('rotate_stripe_secret', {
+      p_secret: fakeKey('test'),
+      p_secret_type: 'api_key',
+    })
+    if (error) throw new Error(`store a test key: ${error.message}`)
+    await core()
+      .from('stripe_settings')
+      .update({ api_key_secret_id: secretId, test_mode: true })
+      .eq('settings_name', 'stripe')
+    try {
+      const res = await call('/test-mode', tokens!.office!.token, {
+        method: 'PUT',
+        body: JSON.stringify({ testMode: false }),
+      })
+      assertEquals(res.status, 409, `live mode over a test key must be refused, got ${res.status} ${JSON.stringify(res.body)}`)
+      const { data: mode } = await core().from('stripe_settings').select('test_mode').eq('settings_name', 'stripe').single()
+      assertEquals(mode.test_mode, true)
+    } finally {
+      await core()
+        .from('stripe_settings')
+        .update({ api_key_secret_id: before.api_key_secret_id, test_mode: before.test_mode })
+        .eq('settings_name', 'stripe')
+    }
   },
 })
