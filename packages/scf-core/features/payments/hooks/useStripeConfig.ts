@@ -1,7 +1,8 @@
-import { useStripeSettings } from '@scf/core/utils/stripe-settings-sdk-hooks'
+import { useStripePublicConfig } from '@scf/core/utils/stripe-settings-sdk-hooks'
 
 export function useStripeConfig(enabled = true) {
-  const query = useStripeSettings({ enabled })
+  // The payer-facing config, not the office-only settings (#1258).
+  const query = useStripePublicConfig({ enabled })
 
   return {
     publishableKey: query.data?.publishableKey ?? null,
