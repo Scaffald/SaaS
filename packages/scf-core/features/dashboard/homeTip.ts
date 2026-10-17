@@ -9,19 +9,24 @@ export const HOME_TIP_PLACEHOLDER = '\u00A0'
  * The line under the greeting. Says nothing about completion until completion
  * has loaded: with no data `total` was 0, so the tip fell through to "Your
  * profile is complete" for every worker on first paint (#1083).
+ *
+ * `searchAppearances` is how often the worker turned up in someone else's
+ * search (the analytics summary, the same figure as Home's metric row). It was
+ * fed the worker's own searches, so "Employers found you 12 times" counted the
+ * worker searching (#1249).
  */
 export function homeTip({
-  searches,
+  searchAppearances,
   completion,
   completionPending,
 }: {
-  searches: number
+  searchAppearances: number
   completion: { totalComplete: number; totalItems: number } | null
   completionPending: boolean
 }): string | undefined {
   const found =
-    searches > 0
-      ? `Employers found you ${searches.toLocaleString()} ${searches === 1 ? 'time' : 'times'} in search this month.`
+    searchAppearances > 0
+      ? `Employers found you ${searchAppearances.toLocaleString()} ${searchAppearances === 1 ? 'time' : 'times'} in search in the last 30 days.`
       : null
 
   if (completionPending) return HOME_TIP_PLACEHOLDER

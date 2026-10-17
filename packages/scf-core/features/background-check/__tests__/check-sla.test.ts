@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
+  CHECK_QUEUE_CAP,
+  computeBoundedQueueMetrics,
   computeQueueMetrics,
+  formatQueueFigure,
   daysInState,
   daysRemaining,
   isTerminal,
@@ -169,5 +172,31 @@ describe('daysRemaining', () => {
   it('is null for terminal and unknown statuses', () => {
     expect(daysRemaining(check({ status: 'completed_clear' }), NOW)).toBeNull()
     expect(daysRemaining(check({ status: 'mystery' }), NOW)).toBeNull()
+  })
+})
+
+describe('computeBoundedQueueMetrics (#1248)', () => {
+  it('is exact when the page is not full', () => {
+    const rows = [check({ updated_at: daysAgo(9) }), check(), check({ status: 'completed_clear' })]
+    const m = computeBoundedQueueMetrics(rows, CHECK_QUEUE_CAP, NOW)
+    expect(m.overflow).toBe(false)
+    expect(formatQueueFigure(m.openCount)).toBe('2')
+    expect(formatQueueFigure(m.overSlaCount)).toBe('1')
+  })
+
+  it('reads as a floor when the page came back full', () => {
+    // 50 open cases on a 50-row page: there may be more beyond it, so the
+    // figure must not read as an exact 50.
+    const rows = Array.from({ length: 50 }, () => check({ updated_at: daysAgo(9) }))
+    const m = computeBoundedQueueMetrics(rows, 50, NOW)
+    expect(m.overflow).toBe(true)
+    expect(formatQueueFigure(m.openCount)).toBe('50+')
+    expect(formatQueueFigure(m.overSlaCount)).toBe('50+')
+  })
+
+  it('caps at the endpoint maximum by default', () => {
+    expect(CHECK_QUEUE_CAP).toBe(200)
+    const rows = Array.from({ length: 200 }, () => check())
+    expect(computeBoundedQueueMetrics(rows, undefined, NOW).overflow).toBe(true)
   })
 })

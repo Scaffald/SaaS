@@ -1,7 +1,7 @@
 import { Button, Row } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { ROUTES } from '@scf/core/constants/routes'
-import { useEngagementMetrics } from '@scf/core/utils/engagement-sdk-hooks'
+import { useAnalyticsSummary } from '@scf/core/utils/analytics-sdk-hooks'
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { openPublicProfileInNewTab } from '@scf/core/utils/publicProfileUrl'
 import { useUser } from '@scf/core/utils/useUser'
@@ -21,7 +21,7 @@ import { homeTip } from './homeTip'
  * screen was a list of chores already done.
  *
  * Everything said here is read from data the screen already loads: the name
- * from the general-info widget, the search count from engagement metrics,
+ * from the general-info widget, search appearances from the analytics summary,
  * completion from the same hook the checklist reads. No Scaffald score —
  * there is no server aggregate for one yet (#632), and a made-up number in
  * the most prominent spot on the page is the worst place to make one up.
@@ -52,7 +52,9 @@ function useHomeHeader() {
   const router = useRouter()
   const { user } = useUser()
   const { data: profile } = useGeneralInfoWidget()
-  const { data: metrics } = useEngagementMetrics({ days: 30 })
+  // Appearances in others' searches, from the analytics summary — the same
+  // query (and cache entry) as the metric row's "Search appearances" (#1249).
+  const { data: summary } = useAnalyticsSummary({ days: 30 })
   const { completionData, isError: completionFailed } = useProfileCompletion()
 
   // Local time on purpose: this is the reader's own day, not a stored date.
@@ -69,10 +71,12 @@ function useHomeHeader() {
     typeof user?.user_metadata?.name === 'string' ? user.user_metadata.name : undefined
   const name = profile?.display_name ?? sessionName
   const firstName = name?.trim().split(/\s+/)[0]
-  const title = firstName ? `${partOfDay(now.getHours())}, ${firstName}.` : `${partOfDay(now.getHours())}.`
+  const title = firstName
+    ? `${partOfDay(now.getHours())}, ${firstName}.`
+    : `${partOfDay(now.getHours())}.`
 
   const tip = homeTip({
-    searches: metrics?.searches ?? 0,
+    searchAppearances: summary?.searchAppearances?.total ?? 0,
     completion: completionData,
     completionPending: !completionData && !completionFailed,
   })
@@ -93,4 +97,3 @@ function useHomeHeader() {
 
   return { kicker, title, tip, actions }
 }
-

@@ -29,7 +29,7 @@ export * from '../employers-sdk-hooks'
 export {
   useTrackEngagementMutation,
   useRecentActivity,
-  useEngagementMetrics,
+  useOwnActivityMetrics,
 } from '../engagement-sdk-hooks'
 
 export * from '../feedback-sdk-hooks'
