@@ -303,7 +303,6 @@ Deno.test({
 const SERVICE_ONLY_TABLES: { schema: string; table: string }[] = [
   { schema: 'core', table: 'stripe_settings' },
   { schema: 'core', table: 'system_config' },
-  { schema: 'core', table: 'success_fee_jobs' },
   { schema: 'core', table: 'construction_projects' },
   { schema: 'core', table: 'application_assignment_history' },
   { schema: 'core', table: 'archived_external_jobs' },

@@ -98,35 +98,27 @@ describe('deriveHireInputs', () => {
 })
 
 describe('deriveSchedule', () => {
-  it('takes 20% upfront on a job of 30 days or more', () => {
-    const schedule = deriveSchedule(10_000_000, 60, '2026-03-01')
-    expect(schedule.paymentSchedule).toBe('standard')
-    expect(schedule.upfrontPercentage).toBe(20)
-    expect(schedule.upfrontAmountCents).toBe(2_000_000)
-    expect(schedule.finalAmountCents).toBe(8_000_000)
-    expect(schedule.finalDueDate).toBe('2026-03-31')
+  // #1256/#1257: the fee is 10% of the hire value and is charged whole,
+  // upfront — the same arithmetic the api does, for short and long jobs alike.
+  it('charges the whole fee — 10% of the hire value — once, upfront', () => {
+    const schedule = deriveSchedule(10_000_000, '2026-03-01')
+    expect(schedule.paymentSchedule).toBe('single')
+    expect(schedule.feePercentage).toBe(10)
+    expect(schedule.totalFeeCents).toBe(1_000_000)
+    expect(schedule.upfrontPercentage).toBe(100)
+    expect(schedule.upfrontAmountCents).toBe(1_000_000)
+    expect(schedule.finalAmountCents).toBe(0)
   })
 
-  it('takes 50% upfront on a short job, and bills the rest at its end', () => {
-    const schedule = deriveSchedule(1_000_000, 21, '2026-03-01')
-    expect(schedule.paymentSchedule).toBe('short')
-    expect(schedule.upfrontPercentage).toBe(50)
-    expect(schedule.upfrontAmountCents).toBe(500_000)
-    expect(schedule.finalDueDate).toBe('2026-03-22')
+  it('never charges the hire value itself as the fee', () => {
+    const schedule = deriveSchedule(1_000_000, '2026-03-01')
+    expect(schedule.upfrontAmountCents).toBe(100_000)
+    expect(schedule.upfrontAmountCents).toBeLessThan(schedule.totalHireValueCents)
   })
 
-  /** 30 days is the boundary, and it belongs to the standard schedule. */
-  it('treats exactly 30 days as standard', () => {
-    expect(deriveSchedule(1_000, 30, '2026-03-01').upfrontPercentage).toBe(20)
-    expect(deriveSchedule(1_000, 29, '2026-03-01').upfrontPercentage).toBe(50)
-  })
-
-  it('never lets rounding make the two parts add up to more than the whole', () => {
-    for (const total of [1, 3, 7, 33, 101, 999_999]) {
-      const schedule = deriveSchedule(total, 60, '2026-03-01')
-      expect(schedule.upfrontAmountCents + schedule.finalAmountCents).toBe(total)
-      expect(schedule.finalAmountCents).toBeGreaterThanOrEqual(0)
-    }
+  it('rounds the fee to whole cents', () => {
+    expect(deriveSchedule(999, '2026-03-01').totalFeeCents).toBe(100)
+    expect(deriveSchedule(1, '2026-03-01').totalFeeCents).toBe(0)
   })
 })
 

@@ -22,13 +22,19 @@ export interface HireInputs {
 
 export interface HireSchedule {
   totalHireValueCents: number
-  paymentSchedule: 'standard' | 'short'
+  /** Percent of the hire value the success fee is. */
+  feePercentage: number
+  totalFeeCents: number
+  /** Always 'single' since #1257: the whole fee is charged upfront. */
+  paymentSchedule: 'single'
   upfrontPercentage: number
-  finalPercentage: number
   upfrontAmountCents: number
   finalAmountCents: number
   finalDueDate: string
 }
+
+/** The success fee, as a percent of the hire value. Mirrors the api's FEE_PERCENTAGE. */
+export const SUCCESS_FEE_PERCENTAGE = 10
 
 /** A full-time year, used to turn an hourly rate into a hire value. */
 const HOURS_PER_WEEK = 40
@@ -75,29 +81,23 @@ export function deriveHireInputs(application?: ATSApplication | null): HireInput
   }
 }
 
-export function deriveSchedule(
-  totalHireValueCents: number,
-  jobDurationDays: number,
-  hireStartDate: string
-): HireSchedule {
-  const paymentSchedule = jobDurationDays >= 30 ? 'standard' : 'short'
-  const upfrontPercentage = paymentSchedule === 'standard' ? 20 : 50
-  const finalPercentage = 100 - upfrontPercentage
-  const upfrontAmountCents = Math.round(totalHireValueCents * (upfrontPercentage / 100))
-  const finalAmountCents = Math.max(totalHireValueCents - upfrontAmountCents, 0)
-  const finalDueDate = addDays(
-    hireStartDate,
-    paymentSchedule === 'standard' ? 30 : Math.max(jobDurationDays, 1)
-  )
-
+/**
+ * What the employer pays, exactly as the api computes it (#1256, #1257): the
+ * fee is 10% of the hire value and it is charged whole, upfront. This used to
+ * split the *hire value* 20/80 or 50/50, so "Due now" showed ten times the
+ * amount the server actually charged, and a "Due later" nothing ever billed.
+ */
+export function deriveSchedule(totalHireValueCents: number, hireStartDate: string): HireSchedule {
+  const totalFeeCents = Math.round(totalHireValueCents * (SUCCESS_FEE_PERCENTAGE / 100))
   return {
     totalHireValueCents,
-    paymentSchedule,
-    upfrontPercentage,
-    finalPercentage,
-    upfrontAmountCents,
-    finalAmountCents,
-    finalDueDate,
+    feePercentage: SUCCESS_FEE_PERCENTAGE,
+    totalFeeCents,
+    paymentSchedule: 'single',
+    upfrontPercentage: 100,
+    upfrontAmountCents: totalFeeCents,
+    finalAmountCents: 0,
+    finalDueDate: hireStartDate,
   }
 }
 

@@ -55,7 +55,6 @@ import { assert, assertEquals, assertExists } from '../shared/assert.ts'
 import {
   createAdminClient,
   getAuthToken,
-  loadCachedTokens,
   TEST_SUPABASE_ANON_KEY,
   TEST_SUPABASE_URL,
   TEST_USERS,
@@ -97,11 +96,11 @@ async function callREST(
   return { status: response.status, body }
 }
 
+// Signs in the seeded worker itself. The cached `regular` token is whichever
+// account auth.test.ts last registered by magic link, not test@example.com, so
+// it never matched the workerUserId these tests look up by that email.
 async function workerToken(): Promise<string> {
-  const cached = await loadCachedTokens()
-  const token =
-    cached?.regular?.token ??
-    (await getAuthToken(TEST_USERS.regular.email, TEST_USERS.regular.password))
+  const token = await getAuthToken(TEST_USERS.regular.email, TEST_USERS.regular.password)
   assertExists(token, 'could not obtain a token for the seeded worker')
   return token
 }
@@ -258,6 +257,150 @@ Deno.test({
       }
       if (verificationId) {
         await core.from('id_verifications').delete().eq('id', verificationId)
+      }
+      await core.from('service_pricing').delete().eq('id', pricingId)
+    }
+  },
+})
+
+/**
+ * #1255: /confirm used to accept any succeeded PaymentIntent. A paid
+ * success-fee intent — whose ledger row says it paid a hire, not an ID check —
+ * earned a free "ID Verified" badge and had its ledger row rewritten as an ID
+ * verification. The mock Stripe client only knows intents it created, so the
+ * success-fee case is driven through the ledger: /request writes the row, the
+ * test retags it as the success-fee payment it would be, and /confirm must
+ * refuse it and leave it alone.
+ */
+async function requestIntent(
+  token: string,
+  workerUserId: string,
+  pricingId: string
+): Promise<string> {
+  const requested = await callREST('/id-verification/request', {
+    method: 'POST',
+    authToken: token,
+    body: JSON.stringify({ workerUserId, pricingId }),
+  })
+  assertEquals(requested.status, 200, `request failed: ${JSON.stringify(requested.body)}`)
+  return ((requested.body as { data: Record<string, unknown> }).data.paymentIntentId) as string
+}
+
+Deno.test({
+  name: 'ID verification REST - /confirm refuses an intent whose ledger row paid for something else (#1255)',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient()
+    // deno-lint-ignore no-explicit-any
+    const core = (admin as any).schema('core')
+    const token = await workerToken()
+    const workerUserId = await getUserIdByEmail(admin, TEST_USERS.regular.email)
+    assertExists(workerUserId, 'seeded worker has no auth user')
+    const pricingId = await ensurePricing(core, 'foreign-intent')
+    let intentId: string | null = null
+    try {
+      intentId = await requestIntent(token, workerUserId, pricingId)
+      const { error: retagError } = await core
+        .from('payment_transactions')
+        .update({ transaction_type: 'success_fee_upfront', metadata: { stage: 'upfront' } })
+        .eq('stripe_payment_intent_id', intentId)
+      if (retagError) throw new Error(`retag: ${retagError.message}`)
+
+      const confirmed = await callREST('/id-verification/confirm', {
+        method: 'POST',
+        authToken: token,
+        body: JSON.stringify({ paymentIntentId: intentId }),
+      })
+      assertEquals(confirmed.status, 400, `expected 400, got ${confirmed.status} ${JSON.stringify(confirmed.body)}`)
+
+      const { data: badges } = await core.from('id_verifications').select('id').eq('payment_intent_id', intentId)
+      assertEquals(badges.length, 0, 'no badge may be issued')
+      const { data: ledger } = await core
+        .from('payment_transactions')
+        .select('transaction_type, status, id_verification_id')
+        .eq('stripe_payment_intent_id', intentId)
+        .single()
+      assertEquals(ledger.transaction_type, 'success_fee_upfront', 'the other path’s ledger row is untouched')
+      assertEquals(ledger.status, 'pending')
+      assertEquals(ledger.id_verification_id, null)
+    } finally {
+      if (intentId) {
+        await core.from('id_verifications').delete().eq('payment_intent_id', intentId)
+        await core.from('payment_transactions').delete().eq('stripe_payment_intent_id', intentId)
+      }
+      await core.from('service_pricing').delete().eq('id', pricingId)
+    }
+  },
+})
+
+Deno.test({
+  name: 'ID verification REST - /confirm refuses an intent charged a different amount than its ledger row (#1255)',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient()
+    // deno-lint-ignore no-explicit-any
+    const core = (admin as any).schema('core')
+    const token = await workerToken()
+    const workerUserId = await getUserIdByEmail(admin, TEST_USERS.regular.email)
+    assertExists(workerUserId, 'seeded worker has no auth user')
+    const pricingId = await ensurePricing(core, 'amount-mismatch')
+    let intentId: string | null = null
+    try {
+      intentId = await requestIntent(token, workerUserId, pricingId)
+      await core.from('payment_transactions').update({ amount_cents: 1 }).eq('stripe_payment_intent_id', intentId)
+
+      const confirmed = await callREST('/id-verification/confirm', {
+        method: 'POST',
+        authToken: token,
+        body: JSON.stringify({ paymentIntentId: intentId }),
+      })
+      assertEquals(confirmed.status, 400, `expected 400, got ${confirmed.status} ${JSON.stringify(confirmed.body)}`)
+      const { data: badges } = await core.from('id_verifications').select('id').eq('payment_intent_id', intentId)
+      assertEquals(badges.length, 0, 'no badge may be issued')
+    } finally {
+      if (intentId) {
+        await core.from('id_verifications').delete().eq('payment_intent_id', intentId)
+        await core.from('payment_transactions').delete().eq('stripe_payment_intent_id', intentId)
+      }
+      await core.from('service_pricing').delete().eq('id', pricingId)
+    }
+  },
+})
+
+Deno.test({
+  name: "ID verification REST - another user cannot confirm someone else's intent (#1255)",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient()
+    // deno-lint-ignore no-explicit-any
+    const core = (admin as any).schema('core')
+    const token = await workerToken()
+    const workerUserId = await getUserIdByEmail(admin, TEST_USERS.regular.email)
+    assertExists(workerUserId, 'seeded worker has no auth user')
+    const pricingId = await ensurePricing(core, 'other-user')
+    let intentId: string | null = null
+    try {
+      intentId = await requestIntent(token, workerUserId, pricingId)
+      const outsider = await getAuthToken('reviewer-worker@scaffald.com', 'Scaffald2026!')
+      assertExists(outsider, 'reviewer-worker@scaffald.com should sign in (seeds/010)')
+      const confirmed = await callREST('/id-verification/confirm', {
+        method: 'POST',
+        authToken: outsider,
+        body: JSON.stringify({ paymentIntentId: intentId }),
+      })
+      assert(
+        confirmed.status === 403 || confirmed.status === 404,
+        `expected 403/404, got ${confirmed.status} ${JSON.stringify(confirmed.body)}`
+      )
+      const { data: badges } = await core.from('id_verifications').select('id').eq('payment_intent_id', intentId)
+      assertEquals(badges.length, 0, 'no badge may be issued')
+    } finally {
+      if (intentId) {
+        await core.from('id_verifications').delete().eq('payment_intent_id', intentId)
+        await core.from('payment_transactions').delete().eq('stripe_payment_intent_id', intentId)
       }
       await core.from('service_pricing').delete().eq('id', pricingId)
     }

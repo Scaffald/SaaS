@@ -118,6 +118,22 @@ export async function settlePaymentIntent(
     }
   }
 
+  // Stripe does not guarantee event order (#1254). A payment_failed from an
+  // earlier attempt on the same intent, or a cancellation, can arrive after
+  // payment_intent.succeeded. Once money has moved, a late failure must not
+  // rewrite the row — or the fee and verification hanging off it. Only a
+  // refund or dispute changes a succeeded payment, and that is its own path.
+  if (existing.status === 'succeeded' && status !== 'succeeded') {
+    console.warn('[payments/settlement] ignored a late event against a succeeded payment', {
+      transactionId: existing.id,
+      intentId: intent.id,
+      lateStatus: status,
+      eventId: event.eventId ?? null,
+      eventType: event.eventType ?? null,
+    })
+    return { intentId: intent.id, transactionId: existing.id, result: 'unchanged', advanced: [] }
+  }
+
   const nowIso = new Date().toISOString()
   const paidAtIso = intent.created ? new Date(intent.created * 1000).toISOString() : nowIso
 
@@ -144,14 +160,17 @@ export async function settlePaymentIntent(
     updates.failure_reason = failureReason ?? intent.cancellation_reason ?? 'cancelled'
   }
 
-  const { error: updateError } = await supabase
-    .schema('core')
-    .from('payment_transactions')
-    .update(updates)
-    .eq('id', existing.id)
+  // The same rule in the statement itself: the webhook and the reconcile sweep
+  // can settle one intent concurrently, so the check above is not enough alone.
+  let update = supabase.schema('core').from('payment_transactions').update(updates).eq('id', existing.id)
+  if (status !== 'succeeded') update = update.neq('status', 'succeeded')
+  const { data: written, error: updateError } = await update.select('id')
 
   if (updateError) {
     throw new Error(`Failed to update payment transaction: ${updateError.message}`)
+  }
+  if ((written?.length ?? 0) === 0) {
+    return { intentId: intent.id, transactionId: existing.id, result: 'unchanged', advanced: [] }
   }
 
   // Only a success moves the downstream paid-state. A decline is retryable —
@@ -243,7 +262,7 @@ async function advanceSuccessFee(
     .schema('core')
     .from('success_fees')
     .select(
-      'id, status, upfront_paid_at, final_paid_at, upfront_payment_intent_id, final_payment_intent_id'
+      'id, status, upfront_paid_at, final_paid_at, upfront_payment_intent_id, final_payment_intent_id, final_amount_cents'
     )
     .eq('id', feeId)
     .maybeSingle()
@@ -295,7 +314,12 @@ async function advanceSuccessFee(
     const { data, error: updateError } = await supabase
       .schema('core')
       .from('success_fees')
-      .update({ upfront_paid_at: paidAtIso, status: 'upfront_paid' })
+      // The whole fee is charged upfront (#1257): with nothing deferred, this
+      // payment completes it. A legacy split fee still waits for its final.
+      .update({
+        upfront_paid_at: paidAtIso,
+        status: fee.final_amount_cents === 0 ? 'completed' : 'upfront_paid',
+      })
       .eq('id', feeId)
       .is('upfront_paid_at', null)
       .in('status', ['pending', 'failed'])

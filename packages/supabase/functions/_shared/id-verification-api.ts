@@ -78,9 +78,9 @@ function createMockStripeClient(): Stripe {
   } as unknown as Stripe
 }
 
-type SupabaseQueryBuilder = {
-  maybeSingle: () => Promise<{ data: unknown; error: unknown }>
-  then: (onfulfilled: (value: { data: unknown; error: unknown }) => unknown) => Promise<unknown>
+// PromiseLike throughout: supabase-js query builders are thenables, not Promises.
+type SupabaseQueryBuilder = PromiseLike<{ data: unknown; error: unknown }> & {
+  maybeSingle: () => PromiseLike<{ data: unknown; error: unknown }>
 }
 
 type SupabaseLike = {
@@ -88,7 +88,8 @@ type SupabaseLike = {
     from: (t: string) => {
       select: (cols: string) => { eq: (k: string, v: string) => SupabaseQueryBuilder }
     }
-    rpc: (name: string, params: Record<string, string>) => Promise<{ data: unknown; error: unknown }>
+    // PromiseLike, not Promise: supabase-js returns a thenable builder here.
+    rpc: (name: string, params: Record<string, string>) => PromiseLike<{ data: unknown; error: unknown }>
   }
 }
 

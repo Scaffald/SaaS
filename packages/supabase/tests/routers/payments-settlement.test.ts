@@ -436,3 +436,82 @@ Deno.test('a late upfront event cannot walk a completed fee backwards', async ()
     await cleanup(fixture)
   }
 })
+
+// #1254: Stripe does not guarantee event order. A payment_failed from an
+// earlier attempt, or a cancellation, can arrive after payment_intent.succeeded.
+// Once money has moved, only a refund or dispute may change the row.
+for (const [label, lateStatus, lateType] of [
+  ['late-failed', 'failed', 'payment_intent.payment_failed'],
+  ['late-cancel', 'cancelled', 'payment_intent.canceled'],
+] as const) {
+  Deno.test(`a ${lateType} that arrives after success cannot undo the payment (#1254)`, async () => {
+    const fixture = await createUpfrontFixture(label)
+    try {
+      await settlePaymentIntent(admin as AnyClient, intent(fixture.intentId), 'succeeded', {
+        source: 'stripe-webhook',
+        eventId: `evt_${RUN}_${label}_ok`,
+        eventType: 'payment_intent.succeeded',
+      })
+      const paidFee = await readFee(fixture.successFeeId)
+
+      const late = await settlePaymentIntent(
+        admin as AnyClient,
+        intent(fixture.intentId, {
+          status: lateStatus === 'failed' ? 'requires_payment_method' : 'canceled',
+          last_payment_error:
+            lateStatus === 'failed'
+              ? ({ message: 'card_declined' } as Stripe.PaymentIntent.LastPaymentError)
+              : undefined,
+        }),
+        lateStatus,
+        { source: 'stripe-webhook', eventId: `evt_${RUN}_${label}_late`, eventType: lateType }
+      )
+
+      assertEquals(late.result, 'unchanged')
+      assertEquals(late.advanced, [])
+
+      const tx = await readTransaction(fixture.transactionId)
+      assertEquals(tx.status, 'succeeded')
+      assertExists(tx.succeeded_at)
+      assertEquals(tx.failed_at, null)
+      assertEquals(tx.failure_reason, null)
+
+      const fee = await readFee(fixture.successFeeId)
+      assertEquals(fee, paidFee)
+    } finally {
+      await cleanup(fixture)
+    }
+  })
+}
+
+// #1257: the whole success fee is charged upfront. A fee with nothing left to
+// pay later (final_amount_cents = 0) is complete the moment that payment lands.
+Deno.test('a single upfront payment completes a fee with nothing left to pay (#1257)', async () => {
+  const fixture = await createUpfrontFixture('single')
+  try {
+    const { error } = await core()
+      .from('success_fees')
+      .update({
+        upfront_percentage: 100,
+        upfront_amount_cents: 100_000,
+        final_percentage: 0,
+        final_amount_cents: 0,
+      })
+      .eq('id', fixture.successFeeId)
+    if (error) throw new Error(`single-charge fixture: ${error.message}`)
+
+    const outcome = await settlePaymentIntent(
+      admin as AnyClient,
+      intent(fixture.intentId, { amount: 100_000 }),
+      'succeeded',
+      { source: 'stripe-webhook', eventId: `evt_${RUN}_single`, eventType: 'payment_intent.succeeded' }
+    )
+    assertEquals(outcome.result, 'applied')
+
+    const fee = await readFee(fixture.successFeeId)
+    assertEquals(fee.status, 'completed')
+    assertExists(fee.upfront_paid_at)
+  } finally {
+    await cleanup(fixture)
+  }
+})
