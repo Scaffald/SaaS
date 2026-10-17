@@ -227,7 +227,7 @@ export function LuscherTestWizard() {
   // and the counter on the kicker's hairline is its one progress readout.
   const railContent = (
     <Stack gap={20} padding="xs">
-      <ResultsSidebar xpAwarded={5} nextAvailableAt={availability?.nextAvailableAt || null} />
+      <ResultsSidebar nextAvailableAt={availability?.nextAvailableAt || null} />
     </Stack>
   )
 
@@ -248,7 +248,6 @@ export function LuscherTestWizard() {
     >
       {isCooldownResultsView ? (
         <ResultsStep
-          feedbackMessage="You're showing signs of balanced focus — ideal for steady progress today."
           luscher1Choices={assessment?.luscher1_choices || []}
           luscher2Choices={assessment?.luscher2_choices || []}
         />
@@ -280,7 +279,6 @@ export function LuscherTestWizard() {
           )}
           {currentStep === 'results' && (
             <ResultsStep
-              feedbackMessage="You're showing signs of balanced focus — ideal for steady progress today."
               luscher1Choices={
                 luscher1Choices.length === 8 ? luscher1Choices : assessment?.luscher1_choices || []
               }

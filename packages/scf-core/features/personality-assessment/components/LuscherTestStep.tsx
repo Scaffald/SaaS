@@ -165,9 +165,9 @@ export function LuscherTestStep({
         </Row>
       )}
 
-      {/* The prototype's footnote, less its "never scored or ranked": the
-          results step here still shows a verdict, so that half is not ours
-          to claim yet. */}
+      {/* The prototype's footnote. "Never scored or ranked" was held back
+          while the results showed a fixed verdict and the run paid out XP;
+          both are gone (#1246), so the whole sentence is true now. */}
       <Text
         style={{
           textAlign: 'center',
@@ -176,7 +176,8 @@ export function LuscherTestStep({
           color: colors.text[theme].tertiary,
         }}
       >
-        A reflective exercise inspired by the Lüscher method — not a clinical instrument.
+        A reflective exercise inspired by the Lüscher method — never scored or ranked, and not a
+        clinical instrument.
       </Text>
     </Stack>
   )
