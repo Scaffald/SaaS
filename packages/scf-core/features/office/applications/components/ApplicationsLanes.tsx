@@ -19,7 +19,7 @@
  */
 
 import { useMemo } from 'react'
-import { Pressable, type TextStyle, View } from 'react-native'
+import { type TextStyle, View } from 'react-native'
 import { Lane, LaneGroup, Text, useResponsive, useThemeContext } from '@scaffald/ui'
 import { colors, fontSize, fontWeight, lineHeight } from '@scaffald/ui/tokens'
 import type { ApplicationStatus, ATSApplication } from '../types'
@@ -288,9 +288,16 @@ export const ApplicationsLanes = ({
                   />
                 ) : null
 
-              const lane = (
+              // The row opens the candidate (#1196). Lane keeps the Move menu
+              // outside its press area, so the trigger is never a button
+              // inside the row's own and a press on it does not open the
+              // candidate (#1288 — this used to need a link-role wrapper).
+              return (
                 <Lane
-                  testID={onSelect ? undefined : `lane-row-${app.id}`}
+                  key={app.id}
+                  testID={`lane-row-${app.id}`}
+                  onPress={onSelect ? () => onSelect(app) : undefined}
+                  accessibilityLabel={`Open ${app.candidate.name}, ${app.job.title}`}
                   age={formatStageAge(days) ?? undefined}
                   overdue={overdue}
                   // Name and job in one fixed-width block, so the cells after
@@ -324,26 +331,6 @@ export const ApplicationsLanes = ({
                     )
                   }
                 />
-              )
-
-              if (!onSelect) return <View key={app.id}>{lane}</View>
-
-              // The row opens the candidate (#1196). The press lives on this
-              // wrapper rather than on Lane's own onPress: Lane makes the row
-              // a button element, and the Move trigger is a button inside it —
-              // invalid HTML, which the server-rendered page's parser splits
-              // apart. A link-role wrapper renders as a div, and the Move
-              // trigger stops its own click from reaching it.
-              return (
-                <Pressable
-                  key={app.id}
-                  testID={`lane-row-${app.id}`}
-                  accessibilityRole="link"
-                  accessibilityLabel={`Open ${app.candidate.name}, ${app.job.title}`}
-                  onPress={() => onSelect(app)}
-                >
-                  {lane}
-                </Pressable>
               )
             })}
           </LaneGroup>
