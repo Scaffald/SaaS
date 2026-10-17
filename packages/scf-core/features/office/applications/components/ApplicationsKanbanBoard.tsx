@@ -718,7 +718,7 @@ const StatusColumn = ({
                 applicantAvatar: app.candidate.photo,
                 jobTitle: app.job.title,
                 applicationDate: new Date(app.appliedAt),
-                score: app.score,
+                score: app.score ?? undefined,
                 status: app.status,
                 attachmentCount,
                 durationDays,

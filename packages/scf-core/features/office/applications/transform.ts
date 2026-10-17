@@ -47,6 +47,15 @@ function formatPayRange(minCents?: number | null, maxCents?: number | null, type
   return `${label}${suffix}`
 }
 
+function assigneeNameOf(app: ApplicationsListItem): string | null {
+  const assignee = (
+    app as ApplicationsListItem & {
+      assignee?: { display_name?: string | null; username?: string | null } | null
+    }
+  ).assignee
+  return assignee?.display_name ?? assignee?.username ?? null
+}
+
 export function toATSApplication(app: ApplicationsListItem): ATSApplication {
   const screening = (app.screening_answers ?? {}) as {
     current_location?: string
@@ -96,7 +105,7 @@ export function toATSApplication(app: ApplicationsListItem): ATSApplication {
     source: app.source as ATSApplication['source'],
     appliedAt: app.created_at,
     updatedAt: app.updated_at ?? app.created_at,
-    score: app.score_total ?? 0,
+    score: app.score_total ?? null,
     screeningAnswers: {
       currentLocation: screening.current_location ?? '',
       willingToRelocate: screening.willing_to_relocate ?? false,
@@ -156,6 +165,10 @@ export function toATSApplication(app: ApplicationsListItem): ATSApplication {
       id: null,
       name: null,
       assignedUserId: app.assigned_to ?? null,
+      // The list embeds who `assigned_to` is (#1198). Read loosely: the SDK's
+      // EmployerApplication type predates the embed, and the SDK returns the
+      // body verbatim, so the field is there at runtime either way.
+      assignedUserName: assigneeNameOf(app),
     },
     unionStatus: unionStatus
       ? {

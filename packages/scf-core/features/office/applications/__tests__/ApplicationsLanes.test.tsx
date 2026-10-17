@@ -88,7 +88,7 @@ describe('ApplicationsLanes — §12 #8, the reasons to pick one row over anothe
         team: { id: 't', assignedUserId: 'user-9' },
       }),
     ])
-    expect(screen.getByText('88')).toBeTruthy()
+    expect(screen.getByText('score 88')).toBeTruthy()
     expect(screen.getByText('Referral')).toBeTruthy()
     expect(screen.getByText(/IBEW 48/)).toBeTruthy()
     expect(screen.getByText('Assigned')).toBeTruthy()
@@ -97,6 +97,48 @@ describe('ApplicationsLanes — §12 #8, the reasons to pick one row over anothe
   it('says Unassigned rather than leaving the cell blank', () => {
     renderLanes([makeApp({ id: 'a' })])
     expect(screen.getByText('Unassigned')).toBeTruthy()
+  })
+})
+
+describe('ApplicationsLanes — what a row claims (#1198)', () => {
+  it('says Not scored for an unscored candidate, never Score 0', () => {
+    renderLanes([makeApp({ id: 'a', score: null })])
+    expect(screen.getByText('Not scored')).toBeTruthy()
+    expect(screen.queryByText(/score 0/i)).toBeNull()
+  })
+
+  it('names the assignee', () => {
+    renderLanes([
+      makeApp({
+        id: 'a',
+        team: { id: null, assignedUserId: 'user-9', assignedUserName: 'Dana Ortiz' },
+      }),
+    ])
+    expect(screen.getByText('Dana Ortiz')).toBeTruthy()
+    expect(screen.queryByText('Assigned')).toBeNull()
+  })
+
+  it('says You for a row assigned to the viewer', () => {
+    render(
+      <ThemeProvider>
+        <ApplicationsLanes
+          applications={[
+            makeApp({
+              id: 'a',
+              team: { id: null, assignedUserId: 'me', assignedUserName: 'Zach' },
+            }),
+          ]}
+          currentUserId="me"
+          now={NOW}
+        />
+      </ThemeProvider>,
+    )
+    expect(screen.getByText('You')).toBeTruthy()
+  })
+
+  it('carries no Outcome cell on an open lane', () => {
+    const { container } = renderLanes([makeApp({ id: 'a', status: 'screen' })])
+    expect(container.textContent).not.toMatch(/Outcome|Not moved forward|Withdrawn/)
   })
 })
 
@@ -142,6 +184,65 @@ describe('ApplicationsLanes — overdue signalling', () => {
   it('stays quiet inside the promise', () => {
     renderLanes([makeApp({ id: 'a', status: 'screen', appliedAt: daysAgo(1) })])
     expect(screen.queryByText(/Overdue/)).toBeNull()
+  })
+})
+
+describe('ApplicationsLanes — opening and moving a row (#1196)', () => {
+  it('makes every row pressable when given onSelect', () => {
+    render(
+      <ThemeProvider>
+        <ApplicationsLanes
+          applications={[makeApp({ id: 'a' }), makeApp({ id: 'b', status: 'interview' })]}
+          onSelect={() => {}}
+          now={NOW}
+        />
+      </ThemeProvider>,
+    )
+    for (const id of ['a', 'b']) {
+      expect(screen.getByTestId(`lane-row-${id}`).getAttribute('role')).toBe('link')
+    }
+  })
+
+  it('gives an open row a Move menu and a terminal row none', () => {
+    render(
+      <ThemeProvider>
+        <ApplicationsLanes
+          applications={[
+            makeApp({ id: 'open', candidate: { ...makeApp({ id: 'x' }).candidate, name: 'Open Row' } }),
+            makeApp({
+              id: 'closed',
+              status: 'rejected',
+              candidate: { ...makeApp({ id: 'y' }).candidate, name: 'Closed Row' },
+            }),
+          ]}
+          onMove={() => {}}
+          now={NOW}
+        />
+      </ThemeProvider>,
+    )
+    expect(screen.getByLabelText('Move Open Row to another stage')).toBeTruthy()
+    expect(screen.queryByLabelText('Move Closed Row to another stage')).toBeNull()
+  })
+
+  it('opens the Move menu without also opening the candidate', () => {
+    const onSelect = vi.fn()
+    render(
+      <ThemeProvider>
+        <ApplicationsLanes
+          applications={[makeApp({ id: 'a' })]}
+          onSelect={onSelect}
+          onMove={() => {}}
+          now={NOW}
+        />
+      </ThemeProvider>,
+    )
+    fireEvent.click(screen.getByLabelText('Move Alice Chen to another stage'))
+    expect(onSelect).not.toHaveBeenCalled()
+  })
+
+  it('has no Move menu without onMove', () => {
+    renderLanes([makeApp({ id: 'a' })])
+    expect(screen.queryByLabelText(/to another stage/)).toBeNull()
   })
 })
 
