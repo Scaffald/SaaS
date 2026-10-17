@@ -18,12 +18,13 @@ export default function MyListingsRoute() {
   return (
     <DashboardPage
       screenKicker="Employer view — your postings"
-      screenTip="Every posting your organisation has, live or not, with how many people have applied."
+      screenTip="Every posting your organisation has, live or not, with how many people have applied — open a count to see them in the pipeline."
       screenActions={
+        // Outline, as in the prototype (#1199): the screen's subject is the
+        // postings, and a filled primary out-shouted every row under it.
         <Button
           size="sm"
-          variant="filled"
-          color="primary"
+          variant="outline"
           onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
         >
           Post a job

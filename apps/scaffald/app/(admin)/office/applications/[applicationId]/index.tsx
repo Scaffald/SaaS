@@ -5,7 +5,7 @@ import { CandidateDetailContent } from '@scf/core/features/office/applications/c
 import { toATSApplication } from '@scf/core/features/office/applications/transform'
 import { useEmployerApplication } from '@scf/core/utils/applications-sdk-hooks'
 import { Spinner, Stack, Text } from '@scaffald/ui'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { ScrollView } from 'react-native'
 
@@ -20,6 +20,7 @@ import { ScrollView } from 'react-native'
 export default function OfficeApplicationDetailRoute() {
   const { applicationId } = useLocalSearchParams<{ applicationId?: string }>()
   const id = typeof applicationId === 'string' ? applicationId : ''
+  const router = useRouter()
 
   const { data, isLoading, error, refetch } = useEmployerApplication(id, {
     enabled: id.length > 0,
@@ -58,17 +59,22 @@ export default function OfficeApplicationDetailRoute() {
       return <Text color="secondary">Candidate not found.</Text>
     }
 
-    return <CandidateDetailContent application={application} />
+    // "← Applications" in the ScreenHeader is the way back (#1200). The
+    // breadcrumb that used to sit above ended in the candidate's name, which
+    // then appeared again as the title.
+    return (
+      <CandidateDetailContent
+        application={application}
+        back={{
+          label: 'Applications',
+          onPress: () => router.push(ROUTES.OFFICE.APPLICATIONS.path),
+        }}
+      />
+    )
   }
 
   return (
     <OfficeLayout
-      showBreadcrumb
-      breadcrumbItems={[
-        { label: 'Office', href: ROUTES.OFFICE.path },
-        { label: 'Applications', href: ROUTES.OFFICE.APPLICATIONS.path },
-        { label: application?.candidate.name ?? 'Candidate', href: '' },
-      ]}
       leftContent={
         <ScrollView>
           <Stack gap={16} padding={16}>
