@@ -37,6 +37,7 @@ vi.mock('@scaffald/ui', () => {
     ModalActions: Passthrough,
     ModalContent: Passthrough,
     ModalHeader: Passthrough,
+    H4: ({ children }: { children?: ReactNode }) => <h4>{children}</h4>,
     Paragraph: ({ children }: { children?: ReactNode }) => <p>{children}</p>,
     Row: Passthrough,
     Stack: Passthrough,

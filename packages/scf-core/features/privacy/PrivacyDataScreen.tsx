@@ -15,7 +15,6 @@ import { ScrollView } from 'react-native'
 import {
   Button,
   Card,
-  H2,
   Modal,
   ModalActions,
   ModalContent,
@@ -112,10 +111,26 @@ function DataCategoryCard({
 function RequestStatusBadge({ status }: { status: string }) {
   const { theme: badgeTheme } = useThemeContext()
   const statusConfig: Record<string, { bg: string; text: string; label: string }> = {
-    pending: { bg: badgeTheme === 'dark' ? colors.warning[900] : colors.warning[50], text: colors.warning[700], label: 'Pending' },
-    processing: { bg: badgeTheme === 'dark' ? colors.info[900] : colors.info[100], text: colors.info[700], label: 'Processing' },
-    completed: { bg: badgeTheme === 'dark' ? colors.success[900] : colors.success[100], text: colors.success[700], label: 'Completed' },
-    denied: { bg: badgeTheme === 'dark' ? colors.error[900] : colors.error[50], text: colors.error[800], label: 'Denied' },
+    pending: {
+      bg: badgeTheme === 'dark' ? colors.warning[900] : colors.warning[50],
+      text: colors.warning[700],
+      label: 'Pending',
+    },
+    processing: {
+      bg: badgeTheme === 'dark' ? colors.info[900] : colors.info[100],
+      text: colors.info[700],
+      label: 'Processing',
+    },
+    completed: {
+      bg: badgeTheme === 'dark' ? colors.success[900] : colors.success[100],
+      text: colors.success[700],
+      label: 'Completed',
+    },
+    denied: {
+      bg: badgeTheme === 'dark' ? colors.error[900] : colors.error[50],
+      text: colors.error[800],
+      label: 'Denied',
+    },
   }
   const config = statusConfig[status] ?? statusConfig.pending
   return (
@@ -180,45 +195,105 @@ export function PrivacyDataScreen() {
 
   // Fallback data for when API isn't connected
   const categories = dataSummary?.categories ?? [
-    { id: 'profile', label: 'Profile Information', description: 'Name, email, phone, location, bio', hasData: true, itemCount: 1 },
-    { id: 'skills', label: 'Skills & Certifications', description: 'Skill assessments, certifications, licenses', hasData: true, itemCount: 12 },
-    { id: 'employment', label: 'Employment History', description: 'Work experience, job history, references', hasData: true, itemCount: 4 },
-    { id: 'applications', label: 'Job Applications', description: 'Applied jobs, application status, cover letters', hasData: true, itemCount: 7 },
-    { id: 'assessments', label: 'Career Assessments', description: 'RIASEC scores, personality assessments', hasData: true, itemCount: 2 },
-    { id: 'messages', label: 'Messages & Communications', description: 'Recruiter messages, notifications', hasData: true, itemCount: 23 },
-    { id: 'activity', label: 'Activity & Usage Data', description: 'Login history, page views, search queries', hasData: true },
-    { id: 'documents', label: 'Uploaded Documents', description: 'Resume, portfolio, certifications', hasData: true, itemCount: 3 },
+    {
+      id: 'profile',
+      label: 'Profile Information',
+      description: 'Name, email, phone, location, bio',
+      hasData: true,
+      itemCount: 1,
+    },
+    {
+      id: 'skills',
+      label: 'Skills & Certifications',
+      description: 'Skill assessments, certifications, licenses',
+      hasData: true,
+      itemCount: 12,
+    },
+    {
+      id: 'employment',
+      label: 'Employment History',
+      description: 'Work experience, job history, references',
+      hasData: true,
+      itemCount: 4,
+    },
+    {
+      id: 'applications',
+      label: 'Job Applications',
+      description: 'Applied jobs, application status, cover letters',
+      hasData: true,
+      itemCount: 7,
+    },
+    {
+      id: 'assessments',
+      label: 'Career Assessments',
+      description: 'RIASEC scores, personality assessments',
+      hasData: true,
+      itemCount: 2,
+    },
+    {
+      id: 'messages',
+      label: 'Messages & Communications',
+      description: 'Recruiter messages, notifications',
+      hasData: true,
+      itemCount: 23,
+    },
+    {
+      id: 'activity',
+      label: 'Activity & Usage Data',
+      description: 'Login history, page views, search queries',
+      hasData: true,
+    },
+    {
+      id: 'documents',
+      label: 'Uploaded Documents',
+      description: 'Resume, portfolio, certifications',
+      hasData: true,
+      itemCount: 3,
+    },
   ]
 
   const requests = myRequests?.requests ?? []
 
   // Always populate all known categories so toggles render even when the API
   // returns only categories the user has already opted out of.
-  const ALL_OPT_OUT_CATEGORIES: CCPAOptOutCategory[] = ['sale', 'sharing', 'targeted_advertising', 'sensitive_data']
+  const ALL_OPT_OUT_CATEGORIES: CCPAOptOutCategory[] = [
+    'sale',
+    'sharing',
+    'targeted_advertising',
+    'sensitive_data',
+  ]
   const apiOptOuts = optOuts?.optOuts ?? []
   const optOutStatuses = ALL_OPT_OUT_CATEGORIES.map((category) => {
     const existing = apiOptOuts.find((o) => o.category === category)
-    return existing ?? { category, opted_out: false, opted_out_at: null, source: 'default' as const }
+    return (
+      existing ?? { category, opted_out: false, opted_out_at: null, source: 'default' as const }
+    )
   })
 
   const optOutLabels: Record<string, { title: string; desc: string }> = {
-    sale: { title: 'Sale of Personal Data', desc: 'Prevent your data from being sold to third parties' },
-    sharing: { title: 'Data Sharing', desc: 'Prevent sharing data with partners for cross-context behavioral ads' },
-    targeted_advertising: { title: 'Targeted Advertising', desc: 'Opt out of personalized ads based on your profile' },
-    sensitive_data: { title: 'Sensitive Data Processing', desc: 'Limit processing of sensitive personal information' },
+    sale: {
+      title: 'Sale of Personal Data',
+      desc: 'Prevent your data from being sold to third parties',
+    },
+    sharing: {
+      title: 'Data Sharing',
+      desc: 'Prevent sharing data with partners for cross-context behavioral ads',
+    },
+    targeted_advertising: {
+      title: 'Targeted Advertising',
+      desc: 'Opt out of personalized ads based on your profile',
+    },
+    sensitive_data: {
+      title: 'Sensitive Data Processing',
+      desc: 'Limit processing of sensitive personal information',
+    },
   }
 
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={24} style={{ paddingBottom: 40 }}>
-        {/* Header */}
-        <Stack gap={4}>
-          <H2>Privacy & Data Management</H2>
-          <Text style={{ color: colors.text[theme].secondary }}>
-            Manage your personal data, privacy preferences, and submit GDPR/CCPA requests
-          </Text>
-        </Stack>
-
+        {/* No header of its own: this renders under the Settings screen's
+            "Privacy & data" section head, which already names it (#1212). */}
         {/* Rights Banner */}
         <Card variant="glass" padding="md">
           <Row gap={12} align="center">
@@ -278,8 +353,12 @@ export function PrivacyDataScreen() {
             <Card variant="glass" padding="md" style={{ flex: 1, minWidth: 200 }}>
               <Stack gap={8} align="center">
                 <Download size={24} color={colors.info[600]} />
-                <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>Export Data</Text>
-                <Text style={{ fontSize: 12, color: colors.text[theme].secondary, textAlign: 'center' }}>
+                <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>
+                  Export Data
+                </Text>
+                <Text
+                  style={{ fontSize: 12, color: colors.text[theme].secondary, textAlign: 'center' }}
+                >
                   Download a copy of all your personal data
                 </Text>
                 <Button size="sm" variant="outline" onPress={() => openRequestModal('export')}>
@@ -291,8 +370,12 @@ export function PrivacyDataScreen() {
             <Card variant="glass" padding="md" style={{ flex: 1, minWidth: 200 }}>
               <Stack gap={8} align="center">
                 <Trash2 size={24} color={colors.error[600]} />
-                <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>Delete Data</Text>
-                <Text style={{ fontSize: 12, color: colors.text[theme].secondary, textAlign: 'center' }}>
+                <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>
+                  Delete Data
+                </Text>
+                <Text
+                  style={{ fontSize: 12, color: colors.text[theme].secondary, textAlign: 'center' }}
+                >
                   Request permanent deletion of your data
                 </Text>
                 <Button size="sm" variant="outline" onPress={() => openRequestModal('deletion')}>
@@ -304,8 +387,12 @@ export function PrivacyDataScreen() {
             <Card variant="glass" padding="md" style={{ flex: 1, minWidth: 200 }}>
               <Stack gap={8} align="center">
                 <ShieldCheck size={24} color={colors.success[500]} />
-                <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>Correct Data</Text>
-                <Text style={{ fontSize: 12, color: colors.text[theme].secondary, textAlign: 'center' }}>
+                <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>
+                  Correct Data
+                </Text>
+                <Text
+                  style={{ fontSize: 12, color: colors.text[theme].secondary, textAlign: 'center' }}
+                >
                   Request corrections to inaccurate data
                 </Text>
                 <Button size="sm" variant="outline" onPress={() => openRequestModal('correction')}>
@@ -323,7 +410,9 @@ export function PrivacyDataScreen() {
             <Stack gap={12}>
               <Row gap={8} align="center">
                 <Clock size={18} color={colors.text[theme].primary} />
-                <Text style={{ fontWeight: '600', fontSize: 16, color: colors.text[theme].primary }}>
+                <Text
+                  style={{ fontWeight: '600', fontSize: 16, color: colors.text[theme].primary }}
+                >
                   Request History
                 </Text>
               </Row>
@@ -343,7 +432,8 @@ export function PrivacyDataScreen() {
                           </Text>
                           <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>
                             Submitted {new Date(req.created_at).toLocaleDateString()}
-                            {req.deadline_at && ` • Due ${new Date(req.deadline_at).toLocaleDateString()}`}
+                            {req.deadline_at &&
+                              ` • Due ${new Date(req.deadline_at).toLocaleDateString()}`}
                           </Text>
                         </Stack>
                         <RequestStatusBadge status={req.status} />

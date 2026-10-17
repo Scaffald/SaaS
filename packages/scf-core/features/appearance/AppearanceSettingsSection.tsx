@@ -1,6 +1,6 @@
 import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider'
 import { useCallback } from 'react'
-import { AppearanceThemeCard, Row, Stack, Text } from '@scaffald/ui'
+import { AppearanceThemeCard, Row, Stack } from '@scaffald/ui'
 
 const CHOICES = ['system', 'light', 'dark'] as const
 type Choice = (typeof CHOICES)[number]
@@ -19,12 +19,8 @@ export function AppearanceSettingsSection() {
   const pick = useCallback((choice: Choice) => set(choice), [set])
 
   return (
+    // Titled and explained by the Settings screen's section head (#1212).
     <Stack gap={12} testID="appearance-settings">
-      <Text size="xl">Appearance</Text>
-      <Text color="gray">
-        Light, dark, or whatever your device is set to. Changes apply straight away and are
-        remembered on this device.
-      </Text>
       {/* One row, never wrapped: each card grows to its 160 px design width and
           shrinks evenly below it, so a phone shows three narrower cards instead
           of two and an orphan (#1090). Desktop is unchanged. */}
