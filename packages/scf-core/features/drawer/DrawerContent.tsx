@@ -74,7 +74,8 @@ export const DrawerContent = ({
   const pathname = normalizePath(usePathname())
   const router = useRouter()
   const { user, profile } = useUser()
-  const { hasOfficeRole } = useUserRoles()
+  const { hasOfficeRole, hasRole } = useUserRoles()
+  const isCheckAdmin = hasRole('background_check_admin')
   const { mode } = useAppMode()
   const { data: generalInfo } = useGeneralInfoWidget(undefined, {
     staleTime: 5 * 60 * 1000,
@@ -84,8 +85,8 @@ export const DrawerContent = ({
   const collapsed = !isSmall && isCollapsed
 
   const items = useMemo(
-    () => getNavItems(orgMemberships ?? undefined, hasOfficeRole, mode),
-    [orgMemberships, hasOfficeRole, mode]
+    () => getNavItems(orgMemberships ?? undefined, hasOfficeRole, mode, isCheckAdmin),
+    [orgMemberships, hasOfficeRole, mode, isCheckAdmin]
   )
   const activeKey = useMemo(() => activeNavKey(items, pathname), [items, pathname])
 

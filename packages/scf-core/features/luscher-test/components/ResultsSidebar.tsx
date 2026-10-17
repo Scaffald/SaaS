@@ -1,10 +1,12 @@
-import { Award, Clock } from 'lucide-react-native'
+import { Clock } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
+// There was a "+5 Frequency XP earned" card above the availability card. The
+// pulse is a reflective exercise, never scored or ranked, so it earns nothing
+// (#1246); the server no longer awards it either.
 export interface ResultsSidebarProps {
-  xpAwarded?: number
   nextAvailableAt: string | null
 }
 
@@ -63,7 +65,7 @@ const formatCountdown = (time: TimeUntilAvailable): string => {
   return parts.length > 0 ? parts.join(', ') : 'Less than a minute'
 }
 
-export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSidebarProps) => {
+export const ResultsSidebar = ({ nextAvailableAt }: ResultsSidebarProps) => {
   const { theme } = useThemeContext()
   const [timeUntilAvailable, setTimeUntilAvailable] = useState<TimeUntilAvailable>(() =>
     calculateTimeUntilAvailable(nextAvailableAt)
@@ -83,110 +85,69 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
     return () => clearInterval(interval)
   }, [nextAvailableAt])
 
-  const xpIconBg =
-    theme === 'dark' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 197, 94, 0.08)'
-
   return (
     <Stack gap={20}>
-        {xpAwarded > 0 && (
-          <Card variant="glass" padding="lg" radius="xl">
-            <Stack gap={12}>
-              <Row gap={12} align="center">
-                <Stack
-                  width={40}
-                  height={40}
-                  borderRadius={12}
-                  align="center"
-                  justify="center"
-                  style={{ backgroundColor: xpIconBg }}
-                >
-                  <Award size={22} color={colors.success[500]} />
-                </Stack>
-                <Stack gap={2}>
-                  <Text
-                    style={{
-                      fontSize: 24,
-                      fontWeight: '700',
-                      color: colors.success[500],
-                    }}
-                  >
-                    +{xpAwarded}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: colors.text[theme].secondary,
-                    }}
-                  >
-                    Frequency XP earned
-                  </Text>
-                </Stack>
-              </Row>
-            </Stack>
-          </Card>
-        )}
-
-        <Card variant="outlined" padding="lg" radius="xl">
-          <Stack gap={12}>
-            <Row gap={12} align="center">
-              <Clock size={20} color={colors.primary[500]} />
-              <Text
-                style={{
-                  fontWeight: '600',
-                  color: colors.text[theme].primary,
-                }}
-              >
-                Test Availability
-              </Text>
-            </Row>
+      <Card variant="outlined" padding="lg" radius="xl">
+        <Stack gap={12}>
+          <Row gap={12} align="center">
+            <Clock size={20} color={colors.primary[500]} />
             <Text
               style={{
-                fontSize: 13,
-                color: colors.text[theme].secondary,
-                lineHeight: 20,
+                fontWeight: '600',
+                color: colors.text[theme].primary,
               }}
             >
-              This test can be taken once every 7 days.
+              Test Availability
             </Text>
-            {nextAvailableAt && !timeUntilAvailable.isAvailable ? (
-              <Stack gap={4}>
-                <Text
-                  style={{
-                    fontSize: 13,
-                    color: colors.text[theme].tertiary,
-                  }}
-                >
-                  Next available:
-                </Text>
-                <Text
-                  style={{
-                    fontWeight: '600',
-                    color: colors.primary[500],
-                  }}
-                >
-                  {formatDate(nextAvailableAt)}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 13,
-                    color: colors.primary[400],
-                  }}
-                >
-                  {formatCountdown(timeUntilAvailable)}
-                </Text>
-              </Stack>
-            ) : (
+          </Row>
+          <Text
+            style={{
+              fontSize: 13,
+              color: colors.text[theme].secondary,
+              lineHeight: 20,
+            }}
+          >
+            This test can be taken once every 7 days.
+          </Text>
+          {nextAvailableAt && !timeUntilAvailable.isAvailable ? (
+            <Stack gap={4}>
+              <Text
+                style={{
+                  fontSize: 13,
+                  color: colors.text[theme].tertiary,
+                }}
+              >
+                Next available:
+              </Text>
               <Text
                 style={{
                   fontWeight: '600',
-                  color: colors.success[500],
+                  color: colors.primary[500],
                 }}
               >
-                Available now
+                {formatDate(nextAvailableAt)}
               </Text>
-            )}
-          </Stack>
-        </Card>
+              <Text
+                style={{
+                  fontSize: 13,
+                  color: colors.primary[400],
+                }}
+              >
+                {formatCountdown(timeUntilAvailable)}
+              </Text>
+            </Stack>
+          ) : (
+            <Text
+              style={{
+                fontWeight: '600',
+                color: colors.success[500],
+              }}
+            >
+              Available now
+            </Text>
+          )}
+        </Stack>
+      </Card>
     </Stack>
   )
 }

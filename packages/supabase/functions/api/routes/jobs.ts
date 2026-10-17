@@ -103,6 +103,10 @@ const jobSchema = z
     require_background_check: z.boolean().nullable(),
     require_drug_test: z.boolean().nullable(),
     require_drivers_license: z.boolean().nullable(),
+    // Which licence class, when the posting names one (#1282). Without it a
+    // job row could not score the licence requirement the way the detail
+    // screen does, so the two disagreed ("2 of 2 met" against "3 of 3").
+    drivers_license_type: z.string().nullable(),
     security_clearance_required: z.string().nullable(),
     travel_percentage: z.number().int().nullable(),
     required_soft_skills: z.unknown().nullable(),
@@ -255,6 +259,7 @@ const PUBLIC_JOB_COLUMNS = `
   require_background_check,
   require_drug_test,
   require_drivers_license,
+  drivers_license_type,
   security_clearance_required,
   travel_percentage,
   required_soft_skills,

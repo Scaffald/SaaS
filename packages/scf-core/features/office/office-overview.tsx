@@ -1,5 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { computeQueueMetrics } from '@scf/core/features/background-check/check-sla'
+import {
+  CHECK_QUEUE_CAP,
+  computeBoundedQueueMetrics,
+} from '@scf/core/features/background-check/check-sla'
 import { useVerificationQueue } from '@scf/core/utils/office-communities-sdk-hooks'
 import { useViolationReports } from '@scf/core/utils/legal-agreements-sdk-hooks'
 import { useNotificationDeliveries } from '@scf/core/utils/notifications-admin-sdk-hooks'
@@ -39,8 +42,6 @@ import { openReportRows, type PreviewRow, screeningPreviewRows } from './office-
 
 /** Rows fetched to count failed deliveries. One over the cap — see `boundedCount`. */
 const FAILED_DELIVERY_CAP = 50
-/** The admin checks endpoint's own maximum page. */
-const CHECKS_CAP = 200
 /** The ID verification list's own maximum page. */
 const ID_VERIFICATIONS_CAP = 200
 /** Items each preview card shows before "View all". */
@@ -87,7 +88,7 @@ export function OfficeOverview() {
   // Unfiltered, like the admin page's own queue strip: open and over-SLA are
   // properties of the whole queue, not of one status.
   const checksQuery = useAdminChecks(
-    { limit: CHECKS_CAP },
+    { limit: CHECK_QUEUE_CAP },
     { enabled: isCheckAdmin, staleTime: 30_000 }
   )
   // Only `active` rows can still be waiting; expired and revoked are finished.
@@ -116,12 +117,11 @@ export function OfficeOverview() {
   const checks = useMemo(() => {
     const rows = checksQuery.data
     if (!Array.isArray(rows)) return null
-    const queue = computeQueueMetrics(rows)
-    // A full page means there may be open cases beyond it.
-    const overflow = rows.length >= CHECKS_CAP
+    // The same count as the admin page's queue strip, so the two agree (#1248).
+    const queue = computeBoundedQueueMetrics(rows, CHECK_QUEUE_CAP)
     return {
-      open: { value: queue.openCount, overflow } satisfies BoundedCount,
-      overSla: { value: queue.overSlaCount, overflow } satisfies BoundedCount,
+      open: queue.openCount satisfies BoundedCount,
+      overSla: queue.overSlaCount satisfies BoundedCount,
     }
   }, [checksQuery.data])
 

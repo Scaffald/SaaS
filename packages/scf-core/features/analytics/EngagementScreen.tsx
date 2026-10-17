@@ -31,15 +31,25 @@ export function EngagementScreen() {
     { profileViews: 0, jobViews: 0, applications: 0, searches: 0 }
   )
 
-  const donutData =
-    eventBreakdown
-      ? [
-          { label: 'Profile Views', value: eventBreakdown.profileViews, color: colors.blue[500] },
-          { label: 'Job Views', value: eventBreakdown.jobViews, color: colors.purple[500] },
-          { label: 'Applications', value: eventBreakdown.applications, color: colors.orange[500] },
-          { label: 'Searches', value: eventBreakdown.searches, color: colors.green[500] },
-        ].filter((d) => d.value > 0)
-      : []
+  // The rollup mixes two directions: profile views are other people looking at
+  // this user; searches and applications are this user's own actions. The
+  // labels say whose, so "Searches" cannot read as appearances in search (#1249).
+  const donutData = eventBreakdown
+    ? [
+        {
+          label: 'Views of your profile',
+          value: eventBreakdown.profileViews,
+          color: colors.blue[500],
+        },
+        { label: 'Job Views', value: eventBreakdown.jobViews, color: colors.purple[500] },
+        {
+          label: 'Applications you made',
+          value: eventBreakdown.applications,
+          color: colors.orange[500],
+        },
+        { label: 'Searches you ran', value: eventBreakdown.searches, color: colors.green[500] },
+      ].filter((d) => d.value > 0)
+    : []
 
   return (
     <Stack gap={20}>
@@ -65,7 +75,13 @@ export function EngagementScreen() {
           {/* Timeline Chart */}
           <Card variant="outlined" radius="lg" padding="lg">
             <Stack gap={12}>
-              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text[resolvedTheme].primary }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: '600',
+                  color: colors.text[resolvedTheme].primary,
+                }}
+              >
                 Engagement Timeline
               </Text>
               <LinearChart
@@ -86,7 +102,13 @@ export function EngagementScreen() {
           {donutData.length > 0 ? (
             <Card variant="outlined" radius="lg" padding="lg">
               <Stack gap={12}>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text[resolvedTheme].primary }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '600',
+                    color: colors.text[resolvedTheme].primary,
+                  }}
+                >
                   Event Breakdown
                 </Text>
                 <Row gap={20} align="center" justify="center" style={{ flexWrap: 'wrap' }}>
@@ -101,7 +123,14 @@ export function EngagementScreen() {
                   <Stack gap={8}>
                     {donutData.map((d) => (
                       <Row key={d.label} gap={8} align="center">
-                        <View style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: d.color }} />
+                        <View
+                          style={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: 3,
+                            backgroundColor: d.color,
+                          }}
+                        />
                         <Text style={{ fontSize: 13, color: colors.text[resolvedTheme].primary }}>
                           {d.label}: {d.value.toLocaleString()}
                         </Text>
@@ -117,7 +146,13 @@ export function EngagementScreen() {
           <Card variant="outlined" radius="lg" padding="lg">
             <Stack gap={12}>
               <Row align="center" justify="space-between">
-                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text[resolvedTheme].primary }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '600',
+                    color: colors.text[resolvedTheme].primary,
+                  }}
+                >
                   Profile Visitors
                 </Text>
                 <Text style={{ fontSize: 12, color: colors.text[resolvedTheme].tertiary }}>
@@ -130,24 +165,47 @@ export function EngagementScreen() {
               ) : visitors?.visitors && visitors.visitors.length > 0 ? (
                 <Stack gap={6}>
                   {visitors.visitors.map((v, i) => (
-                    <Row key={`${v.viewerId}-${i}`} gap={12} align="center" style={styles.visitorRow}>
-                      <View style={[styles.avatar, { backgroundColor: colors.bg[resolvedTheme].muted }]}>
-                        <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text[resolvedTheme].secondary }}>
+                    <Row
+                      key={`${v.viewerId}-${i}`}
+                      gap={12}
+                      align="center"
+                      style={styles.visitorRow}
+                    >
+                      <View
+                        style={[styles.avatar, { backgroundColor: colors.bg[resolvedTheme].muted }]}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            fontWeight: '600',
+                            color: colors.text[resolvedTheme].secondary,
+                          }}
+                        >
                           {(v.viewerName || '?')[0]?.toUpperCase()}
                         </Text>
                       </View>
                       <Stack gap={1} style={{ flex: 1 }}>
-                        <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text[resolvedTheme].primary }}>
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            fontWeight: '500',
+                            color: colors.text[resolvedTheme].primary,
+                          }}
+                        >
                           {v.viewerName || 'Anonymous'}
                         </Text>
                         <Row gap={8}>
                           {v.roleType ? (
-                            <Text style={{ fontSize: 12, color: colors.text[resolvedTheme].tertiary }}>
+                            <Text
+                              style={{ fontSize: 12, color: colors.text[resolvedTheme].tertiary }}
+                            >
                               {v.roleType}
                             </Text>
                           ) : null}
                           {v.industryName ? (
-                            <Text style={{ fontSize: 12, color: colors.text[resolvedTheme].tertiary }}>
+                            <Text
+                              style={{ fontSize: 12, color: colors.text[resolvedTheme].tertiary }}
+                            >
                               {v.industryName}
                             </Text>
                           ) : null}
@@ -160,7 +218,14 @@ export function EngagementScreen() {
                   ))}
                 </Stack>
               ) : (
-                <Text style={{ fontSize: 13, color: colors.text[resolvedTheme].tertiary, textAlign: 'center', paddingVertical: 20 }}>
+                <Text
+                  style={{
+                    fontSize: 13,
+                    color: colors.text[resolvedTheme].tertiary,
+                    textAlign: 'center',
+                    paddingVertical: 20,
+                  }}
+                >
                   No visitors in this period
                 </Text>
               )}
@@ -168,13 +233,30 @@ export function EngagementScreen() {
               {/* Industry breakdown */}
               {visitors?.byIndustry && visitors.byIndustry.length > 0 ? (
                 <Stack gap={8}>
-                  <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text[resolvedTheme].primary, marginTop: 8 }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: '600',
+                      color: colors.text[resolvedTheme].primary,
+                      marginTop: 8,
+                    }}
+                  >
                     By Industry
                   </Text>
                   {visitors.byIndustry.slice(0, 5).map((b) => (
                     <Row key={b.industry} align="center" justify="space-between">
-                      <Text style={{ fontSize: 13, color: colors.text[resolvedTheme].secondary }}>{b.industry}</Text>
-                      <Text style={{ fontSize: 13, fontWeight: '600', color: colors.text[resolvedTheme].primary }}>{b.count}</Text>
+                      <Text style={{ fontSize: 13, color: colors.text[resolvedTheme].secondary }}>
+                        {b.industry}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 13,
+                          fontWeight: '600',
+                          color: colors.text[resolvedTheme].primary,
+                        }}
+                      >
+                        {b.count}
+                      </Text>
                     </Row>
                   ))}
                 </Stack>

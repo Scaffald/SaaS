@@ -25,7 +25,12 @@ import {
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
-import { computeQueueMetrics } from '../check-sla'
+import {
+  CHECK_QUEUE_CAP,
+  computeBoundedQueueMetrics,
+  formatQueueFigure,
+  type QueueFigure,
+} from '../check-sla'
 import { clearQueueFilter, queueFilterChips, type QueueFilterState } from '../queue-filters'
 import { colors } from '@scaffald/ui/tokens'
 
@@ -119,6 +124,12 @@ function WorkerCell({
     </Stack>
   )
 }
+/**
+ * Rows the filtered table loads — the endpoint's default page, made explicit
+ * so "In current filter" can say "50+" when the page is full (#1248).
+ */
+const CHECK_LIST_PAGE = 50
+
 export function AdminBackgroundChecksPage() {
   const router = useRouter()
   const { hasRole, isLoading: isLoadingRoles } = useUserRoles()
@@ -134,7 +145,7 @@ export function AdminBackgroundChecksPage() {
   const t = theme === 'dark' ? 'dark' : 'light'
 
   const checksQuery = useAdminChecks(
-    { status: statusFilter === 'all' ? undefined : statusFilter },
+    { status: statusFilter === 'all' ? undefined : statusFilter, limit: CHECK_LIST_PAGE },
     { enabled: isAdmin, staleTime: 30_000 }
   )
 
@@ -146,7 +157,16 @@ export function AdminBackgroundChecksPage() {
   // would think the queue was clear. This is the same class of mistake as
   // rendering a confident 0 before data loads: a number that is technically
   // derived from something, and wrong about the thing it appears to describe.
-  const allChecksQuery = useAdminChecks({}, { enabled: isAdmin, staleTime: 30_000 })
+  //
+  // It also has to describe the WHOLE queue, not its first page: this read the
+  // endpoint's default 50 rows, so Open cases and Over SLA stopped at 50 and
+  // looked exact (#1248). It now asks for the endpoint's maximum, the same
+  // query /office makes (one cache entry, one answer), and a full page reads
+  // "200+" until there is a count endpoint for checks.
+  const allChecksQuery = useAdminChecks(
+    { limit: CHECK_QUEUE_CAP },
+    { enabled: isAdmin, staleTime: 30_000 }
+  )
 
   const disputesQuery = useAdminDisputes(undefined, {
     enabled: isAdmin && activeTab === 'disputes',
@@ -355,7 +375,8 @@ export function AdminBackgroundChecksPage() {
   )
 
   const summaryStats = useMemo(() => {
-    const total = checksQuery.data?.length ?? 0
+    const rows = checksQuery.data ?? []
+    const total: QueueFigure = { value: rows.length, overflow: rows.length >= CHECK_LIST_PAGE }
     const pendingDisputes =
       disputesQuery.data?.filter(
         (dispute: AdminDisputeSummary) =>
@@ -364,7 +385,7 @@ export function AdminBackgroundChecksPage() {
     // The queue's own numbers: what is open, what is late, and how long a case
     // typically sits. A queue that shows status but not elapsed time tells a
     // processor what a case IS, not which one to pick up.
-    const queue = computeQueueMetrics(allChecksQuery.data ?? [])
+    const queue = computeBoundedQueueMetrics(allChecksQuery.data ?? [], CHECK_QUEUE_CAP)
     return {
       total,
       pendingDisputes: pendingDisputes.length,
@@ -421,29 +442,32 @@ export function AdminBackgroundChecksPage() {
             case IS (its status) but never how long it had been sitting, which
             is the number that decides what a processor picks up next. */}
         <MetricRow bordered>
-          <MetricBlock label="Open cases" value={summaryStats.openCount} />
+          <MetricBlock label="Open cases" value={formatQueueFigure(summaryStats.openCount)} />
           <MetricBlock
             label="Over SLA"
-            value={summaryStats.overSlaCount}
-            emphasis={summaryStats.overSlaCount > 0}
+            value={formatQueueFigure(summaryStats.overSlaCount)}
+            emphasis={summaryStats.overSlaCount.value > 0}
             tone="attention"
-            delta={summaryStats.overSlaCount > 0 ? 'needs chasing' : undefined}
+            delta={summaryStats.overSlaCount.value > 0 ? 'needs chasing' : undefined}
           />
           <MetricBlock
             label="Due today"
-            value={summaryStats.dueTodayCount}
-            tone={summaryStats.dueTodayCount > 0 ? 'attention' : 'neutral'}
+            value={formatQueueFigure(summaryStats.dueTodayCount)}
+            tone={summaryStats.dueTodayCount.value > 0 ? 'attention' : 'neutral'}
           />
           <MetricBlock
             label="Median days open"
             // Null, not 0, when nothing is open — an empty queue has no median,
             // and "0d" would read as "we turn everything around same-day".
             value={summaryStats.medianDaysOpen == null ? '—' : `${summaryStats.medianDaysOpen}d`}
+            // Past one full page the median is of the newest cases only; say
+            // so rather than present it as the whole queue's (#1248).
+            delta={summaryStats.overflow ? `newest ${CHECK_QUEUE_CAP}` : undefined}
           />
           <MetricBlock label="Pending disputes" value={summaryStats.pendingDisputes} />
           <MetricBlock
             label="In current filter"
-            value={summaryStats.total}
+            value={formatQueueFigure(summaryStats.total)}
             // The only figure here that IS filter-scoped. Named so it
             // cannot be misread as a queue total sitting beside five that
             // are.

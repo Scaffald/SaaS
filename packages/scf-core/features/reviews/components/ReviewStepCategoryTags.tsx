@@ -1,6 +1,6 @@
 import { Pressable } from 'react-native'
 import { CheckCircle2, Circle } from 'lucide-react-native'
-import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { EmptyState, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 interface Skill {
@@ -30,12 +30,30 @@ export function ReviewStepCategoryTags({
 }: ReviewStepCategoryTagsProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
+  const header = (
+    <Stack gap={8}>
+      <Text style={{ color: colors.text[t].secondary }}>{title}</Text>
+      <Text style={{ color: colors.text[t].secondary }}>{description}</Text>
+    </Stack>
+  )
+
+  // The chips come from the soft-skill catalog now (#1247), which can be
+  // empty for a category; say so rather than show two bare headings.
+  if (skills.length === 0) {
+    return (
+      <Stack gap={16}>
+        {header}
+        <EmptyState
+          title="Nothing to tag here"
+          description="There are no skills in this category yet. Continue to the next step."
+        />
+      </Stack>
+    )
+  }
+
   return (
     <Stack gap={16}>
-      <Stack gap={8}>
-        <Text style={{ color: colors.text[t].secondary }}>{title}</Text>
-        <Text style={{ color: colors.text[t].secondary }}>{description}</Text>
-      </Stack>
+      {header}
 
       {/* Strengths Section */}
       <Stack gap={12}>
@@ -64,7 +82,9 @@ export function ReviewStepCategoryTags({
                 ) : (
                   <Circle size={16} color={colors.gray[500]} />
                 )}
-                <Text style={{ color: isSelected ? colors.green[700] : colors.gray[700] }}>{skill.name}</Text>
+                <Text style={{ color: isSelected ? colors.green[700] : colors.gray[700] }}>
+                  {skill.name}
+                </Text>
               </Pressable>
             )
           })}
@@ -98,7 +118,9 @@ export function ReviewStepCategoryTags({
                 ) : (
                   <Circle size={16} color={colors.gray[500]} />
                 )}
-                <Text style={{ color: isSelected ? colors.error[700] : colors.gray[700] }}>{skill.name}</Text>
+                <Text style={{ color: isSelected ? colors.error[700] : colors.gray[700] }}>
+                  {skill.name}
+                </Text>
               </Pressable>
             )
           })}

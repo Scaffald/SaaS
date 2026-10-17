@@ -1,6 +1,6 @@
 /**
  * Community Reputation REST API
- * Scaffold Score, Karma Bank, reputation history
+ * Scaffald score, Karma Bank, reputation history
  */
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
@@ -58,8 +58,8 @@ const getMyScoreRoute = createRoute({
   method: "get",
   path: "/me",
   tags: ["Community Reputation"],
-  summary: "My Scaffold Score",
-  description: "Get the authenticated users Scaffold Score and Karma Bank",
+  summary: "My Scaffald score",
+  description: "Get the authenticated users Scaffald score and Karma Bank",
   responses: {
     200: {
       description: "Score data",
@@ -132,8 +132,8 @@ const getUserScoreRoute = createRoute({
   method: "get",
   path: "/user/{userId}",
   tags: ["Community Reputation"],
-  summary: "User Scaffold Score",
-  description: "Get a users public Scaffold Score",
+  summary: "User Scaffald score",
+  description: "Get a users public Scaffald score",
   request: {
     params: z.object({ userId: z.string().uuid() }),
   },

@@ -13,6 +13,7 @@ import {
 } from '@scaffald/ui'
 import { useFilterOptions } from '@scf/core/utils/jobs-sdk-hooks'
 import { useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
+import { useOrganization } from '@scf/core/utils/organizations-sdk-hooks'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { colors } from '@scaffald/ui/tokens'
 import { Check } from 'lucide-react-native'
@@ -23,6 +24,7 @@ import { useToolbarFilters } from '@scf/core/components/toolbarFilters'
 import { JobsBottomToolbar } from './components/JobsBottomToolbar'
 import type { JobSortBy, JobSource } from './components/JobsBottomToolbar'
 import { DiscoverJobsLeft, type DiscoverJobsInitialData } from './discover-jobs-left'
+import { readOrgParam } from './jobs-org-param'
 
 /** Sort options, as parallel arrays because SegmentedControl works by index. */
 const SORT_VALUES = ['relevance', 'match_score'] as const
@@ -90,11 +92,16 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
   // Universal search's "See all" lands here with `?search=` (#1179); it was
   // ignored, so the listing opened unfiltered. Seeds the field once — typing
   // afterwards is the screen's own state, as before.
-  const params = useLocalSearchParams<{ search?: string | string[] }>()
+  const params = useLocalSearchParams<{ search?: string | string[]; org?: string | string[] }>()
   const initialSearch = Array.isArray(params.search)
     ? (params.search[0] ?? '')
     : (params.search ?? '')
   const [searchQuery, setSearchQuery] = useState(initialSearch)
+  // The map's employer preview opens this listing with `?org=` (#1282). Seeded
+  // once like `?search=`; it shows as a filter and clears like one.
+  const [organizationId, setOrganizationId] = useState(() => readOrgParam(params.org))
+  const { data: scopedOrganization } = useOrganization(organizationId)
+  const scopedOrganizationName = (scopedOrganization as { name?: string } | undefined)?.name
   const debouncedSearch = useDebounce(searchQuery, 300)
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([])
@@ -121,6 +128,7 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
 
   const handleReset = () => {
     setSearchQuery('')
+    setOrganizationId(undefined)
     setSelectedIndustries([])
     setSelectedJobTypes([])
     setJobSource('all')
@@ -130,6 +138,7 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
 
   const hasFilters =
     searchQuery.length > 0 ||
+    !!organizationId ||
     selectedIndustries.length > 0 ||
     selectedJobTypes.length > 0 ||
     jobSource !== 'all' ||
@@ -192,14 +201,39 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
   const filterPills = useMemo<FilterPillConfig[]>(() => {
     const pills: FilterPillConfig[] = []
 
-    pills.push({
-      id: 'source',
-      label: 'Source',
-      value: jobSource !== 'all' ? (jobSource === 'internal' ? 'Internal' : 'External') : undefined,
-      isActive: jobSource !== 'all',
-      onPress: () => {},
-      popoverContent: sourcePopoverContent,
-    })
+    if (organizationId) {
+      pills.push({
+        id: 'employer',
+        label: 'Employer',
+        value: scopedOrganizationName ?? 'One employer',
+        isActive: true,
+        onPress: () => {},
+        popoverContent: (
+          <Stack gap={8} align="flex-start">
+            <Text style={{ color: colors.text[t].secondary }}>
+              {scopedOrganizationName
+                ? `Only jobs posted by ${scopedOrganizationName}.`
+                : 'Only jobs posted by one employer.'}
+            </Text>
+            <Button size="sm" variant="outline" onPress={() => setOrganizationId(undefined)}>
+              Show every employer
+            </Button>
+          </Stack>
+        ),
+      })
+    } else {
+      // One employer's listing has no outside jobs to choose between, so the
+      // Source filter only appears without one.
+      pills.push({
+        id: 'source',
+        label: 'Source',
+        value:
+          jobSource !== 'all' ? (jobSource === 'internal' ? 'Internal' : 'External') : undefined,
+        isActive: jobSource !== 'all',
+        onPress: () => {},
+        popoverContent: sourcePopoverContent,
+      })
+    }
 
     // Industry, job type and the soft-skills threshold lived in a right-hand
     // rail of their own: a second "Filters" panel beside the toolbar's
@@ -266,6 +300,8 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
 
     return pills
   }, [
+    organizationId,
+    scopedOrganizationName,
     jobSource,
     selectedJobTypes,
     selectedIndustries,
@@ -366,6 +402,7 @@ export function DiscoverJobsScreen({ initialJobs }: DiscoverJobsScreenOptions = 
         jobSource={jobSource}
         minSoftSkillsMatch={minSoftSkillsMatch}
         sortBy={sortBy}
+        organizationId={organizationId}
       />
     ),
     // No rail: its filters are sections of the toolbar flyout (#1035).

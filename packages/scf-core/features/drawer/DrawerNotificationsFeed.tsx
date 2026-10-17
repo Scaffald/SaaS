@@ -22,7 +22,8 @@ import { Pressable, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
 import { Row, Stack, Text, TextLink, useThemeContext } from '@scaffald/ui'
 import { colors, fontSize } from '@scaffald/ui/tokens'
-import { useNotifications, useUnreadCount } from '@scf/core/utils/notifications-sdk-hooks'
+import { useNotifications } from '@scf/core/utils/notifications-sdk-hooks'
+import { useModeUnreadCount } from '@scf/core/features/notifications/useModeUnreadCount'
 import { toNotificationItems } from '@scf/core/features/notifications/normalize'
 import { filterNotificationsForMode } from '@scf/core/features/notifications/audience'
 import { useAppMode } from '@scf/core/utils/useAppMode'
@@ -54,7 +55,8 @@ export function DrawerNotificationsFeed({ onNavigate }: DrawerNotificationsFeedP
     [notificationsQuery.data, mode]
   )
   const openNotification = useOpenNotification(onNavigate)
-  const unreadCount = useUnreadCount().data?.data?.unread_count ?? 0
+  // This mode's unread rows, so "Mark all read" only shows when the feed has some (#1250).
+  const { count: unreadCount } = useModeUnreadCount()
   const markAllRead = useMarkAllNotificationsRead()
 
   const handleSeeAllPress = useCallback(() => {

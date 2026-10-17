@@ -1,9 +1,9 @@
 import { useNotificationDeviceRegistration } from '@scf/core/hooks/useNotificationDeviceRegistration'
 import {
   useNotificationPreferences,
-  useUnreadCount,
   useMarkAsReadMutation,
 } from '@scf/core/utils/notifications-sdk-hooks'
+import { useModeUnreadCount } from '@scf/core/features/notifications/useModeUnreadCount'
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useQueryClient } from '@tanstack/react-query'
@@ -127,8 +127,10 @@ function DrawerLayoutInner({
   const pushEnabled = preferencesData?.data?.push_notifications ?? true
   useNotificationDeviceRegistration(pushEnabled)
 
-  const { data: unreadCountData } = useUnreadCount({ enabled: !!session })
-  const unreadCount = unreadCountData?.data?.unread_count ?? 0
+  // Counted for the current mode, from the rows the inbox would show: the
+  // count endpoint counted both modes, so an employer-only row lit the badge
+  // in worker mode over an inbox with nothing new in it (#1250).
+  const { count: unreadCount, label: unreadLabel } = useModeUnreadCount({ enabled: !!session })
 
   const { data: profileData } = useGeneralInfoWidget()
   const avatarUrl = profileData?.avatar_url ?? profileData?.avatar_path ?? undefined
@@ -335,7 +337,7 @@ function DrawerLayoutInner({
                 <Text
                   style={StyleSheet.flatten([mastheadStyles.badgeText, { color: colors.white }])}
                 >
-                  {unreadCount > 99 ? '99+' : String(unreadCount)}
+                  {unreadLabel}
                 </Text>
               </View>
             ) : null}
