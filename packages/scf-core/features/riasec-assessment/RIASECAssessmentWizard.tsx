@@ -1,9 +1,5 @@
 import { AssessmentWizard, useAssessmentSave, toError } from '@scf/core/features/assessments'
 import { RiasecQuickAssessment } from '@scf/core/features/career-assessment/components/RiasecQuickAssessment'
-import {
-  careerAssessmentDefaults,
-  type RiasecScores,
-} from '@scf/core/features/career-assessment/config/career-assessment-schema'
 import { useRIASECStatus, useSaveCareerAssessmentMutation } from '@scf/core/utils/onet-sdk-hooks'
 import { DashboardLayout } from '@scf/core/components/layouts'
 import { useRouteScreenTitle } from '@scf/core/hooks/useRouteScreenTitle'
@@ -11,7 +7,15 @@ import { AssessmentHeader, AssessmentProgressBar, Card, useThemeContext } from '
 import { colors } from '@scaffald/ui/tokens'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Text, Row, Stack } from '@scaffald/ui'
-import { Clock, Compass, Target, Zap } from 'lucide-react-native'
+import {
+  completedScores,
+  countRated,
+  draftFromSaved,
+  emptyRiasecDraft,
+  RIASEC_DIMENSION_COUNT,
+  ratedPercent,
+  type RiasecDraft,
+} from './riasec-draft'
 
 const RIASEC_DIMENSIONS = [
   { key: 'R', name: 'Realistic', description: 'Hands-on, practical activities' },
@@ -29,11 +33,12 @@ export function RIASECAssessmentWizard() {
   const { theme } = useThemeContext()
   const { title: routeTitle } = useRouteScreenTitle()
   const { data: status, isLoading, error } = useRIASECStatus()
-  const [scores, setScores] = useState<RiasecScores>(careerAssessmentDefaults.riasec_scores)
+  // Every dimension starts unset; only a value the user chose counts (#1173).
+  const [scores, setScores] = useState<RiasecDraft>(emptyRiasecDraft)
 
   useEffect(() => {
     if (status?.scores) {
-      setScores(status.scores as RiasecScores)
+      setScores(draftFromSaved(status.scores))
     }
   }, [status])
 
@@ -44,18 +49,17 @@ export function RIASECAssessmentWizard() {
     useMutation: useSaveCareerAssessmentMutation,
   })
 
+  const completed = completedScores(scores)
+
   const handleComplete = () => {
-    saveMutation.mutate({ riasec_scores: scores })
+    if (!completed) return
+    saveMutation.mutate({ riasec_scores: completed })
   }
 
-  const allRated = Object.values(scores).every(
-    (score) => typeof score === 'number' && score >= 1 && score <= 5
-  )
-
-  const ratedCount = Object.values(scores).filter(
-    (score) => typeof score === 'number' && score >= 1 && score <= 5
-  ).length
-  const completionScore = status?.isCompleted ? 100 : Math.round((ratedCount / 6) * 100)
+  const ratedCount = countRated(scores)
+  // The bar follows what is rated on screen, not whether a result was saved
+  // before: a retake that loads saved scores is already at 6 of 6 anyway.
+  const completionScore = ratedPercent(scores)
 
   const wizardContent = (
     <AssessmentWizard
@@ -83,7 +87,7 @@ export function RIASECAssessmentWizard() {
           variant="filled"
           color="primary"
           onPress={handleComplete}
-          disabled={!allRated || saveMutation.isPending}
+          disabled={!completed || saveMutation.isPending}
         >
           Complete Assessment
         </Button>
@@ -129,7 +133,7 @@ export function RIASECAssessmentWizard() {
           </Text>
           <AssessmentProgressBar value={completionScore} height={6} />
           <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
-            {ratedCount} of 6 dimensions rated
+            {`${ratedCount} of ${RIASEC_DIMENSION_COUNT} dimensions rated`}
           </Text>
         </Stack>
       </Card>

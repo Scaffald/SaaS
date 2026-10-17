@@ -7,6 +7,7 @@ import {
   CommunitiesWidget,
   CompactNewsWidget,
   HomeMetrics,
+  ProfileViewersWidget,
   RecentActivityWidget,
   TeamInvitationsWidget,
 } from './components'
@@ -21,13 +22,16 @@ import {
  * nothing about what to do first.
  *
  * Then (#1033): the greeting moved into the shared ScreenHeader, the figures
- * (search appearances, profile views, invitations) open the column, and the
+ * (search appearances, profile views, team invitations) open the column, and the
  * profile checklist shrank to one block that disappears once the profile is
  * complete. On a desktop that block sits in the right rail, as in the
  * prototype; on a phone it follows the figures. After that: whatever is
  * waiting on the worker, assessments, then what has been happening. The
  * phone gets the same column in the same order rather than a different
  * subset. `DashboardIndexRight` is desktop-only.
+ *
+ * Who viewed the profile follows whatever is waiting, as in the prototype,
+ * where the viewers sit under the invitations (#1172).
  */
 export function DashboardIndexLeft() {
   const { isMobile } = useResponsive()
@@ -41,6 +45,8 @@ export function DashboardIndexLeft() {
       <InquiryOverviewWidget />
       {/* No rule here: the metric row draws its own hairline beneath it, and
           with no invitations a Separator sat directly under that one. */}
+      <ProfileViewersWidget />
+      <Separator />
       <AssessmentsSection />
       <Separator />
       <RecentActivityWidget />

@@ -2,6 +2,7 @@ export { HomeMetrics } from './HomeMetrics'
 export { AssessmentsSection } from './AssessmentsSection'
 export { CommunitiesWidget } from './CommunitiesWidget'
 export { CompactNewsWidget } from './CompactNewsWidget'
+export { ProfileViewersWidget } from './ProfileViewersWidget'
 export { RecentActivityWidget } from './RecentActivityWidget'
 export { SuggestedContactsWidget } from './SuggestedContactsWidget'
 export {
