@@ -23,12 +23,7 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
-import {
-  Download,
-  Info,
-  PieChart,
-  ShieldCheck,
-} from 'lucide-react-native'
+import { Download, Info, PieChart, ShieldCheck } from 'lucide-react-native'
 
 // ============================================================================
 // Types
@@ -303,8 +298,6 @@ export function EEOReportScreen() {
           </Card>
         )}
 
-        
-
         {/* Compliance Status Banner */}
         {/* Period Selector */}
         <Row gap={8}>
@@ -323,7 +316,10 @@ export function EEOReportScreen() {
                   style={{
                     fontSize: fontSize.sm,
                     fontWeight: '500',
-                    color: period === p.value ? colors.text[theme].quaternary : colors.text[theme].secondary,
+                    color:
+                      period === p.value
+                        ? colors.text[theme].quaternary
+                        : colors.text[theme].secondary,
                   }}
                 >
                   {p.label}
@@ -333,24 +329,52 @@ export function EEOReportScreen() {
           ))}
         </Row>
 
-        {/* Summary Metrics — a band, not four tinted cards (#839). */}
+        {/* Summary Metrics — a band, not four tinted cards (#839).
+
+            `totals` is built from self-identification records only, so the
+            first figure counts self-identified applicants, not applications.
+            Labelled "Applications", it read 0 directly under a banner saying
+            "0 of 12 applicants self-identified" — two figures that looked like
+            they disagreed about one number (#1174). The label now says what
+            it counts and the delta carries the banner's denominator. Until
+            the report loads, every figure is a dash rather than a zero. */}
         <MetricRow bordered minColumnWidth={150}>
           <MetricBlock
-            label="Applications"
-            value={totals.applications}
-            delta={`${period.toUpperCase()} period`}
+            label="Self-identified"
+            value={report ? totals.applications : '—'}
+            delta={
+              report
+                ? `of ${report.coverage.totalApplications} applicants · ${period.toUpperCase()}`
+                : `${period.toUpperCase()} period`
+            }
           />
           <MetricBlock
             label="Hired"
-            value={totals.hired}
-            delta={hireRate === null ? 'no applicants' : `${(hireRate * 100).toFixed(1)}% rate`}
+            value={report ? totals.hired : '—'}
+            delta={
+              hireRate === null
+                ? 'no self-identified applicants'
+                : `${(hireRate * 100).toFixed(1)}% of self-identified`
+            }
           />
-          <MetricBlock label="Job groups" value={totals.jobGroups} delta="active categories" />
+          <MetricBlock
+            label="Job groups"
+            value={report ? totals.jobGroups : '—'}
+            delta="active categories"
+          />
+          {/* The attention hue is for a figure that needs somebody. It was set
+              unconditionally, so "0 — flags detected" rendered amber (#1174). */}
           <MetricBlock
             label="Adverse impact"
-            value={adverseImpactFlagCount}
-            delta={adverseImpactFlagCount === 1 ? 'flag detected' : 'flags detected'}
-            tone="attention"
+            value={report ? adverseImpactFlagCount : '—'}
+            delta={
+              adverseImpactFlagCount === 0
+                ? 'none detected'
+                : adverseImpactFlagCount === 1
+                  ? 'flag detected'
+                  : 'flags detected'
+            }
+            tone={adverseImpactFlagCount > 0 ? 'attention' : 'neutral'}
             emphasis={adverseImpactFlagCount > 0}
           />
         </MetricRow>
@@ -384,7 +408,9 @@ export function EEOReportScreen() {
                           >
                             {categoryLabel(group.jobGroup)}
                           </Text>
-                          <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].tertiary }}>
+                          <Text
+                            style={{ fontSize: fontSize.sm, color: colors.text[theme].tertiary }}
+                          >
                             {group.totalApplications} applicants • {group.totalHired} hired
                           </Text>
                         </Stack>
@@ -478,11 +504,20 @@ export function EEOReportScreen() {
                             }}
                           >
                             <Text
-                              style={{ flex: 2, fontSize: fontSize.sm, color: colors.text[theme].primary }}
+                              style={{
+                                flex: 2,
+                                fontSize: fontSize.sm,
+                                color: colors.text[theme].primary,
+                              }}
                             >
                               {categoryLabel(cat.category)}
                               {cat.suppressed && (
-                                <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}>
+                                <Text
+                                  style={{
+                                    fontSize: fontSize.xxs,
+                                    color: colors.text[theme].tertiary,
+                                  }}
+                                >
                                   {'  '}(suppressed)
                                 </Text>
                               )}
@@ -552,7 +587,13 @@ export function EEOReportScreen() {
                 >
                   <Row gap={12} align="center">
                     <Info size={16} color={colors.icon[theme].default} />
-                    <Text style={{ flex: 1, fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: fontSize.sm,
+                        color: colors.text[theme].secondary,
+                      }}
+                    >
                       The 4/5ths (80%) rule: A selection rate for any group that is less than 80% of
                       the highest group's rate may indicate adverse impact.
                     </Text>
@@ -563,7 +604,11 @@ export function EEOReportScreen() {
                 <Card variant="glass" padding="md">
                   <Stack gap={12}>
                     <Text
-                      style={{ fontWeight: '600', fontSize: fontSize.md, color: colors.text[theme].primary }}
+                      style={{
+                        fontWeight: '600',
+                        fontSize: fontSize.md,
+                        color: colors.text[theme].primary,
+                      }}
                     >
                       Gender Analysis
                     </Text>
@@ -637,10 +682,18 @@ export function EEOReportScreen() {
                           backgroundColor: colors.bg[theme].subtle,
                         }}
                       >
-                        <Text style={{ flex: 2, fontSize: fontSize.sm, color: colors.text[theme].primary }}>
+                        <Text
+                          style={{
+                            flex: 2,
+                            fontSize: fontSize.sm,
+                            color: colors.text[theme].primary,
+                          }}
+                        >
                           {categoryLabel(row.category)}
                           {row.suppressed && (
-                            <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}>
+                            <Text
+                              style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}
+                            >
                               {'  '}(suppressed)
                             </Text>
                           )}
@@ -687,7 +740,11 @@ export function EEOReportScreen() {
                 <Card variant="glass" padding="md">
                   <Stack gap={12}>
                     <Text
-                      style={{ fontWeight: '600', fontSize: fontSize.md, color: colors.text[theme].primary }}
+                      style={{
+                        fontWeight: '600',
+                        fontSize: fontSize.md,
+                        color: colors.text[theme].primary,
+                      }}
                     >
                       Veteran Status Analysis
                     </Text>
@@ -702,10 +759,18 @@ export function EEOReportScreen() {
                           backgroundColor: colors.bg[theme].subtle,
                         }}
                       >
-                        <Text style={{ flex: 2, fontSize: fontSize.sm, color: colors.text[theme].primary }}>
+                        <Text
+                          style={{
+                            flex: 2,
+                            fontSize: fontSize.sm,
+                            color: colors.text[theme].primary,
+                          }}
+                        >
                           {categoryLabel(row.category)}
                           {row.suppressed && (
-                            <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}>
+                            <Text
+                              style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}
+                            >
                               {'  '}(suppressed)
                             </Text>
                           )}
@@ -760,7 +825,13 @@ export function EEOReportScreen() {
                 >
                   <Row gap={12} align="center">
                     <PieChart size={16} color={colors.icon[theme].default} />
-                    <Text style={{ flex: 1, fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: fontSize.sm,
+                        color: colors.text[theme].secondary,
+                      }}
+                    >
                       OFCCP Applicant Flow Log — Tracks the demographic composition of applicants at
                       each stage of the hiring pipeline for federal contractor compliance.
                     </Text>
@@ -802,13 +873,22 @@ export function EEOReportScreen() {
                                 >
                                   {stage}
                                 </Text>
-                                <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].tertiary }}>
+                                <Text
+                                  style={{
+                                    fontSize: fontSize.sm,
+                                    color: colors.text[theme].tertiary,
+                                  }}
+                                >
                                   {total} total
                                 </Text>
                               </Row>
                               <Row
                                 gap={1}
-                                style={{ height: 24, borderRadius: borderRadius.xs, overflow: 'hidden' }}
+                                style={{
+                                  height: 24,
+                                  borderRadius: borderRadius.xs,
+                                  overflow: 'hidden',
+                                }}
                               >
                                 {group.categories.map((cat) => {
                                   const value = cat[key]
@@ -828,7 +908,11 @@ export function EEOReportScreen() {
                                     >
                                       {pct > 10 && (
                                         <Text
-                                          style={{ fontSize: fontSize.xxs, color: colors.white, fontWeight: '600' }}
+                                          style={{
+                                            fontSize: fontSize.xxs,
+                                            color: colors.white,
+                                            fontWeight: '600',
+                                          }}
                                         >
                                           {value}
                                         </Text>
@@ -854,7 +938,12 @@ export function EEOReportScreen() {
                                     backgroundColor: categoryColor(cat.category),
                                   }}
                                 />
-                                <Text style={{ fontSize: fontSize.xxs, color: colors.text[theme].tertiary }}>
+                                <Text
+                                  style={{
+                                    fontSize: fontSize.xxs,
+                                    color: colors.text[theme].tertiary,
+                                  }}
+                                >
                                   {categoryLabel(cat.category)}
                                 </Text>
                               </Row>
