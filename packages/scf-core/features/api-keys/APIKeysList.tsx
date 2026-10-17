@@ -1,62 +1,52 @@
 /**
  * API Keys List Component
  * Displays all API keys for an organization with management options
+ *
+ * A ruled table since #1207, the prototype's admin records form. Each key
+ * was a ~300px card — serif name, a dark-brown tier chip, a light-blue scope
+ * chip, View Usage / Manage Scopes / Revoke buttons and a ⋮ that did nothing
+ * — so three keys filled a 1440 screen, revoked keys sat between live ones
+ * at the same weight, and the fixed blue / error[100] / tier ramps stayed
+ * light boxes in dark mode. Now: Name, Key, Tier, Scopes, Last used,
+ * Created, Status, with the actions in one ⋯ menu; revoked keys behind the
+ * toolbar's Revoked tab; chips are themed StatusBadges. Below the Table's
+ * stacking width (and always on native) each key becomes a stacked
+ * label/value card, which keeps #1126's phone layout.
  */
 
-import { useState, type ReactNode } from 'react'
+import { useMemo, useState } from 'react'
+import { Pressable, StyleSheet, View } from 'react-native'
 import {
-  ScreenHeader,
   Button,
-  Card,
-  H4,
-  Paragraph,
-  Separator,
-  Spinner,
+  EmptyState,
+  ListToolbar,
+  Popover,
+  PopoverContent,
   Row,
+  ScreenHeader,
+  Spinner,
   Stack,
-  useResponsive,
+  Table,
+  Text,
   useThemeContext,
+  type TableColumn,
+  type TableRowData,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
-import { copyToClipboard as copyText } from '@scf/core/utils/clipboard'
-import { Copy, Key, MoreVertical, Plus, Trash2 } from 'lucide-react-native'
+import { colors, fontSize, radius, spacing } from '@scaffald/ui/tokens'
+import { Check, Copy, Key, MoreHorizontal, Plus } from 'lucide-react-native'
 import { format } from 'date-fns'
-
-/** One metadata field: label over value on desktop, label beside value on a phone. */
-function KeyMeta({
-  label,
-  stacked,
-  grow,
-  children,
-}: {
-  label: string
-  stacked: boolean
-  grow?: boolean
-  children: ReactNode
-}) {
-  const { theme } = useThemeContext()
-  const caption = (
-    <Paragraph size="sm" color={colors.text[theme].tertiary}>
-      {label}
-    </Paragraph>
-  )
-  if (stacked) {
-    return (
-      <Row gap={12} justify="space-between" align="flex-start">
-        {caption}
-        <Stack flex={1} align="flex-end">
-          {children}
-        </Stack>
-      </Row>
-    )
-  }
-  return (
-    <Stack gap={4} style={grow ? { flex: 1, minWidth: 160 } : undefined}>
-      {caption}
-      {children}
-    </Stack>
-  )
-}
+import { copyToClipboard as copyText } from '@scf/core/utils/clipboard'
+import { StatusBadge } from '@scf/core/components/ui/StatusBadge'
+import {
+  type ApiKeyStatus,
+  type ApiKeyTab,
+  apiKeyStatus,
+  apiKeyTierLabel,
+  maskApiKey,
+  matchesApiKeySearch,
+  partitionApiKeys,
+  visibleScopes,
+} from './api-key-rows'
 
 export interface APIKey {
   id: string
@@ -79,6 +69,90 @@ export interface APIKeysListProps {
   onManageScopes?: (keyId: string) => void
 }
 
+const STATUS_TAG: Record<
+  ApiKeyStatus,
+  { label: string; variant: 'success' | 'warning' | 'error' }
+> = {
+  active: { label: 'Active', variant: 'success' },
+  expired: { label: 'Expired', variant: 'warning' },
+  revoked: { label: 'Revoked', variant: 'error' },
+}
+
+const formatDate = (value: string | null, pattern = 'MMM d, yyyy') => {
+  if (!value) return null
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? null : format(date, pattern)
+}
+
+interface KeyAction {
+  label: string
+  onPress: () => void
+  destructive?: boolean
+}
+
+/**
+ * The row's ⋯ menu. Built on Popover, like the pipeline's Move menu, because
+ * @scaffald/ui's Dropdown has no key handling (see MoveMenu.tsx); every item
+ * is a real Pressable with a menuitem role so it is in the tab order.
+ */
+function KeyActionsMenu({ keyName, actions }: { keyName: string; actions: KeyAction[] }) {
+  const { theme } = useThemeContext()
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Popover
+      placement="bottom"
+      trigger="manual"
+      open={open}
+      onOpenChange={setOpen}
+      offset={4}
+      content={
+        <PopoverContent>
+          <View accessibilityRole="menu" style={styles.menu}>
+            {actions.map((action) => (
+              <Pressable
+                key={action.label}
+                onPress={() => {
+                  setOpen(false)
+                  action.onPress()
+                }}
+                accessibilityRole="menuitem"
+                accessibilityLabel={`${action.label}: ${keyName}`}
+                style={styles.menuItem}
+              >
+                <Text
+                  style={{
+                    fontSize: fontSize.md,
+                    color: action.destructive ? colors.fg[theme].error : colors.text[theme].primary,
+                  }}
+                >
+                  {action.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </PopoverContent>
+      }
+    >
+      <Pressable
+        onPress={() => setOpen((v) => !v)}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        accessibilityLabel={`Actions for ${keyName}`}
+        aria-haspopup="menu"
+        style={[
+          styles.menuTrigger,
+          {
+            borderColor: open ? colors.border[theme].active : 'transparent',
+          },
+        ]}
+      >
+        <MoreHorizontal size={18} color={colors.icon[theme].muted} />
+      </Pressable>
+    </Popover>
+  )
+}
+
 export function APIKeysList({
   keys,
   isLoading = false,
@@ -88,8 +162,9 @@ export function APIKeysList({
   onManageScopes,
 }: APIKeysListProps) {
   const { theme } = useThemeContext()
-  const { isMobile } = useResponsive()
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null)
+  const [tab, setTab] = useState<ApiKeyTab>('active')
+  const [search, setSearch] = useState('')
 
   const copyToClipboard = (text: string, keyId: string) => {
     void copyText(text)
@@ -97,39 +172,135 @@ export function APIKeysList({
     setTimeout(() => setCopiedKeyId(null), 2000)
   }
 
-  const getRateLimitBadgeColor = (tier: string) => {
-    switch (tier) {
-      case 'free':
-        return colors.gray[500]
-      case 'pro':
-        return colors.blue[500]
-      case 'enterprise':
-        return colors.purple[500]
-      default:
-        return colors.gray[500]
-    }
-  }
+  const partitions = useMemo(() => partitionApiKeys(keys), [keys])
+  const rows = useMemo(
+    () => partitions[tab].filter((key) => matchesApiKeySearch(key, search)),
+    [partitions, tab, search]
+  )
 
-  const getRateLimitDescription = (tier: string) => {
-    switch (tier) {
-      case 'free':
-        return '100 req/min'
-      case 'pro':
-        return '1,000 req/min'
-      case 'enterprise':
-        return '10,000 req/min'
-      default:
-        return 'Unknown'
-    }
-  }
+  const muted = colors.text[theme].tertiary
+
+  const columns: TableColumn[] = [
+    {
+      id: 'name',
+      title: 'Name',
+      render: (_value, row) => (
+        <Text style={{ color: colors.text[theme].primary, fontWeight: '600' }}>
+          {(row as unknown as APIKey).name}
+        </Text>
+      ),
+    },
+    {
+      id: 'key_prefix',
+      title: 'Key',
+      width: 210,
+      render: (_value, row) => {
+        const key = row as unknown as APIKey
+        const copied = copiedKeyId === key.id
+        return (
+          <Row gap={4} align="center">
+            <Text
+              style={{ color: colors.text[theme].secondary, fontFamily: 'monospace' }}
+              numberOfLines={1}
+            >
+              {maskApiKey(key.key_prefix)}
+            </Text>
+            <Pressable
+              onPress={() => copyToClipboard(key.key_prefix, key.id)}
+              accessibilityRole="button"
+              accessibilityLabel={copied ? 'Key prefix copied' : `Copy key prefix for ${key.name}`}
+              style={styles.iconButton}
+            >
+              {copied ? (
+                <Check size={14} color={colors.icon[theme].success} />
+              ) : (
+                <Copy size={14} color={colors.icon[theme].muted} />
+              )}
+            </Pressable>
+          </Row>
+        )
+      },
+    },
+    {
+      id: 'rate_limit_tier',
+      title: 'Tier',
+      width: 140,
+      render: (_value, row) => (
+        <StatusBadge>{apiKeyTierLabel((row as unknown as APIKey).rate_limit_tier)}</StatusBadge>
+      ),
+    },
+    {
+      id: 'scopes',
+      title: 'Scopes',
+      render: (_value, row) => {
+        const { shown, hidden } = visibleScopes((row as unknown as APIKey).scopes)
+        if (shown.length === 0) return <Text style={{ color: muted }}>None</Text>
+        return (
+          <Row gap={4} wrap align="center">
+            {shown.map((scope) => (
+              <StatusBadge key={scope}>{scope}</StatusBadge>
+            ))}
+            {hidden > 0 ? <Text style={{ color: muted, fontSize: fontSize.xs }}>+{hidden}</Text> : null}
+          </Row>
+        )
+      },
+    },
+    {
+      id: 'last_used_at',
+      title: 'Last used',
+      width: 120,
+      render: (_value, row) => formatDate((row as unknown as APIKey).last_used_at) ?? 'Never',
+    },
+    {
+      id: 'created_at',
+      title: 'Created',
+      width: 120,
+      render: (_value, row) => formatDate((row as unknown as APIKey).created_at) ?? '—',
+    },
+    {
+      id: 'status',
+      title: 'Status',
+      width: 120,
+      render: (_value, row) => {
+        const key = row as unknown as APIKey
+        const tag = STATUS_TAG[apiKeyStatus(key)]
+        const expires = key.is_active ? formatDate(key.expires_at) : null
+        return (
+          <Stack gap={2}>
+            <StatusBadge variant={tag.variant}>{tag.label}</StatusBadge>
+            {expires && tag.label === 'Active' ? (
+              <Text style={{ color: muted, fontSize: fontSize.xs }}>Expires {expires}</Text>
+            ) : null}
+          </Stack>
+        )
+      },
+    },
+    {
+      // Titled so the stacked phone card keeps it: the Table drops untitled
+      // columns when it stacks, which would leave a phone with no actions.
+      id: 'actions',
+      title: 'Actions',
+      width: 80,
+      align: 'right',
+      render: (_value, row) => {
+        const key = row as unknown as APIKey
+        const actions: KeyAction[] = [{ label: 'View usage', onPress: () => onViewUsage(key.id) }]
+        if (key.is_active && onManageScopes) {
+          actions.push({ label: 'Manage scopes', onPress: () => onManageScopes(key.id) })
+        }
+        if (key.is_active) {
+          actions.push({ label: 'Revoke', onPress: () => onRevokeKey(key.id), destructive: true })
+        }
+        return <KeyActionsMenu keyName={key.name} actions={actions} />
+      },
+    },
+  ]
 
   if (isLoading) {
     return (
-      <Stack flex={1} justify="center" align="center" padding="xl">
+      <Stack flex={1} justify="center" align="center" padding="xl" gap={16}>
         <Spinner variant="ios" size="lg" color="primary" />
-        <Paragraph style={{ marginTop: 16 }} color={colors.text[theme].tertiary}>
-          Loading API keys...
-        </Paragraph>
+        <Text style={{ color: muted }}>Loading API keys…</Text>
       </Stack>
     )
   }
@@ -148,172 +319,61 @@ export function APIKeysList({
         }
       />
 
-      <Separator />
-
-      {/* Keys List */}
       {keys.length === 0 ? (
-        <Card padding="lg" variant="outlined">
-          <Stack align="center" gap={16} padding="xl">
-            <Key size={48} color={colors.icon[theme].muted} />
-            <Stack align="center" gap={8}>
-              <H4>No API Keys</H4>
-              <Paragraph color={colors.text[theme].tertiary} align="center">
-                Create your first API key to start using the Scaffald SDK
-              </Paragraph>
-            </Stack>
-            <Button iconStart={Plus} onPress={onCreateKey} color="primary">
-              Create Your First API Key
-            </Button>
-          </Stack>
-        </Card>
+        <EmptyState
+          icon={Key}
+          title="No API keys"
+          description="Create your first API key to start using the Scaffald SDK."
+        />
       ) : (
-        <Stack gap={12}>
-          {keys.map((key) => (
-            <Card key={key.id} padding="lg" variant="outlined">
-              <Stack gap={16}>
-                {/* Key Header */}
-                <Row justify="space-between" align="flex-start">
-                  <Stack gap={8} flex={1}>
-                    <Row align="center" gap={8}>
-                      <H4>{key.name}</H4>
-                      {!key.is_active && (
-                        <Card
-                          style={{
-                            backgroundColor: colors.error[100],
-                            paddingHorizontal: 8,
-                            paddingVertical: 4,
-                            borderRadius: 7,
-                          }}
-                        >
-                          <Paragraph size="sm" color={colors.fg[theme].error}>
-                            REVOKED
-                          </Paragraph>
-                        </Card>
-                      )}
-                    </Row>
-
-                    {/* Key Prefix */}
-                    <Row align="center" gap={8}>
-                      <Card
-                        style={{
-                          backgroundColor: colors.bg[theme].muted,
-                          paddingHorizontal: 12,
-                          paddingVertical: 8,
-                          borderRadius: 7,
-                        }}
-                      >
-                        <Paragraph size="sm" style={{ fontFamily: 'monospace' }}>
-                          {key.key_prefix}
-                        </Paragraph>
-                      </Card>
-                      <Button
-                        size="sm"
-                        variant="text"
-                        iconStart={Copy}
-                        onPress={() => copyToClipboard(key.key_prefix, key.id)}
-                      >
-                        {copiedKeyId === key.id ? 'Copied!' : ''}
-                      </Button>
-                    </Row>
-                  </Stack>
-
-                  {/* Actions Menu */}
-                  <Button size="sm" variant="text" iconStart={MoreVertical} />
-                </Row>
-
-                {/* Key Metadata. On a phone the five fields shared one
-                    wrapping row and "Scopes" was squeezed to "Scop / es"
-                    (#1126); there they stack as label/value lines. */}
-                <Stack
-                  gap={isMobile ? 10 : 16}
-                  style={isMobile ? undefined : { flexDirection: 'row', flexWrap: 'wrap' }}
-                >
-                  <KeyMeta label="Rate Limit" stacked={isMobile}>
-                    <Card
-                      style={{
-                        backgroundColor: getRateLimitBadgeColor(key.rate_limit_tier),
-                        paddingHorizontal: 8,
-                        paddingVertical: 4,
-                        borderRadius: 7,
-                      }}
-                    >
-                      <Paragraph size="sm" color={colors.text[theme].primary}>
-                        {key.rate_limit_tier.toUpperCase()} -{' '}
-                        {getRateLimitDescription(key.rate_limit_tier)}
-                      </Paragraph>
-                    </Card>
-                  </KeyMeta>
-
-                  <KeyMeta label="Scopes" stacked={isMobile} grow>
-                    <Row gap={8} wrap style={isMobile ? { justifyContent: 'flex-end' } : undefined}>
-                      {key.scopes.map((scope) => (
-                        <Card
-                          key={scope}
-                          style={{
-                            backgroundColor: colors.blue[200],
-                            paddingHorizontal: 8,
-                            paddingVertical: 4,
-                            borderRadius: 7,
-                          }}
-                        >
-                          <Paragraph size="sm" color={colors.blue[700]}>
-                            {scope}
-                          </Paragraph>
-                        </Card>
-                      ))}
-                    </Row>
-                  </KeyMeta>
-
-                  <KeyMeta label="Last Used" stacked={isMobile}>
-                    <Paragraph size="sm">
-                      {key.last_used_at
-                        ? format(new Date(key.last_used_at), 'MMM d, yyyy HH:mm')
-                        : 'Never'}
-                    </Paragraph>
-                  </KeyMeta>
-
-                  <KeyMeta label="Created" stacked={isMobile}>
-                    <Paragraph size="sm">
-                      {format(new Date(key.created_at), 'MMM d, yyyy')}
-                    </Paragraph>
-                  </KeyMeta>
-
-                  {key.expires_at && (
-                    <KeyMeta label="Expires" stacked={isMobile}>
-                      <Paragraph size="sm" color={colors.fg[theme].warning}>
-                        {format(new Date(key.expires_at), 'MMM d, yyyy')}
-                      </Paragraph>
-                    </KeyMeta>
-                  )}
-                </Stack>
-
-                {/* Actions — wrap, so Revoke never runs into the card edge */}
-                <Row gap={8} wrap>
-                  <Button size="sm" variant="outline" onPress={() => onViewUsage(key.id)}>
-                    View Usage
-                  </Button>
-                  {onManageScopes && key.is_active && (
-                    <Button size="sm" variant="outline" onPress={() => onManageScopes(key.id)}>
-                      Manage Scopes
-                    </Button>
-                  )}
-                  {key.is_active && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      color="error"
-                      iconStart={Trash2}
-                      onPress={() => onRevokeKey(key.id)}
-                    >
-                      Revoke
-                    </Button>
-                  )}
-                </Row>
-              </Stack>
-            </Card>
-          ))}
-        </Stack>
+        <>
+          <ListToolbar
+            tabs={[
+              { key: 'active', label: 'Active', count: partitions.active.length },
+              { key: 'revoked', label: 'Revoked', count: partitions.revoked.length },
+            ]}
+            activeTab={tab}
+            onTabChange={(key) => setTab(key as ApiKeyTab)}
+            searchValue={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Search by name or key prefix…"
+            resultCount={rows.length}
+            resultNoun="key"
+          />
+          <Table
+            columns={columns}
+            data={rows as unknown as TableRowData[]}
+            getRowId={(row) => String((row as unknown as APIKey).id)}
+            pageSize={50}
+            emptyMessage={
+              search.trim()
+                ? 'No keys match that search.'
+                : tab === 'revoked'
+                  ? 'No revoked keys.'
+                  : 'No active keys. Revoked keys are on the Revoked tab.'
+            }
+          />
+        </>
       )}
     </Stack>
   )
 }
+
+const styles = StyleSheet.create({
+  menu: {
+    minWidth: 160,
+  },
+  menuItem: {
+    paddingVertical: spacing[8],
+    paddingHorizontal: spacing[12],
+  },
+  menuTrigger: {
+    padding: spacing[4],
+    borderWidth: 1,
+    borderRadius: radius.md,
+    alignSelf: 'flex-end',
+  },
+  iconButton: {
+    padding: spacing[4],
+  },
+})

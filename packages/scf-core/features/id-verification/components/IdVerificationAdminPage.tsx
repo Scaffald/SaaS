@@ -15,46 +15,33 @@ import {
   MetricRow,
   ScreenHeader,
   Spinner,
-  Tabs,
   Text,
   Row,
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { colors, fontSize } from '@scaffald/ui/tokens'
+import { StatusBadge } from '@scf/core/components/ui/StatusBadge'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type OrganizationOption = RouterOutputs['office']['getOrganizations']['organizations'][number]
 type StatusFilter = 'all' | 'active' | 'expired' | 'revoked'
 
+// Themed StatusBadge tones rather than fixed 100/700 ramps, which stayed
+// light boxes on the dark ground.
 const STATUS_META: Record<
   Exclude<StatusFilter, 'all'>,
-  { label: string; color: string; backgroundColor: string }
+  { label: string; variant: 'success' | 'warning' | 'error' }
 > = {
-  active: { label: 'Active', color: colors.success[700], backgroundColor: colors.success[100] },
-  expired: { label: 'Expired', color: colors.warning[700], backgroundColor: colors.warning[100] },
-  revoked: { label: 'Revoked', color: colors.error[600], backgroundColor: colors.error[100] },
+  active: { label: 'Active', variant: 'success' },
+  expired: { label: 'Expired', variant: 'warning' },
+  revoked: { label: 'Revoked', variant: 'error' },
 }
 
-const SOURCE_META: Record<
-  'worker' | 'organization' | 'platform',
-  { label: string; color: string; backgroundColor: string }
-> = {
-  worker: {
-    label: 'Worker self-serve',
-    color: colors.gray[800],
-    backgroundColor: colors.gray[100],
-  },
-  organization: {
-    label: 'Organization',
-    color: colors.info[700],
-    backgroundColor: colors.info[100],
-  },
-  platform: {
-    label: 'Platform initiated',
-    color: colors.primary[700],
-    backgroundColor: colors.primary[100],
-  },
+const SOURCE_LABEL: Record<'worker' | 'organization' | 'platform', string> = {
+  worker: 'Worker self-serve',
+  organization: 'Organization',
+  platform: 'Platform initiated',
 }
 
 interface IdVerificationAdminPageProps {
@@ -93,6 +80,7 @@ export function IdVerificationAdminPage({
   const t = theme === 'dark' ? 'dark' : 'light'
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [searchValue, setSearchValue] = useState('')
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const debouncedSearch = useDebounce(searchValue, 400)
 
   const { data: organizationsData, isLoading: isLoadingOrganizations } = useAllOrganizations()
@@ -154,19 +142,7 @@ export function IdVerificationAdminPage({
               <Text style={{ color: colors.text[t].secondary }}>{row.original.badgeStatus}</Text>
             )
           }
-          return (
-            <Text
-              style={{
-                color: meta.color,
-                backgroundColor: meta.backgroundColor,
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                borderRadius: 7,
-              }}
-            >
-              {meta.label}
-            </Text>
-          )
+          return <StatusBadge variant={meta.variant}>{meta.label}</StatusBadge>
         },
       },
       {
@@ -197,21 +173,8 @@ export function IdVerificationAdminPage({
         accessorKey: 'source',
         header: 'Source',
         cell: ({ row }: CellContext<IdVerificationListItem, unknown>) => {
-          const sourceKey = (row.original.source ?? 'worker') as keyof typeof SOURCE_META
-          const meta = SOURCE_META[sourceKey]
-          return (
-            <Text
-              style={{
-                color: meta.color,
-                backgroundColor: meta.backgroundColor,
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                borderRadius: 7,
-              }}
-            >
-              {meta.label}
-            </Text>
-          )
+          const sourceKey = (row.original.source ?? 'worker') as keyof typeof SOURCE_LABEL
+          return <StatusBadge>{SOURCE_LABEL[sourceKey] ?? sourceKey}</StatusBadge>
         },
       },
       {
@@ -236,6 +199,45 @@ export function IdVerificationAdminPage({
       onOrganizationChange(value)
     }
   }
+
+  const selectedOrganizationName = selectedOrganizationId
+    ? ((organizations.find((org) => org.id === selectedOrganizationId)?.name as
+        | string
+        | undefined) ?? 'Selected organization')
+    : undefined
+
+  const organizationFilter = (
+    <Stack gap={6} style={{ minWidth: 240 }}>
+      <Text
+        style={{
+          fontSize: fontSize.xxs,
+          letterSpacing: 1.4,
+          textTransform: 'uppercase',
+          color: colors.text[t].tertiary,
+        }}
+      >
+        Organization
+      </Text>
+      <ResponsiveSelect
+        value={selectedOrganizationId ?? '__all__'}
+        onValueChange={handleOrganizationChange}
+        placeholder={selectedOrganizationName ?? 'All organizations'}
+        options={[
+          { value: '__all__', label: 'All organizations' },
+          ...organizations.map((org) => ({
+            value: org.id as string,
+            label: (org.name as string) ?? 'Untitled org',
+          })),
+        ]}
+      />
+      {isLoadingOrganizations ? (
+        <Row gap={8} align="center">
+          <Spinner variant="ios" size="sm" />
+          <Text style={{ color: colors.text[t].secondary }}>Loading organizations…</Text>
+        </Row>
+      ) : null}
+    </Stack>
+  )
 
   return (
     <Stack flex={1} gap={16}>
@@ -266,60 +268,36 @@ export function IdVerificationAdminPage({
           <MetricBlock label="Revoked badges" value={count(summary.revoked)} />
           <MetricBlock label="Total verifications" value={count(summary.total)} />
         </MetricRow>
-
-        <Stack gap={8}>
-          <Text style={{ color: colors.text[t].secondary }}>Badge status filter</Text>
-          <Row
-            style={{
-              backgroundColor: colors.bg[t].subtle,
-              borderColor: colors.border[t].default,
-              overflow: 'hidden',
-            }}
-            borderRadius={16}
-            borderWidth={1}
-          >
-            <Tabs
-              value={statusFilter}
-              onValueChange={(value) => setStatusFilter(value as StatusFilter)}
-            >
-              {STATUS_TABS.map((tab) => (
-                <Tabs.Item key={tab.value} value={tab.value}>
-                  <Tabs.Trigger containerStyle={{ flex: 1 }}>{tab.label}</Tabs.Trigger>
-                </Tabs.Item>
-              ))}
-            </Tabs>
-          </Row>
-        </Stack>
-
-        <Stack gap={8}>
-          <ResponsiveSelect
-            value={selectedOrganizationId ?? '__all__'}
-            onValueChange={handleOrganizationChange}
-            placeholder={
-              selectedOrganizationId
-                ? (organizations.find((org) => org.id === selectedOrganizationId)?.name ??
-                  'Select organization')
-                : 'All organizations'
-            }
-            label="Organization"
-            options={[
-              { value: '__all__', label: 'All organizations' },
-              ...organizations.map((org) => ({
-                value: org.id as string,
-                label: (org.name as string) ?? 'Untitled org',
-              })),
-            ]}
-          />
-          {isLoadingOrganizations ? (
-            <Row gap={8} align="center">
-              <Spinner variant="ios" size="sm" />
-              <Text style={{ color: colors.text[t].secondary }}>Loading organizations…</Text>
-            </Row>
-          ) : null}
-        </Stack>
       </Stack>
 
+      {/* One toolbar row (#1209): badge status as the toolbar's folder tabs,
+          then search, the organization select inside Filters & sort, and the
+          count. It stacked a "Badge status filter" label, a bordered pill
+          around underline tabs and a full-width organization select above
+          the search. */}
       <OfficePageLayout
+        toolbarTabs={STATUS_TABS.map((tab) => ({ key: tab.value, label: tab.label }))}
+        activeToolbarTab={statusFilter}
+        onToolbarTabChange={(key) => setStatusFilter(key as StatusFilter)}
+        filterContent={organizationFilter}
+        activeFilterCount={selectedOrganizationId ? 1 : 0}
+        filterChips={
+          selectedOrganizationId
+            ? [
+                {
+                  id: 'organization',
+                  label: 'Organization',
+                  value: selectedOrganizationName,
+                  active: true,
+                  onPress: () => setFiltersOpen(true),
+                  onClear: () => onOrganizationChange(null),
+                },
+              ]
+            : undefined
+        }
+        onClearFilters={selectedOrganizationId ? () => onOrganizationChange(null) : undefined}
+        filtersOpen={filtersOpen}
+        onFiltersOpenChange={setFiltersOpen}
         resultNoun="verification"
         title="ID Verifications"
         searchPlaceholder="Search worker, organization, or status"
