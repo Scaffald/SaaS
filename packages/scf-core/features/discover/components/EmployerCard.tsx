@@ -1,8 +1,9 @@
-import { Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
+import { ExternalLink, MapPin } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { Card, Text, Stack, extractPlainText, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { orgPalette, textSmall, CardHeader, MetricRow } from '@scf/core/components/ui'
+import { textSmall, MetricRow } from '@scf/core/components/ui'
+import { type EmployerAddress, formatEmployerPlace, formatOpenRoles } from '../utils/employerFacts'
 
 export interface Employer {
   id: string
@@ -12,14 +13,13 @@ export interface Employer {
   website_url: string | null
   employee_count_range: string | null
   annual_revenue_range: string | null
-  address: {
-    street?: string
-    zipCode?: string
-  } | null
+  address: EmployerAddress | null
   industries: {
     id: string
     name: string
   } | null
+  /** Jobs with status 'open', counted by GET /v1/employers (#1185). */
+  open_roles_count?: number | null
   created_at: string
 }
 
@@ -29,16 +29,18 @@ interface EmployerCardProps {
 }
 
 /**
- * Employer Card — uses shared card primitives for consistency.
- * Header: purple icon + name + industry
- * Metrics: location, employee count, website
+ * Employer Card — the directory's Cards view, behind the List/Cards switch.
+ *
+ * The card led with an off-palette purple Building2 tile and printed the bare
+ * street address, so a worker could not tell which town an employer was in
+ * (#1185). It now leads with the name, and the place is city and state.
  */
 export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
-  const pal = orgPalette[t]
 
-  const location = employer.address?.street || employer.address?.zipCode || null
+  const place = formatEmployerPlace(employer.address)
+  const openRoles = formatOpenRoles(employer.open_roles_count)
 
   const descriptionText = employer.description
     ? typeof employer.description === 'string'
@@ -55,29 +57,25 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
       glassMaterial="thin"
     >
       <Stack gap={12}>
-        <CardHeader
-          icon={Building2}
-          iconBg={pal.iconBg}
-          iconColor={pal.iconFg}
-          title={employer.name}
-          subtitle={employer.industries?.name}
-          theme={t}
-        />
+        <Stack gap={2}>
+          <Text style={{ fontWeight: '600', fontSize: 15 }} numberOfLines={1}>
+            {employer.name}
+          </Text>
+          {employer.industries?.name ? (
+            <Text style={{ ...textSmall, color: colors.text[t].tertiary }} numberOfLines={1}>
+              {employer.industries.name}
+            </Text>
+          ) : null}
+        </Stack>
 
-        {/* Description */}
         {descriptionText && (
           <Text style={{ ...textSmall, color: colors.text[t].secondary }} numberOfLines={3}>
             {descriptionText}
           </Text>
         )}
 
-        {/* Metrics */}
         <Stack gap={6}>
-          {location && <MetricRow icon={MapPin} text={location} theme={t} />}
-
-          {employer.employee_count_range && (
-            <MetricRow icon={Users} text={`${employer.employee_count_range} employees`} theme={t} />
-          )}
+          {place && <MetricRow icon={MapPin} text={place} theme={t} />}
 
           {employer.website_url && (
             <MetricRow
@@ -87,6 +85,10 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
               theme={t}
             />
           )}
+
+          {openRoles ? (
+            <Text style={{ ...textSmall, color: colors.text[t].secondary }}>{openRoles}</Text>
+          ) : null}
         </Stack>
       </Stack>
     </Card>

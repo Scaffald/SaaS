@@ -38,6 +38,7 @@ ccpa.test.ts
 certifications-verification-guard-rest.test.ts
 community-ai-functions.test.ts
 db-access-hardening-rest.test.ts
+employers-rest.test.ts
 employers.test.ts
 feedback.test.ts
 id-verification-list-rest.test.ts
