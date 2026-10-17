@@ -13,25 +13,11 @@ import {
   requireAuth,
 } from "../middleware/auth.ts";
 import type Stripe from "stripe";
+// The shared loader: same Vault key path, plus STRIPE_MOCK_MODE for the REST
+// tests (#937) — this file used to carry its own copy without it.
+import { loadStripeClient } from "../../_shared/id-verification-api.ts";
 
-// Pinned deliberately: this integration is written against the 2025-11-17
-// response shapes. stripe@20.4.1 types `apiVersion` as `LatestApiVersion`
-// (2026-02-25.clover), so pinning any earlier version is a type error even
-// though the Stripe API supports it — hence the cast. Moving the runtime
-// version is a behavioural change against a live payment provider and belongs
-// with the SDK upgrade in #454, not with a build fix.
-const STRIPE_API_VERSION = "2025-11-17.clover" as Stripe.LatestApiVersion;
 const FEE_PERCENTAGE = 10;
-
-let StripeClass: typeof import("stripe").default | null = null;
-
-async function getStripeClass(): Promise<typeof import("stripe").default> {
-  if (!StripeClass) {
-    const stripeModule = await import("stripe");
-    StripeClass = stripeModule.default;
-  }
-  return StripeClass;
-}
 
 type SuccessFeeRecord = {
   id: string;
@@ -55,40 +41,6 @@ type SuccessFeeRecord = {
   created_at: string;
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: Supabase client/result typed as any
-async function loadStripeClient(supabaseAdmin: any): Promise<Stripe> {
-  const { data: settings, error } = await supabaseAdmin
-    .schema("core")
-    .from("stripe_settings")
-    .select("api_key_secret_id")
-    .eq("settings_name", "stripe")
-    .maybeSingle();
-
-  if (error) {
-    throw new Error(`Failed to load Stripe settings: ${error.message}`);
-  }
-  if (!settings?.api_key_secret_id) {
-    throw new Error("Stripe API key is not configured.");
-  }
-
-  const { data: secretValue, error: secretError } = await supabaseAdmin
-    .schema("core")
-    .rpc("get_secret_value", { p_secret_id: settings.api_key_secret_id });
-
-  if (secretError || !secretValue) {
-    throw new Error(
-      secretError
-        ? `Failed to load Stripe secret: ${secretError.message}`
-        : "Stripe API secret unavailable.",
-    );
-  }
-
-  const Stripe = await getStripeClass();
-  return new Stripe(secretValue, {
-    apiVersion: STRIPE_API_VERSION,
-    httpClient: Stripe.createFetchHttpClient(),
-  });
-}
 
 // biome-ignore lint/suspicious/noExplicitAny: Supabase client/result typed as any
 async function ensureOrganizationAccess(
@@ -153,35 +105,43 @@ async function ensureOrganizationAccess(
   }
 }
 
-function determinePaymentSchedule(
-  totalFeeCents: number,
-  jobDurationDays: number,
-  hireStartDate: string,
-) {
-  const useStandard = jobDurationDays >= 30;
-  const paymentSchedule: "standard" | "short" = useStandard
-    ? "standard"
-    : "short";
-  const upfrontPercentage = useStandard ? 20 : 50;
-  const finalPercentage = 100 - upfrontPercentage;
-  const upfrontAmountCents = Math.round(
-    totalFeeCents * (upfrontPercentage / 100),
-  );
-  const finalAmountCents = Math.max(totalFeeCents - upfrontAmountCents, 0);
-  const start = new Date(hireStartDate);
-  const offset = paymentSchedule === "standard"
-    ? 30
-    : Math.max(jobDurationDays, 1);
-  const due = new Date(start);
-  due.setDate(due.getDate() + offset);
-  const finalPaymentDueDate = due.toISOString().split("T")[0] ?? "";
+/** A full-time year, the same basis the Hire screen has always shown. */
+const HOURS_PER_WEEK = 40;
+const WEEKS_PER_YEAR = 52;
+
+/**
+ * What a hire is worth, from the job — never from the request (#1256).
+ *
+ * The fee used to be 10% of a `totalHireValueCents` the client sent, so the
+ * caller set the price of their own fee. This is the formula the Hire screen
+ * displayed: the top of the pay range (or the bottom if that is all there is),
+ * and an hourly rate as a full-time year. Null when the job has no pay range.
+ */
+function hireValueFromJob(job: {
+  pay_range_min_cents: number | null;
+  pay_range_max_cents: number | null;
+  pay_range_type: string | null;
+}): number | null {
+  const base = job.pay_range_max_cents ?? job.pay_range_min_cents;
+  if (!base || base <= 0) return null;
+  return job.pay_range_type === "hourly"
+    ? Math.round(base * HOURS_PER_WEEK * WEEKS_PER_YEAR)
+    : base;
+}
+
+/**
+ * The whole fee, charged upfront (#1257, Clay 2026-10-17). There is no
+ * deferred final payment: the 20/80 and 50/50 splits queued a remainder that
+ * nothing ever charged.
+ */
+function singleChargeSchedule(totalFeeCents: number, hireStartDate: string) {
   return {
-    paymentSchedule,
-    upfrontPercentage,
-    finalPercentage,
-    upfrontAmountCents,
-    finalAmountCents,
-    finalPaymentDueDate,
+    paymentSchedule: "single" as const,
+    upfrontPercentage: 100,
+    finalPercentage: 0,
+    upfrontAmountCents: totalFeeCents,
+    finalAmountCents: 0,
+    finalPaymentDueDate: hireStartDate,
   };
 }
 
@@ -203,7 +163,9 @@ const statusQuerySchema = z.object({
 });
 
 const createSchema = z.object({
-  totalHireValueCents: z.number().int().positive(),
+  // Accepted for compatibility with older clients and ignored: the server
+  // derives the hire value from the job (#1256).
+  totalHireValueCents: z.number().int().positive().optional(),
   jobDurationDays: z.number().int().positive(),
   hireStartDate: z.string(),
   organizationId: z.string().uuid(),
@@ -309,14 +271,49 @@ app.post(
       return c.json({ error: err.message }, (err.status ?? 403) as 403 | 404);
     }
 
-    const totalFeeCents = Math.round(
-      input.totalHireValueCents * (FEE_PERCENTAGE / 100),
-    );
-    const schedule = determinePaymentSchedule(
-      totalFeeCents,
-      input.jobDurationDays,
-      input.hireStartDate,
-    );
+    // The application, its job and the organization must belong together,
+    // and the job — not the request — says what the hire is worth (#1256).
+    const { data: application, error: applicationError } = await supabaseAdmin
+      .schema("core")
+      .from("applications")
+      .select(
+        "id, user_id, job_id, job:jobs!inner(id, organization_id, pay_range_min_cents, pay_range_max_cents, pay_range_type)",
+      )
+      .eq("id", input.applicationId)
+      .maybeSingle();
+    if (applicationError) {
+      return c.json({
+        error: `Failed to load application: ${applicationError.message}`,
+      }, 500);
+    }
+    const job = application?.job as
+      | {
+        id: string;
+        organization_id: string;
+        pay_range_min_cents: number | null;
+        pay_range_max_cents: number | null;
+        pay_range_type: string | null;
+      }
+      | undefined;
+    if (
+      !application || !job ||
+      job.organization_id !== input.organizationId ||
+      application.user_id !== input.workerUserId ||
+      (input.jobId && input.jobId !== job.id)
+    ) {
+      return c.json({
+        error: "This application is not one of your organization's hires.",
+      }, 404);
+    }
+    const hireValueCents = hireValueFromJob(job);
+    if (!hireValueCents) {
+      return c.json({
+        error: "The job has no pay range, so the success fee cannot be calculated.",
+      }, 400);
+    }
+
+    const totalFeeCents = Math.round(hireValueCents * (FEE_PERCENTAGE / 100));
+    const schedule = singleChargeSchedule(totalFeeCents, input.hireStartDate);
     const now = new Date().toISOString();
 
     const { data: latest } = await supabaseAdmin
@@ -340,9 +337,9 @@ app.post(
         .insert({
           organization_id: input.organizationId,
           worker_user_id: input.workerUserId,
-          job_id: input.jobId ?? null,
+          job_id: job.id,
           application_id: input.applicationId,
-          total_hire_value_cents: input.totalHireValueCents,
+          total_hire_value_cents: hireValueCents,
           fee_percentage: FEE_PERCENTAGE,
           total_fee_cents: totalFeeCents,
           job_duration_days: input.jobDurationDays,
@@ -376,7 +373,9 @@ app.post(
       calculatedSchedule = scheduleFromRecord(latest as SuccessFeeRecord);
     }
 
-    if (successFee.status === "upfront_paid") {
+    if (
+      successFee.status === "upfront_paid" || successFee.status === "completed"
+    ) {
       return c.json({
         successFeeId: successFee.id,
         clientSecret: null,
@@ -541,14 +540,20 @@ app.post(
         return c.json({ error: "Payment has not succeeded yet." }, 400);
       }
 
+      // Nothing is deferred any more (#1257): a fee with no final amount is
+      // complete once this payment lands. Guarded on a payable status, as
+      // settlement is, so a confirm cannot walk a completed or cancelled fee.
       const { error: updateError } = await supabaseAdmin
         .schema("core")
         .from("success_fees")
         .update({
           upfront_paid_at: new Date(intent.created * 1000).toISOString(),
-          status: "upfront_paid",
+          status: successFee.final_amount_cents === 0
+            ? "completed"
+            : "upfront_paid",
         })
-        .eq("id", successFee.id);
+        .eq("id", successFee.id)
+        .in("status", ["pending", "failed"]);
 
       if (updateError) {
         return c.json({

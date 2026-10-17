@@ -262,7 +262,7 @@ async function advanceSuccessFee(
     .schema('core')
     .from('success_fees')
     .select(
-      'id, status, upfront_paid_at, final_paid_at, upfront_payment_intent_id, final_payment_intent_id'
+      'id, status, upfront_paid_at, final_paid_at, upfront_payment_intent_id, final_payment_intent_id, final_amount_cents'
     )
     .eq('id', feeId)
     .maybeSingle()
@@ -314,7 +314,12 @@ async function advanceSuccessFee(
     const { data, error: updateError } = await supabase
       .schema('core')
       .from('success_fees')
-      .update({ upfront_paid_at: paidAtIso, status: 'upfront_paid' })
+      // The whole fee is charged upfront (#1257): with nothing deferred, this
+      // payment completes it. A legacy split fee still waits for its final.
+      .update({
+        upfront_paid_at: paidAtIso,
+        status: fee.final_amount_cents === 0 ? 'completed' : 'upfront_paid',
+      })
       .eq('id', feeId)
       .is('upfront_paid_at', null)
       .in('status', ['pending', 'failed'])

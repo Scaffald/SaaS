@@ -94,7 +94,11 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
     }
   )
 
-  const contactUnlocked = Boolean(successFeeStatusQuery.data?.status === 'upfront_paid')
+  // A paid fee unlocks contact. Since #1257 the whole fee is one payment, so a
+  // paid fee is 'completed'; 'upfront_paid' is a fee from the old split.
+  const contactUnlocked =
+    successFeeStatusQuery.data?.status === 'upfront_paid' ||
+    successFeeStatusQuery.data?.status === 'completed'
 
   const contactInfoQuery = useContactInfo(
     {

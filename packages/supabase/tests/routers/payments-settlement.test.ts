@@ -483,3 +483,35 @@ for (const [label, lateStatus, lateType] of [
     }
   })
 }
+
+// #1257: the whole success fee is charged upfront. A fee with nothing left to
+// pay later (final_amount_cents = 0) is complete the moment that payment lands.
+Deno.test('a single upfront payment completes a fee with nothing left to pay (#1257)', async () => {
+  const fixture = await createUpfrontFixture('single')
+  try {
+    const { error } = await core()
+      .from('success_fees')
+      .update({
+        upfront_percentage: 100,
+        upfront_amount_cents: 100_000,
+        final_percentage: 0,
+        final_amount_cents: 0,
+      })
+      .eq('id', fixture.successFeeId)
+    if (error) throw new Error(`single-charge fixture: ${error.message}`)
+
+    const outcome = await settlePaymentIntent(
+      admin as AnyClient,
+      intent(fixture.intentId, { amount: 100_000 }),
+      'succeeded',
+      { source: 'stripe-webhook', eventId: `evt_${RUN}_single`, eventType: 'payment_intent.succeeded' }
+    )
+    assertEquals(outcome.result, 'applied')
+
+    const fee = await readFee(fixture.successFeeId)
+    assertEquals(fee.status, 'completed')
+    assertExists(fee.upfront_paid_at)
+  } finally {
+    await cleanup(fixture)
+  }
+})
