@@ -10281,61 +10281,6 @@ export type Database = {
         }
         Relationships: []
       }
-      success_fee_jobs: {
-        Row: {
-          created_at: string
-          id: string
-          job_type: string
-          last_error: string | null
-          payload: Json
-          processed_at: string | null
-          processed_by: string | null
-          success_fee_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          job_type: string
-          last_error?: string | null
-          payload?: Json
-          processed_at?: string | null
-          processed_by?: string | null
-          success_fee_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          job_type?: string
-          last_error?: string | null
-          payload?: Json
-          processed_at?: string | null
-          processed_by?: string | null
-          success_fee_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "success_fee_jobs_processed_by_fkey"
-            columns: ["processed_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "success_fee_jobs_processed_by_fkey"
-            columns: ["processed_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "success_fee_jobs_success_fee_id_fkey"
-            columns: ["success_fee_id"]
-            isOneToOne: false
-            referencedRelation: "success_fees"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       success_fees: {
         Row: {
           adjustment_notes: string | null
@@ -13036,8 +12981,6 @@ export type Database = {
         Args: { p_data: Json; p_secret: string }
         Returns: string
       }
-      enqueue_due_success_fees: { Args: never; Returns: number }
-      enqueue_duration_check_success_fees: { Args: never; Returns: number }
       extract_tiptap_plain_text: { Args: { content: Json }; Returns: string }
       generate_application_attachment_path: {
         Args: {

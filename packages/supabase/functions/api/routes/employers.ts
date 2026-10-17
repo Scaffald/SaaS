@@ -15,6 +15,26 @@ const _errorResponseSchema = z.object({
 });
 
 /**
+ * What a worker needs to read an employer at a glance (#1185): the industry
+ * by name and how many roles it has open. core.organizations carries only
+ * `industry_id`, so the directory used to print no industry at all, and the
+ * open-role count took one request per employer. Both ride along as embeds;
+ * "open" is core.jobs.status = 'open', the same rule as
+ * GET /v1/organizations/{id}/open-jobs-count.
+ */
+const EMPLOYER_SELECT = "*, industries(id, name), open_jobs:jobs(count)";
+
+type EmployerRow = Record<string, unknown> & {
+  open_jobs?: Array<{ count?: number }> | null;
+};
+
+/** Flatten the `jobs(count)` embed into a plain `open_roles_count`. */
+function shapeEmployer(row: EmployerRow) {
+  const { open_jobs, ...rest } = row;
+  return { ...rest, open_roles_count: open_jobs?.[0]?.count ?? 0 };
+}
+
+/**
  * GET /v1/employers
  * List employers
  */
@@ -59,20 +79,24 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    let query = supabase.schema("core").from("organizations").select("*", {
-      count: "exact",
-    });
+    let query = supabase
+      .schema("core")
+      .from("organizations")
+      .select(EMPLOYER_SELECT, { count: "exact" })
+      .eq("open_jobs.status", "open");
 
     if (search) {
       query = query.ilike("name", `%${search}%`);
     }
 
+    // core.organizations has no `industry` or `location` column; filtering on
+    // them failed the whole request. The client sends an industry id (#1185).
     if (industry) {
-      query = query.eq("industry", industry);
+      query = query.eq("industry_id", industry);
     }
 
     if (location) {
-      query = query.ilike("location", `%${location}%`);
+      query = query.ilike("address->>city", `%${location}%`);
     }
 
     query = query.range(offset, offset + limit - 1);
@@ -80,13 +104,19 @@ app.openapi(
     const { data, error, count } = await query;
 
     if (error) {
-      return c.json({
-        error: "Failed to fetch employers",
-        message: error.message,
-      }, 500);
+      return c.json(
+        {
+          error: "Failed to fetch employers",
+          message: error.message,
+        },
+        500,
+      );
     }
 
-    return c.json({ employers: data || [], total: count || 0 });
+    return c.json({
+      employers: (data || []).map((row) => shapeEmployer(row as EmployerRow)),
+      total: count || 0,
+    });
   },
 );
 
@@ -124,14 +154,19 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const { data, error } = await supabase.schema("core").from("organizations")
-      .select("*").eq("id", id).single();
+    const { data, error } = await supabase
+      .schema("core")
+      .from("organizations")
+      .select(EMPLOYER_SELECT)
+      .eq("id", id)
+      .eq("open_jobs.status", "open")
+      .single();
 
     if (error || !data) {
       return c.json({ error: "Employer not found" }, 404);
     }
 
-    return c.json(data);
+    return c.json(shapeEmployer(data as EmployerRow));
   },
 );
 
@@ -279,10 +314,13 @@ app.openapi(
       .single();
 
     if (error) {
-      return c.json({
-        error: "Failed to claim employment",
-        message: error.message,
-      }, 500);
+      return c.json(
+        {
+          error: "Failed to claim employment",
+          message: error.message,
+        },
+        500,
+      );
     }
 
     return c.json({ experience: data }, 201);

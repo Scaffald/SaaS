@@ -1,6 +1,11 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
+import { FollowEmployerButton } from '@scf/core/features/discover/components/FollowEmployerButton'
 import { DiscoverEmployerDetailScreen } from '@scf/core/features/discover/discover-employer-detail-screen'
+import {
+  type EmployerAddress,
+  employerDescriptor,
+} from '@scf/core/features/discover/utils/employerFacts'
 import { useEmployer } from '@scf/core/utils/employers-sdk-hooks'
 import type { DashboardBreadcrumbSegment } from '@scf/core/utils/navigation/buildDashboardBreadcrumbs'
 import { useLocalSearchParams } from 'expo-router'
@@ -30,9 +35,25 @@ export default function EmployerDetailPage() {
 
   const title = isLoading || !employer ? null : (employer.name ?? null)
 
-  // Trade · location, above the name — the posting's context, the way every
-  // other screen states its own (#828).
-  const kicker = [employer?.industry, employer?.location].filter(Boolean).join(' · ') || undefined
+  // The kicker was built from `industry` and `location`, neither of which
+  // core.organizations has, so it was always empty and the header was just
+  // the name. A constant kicker, and the facts as a descriptor line under the
+  // name: industry · City, ST · on Scaffald since <year> (#1186). The
+  // industry name and address come from the api's embed, which the SDK's
+  // Employer type does not declare yet.
+  const record = employer as
+    | (typeof employer & {
+        industries?: { name?: string | null } | null
+        address?: EmployerAddress | null
+      })
+    | undefined
+  const descriptor = record
+    ? employerDescriptor({
+        industryName: record.industries?.name,
+        address: record.address,
+        createdAt: record.created_at,
+      }) || undefined
+    : undefined
 
   const { left, right } = DiscoverEmployerDetailScreen({ employerId: id })
 
@@ -42,7 +63,9 @@ export default function EmployerDetailPage() {
       pageTitle={() => title ?? 'Employer Profile'}
       pageTitleDeps={[employer?.name, isLoading]}
       screenTitle={title}
-      screenKicker={kicker}
+      screenKicker="Employer"
+      screenTip={descriptor}
+      screenActions={<FollowEmployerButton employerId={id} />}
       leftContent={left}
       rightContent={right}
     />

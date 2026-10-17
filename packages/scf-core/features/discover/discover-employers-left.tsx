@@ -1,11 +1,15 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useRouter } from 'expo-router'
-import { ScrollView, SkeletonCard, Text, Stack } from '@scaffald/ui'
+import { ScrollView, SkeletonCard, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { type Employer, EmployerCard } from './components/EmployerCard'
+import { EmployerListRow } from './components/EmployerListRow'
 
 interface DiscoverEmployersLeftProps {
   employers: Employer[]
   isLoading: boolean
+  /** Ruled rows by default; the cards sit behind the toolbar switch (#1185). */
+  view?: 'list' | 'cards'
 }
 
 /**
@@ -15,8 +19,11 @@ interface DiscoverEmployersLeftProps {
 export function DiscoverEmployersLeft({
   employers,
   isLoading,
+  view = 'list',
 }: DiscoverEmployersLeftProps) {
   const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
   const handleViewDetails = (employer: Employer) => {
     router.push(buildPath(ROUTES.EMPLOYERS.DETAIL, { id: employer.id }))
@@ -43,11 +50,23 @@ export function DiscoverEmployersLeft({
 
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-      <Stack gap={12} padding="md">
-        {employers.map((employer: Employer) => (
-          <EmployerCard key={employer.id} employer={employer} onViewDetails={handleViewDetails} />
-        ))}
-      </Stack>
+      {view === 'list' ? (
+        <Stack style={{ borderTopWidth: 1, borderTopColor: colors.border[t].default }}>
+          {employers.map((employer: Employer) => (
+            <EmployerListRow
+              key={employer.id}
+              employer={employer}
+              onViewDetails={handleViewDetails}
+            />
+          ))}
+        </Stack>
+      ) : (
+        <Stack gap={12} padding="md">
+          {employers.map((employer: Employer) => (
+            <EmployerCard key={employer.id} employer={employer} onViewDetails={handleViewDetails} />
+          ))}
+        </Stack>
+      )}
     </ScrollView>
   )
 }

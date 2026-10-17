@@ -727,7 +727,8 @@ async function checkUpfrontFeeSettled(
     .eq("organization_id", organizationId)
     .eq("application_id", applicationId)
     .eq("worker_user_id", workerUserId)
-    .eq("status", "upfront_paid")
+    // A paid fee unlocks contact; since #1257 a fully paid one is `completed`.
+    .in("status", ["upfront_paid", "completed"])
     .maybeSingle();
 
   if (error) {

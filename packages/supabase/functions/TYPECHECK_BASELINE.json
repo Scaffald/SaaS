@@ -32,7 +32,6 @@
     "packages/supabase/functions/api/routes/experience.ts": 4,
     "packages/supabase/functions/api/routes/feedback.ts": 1,
     "packages/supabase/functions/api/routes/follows.ts": 7,
-    "packages/supabase/functions/api/routes/id-verification.ts": 6,
     "packages/supabase/functions/api/routes/industries.ts": 2,
     "packages/supabase/functions/api/routes/jobs.ts": 6,
     "packages/supabase/functions/api/routes/legal.ts": 1,

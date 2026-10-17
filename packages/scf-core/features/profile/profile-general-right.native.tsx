@@ -1,23 +1,10 @@
-import { DashboardWidget } from '@scaffald/ui'
-import { H3, Text, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
-
 /**
- * Profile General Right Component
- * Navigation and overview for general profile settings with animated tips
+ * Profile General Right Component (native)
+ *
+ * The web rail holds the public-URL setting, which native does not have. All
+ * that was left here was a card restating the section title beside the
+ * section, so it draws nothing (#1190).
  */
 export function ProfileGeneralRight() {
-  const { theme } = useThemeContext()
-  const t = theme === 'dark' ? 'dark' : 'light'
-
-  return (
-    <Stack gap={16}>
-      <DashboardWidget>
-        <H3>General Information</H3>
-        <Text style={{ color: colors.text[t].secondary }}>
-          Update your basic profile information including your name, photo, and contact details.
-        </Text>
-      </DashboardWidget>
-    </Stack>
-  )
+  return null
 }

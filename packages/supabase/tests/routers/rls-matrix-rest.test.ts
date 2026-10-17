@@ -174,7 +174,8 @@ async function fixtures(personas: Personas): Promise<() => Promise<void>> {
   const { data: folder, error } = await admin
     .schema('core')
     .from('organization_folders')
-    .insert({ organization_id: ra.scope_org_id, name: 'rls-matrix', created_by: personas.orgAdmin.id })
+    // Unique per run: suites from parallel sessions share one local database.
+    .insert({ organization_id: ra.scope_org_id, name: `rls-matrix-${crypto.randomUUID().slice(0, 8)}`, created_by: personas.orgAdmin.id })
     .select('id')
     .single()
   if (error) throw new Error(`fixture folder: ${error.message}`)

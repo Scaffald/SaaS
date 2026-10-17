@@ -69,11 +69,7 @@ export function HireScreen({ application }: { application: ATSApplication }) {
   const schedule = useMemo(
     () =>
       hireInputs
-        ? deriveSchedule(
-            hireInputs.totalHireValueCents,
-            hireInputs.jobDurationDays,
-            hireInputs.hireStartDate
-          )
+        ? deriveSchedule(hireInputs.totalHireValueCents, hireInputs.hireStartDate)
         : null,
     [hireInputs]
   )
@@ -86,7 +82,10 @@ export function HireScreen({ application }: { application: ATSApplication }) {
     },
     { enabled: Boolean(hireInputs), staleTime: 10 * 1000 }
   )
-  const alreadyPaid = statusQuery.data?.status === 'upfront_paid'
+  // 'completed' since #1257 (the whole fee is one payment); 'upfront_paid' for
+  // a fee from the old split schedule.
+  const alreadyPaid =
+    statusQuery.data?.status === 'upfront_paid' || statusQuery.data?.status === 'completed'
 
   /**
    * One intent per visit, and exactly one on failure.
@@ -259,20 +258,14 @@ export function HireScreen({ application }: { application: ATSApplication }) {
             <MetricRow bordered minColumnWidth={150}>
               <MetricBlock label="Hire value" value={formatCents(schedule.totalHireValueCents)} />
               <MetricBlock
-                label="Due now"
-                value={formatCents(schedule.upfrontAmountCents)}
-                delta={`${schedule.upfrontPercentage}% of the hire value`}
+                label="Success fee"
+                value={formatCents(schedule.totalFeeCents)}
+                delta={`${schedule.feePercentage}% of the hire value, paid once`}
                 emphasis
-              />
-              <MetricBlock
-                label="Due later"
-                value={formatCents(schedule.finalAmountCents)}
-                delta={`${schedule.finalPercentage}% on ${formatDueDate(schedule.finalDueDate)}`}
               />
             </MetricRow>
             <Text style={{ color: colors.text[t].tertiary }}>
-              Calculated from the posting's pay range
-              {schedule.paymentSchedule === 'short' ? ', on the short-engagement schedule.' : '.'}
+              Calculated from the posting's pay range. Nothing is billed later.
             </Text>
           </Stack>
         )}
@@ -294,7 +287,7 @@ export function HireScreen({ application }: { application: ATSApplication }) {
             ) : alreadyPaid ? (
               <Stack gap={12} align="flex-start">
                 <Text style={{ color: colors.fg[t].success }}>
-                  The upfront fee for this hire is already paid
+                  The success fee for this hire is already paid
                   {statusQuery.data?.upfrontPaidAt
                     ? ` (${formatDueDate(statusQuery.data.upfrontPaidAt)})`
                     : ''}
@@ -355,7 +348,7 @@ export function HireScreen({ application }: { application: ATSApplication }) {
                   <PaymentIntentForm
                     clientSecret={intentState.clientSecret}
                     amountCents={schedule.upfrontAmountCents}
-                    description={`${schedule.upfrontPercentage}% upfront success fee`}
+                    description={`${schedule.feePercentage}% success fee`}
                     submitLabel={
                       paymentCompleted
                         ? 'Hire confirmed'

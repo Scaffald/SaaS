@@ -369,7 +369,16 @@ app.post(
       }
 
       const metadata = (intent.metadata ?? {}) as Record<string, string>;
-      const workerUserId = metadata.worker_user_id ?? user.id;
+
+      // Only an intent /request created for an ID check can buy a badge
+      // (#1255). This used to accept any succeeded intent, so a paid
+      // success-fee intent earned a free "ID Verified" badge and had its
+      // ledger row rewritten as an ID verification.
+      if (metadata.service_type !== "id_verification") {
+        return toError(c, "This payment is not for an ID verification.", 400);
+      }
+
+      const workerUserId = metadata.worker_user_id;
       if (!workerUserId) {
         return toError(
           c,
@@ -379,6 +388,35 @@ app.post(
       }
 
       await ensureCanRequestForWorker(supabaseAdmin, user.id, workerUserId);
+
+      // The ledger row /request wrote before the charge (#948) is the second
+      // witness: it must say this intent paid for an ID check, for this
+      // worker, at the price charged. No row means an intent from outside
+      // /request, and that is refused rather than backfilled.
+      const { data: ledgerRow, error: ledgerError } = await supabaseAdmin
+        .schema("core")
+        .from("payment_transactions")
+        .select("transaction_type, user_id, amount_cents")
+        .eq("stripe_payment_intent_id", intent.id)
+        .maybeSingle();
+      if (ledgerError) {
+        return toError(
+          c,
+          `Failed to load the payment record: ${ledgerError.message}`,
+          500,
+        );
+      }
+      if (
+        ledgerRow?.transaction_type !== "id_verification" ||
+        ledgerRow.user_id !== workerUserId ||
+        ledgerRow.amount_cents !== intent.amount
+      ) {
+        return toError(
+          c,
+          "This payment does not match an ID verification request.",
+          400,
+        );
+      }
 
       const initiatedByUserId = metadata.initiated_by_user_id?.length
         ? metadata.initiated_by_user_id
@@ -461,7 +499,7 @@ app.post(
       // one (#948). Matching on the intent id makes a repeated /confirm
       // idempotent — the `existing` check above returns early on the happy
       // path, but a retry that races it lands here.
-      const { data: advanced, error: advanceError } = await supabaseAdmin
+      const { error: advanceError } = await supabaseAdmin
         .schema("core")
         .from("payment_transactions")
         .update({
@@ -473,30 +511,6 @@ app.post(
         })
         .eq("stripe_payment_intent_id", intent.id)
         .select("id");
-
-      // An intent created before #948, or by some other path, has no row to
-      // advance. Insert one so the charge is still recorded — the point is
-      // that money never goes unrecorded, not that /request always won.
-      if (!advanceError && (advanced?.length ?? 0) === 0) {
-        await supabaseAdmin
-          .schema("core")
-          .from("payment_transactions")
-          .insert({
-            organization_id: organizationId,
-            user_id: workerUserId,
-            amount_cents: intent.amount ?? 0,
-            currency: intent.currency ?? "usd",
-            transaction_type: "id_verification",
-            id_verification_id: record.id,
-            stripe_payment_intent_id: intent.id,
-            status: "succeeded",
-            succeeded_at: new Date().toISOString(),
-            metadata: {
-              source: "id_verification_rest",
-              stage: "confirmed-backfill",
-            },
-          });
-      }
 
       // Not fatal: the verification exists and the customer has paid, so
       // failing the request here would be worse than a mismatched ledger row

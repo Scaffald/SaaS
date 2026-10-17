@@ -5,17 +5,14 @@ import {
   useRemoveSkillMultiTaxonomyMutation,
 } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
-import { DashboardWidget, Modal, ModalHeader, ModalContent, ModalActions } from '@scaffald/ui'
+import { Modal, ModalHeader, ModalContent, ModalActions } from '@scaffald/ui'
 import { Award } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { TRPCClientError } from '@trpc/client'
 import { type ComponentType, useCallback, useEffect, useRef, useState } from 'react'
 import { Text, Row, Stack } from '@scaffald/ui'
-import { ProfileResultCard, ProfileResultsPanel, ProfileSectionIntro } from './components'
-import { SkillCompletionProgress } from './components/skills/SkillCompletionProgress'
-import { SkillGuidanceWidget } from './components/skills/SkillGuidanceWidget'
+import { ProfileResultCard, ProfileResultsPanel } from './components'
 import { getProficiencyLabel } from './constants/proficiency-levels'
-import { useProfileSkillsContext } from './profile-skills-context'
 
 /**
  * Profile Skills Right Component
@@ -24,14 +21,6 @@ import { useProfileSkillsContext } from './profile-skills-context'
 export function ProfileSkillsRight() {
   const { theme } = useThemeContext()
   const toast = useToast()
-  const {
-    industryDisplayName,
-    skillGuidance,
-    hasMinimumSkills,
-    skillCount,
-    completionPercent,
-    handleSuggestionSelect,
-  } = useProfileSkillsContext()
 
   // Confirmation modal state
   const [confirmRemoveSkillId, setConfirmRemoveSkillId] = useState<string | null>(null)
@@ -233,25 +222,10 @@ export function ProfileSkillsRight() {
           }}
         />
       </Modal>
-      <ProfileSectionIntro
-        title="Skills"
-        description="Add and manage your professional skills. Search by industry, then add skills with proficiency levels; they appear in the list below."
-      />
-      <DashboardWidget>
-        <Stack gap={12}>
-          <SkillCompletionProgress
-            skillCount={skillCount}
-            hasMinimumSkills={hasMinimumSkills}
-            completionPercent={completionPercent}
-          />
-
-          <SkillGuidanceWidget
-            industryDisplayName={industryDisplayName}
-            skillGuidance={skillGuidance}
-            onSuggestionSelect={handleSuggestionSelect}
-          />
-        </Stack>
-      </DashboardWidget>
+      {/* A card restating the section title, a teal "experts recommend five
+          skills" callout and a card of industry tips opened this rail. The
+          build-your-profile block above says what is left to do, so the rail
+          is now that and the one list of your skills (#1190). */}
 
       <ProfileResultsPanel
         title="Your Skills"
