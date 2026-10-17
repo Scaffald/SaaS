@@ -74,6 +74,18 @@ const employerApplicationSchema = z
     source: z.string().nullable(),
     union_status: z.record(z.string(), z.unknown()).nullable(),
     assigned_to: z.string().uuid().nullable(),
+    assignee: z
+      .object({
+        id: z.string().uuid(),
+        display_name: z.string().nullable(),
+        username: z.string().nullable(),
+      })
+      .nullable()
+      .optional()
+      .openapi({
+        description:
+          "Who `assigned_to` is. The pipeline's assignee cell could only say 'Assigned' without it, which names nobody (#1198).",
+      }),
     is_shortlisted: z.boolean().nullable(),
     screening_answers: z.record(z.string(), z.unknown()).nullable(),
     attachment_metadata: z.record(z.string(), z.unknown()).nullable(),
@@ -137,6 +149,7 @@ const LIST_SELECT = `
   score_total, source, union_status, assigned_to, is_shortlisted,
   screening_answers, attachment_metadata,
   candidate:users!user_id(id, display_name, username, headline, avatar_url, avatar_path),
+  assignee:users!assigned_to(id, display_name, username),
   job:jobs!job_id(
     id, title, location, employment_type, organization_id,
     pay_range_min_cents, pay_range_max_cents, pay_range_type

@@ -73,3 +73,19 @@ export function countSuffix(count: number | null | undefined): string {
   if (count == null || count === 0) return ''
   return ` · ${count}`
 }
+
+/**
+ * "today", "1d ago", "3w ago" — the applied date as the header's meta line
+ * reads it (#1200). The long form ("August 11, 2026") sat in a labelled block
+ * of its own; a relative age is what an employer weighs, and the dated
+ * application event is still in the Activity tab.
+ */
+export function formatAppliedAgo(appliedAt: string, now: number = Date.now()): string {
+  const then = new Date(appliedAt).getTime()
+  if (Number.isNaN(then)) return '—'
+  const days = Math.max(0, Math.floor((now - then) / 86_400_000))
+  if (days === 0) return 'today'
+  if (days < 14) return `${days}d ago`
+  if (days < 60) return `${Math.floor(days / 7)}w ago`
+  return `${Math.floor(days / 30)}mo ago`
+}

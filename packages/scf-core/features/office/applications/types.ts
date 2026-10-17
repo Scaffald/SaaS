@@ -110,6 +110,8 @@ export interface ATSApplication {
     id: string | null
     name?: string | null
     assignedUserId?: string | null
+    /** The assignee's display name, from the list's `assignee` embed (#1198). */
+    assignedUserName?: string | null
   }
   status: ApplicationStatus
   /** How the candidate found the job (#91). */
@@ -125,7 +127,11 @@ export interface ATSApplication {
   }
   appliedAt: string
   updatedAt: string
-  score: number
+  /**
+   * `score_total`, or null when nobody has scored the application — which is
+   * most of them until #534. Not 0: "Score 0" is a verdict (#1198).
+   */
+  score: number | null
   screeningAnswers: {
     currentLocation: string
     willingToRelocate: boolean

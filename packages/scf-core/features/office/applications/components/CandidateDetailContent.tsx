@@ -14,14 +14,26 @@ import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { useApplicationMessages } from '@scf/core/utils/jobs-sdk-hooks'
-import { Avatar, Button, H4, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { StyleSheet } from 'react-native'
+import {
+  Button,
+  MetricBlock,
+  Row,
+  ScreenHeader,
+  type ScreenHeaderBack,
+  Spinner,
+  Stack,
+  Text,
+  useThemeContext,
+} from '@scaffald/ui'
 import type { ATSApplication } from '../types'
 import {
   canReject as canRejectStatus,
   countSuffix,
-  initialsOf,
+  formatAppliedAgo,
   nextStageFor,
 } from '../candidate-actions'
+import { assigneeLabel, formatScore } from '../row-labels'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { ApplicationDetailsTab } from './ApplicationDetailsTab'
@@ -32,7 +44,7 @@ import { MessagesTab } from './MessagesTab'
 import { NotesTab } from './NotesTab'
 import { ActivityFeedTab } from './ActivityFeedTab'
 import { UnionStatusBadge } from './UnionStatusBadge'
-import { borderRadius, colors } from '@scaffald/ui/tokens'
+import { colors, fontSize, fontWeight } from '@scaffald/ui/tokens'
 
 // biome-ignore lint/suspicious/noExplicitAny: legacy inquiry record mapping
 const mapInquiryToFormValues = (inquiry: Record<string, any>): InquiryCreateInput => ({
@@ -75,7 +87,14 @@ const mapInquiryToFormValues = (inquiry: Record<string, any>): InquiryCreateInpu
  * queries below no longer need an `open` flag to stay idle. Mounting is the
  * gate.
  */
-export const CandidateDetailContent = ({ application }: { application: ATSApplication }) => {
+export const CandidateDetailContent = ({
+  application,
+  back,
+}: {
+  application: ATSApplication
+  /** "← Applications" when this is its own page; the modal leaves it out. */
+  back?: ScreenHeaderBack
+}) => {
   const { theme } = useThemeContext()
   const [activeTab, setActiveTab] = useState<CandidateTab>('profile')
   const organizationId = application.organizationId ?? application.job.organizationId ?? ''
@@ -176,26 +195,31 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
     },
   })
 
-  const scoreColor =
-    application.score >= 80
-      ? theme === 'light'
-        ? colors.green[700]
-        : colors.green[300]
-      : application.score >= 60
-        ? colors.text[theme === 'light' ? 'light' : 'dark'].emphasis
-        : theme === 'light'
-          ? colors.error[700]
-          : colors.error[300]
-  const scoreBg =
-    application.score >= 80
-      ? theme === 'light'
-        ? colors.green[50]
-        : colors.green[900]
-      : application.score >= 60
-        ? colors.bg[theme === 'light' ? 'light' : 'dark'].selected
-        : theme === 'light'
-          ? colors.error[50]
-          : colors.error[900]
+  const score = formatScore(application.score)
+
+  // The assignee by name. The list embeds it (#1198); the team roster is the
+  // fallback for a row assigned before that, when this renders inside a team.
+  const assignedId = application.team?.assignedUserId ?? null
+  const assignee = assigneeLabel(
+    assignedId
+      ? {
+          id: assignedId,
+          name:
+            application.team?.assignedUserName ??
+            mentionOptions.find((option) => option.id === assignedId)?.label,
+        }
+      : null,
+    currentUser?.id
+  )
+  const years = application.candidate.yearsExperience
+  const metaLine = [
+    `Assignee — ${assignee}`,
+    `Applied ${formatAppliedAgo(application.appliedAt)}`,
+    application.candidate.location || null,
+    years > 0 ? `${years} yr${years === 1 ? '' : 's'} exp` : null,
+  ]
+    .filter(Boolean)
+    .join(' · ')
 
   const inquiryFormValues = useMemo(() => {
     if (!inquiryData?.inquiry) {
@@ -233,139 +257,124 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
 
   return (
     <>
-      {/* Candidate Header.
-          The name was missing entirely (§12 #2) — it lived only in the modal
-          chrome, so the route version at /office/applications/[id] had no name
-          anywhere on the page. The avatar was 24px (§12 #3), smaller than the
-          body text beside it. */}
-      <Row gap={12} align="center">
-        <Avatar
-          size={48}
-          src={application.candidate.photo}
-          initials={initialsOf(application.candidate.name)}
-        />
-
-        <Stack flex={1}>
-          <H4>{application.candidate.name}</H4>
-          <Text style={{ opacity: 0.7 }}>{application.candidate.title}</Text>
-          <Text style={{ opacity: 0.6, marginTop: 4 }}>{application.candidate.location}</Text>
-        </Stack>
-      </Row>
-
-      {/* Score Badge */}
-      <Stack
-        backgroundColor={scoreBg}
-        paddingHorizontal={16}
-        paddingVertical={12}
-        borderRadius={borderRadius.l}
-        align="center"
+      {/* The header is the shared ScreenHeader (#1200): the name is the page
+          title, the job is the kicker, and "← Applications" is the way back
+          when this renders as its own page. It used to be an H4 inside the
+          content under a breadcrumb that ended in the same name, a tinted
+          green/grey/red score box, and four full-width buttons — about six
+          stacked rows before the tabs. Now it is two: the title row with the
+          score at its trailing edge, and one hairline action row. */}
+      <ScreenHeader
+        back={back}
+        kicker={application.job.title}
+        title={application.candidate.name}
+        actions={
+          <MetricBlock
+            label="Application score"
+            // The accent, not a traffic light. Green/grey/red read a
+            // threshold nobody has set as a verdict; and an unscored
+            // candidate says so rather than scoring 0 (#1198).
+            value={
+              <Text
+                style={{
+                  fontSize: fontSize.xl,
+                  fontWeight: fontWeight.semibold,
+                  fontVariant: ['tabular-nums'],
+                  color: score != null ? colors.text[theme].emphasis : colors.text[theme].tertiary,
+                }}
+              >
+                {score ?? 'Not scored'}
+              </Text>
+            }
+          />
+        }
       >
-        <Text color={scoreColor}>{application.score}</Text>
-        <Text style={{ opacity: 0.8 }}>Application Score</Text>
-      </Stack>
-
-      {/* Union Status Badge (Issue #98) */}
-      {application.unionStatus && <UnionStatusBadge unionStatus={application.unionStatus} />}
-
-      {/* Quick Actions.
-          All three rendered, pressed, and did nothing (§12 #1) — no handlers
-          at all. Advance now names the ACTUAL next stage rather than always
-          claiming "Interview", which was wrong for four of the seven stages
-          and would have skipped Screening from New. */}
-      <Row gap={8}>
-        {nextStage ? (
-          <Button
-            color="success"
-            style={{ flex: 1 }}
-            size="md"
-            disabled={isChanging}
-            loading={isChanging}
-            onPress={() =>
-              changeStatus({
-                applicationId: application.id,
-                fromStatus: application.status,
-                toStatus: nextStage.status,
-                candidateName: application.candidate?.name,
-              })
-            }
-          >
-            {`Advance to ${nextStage.label}`}
-          </Button>
-        ) : null}
-        {canReject ? (
-          <Button
-            color="error"
-            style={{ flex: 1 }}
-            size="md"
-            disabled={isChanging}
-            // Rejection is a critical change: it goes through the confirm
-            // modal rather than firing straight at the API.
-            onPress={() =>
-              setPendingChange({
-                applicationId: application.id,
-                fromStatus: application.status,
-                toStatus: 'rejected',
-              })
-            }
-          >
-            Reject
-          </Button>
-        ) : null}
-      </Row>
-      <Button style={{ flex: 1 }} size="md" onPress={() => setActiveTab('messages')}>
-        Send Message
-      </Button>
-      {teamId && currentUser?.id ? (
-        <Button
-          style={{ flex: 1 }}
-          size="md"
-          variant="outline"
-          onPress={() =>
-            assignMutation.mutate({
-              teamId,
-              applicationId: application.id,
-              assigneeUserId: currentUser.id,
-            })
-          }
-          disabled={assignMutation.isPending}
-          loading={assignMutation.isPending}
+        <Row
+          align="center"
+          justify="space-between"
+          wrap
+          gap={12}
+          rowGap={8}
+          style={{
+            paddingVertical: 8,
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderColor: colors.border[theme].default,
+          }}
         >
-          Assign to me
-        </Button>
-      ) : null}
-      {teamId ? (
-        <Stack gap={4}>
-          <Text style={{ opacity: 0.6 }}>Current assignee</Text>
-          <Text>
-            {application.team?.assignedUserId
-              ? (mentionOptions.find((option) => option.id === application.team?.assignedUserId)
-                  ?.label ?? `User ${application.team?.assignedUserId.slice(0, 6)}`)
-              : 'Unassigned'}
-          </Text>
-        </Stack>
-      ) : null}
+          {/* No success/error fills (#1200). Advance is the one outlined
+              action; closing out is a text button that still confirms in the
+              modal, because rejection is the one move a candidate reads as
+              final. Advance names the ACTUAL next stage (§12 #1). */}
+          <Row gap={4} align="center" wrap>
+            {nextStage ? (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isChanging}
+                loading={isChanging}
+                onPress={() =>
+                  changeStatus({
+                    applicationId: application.id,
+                    fromStatus: application.status,
+                    toStatus: nextStage.status,
+                    candidateName: application.candidate?.name,
+                  })
+                }
+              >
+                {`Advance to ${nextStage.label}`}
+              </Button>
+            ) : null}
+            {canReject ? (
+              <Button
+                variant="text"
+                size="sm"
+                disabled={isChanging}
+                onPress={() =>
+                  setPendingChange({
+                    applicationId: application.id,
+                    fromStatus: application.status,
+                    toStatus: 'rejected',
+                  })
+                }
+              >
+                Close out…
+              </Button>
+            ) : null}
+            <Button variant="text" size="sm" onPress={() => setActiveTab('messages')}>
+              Message
+            </Button>
+            {teamId && currentUser?.id && application.team?.assignedUserId !== currentUser.id ? (
+              <Button
+                variant="text"
+                size="sm"
+                onPress={() =>
+                  assignMutation.mutate({
+                    teamId,
+                    applicationId: application.id,
+                    assigneeUserId: currentUser.id,
+                  })
+                }
+                disabled={assignMutation.isPending}
+                loading={assignMutation.isPending}
+              >
+                Assign to me
+              </Button>
+            ) : null}
+          </Row>
 
-      {/* Application Meta */}
-      <Row gap={16} wrap>
-        <Stack flex={1} width={150}>
-          <Text style={{ opacity: 0.6 }}>Applied</Text>
-          <Text>
-            {new Date(application.appliedAt).toLocaleDateString('en-US', {
-              month: 'long',
-              day: 'numeric',
-              year: 'numeric',
-            })}
-          </Text>
-        </Stack>
-        <Stack flex={1} width={150}>
-          <Text style={{ opacity: 0.6 }}>Job</Text>
-          <Text>{application.job.title}</Text>
-        </Stack>
-        <Stack flex={1} width={150}>
-          <Text style={{ opacity: 0.6 }}>Experience</Text>
-          <Text>{application.candidate.yearsExperience} years</Text>
-        </Stack>
-      </Row>
+          {/* Assignee, applied and experience as one line, not three
+              labelled blocks. */}
+          <Row gap={8} align="center" wrap>
+            {application.unionStatus?.isUnionMember ? (
+              <UnionStatusBadge unionStatus={application.unionStatus} compact />
+            ) : null}
+            <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
+              {metaLine}
+            </Text>
+          </Row>
+        </Row>
+      </ScreenHeader>
 
       <CandidateDetailTabs
         value={activeTab}
@@ -375,12 +384,19 @@ export const CandidateDetailContent = ({ application }: { application: ATSApplic
             value: 'profile',
             label: 'Profile',
             panel: (
-              <CandidateProfileTab
-                candidate={application.candidate}
-                contactInfo={contactInfoQuery.data ?? undefined}
-                isContactLocked={!contactUnlocked}
-                lockReason={contactLockReason}
-              />
+              <Stack gap={16}>
+                {/* Union detail (Issue #98) moved here from above the tabs
+                    (#1200); the header carries the compact badge. */}
+                {application.unionStatus ? (
+                  <UnionStatusBadge unionStatus={application.unionStatus} />
+                ) : null}
+                <CandidateProfileTab
+                  candidate={application.candidate}
+                  contactInfo={contactInfoQuery.data ?? undefined}
+                  isContactLocked={!contactUnlocked}
+                  lockReason={contactLockReason}
+                />
+              </Stack>
             ),
           },
           {

@@ -4,6 +4,7 @@ import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
+import { Pressable, View } from 'react-native'
 import {
   Button,
   Lane,
@@ -13,16 +14,19 @@ import {
   Spinner,
   Stack,
   Text,
+  useResponsive,
   useThemeContext,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { colors, fontSize, fontWeight } from '@scaffald/ui/tokens'
 import {
   daysOpen,
   LISTING_FILTERS,
   listingAgeLabel,
   type ListingFilter,
+  listingMetaLine,
   listingStatus,
   statusesForListingFilter,
+  statusWordInGroup,
 } from './employer-jobs-status'
 
 /**
@@ -39,12 +43,19 @@ import {
  * come from the organisation's own applications, in one request, counted by
  * job — no new endpoint.
  */
+/** Fixed so the applicant column lines up down a wide list (#1199). */
+const LISTING_TITLE_WIDTH = 360
+const LISTING_APPLICANTS_WIDTH = 200
+
 export function EmployerJobsList() {
   const router = useRouter()
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
   const [filter, setFilter] = useState<ListingFilter>('all')
   const [search, setSearch] = useState('')
+  // Lane's own stackBelow default, so the row and its cells agree on narrow.
+  const { width } = useResponsive()
+  const stacked = width > 0 && width < 768
 
   const { data: memberships } = useOrganizations()
 
@@ -163,8 +174,7 @@ export function EmployerJobsList() {
         </Text>
         <Button
           size="md"
-          variant="filled"
-          color="primary"
+          variant="outline"
           onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
         >
           Post a job
@@ -176,7 +186,12 @@ export function EmployerJobsList() {
   return (
     <Stack gap={20}>
       <ListToolbar
-        tabs={LISTING_FILTERS.map((group) => ({
+        // An empty partition is not a place to go: "Draft · 0" was a tab
+        // that could only show nothing (#1199). All and the tab you are on
+        // always stay.
+        tabs={LISTING_FILTERS.filter(
+          (group) => group.key === 'all' || group.key === filter || counts[group.key] > 0
+        ).map((group) => ({
           key: group.key,
           label: group.label,
           count: counts[group.key],
@@ -203,49 +218,126 @@ export function EmployerJobsList() {
           >
             {group.rows.map((job) => {
               const status = listingStatus(job.status)
+              const statusWord = statusWordInGroup(job.status, group.title)
               const applicants = applicantsByJob.get(job.id) ?? 0
               const age = daysOpen(job.posted_at, job.created_at)
+              const meta = listingMetaLine(job)
+              const statusColor =
+                status.tone === 'active'
+                  ? colors.text[t].emphasis
+                  : status.tone === 'attention'
+                    ? colors.text[t].attention
+                    : colors.text[t].secondary
 
+              const openPosting = () => router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))
+
+              // The press is on a link-role wrapper rather than Lane's own
+              // onPress, which makes the row a button element with the Edit
+              // button nested inside it — invalid HTML (the same fix as the
+              // pipeline's lanes, #1196). Each inner control stops its own
+              // click from reaching the row.
               return (
-                <Lane
+                <Pressable
                   key={job.id}
-                  age={age != null ? `${age}d` : undefined}
-                  ageLabel={listingAgeLabel(job.posted_at)}
-                  title={job.title}
-                  subtitle={job.location ?? undefined}
-                  columns={[
-                    <Text key="applicants" style={{ color: colors.text[t].secondary }}>
-                      {applicants} {applicants === 1 ? 'applicant' : 'applicants'}
-                    </Text>,
-                    <Text
-                      key="status"
-                      style={{
-                        color:
-                          status.tone === 'active'
-                            ? colors.text[t].emphasis
-                            : status.tone === 'attention'
-                              ? colors.text[t].attention
-                              : colors.text[t].secondary,
-                      }}
-                    >
-                      {status.label}
-                    </Text>,
-                  ]}
-                  actions={
-                    <Row gap={8} wrap>
+                  accessibilityRole="link"
+                  accessibilityLabel={`Open ${job.title}`}
+                  onPress={openPosting}
+                >
+                  <Lane
+                    age={age != null ? `${age}d` : undefined}
+                    ageLabel={listingAgeLabel(job.posted_at)}
+                    // Title and meta in a fixed-width block so the applicant
+                    // count starts at one x down the list.
+                    title={
+                      <View style={stacked ? undefined : { width: LISTING_TITLE_WIDTH }}>
+                        <Text
+                          numberOfLines={1}
+                          style={{
+                            fontSize: fontSize.lg,
+                            fontWeight: fontWeight.semibold,
+                            color: colors.text[t].primary,
+                          }}
+                        >
+                          {job.title}
+                        </Text>
+                        {meta ? (
+                          <Text
+                            numberOfLines={stacked ? 2 : 1}
+                            style={{ fontSize: fontSize.md, color: colors.text[t].secondary }}
+                          >
+                            {meta}
+                          </Text>
+                        ) : null}
+                      </View>
+                    }
+                    columns={[
+                      // The count is the way into the pipeline for this posting
+                      // (#1199): it used to be plain text, so an employer read
+                      // "4 applicants" and then had to go and find them.
+                      applicants > 0 ? (
+                        <Pressable
+                          key="applicants"
+                          style={stacked ? undefined : { width: LISTING_APPLICANTS_WIDTH }}
+                          accessibilityRole="link"
+                          accessibilityLabel={`View ${applicants} ${
+                            applicants === 1 ? 'applicant' : 'applicants'
+                          } for ${job.title}`}
+                          onPress={() =>
+                            router.push({
+                              pathname: ROUTES.OFFICE.APPLICATIONS.path,
+                              params: { job: job.id },
+                            })
+                          }
+                        >
+                          <Row gap={8} align="baseline">
+                            <Text
+                              style={{
+                                fontSize: fontSize.lg,
+                                fontWeight: fontWeight.semibold,
+                                fontVariant: ['tabular-nums'],
+                                color: colors.text[t].emphasis,
+                              }}
+                            >
+                              {applicants}
+                            </Text>
+                            <Text style={{ fontSize: fontSize.md, color: colors.text[t].emphasis }}>
+                              View applicants →
+                            </Text>
+                          </Row>
+                        </Pressable>
+                      ) : (
+                        <View
+                          key="applicants"
+                          style={stacked ? undefined : { width: LISTING_APPLICANTS_WIDTH }}
+                        >
+                          <Text style={{ color: colors.text[t].tertiary }}>No applicants yet</Text>
+                        </View>
+                      ),
+                      // Only where the group's title does not already say it.
+                      ...(statusWord
+                        ? [
+                            <Text key="status" style={{ color: statusColor }}>
+                              {statusWord}
+                            </Text>,
+                          ]
+                        : []),
+                    ]}
+                    actions={
+                      // Stacked, a full button under every posting made each one
+                      // five lines tall (#1199); a text button keeps Edit on
+                      // the row without spending a line on its outline.
                       <Button
                         size="sm"
-                        variant="outline"
+                        variant={stacked ? 'text' : 'outline'}
                         onPress={() =>
                           router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
                         }
                       >
                         Edit
                       </Button>
-                    </Row>
-                  }
-                  onPress={() => router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))}
-                />
+                    }
+                  />
+                </Pressable>
               )
             })}
           </LaneGroup>
