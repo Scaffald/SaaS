@@ -70,7 +70,10 @@ const legacyCertificationSchema = z.object({
   certificate_file_path: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   is_active: z.boolean().default(true),
-  verification_status: z.string().default("unverified"),
+  // Accepted so older clients that echo the row back don't get a 400, and
+  // ignored: whether a certification is verified is Scaffald's to say, not
+  // its owner's (#1276). The save below never writes it from the request.
+  verification_status: z.string().optional(),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
 });
@@ -1070,7 +1073,6 @@ app.openapi(saveCertificationsRoute, async (c) => {
       credential_url: cert.credential_url || null,
       description: cert.description || null,
       is_active: cert.is_active,
-      verification_status: cert.verification_status,
     };
 
     if (cert.id) {
@@ -1094,7 +1096,7 @@ app.openapi(saveCertificationsRoute, async (c) => {
       const { data, error } = await supabase
         .schema("core")
         .from("user_certifications")
-        .insert({ user_id: user.id, ...payload })
+        .insert({ user_id: user.id, ...payload, verification_status: "unverified" })
         .select()
         .single();
 
