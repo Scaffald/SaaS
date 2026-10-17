@@ -46,3 +46,22 @@ describe('splitOnEmails', () => {
     }
   })
 })
+
+describe('the Support FAQ describes the app as it is (#1300)', () => {
+  // Each of these named a control the app does not have.
+  const GONE = ['Forgot password?', 'Settings → Account → Delete Account', '"⋯"', 'My Applications']
+
+  it('names none of the controls that do not exist', () => {
+    for (const faq of SUPPORT_FAQS) {
+      for (const phrase of GONE) {
+        expect(faq.a, faq.q).not.toContain(phrase)
+      }
+    }
+  })
+
+  it('promises no push notification the app does not send', () => {
+    for (const faq of SUPPORT_FAQS) {
+      expect(faq.a.toLowerCase(), faq.q).not.toContain('push notification')
+    }
+  })
+})

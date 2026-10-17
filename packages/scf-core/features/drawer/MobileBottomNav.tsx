@@ -23,9 +23,10 @@ import { useEffect, useMemo } from 'react'
 import { Platform, Pressable, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MoreHorizontal } from 'lucide-react-native'
-import { EMPLOYER_MOBILE_SECTIONS, MOBILE_SECTIONS, type MobileSection } from './config'
+import { getEmployerMobileSections, MOBILE_SECTIONS, type MobileSection } from './config'
 import { useDrawer } from './DrawerContext'
 import { useAppMode } from '@scf/core/utils/useAppMode'
+import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 
 // ── Constants ──
 
@@ -70,7 +71,16 @@ export function MobileBottomNav() {
   // altogether — correct in that worker tabs must not imply worker context on
   // employer screens (#385), but it left an employer on a phone with no primary
   // navigation at all. Now each mode has its own tab set.
-  const sections = mode === 'employer' ? EMPLOYER_MOBILE_SECTIONS : MOBILE_SECTIONS
+  // Screening is offered only to those its pages admit (#1297).
+  const { hasOfficeRole, hasRole } = useUserRoles()
+  const isCheckAdmin = hasRole('background_check_admin')
+  const sections = useMemo(
+    () =>
+      mode === 'employer'
+        ? getEmployerMobileSections({ hasOfficeRole, isCheckAdmin })
+        : MOBILE_SECTIONS,
+    [mode, hasOfficeRole, isCheckAdmin]
+  )
   const { open: openDrawer } = useDrawer()
   const visible = isMobile || shouldForceMobile()
 
