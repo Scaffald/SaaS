@@ -1096,7 +1096,11 @@ app.openapi(saveCertificationsRoute, async (c) => {
       const { data, error } = await supabase
         .schema("core")
         .from("user_certifications")
-        .insert({ user_id: user.id, ...payload, verification_status: "unverified" })
+        .insert({
+          user_id: user.id,
+          ...payload,
+          verification_status: "unverified",
+        })
         .select()
         .single();
 
