@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { activeNavKey, getNavItems } from '../config'
+import { activeNavKey, EMPLOYER_MOBILE_SECTIONS, getNavItems, SCREENING_LANDING } from '../config'
 import { getSectionTabs, stripEdgeFades, stripScrollTarget } from '../section-tabs'
 import type { OrganizationMembership } from '@scf/core/utils/useOrganizations'
 
@@ -75,6 +75,53 @@ describe('getSectionTabs', () => {
     expect(getSectionTabs('/office/applications/abc', office)?.activeKey).toBe(
       'office-applications'
     )
+  })
+
+  // #1203: no Office tab owned /office/ats/*, so screening lit nothing.
+  describe('Screening', () => {
+    const atsPages = [
+      '/office/ats/admin',
+      '/office/ats/checks',
+      '/office/ats/request',
+      '/office/ats/id-verifications',
+      '/office/ats/scheduling',
+      '/office/ats/self-schedule',
+      '/office/ats/metrics',
+    ]
+
+    it.each(atsPages)('%s lights exactly the Screening tab', (pathname) => {
+      for (const items of [office, employerAdmin]) {
+        const strip = getSectionTabs(pathname, items)
+        expect(strip?.ownerKey).toBe('office')
+        expect(strip?.activeKey).toBe('office-screening')
+      }
+    })
+
+    it('owns community verification, which is a screening queue', () => {
+      expect(getSectionTabs('/office/communities/verification', office)?.activeKey).toBe(
+        'office-screening'
+      )
+    })
+
+    it('lands on the review queue, the same page as the phone tab', () => {
+      const screening = office
+        .find((item) => item.key === 'office')
+        ?.subItems?.find((tab) => tab.key === 'office-screening')
+      expect(screening?.href).toBe(SCREENING_LANDING)
+      const phone = EMPLOYER_MOBILE_SECTIONS.find((s) => s.key === 'screening')
+      expect(phone?.route).toBe(SCREENING_LANDING)
+    })
+
+    it('leaves the other Office tabs their own pages', () => {
+      expect(getSectionTabs('/office/violations', office)?.activeKey).toBe('office-violations')
+      expect(getSectionTabs('/office/cms/workers', office)?.activeKey).toBe('office-cms')
+    })
+  })
+
+  it('lights Overview on the Office home only', () => {
+    expect(getSectionTabs('/office', office)?.activeKey).toBe('office-overview')
+    expect(getSectionTabs('/office/notifications', office)?.activeKey).toBeNull()
+    expect(getSectionTabs('/office/payments', office)?.activeKey).toBe('office-payments')
   })
 
   it('does not offer Office tabs to someone without the role', () => {

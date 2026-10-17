@@ -1,4 +1,3 @@
-export * from './BackgroundCheckNavigationMenu'
 export * from './BackgroundCheckWizard'
 export * from './CheckProgressTracker'
 export * from './CheckStatusCard'
