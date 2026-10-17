@@ -2,9 +2,15 @@ import { NotificationTag, useThemeContext } from '@scaffald/ui'
 import {
   useNotificationDeliveries,
   useNotificationDigestQueue,
+  useOperationalNotifications,
 } from '@scf/core/utils/notifications-admin-sdk-hooks'
+import {
+  describeFailureCount,
+  summarizeOperationalAlerts,
+} from '@scf/core/features/notifications/audience'
+import { formatNotificationTime } from '@scf/core/features/notifications/components/NotificationRow'
 import { AlertCircle, RefreshCw } from 'lucide-react-native'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button, H3, H4, ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { borderRadius, colors } from '@scaffald/ui/tokens'
 
@@ -64,6 +70,79 @@ function formatChannel(channel: string) {
   }
 }
 
+/**
+ * Failed scheduled jobs, one row per job (#1178). These used to land in each
+ * super-admin's personal inbox, a fresh identical row per failed run carrying
+ * the cron's raw config text. The `api` function now keeps them out of that
+ * inbox; this is where an operator sees them, in a sentence, with the count.
+ */
+function SystemAlerts() {
+  const { theme } = useThemeContext()
+  const query = useOperationalNotifications()
+  const alerts = useMemo(() => summarizeOperationalAlerts(query.data?.data), [query.data])
+
+  return (
+    <Stack gap={12}>
+      <Row justify="space-between" align="center">
+        <H4>System alerts</H4>
+        <Button
+          size="sm"
+          variant="outline"
+          color="primary"
+          iconStart={RefreshCw}
+          onPress={() => query.refetch()}
+          disabled={query.isRefetching}
+        >
+          Refresh
+        </Button>
+      </Row>
+
+      {query.isLoading ? (
+        <Stack align="center" gap={12} marginTop={16}>
+          <Spinner variant="ios" size="lg" color="gray" />
+          <Text style={{ color: colors.text[theme].secondary }}>Loading system alerts…</Text>
+        </Stack>
+      ) : query.isError ? (
+        <Text style={{ color: colors.text[theme].secondary }}>
+          System alerts could not be loaded.
+        </Text>
+      ) : alerts.length === 0 ? (
+        <Text style={{ color: colors.text[theme].secondary }}>No scheduled job has failed.</Text>
+      ) : (
+        <Stack
+          borderWidth={1}
+          borderColor={colors.border[theme].default}
+          borderRadius={borderRadius.l}
+          style={{ overflow: 'hidden' }}
+          testID="office-system-alerts"
+        >
+          {alerts.map((alert, index) => (
+            <Stack
+              key={alert.key}
+              gap={4}
+              padding="sm"
+              style={{
+                backgroundColor:
+                  index % 2 === 0 ? colors.bg[theme].default : colors.bg[theme].subtle,
+              }}
+            >
+              <Text style={{ color: colors.text[theme].primary }}>{alert.summary}</Text>
+              <Text size="sm" style={{ color: colors.text[theme].secondary }}>
+                {describeFailureCount(alert)} · last {formatNotificationTime(alert.lastAt)}
+              </Text>
+              {alert.lastError ? (
+                <Text size="sm" style={{ color: colors.text[theme].tertiary }}>
+                  Last error: {alert.lastError}
+                </Text>
+              ) : null}
+            </Stack>
+          ))}
+        </Stack>
+      )}
+    </Stack>
+  )
+}
+
 export function OfficeNotificationsConsole() {
   const { theme } = useThemeContext()
   const [status, setStatus] = useState<DeliveryStatus>('queued')
@@ -86,6 +165,10 @@ export function OfficeNotificationsConsole() {
           Monitor delivery workers, inspect failures, and triage digest backlogs.
         </Text>
       </Stack>
+
+      <SystemAlerts />
+
+      <Separator style={{ backgroundColor: colors.bg[theme].muted }} />
 
       <Stack gap={12}>
         <Row justify="space-between" align="center">

@@ -25,7 +25,7 @@ export function ProfileScaffoldScore({ userId }: Props) {
   return (
     <DashboardWidget>
       <Stack gap={12}>
-        <H4>Scaffold Score</H4>
+        <H4>Scaffald score</H4>
         <Row align="center" gap={16}>
           <ScaffoldScoreBadge score={score} size={64} />
           <Stack gap={4} style={{ flex: 1 }}>

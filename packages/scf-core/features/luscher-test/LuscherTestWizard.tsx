@@ -13,20 +13,28 @@ import { AssessmentProgressBar, useToast, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useEffect, useRef, useState } from 'react'
 import { Text, Stack } from '@scaffald/ui'
-import { CooldownStep, IntroductionStep, ResultsSidebar, ResultsStep } from './components'
+import { CooldownStep, ResultsSidebar, ResultsStep } from './components'
 
-type TestStep = 'intro' | 'luscher1' | 'cooldown' | 'luscher2' | 'results'
+type TestStep = 'luscher1' | 'cooldown' | 'luscher2' | 'results'
 
 /**
  * LuscherTestWizard - Unified wizard for Weekly Pulse
- * Combines Test 1 and Test 2 into a single flow with intro, cooldown, and results
+ * Combines Test 1 and Test 2 into a single flow with cooldown and results.
+ *
+ * It opens on the first swatch grid. There was an introduction step before
+ * it: four feature tiles ("Mood Metrics — produces quantitative state
+ * metrics", "Earn XP") and a callout promising the test "cannot be gamed"
+ * and reveals "deeper truths". This is a reflective colour exercise, not a
+ * psychometric instrument, so those claims went, and with them the step
+ * that existed to make them (#1175). The instruction and the
+ * not-a-clinical-instrument footnote live on the grid itself.
  */
 export function LuscherTestWizard() {
   const toast = useToast()
   const { theme } = useThemeContext()
   const { title: routeTitle } = useRouteScreenTitle()
 
-  const [currentStep, setCurrentStep] = useState<TestStep>('intro')
+  const [currentStep, setCurrentStep] = useState<TestStep>('luscher1')
   const [luscher1Choices, setLuscher1Choices] = useState<number[]>([])
   const [luscher2Choices, setLuscher2Choices] = useState<number[]>([])
   const [diaryResponse, setDiaryResponse] = useState<string>('')
@@ -104,34 +112,38 @@ export function LuscherTestWizard() {
         // User is on cooldown, show results view
         setCurrentStep('results')
       } else if (availability.isCompleted) {
-        // Test is completed but cooldown expired, allow retake
-        // Reset to intro
-        setCurrentStep('intro')
+        // Test is completed but cooldown expired: a fresh retake, so the last
+        // run's answers are not carried into it.
+        startFresh()
       }
     }
   }, [availability, isLoadingAvailability])
 
-  // Load existing progress if available
+  // Load existing progress if available. Only a run that is part-way through
+  // (Part 1 saved, Part 2 not) is resumed. With no introduction step to pass
+  // through, restoring a finished run's choices would open the grid with
+  // all eight already picked; the introduction's Begin used to clear them.
   useEffect(() => {
     if (assessment) {
+      const resuming =
+        assessment.current_step === 'cooldown' || assessment.current_step === 'luscher2'
+      if (!resuming) return
       if (assessment.luscher1_choices && assessment.luscher1_choices.length === 8) {
         setLuscher1Choices(assessment.luscher1_choices)
-        // If Part 1 is complete but Part 2 isn't, continue from cooldown or luscher2
-        if (assessment.current_step === 'cooldown' || assessment.current_step === 'luscher2') {
-          if (assessment.cooldown_end_time) {
-            const cooldownEnd = new Date(assessment.cooldown_end_time).getTime()
-            const now = Date.now()
-            if (cooldownEnd > now) {
-              // Still in cooldown
-              setCooldownEndTime(assessment.cooldown_end_time)
-              setCurrentStep('cooldown')
-            } else {
-              // Cooldown complete, proceed to Part 2
-              setCurrentStep('luscher2')
-            }
+        // Part 1 is complete but Part 2 isn't: continue from cooldown or luscher2
+        if (assessment.cooldown_end_time) {
+          const cooldownEnd = new Date(assessment.cooldown_end_time).getTime()
+          const now = Date.now()
+          if (cooldownEnd > now) {
+            // Still in cooldown
+            setCooldownEndTime(assessment.cooldown_end_time)
+            setCurrentStep('cooldown')
           } else {
+            // Cooldown complete, proceed to Part 2
             setCurrentStep('luscher2')
           }
+        } else {
+          setCurrentStep('luscher2')
         }
       }
       if (assessment.luscher2_choices && assessment.luscher2_choices.length === 8) {
@@ -143,7 +155,7 @@ export function LuscherTestWizard() {
     }
   }, [assessment])
 
-  const handleBegin = () => {
+  function startFresh() {
     directionRef.current = 1
     setCurrentStep('luscher1')
     setLuscher1Choices([])
@@ -176,23 +188,15 @@ export function LuscherTestWizard() {
   }
 
   const steps = [
-    { id: 'intro', label: 'Introduction', order: 1 },
-    { id: 'luscher1', label: 'First Selection', order: 2 },
-    { id: 'cooldown', label: 'Cooldown', order: 3 },
-    { id: 'luscher2', label: 'Second Selection', order: 4 },
-    { id: 'results', label: 'Results', order: 5 },
+    { id: 'luscher1', label: 'First pass', order: 1 },
+    { id: 'cooldown', label: 'Pause', order: 2 },
+    { id: 'luscher2', label: 'Second pass', order: 3 },
+    { id: 'results', label: 'Results', order: 4 },
   ]
 
-  const completionScore =
-    currentStep === 'results'
-      ? 100
-      : currentStep === 'luscher2'
-        ? 75
-        : currentStep === 'cooldown'
-          ? 50
-          : currentStep === 'luscher1'
-            ? 25
-            : 0
+  // Progress is passes done: none on the first grid, one through the pause
+  // and the second grid, both at the results.
+  const completionScore = currentStep === 'results' ? 100 : currentStep === 'luscher1' ? 0 : 50
 
   const currentStepOrder = steps.find((step) => step.id === currentStep)?.order ?? 0
   const completedSteps = new Set(
@@ -207,18 +211,12 @@ export function LuscherTestWizard() {
     ? isLoadingAvailability
     : isLoadingAvailability || savePart1Mutation.isPending || savePart2Mutation.isPending
 
-  const showPrevious =
-    !isCooldownResultsView &&
-    currentStep !== 'intro' &&
-    currentStep !== 'cooldown' &&
-    currentStep !== 'results'
+  const showPrevious = !isCooldownResultsView && currentStep === 'luscher2'
 
   const handlePrevious = () => {
     directionRef.current = -1
     if (currentStep === 'luscher2') {
       setCurrentStep('luscher1')
-    } else if (currentStep === 'luscher1') {
-      setCurrentStep('intro')
     }
   }
 
@@ -228,12 +226,11 @@ export function LuscherTestWizard() {
     <Stack gap={20} padding="xs">
       {!showResultsSidebar && (
         <>
-          <Stack gap={4}>
-            <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>Weekly Pulse</Text>
-            <Text style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 20 }}>
-              Two rounds of color selection to capture how you're feeling this week.
-            </Text>
-          </Stack>
+          {/* No "Weekly Pulse" heading here: the screen header already says it,
+              and the intro step said it a third time (#1175). */}
+          <Text style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 20 }}>
+            Two passes of the same eight colors, a short pause apart.
+          </Text>
           <AssessmentProgress
             steps={steps}
             currentStep={effectiveCurrentStep}
@@ -276,7 +273,6 @@ export function LuscherTestWizard() {
         />
       ) : (
         <>
-          {currentStep === 'intro' && <IntroductionStep onBegin={handleBegin} />}
           {currentStep === 'luscher1' && (
             <LuscherTestStep
               step="luscher1"
@@ -321,10 +317,7 @@ export function LuscherTestWizard() {
     <DashboardLayout
       leftContent={wizardContent}
       rightContent={railContent}
-      breadcrumbItems={[
-        { label: 'Assessments', href: '/assessments' },
-        { label: 'Weekly Pulse' },
-      ]}
+      breadcrumbItems={[{ label: 'Assessments', href: '/assessments' }, { label: 'Weekly Pulse' }]}
       screenKicker="Assessment"
       screenTitle={routeTitle}
       screenTip="Pick colours in the order you prefer them. It takes about two minutes, and it repeats."

@@ -1,14 +1,6 @@
 import { useViewAnalytics } from '@scf/core/utils/profile-views-sdk-hooks'
-import { useEngagementMetrics } from '@scf/core/utils/engagement-sdk-hooks'
-import type { EngagementMetrics } from '@scaffald/sdk'
-import {
-  MetricBlock,
-  MetricRow,
-  Row,
-  Skeleton,
-  SkeletonGroup,
-  Stack,
-} from '@scaffald/ui'
+import { useAnalyticsSummary } from '@scf/core/utils/analytics-sdk-hooks'
+import { MetricBlock, MetricRow, Row, Skeleton, SkeletonGroup, Stack } from '@scaffald/ui'
 import { useMyTeamInvitations } from '@scaffald/sdk/react'
 
 function formatNumber(n: number | undefined | null): string {
@@ -50,16 +42,25 @@ function deltaTone(trend: number | undefined | null): 'positive' | 'attention' |
  *
  * Every figure comes from data the app already has. The old band's third block,
  * "Post impressions", was filled from `metrics.profile_views`, which is a
- * different number under the wrong label; it is gone. Invitations are pending
- * team invitations, from the same query the invitations band below reads.
- * The prototype's shortlist count has no source yet, so it is not drawn.
+ * different number under the wrong label; it is gone. The first block was the
+ * same kind of mistake (the worker's own searches as "Search appearances")
+ * and now reads the analytics summary. The third block counts
+ * pending *team* invitations (an organisation asking the worker to join it),
+ * from the same query the invitations band below reads, and says so. It was
+ * labelled plain "Invitations", which beside search appearances and profile
+ * views reads as employers asking the worker to apply; nothing records those
+ * yet, so that figure is not drawn until something does (#1171). The
+ * prototype's shortlist count has no source either.
  */
 export function HomeMetrics() {
   const { data: analytics, isLoading: loadingAnalytics } = useViewAnalytics()
-  const { data: metrics, isLoading: loadingMetrics } = useEngagementMetrics({ days: 30 })
-  const { data: invitationData } = useMyTeamInvitations({ status: 'pending' }, { staleTime: 30_000 })
+  const { data: summary, isLoading: loadingSummary } = useAnalyticsSummary({ days: 30 })
+  const { data: invitationData } = useMyTeamInvitations(
+    { status: 'pending' },
+    { staleTime: 30_000 }
+  )
 
-  if (loadingAnalytics || loadingMetrics) {
+  if (loadingAnalytics || loadingSummary) {
     return (
       <SkeletonGroup gap={16} animation="wave">
         <Row gap={16} wrap>
@@ -74,7 +75,11 @@ export function HomeMetrics() {
     )
   }
 
-  const searches = (metrics as EngagementMetrics | undefined)?.searches
+  // Search appearances are the times this worker turned up in someone else's
+  // worker search: `search_impressions` rows rolled up per day by the
+  // analytics job. They used to come from `useEngagementMetrics().searches`,
+  // which counts searches the worker ran *themselves* (#1171).
+  const searches = summary?.searchAppearances?.total
   const invitations = invitationData?.invitations?.length ?? 0
 
   return (
@@ -87,7 +92,7 @@ export function HomeMetrics() {
         tone={deltaTone(analytics?.trend)}
       />
       <MetricBlock
-        label="Invitations"
+        label="Team invitations"
         value={String(invitations)}
         delta={invitations > 0 ? 'Waiting on you' : 'None pending'}
         emphasis={invitations > 0}

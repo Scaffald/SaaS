@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react'
-import { Image, Pressable, Platform } from 'react-native'
-import { Button, Input, Row, Spinner, Stack, Text, useThemeContext } from '@scaffald/ui'
+import { Pressable, Platform } from 'react-native'
+import { Avatar, Button, Input, Row, Spinner, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Check, X } from 'lucide-react-native'
-import {
-  useCommunityMembers,
-  useMyCommunities,
-} from '@scf/core/utils/communities-sdk-hooks'
+import { useCommunityMembers, useMyCommunities } from '@scf/core/utils/communities-sdk-hooks'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import type { CommunityMember } from '@scaffald/sdk/resources/communities'
+import { giftRecipients } from '../gift-recipients'
+
+// The shared Avatar's neutral disc, not a hand-rolled info-blue one (#1176).
+const initialOf = (name: string | null) => (name ?? '?').slice(0, 1).toUpperCase()
 
 export interface MemberPickerProps {
   selected: { id: string; display_name: string | null; avatar_url: string | null } | null
@@ -33,18 +35,13 @@ export function MemberPicker({ selected, onSelect, disabled }: MemberPickerProps
     { enabled: !!effectiveCommunityId }
   )
 
-  const filteredMembers = useMemo(() => {
-    const all = membersData?.data ?? []
-    if (!search.trim()) return all.slice(0, 20)
-    const q = search.trim().toLowerCase()
-    return all
-      .filter(
-        (m) =>
-          (m.display_name ?? '').toLowerCase().includes(q) ||
-          (m.headline ?? '').toLowerCase().includes(q)
-      )
-      .slice(0, 20)
-  }, [membersData, search])
+  const { session } = useSessionContext()
+  const viewerId = session?.user?.id
+
+  const filteredMembers = useMemo(
+    () => giftRecipients(membersData?.data ?? [], viewerId, search),
+    [membersData, viewerId, search]
+  )
 
   if (selected) {
     return (
@@ -54,33 +51,16 @@ export function MemberPicker({ selected, onSelect, disabled }: MemberPickerProps
         style={{
           padding: 8,
           borderRadius: 7,
-          backgroundColor: t === 'dark' ? colors.info[900] : colors.info[50],
+          backgroundColor: colors.bg[t].muted,
         }}
       >
-        {selected.avatar_url ? (
-          <Image
-            source={{ uri: selected.avatar_url }}
-            style={{ width: 28, height: 28, borderRadius: 14 }}
-          />
-        ) : (
-          <Stack
-            align="center"
-            justify="center"
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: 14,
-              backgroundColor: colors.info[500],
-            }}
-          >
-            <Text style={{ color: '#fff', fontWeight: '600', fontSize: 12 }}>
-              {(selected.display_name ?? '?').slice(0, 1).toUpperCase()}
-            </Text>
-          </Stack>
-        )}
-        <Text style={{ flex: 1, fontWeight: '600' }}>
-          {selected.display_name ?? 'Member'}
-        </Text>
+        <Avatar
+          size={32}
+          src={selected.avatar_url ?? undefined}
+          initials={initialOf(selected.display_name)}
+          alt={selected.display_name ?? 'Member'}
+        />
+        <Text style={{ flex: 1, fontWeight: '600' }}>{selected.display_name ?? 'Member'}</Text>
         <Button
           size="sm"
           variant="outline"
@@ -186,27 +166,12 @@ export function MemberPicker({ selected, onSelect, disabled }: MemberPickerProps
                 })}
               >
                 <Row align="center" gap={10}>
-                  {m.avatar_url ? (
-                    <Image
-                      source={{ uri: m.avatar_url }}
-                      style={{ width: 32, height: 32, borderRadius: 16 }}
-                    />
-                  ) : (
-                    <Stack
-                      align="center"
-                      justify="center"
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 16,
-                        backgroundColor: colors.info[500],
-                      }}
-                    >
-                      <Text style={{ color: '#fff', fontWeight: '600', fontSize: 13 }}>
-                        {(m.display_name ?? '?').slice(0, 1).toUpperCase()}
-                      </Text>
-                    </Stack>
-                  )}
+                  <Avatar
+                    size={32}
+                    src={m.avatar_url ?? undefined}
+                    initials={initialOf(m.display_name)}
+                    alt={m.display_name ?? 'Member'}
+                  />
                   <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
                     <Row align="center" gap={6}>
                       <Text

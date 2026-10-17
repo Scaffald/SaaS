@@ -10,7 +10,6 @@ import {
   Button,
   MetricBlock,
   MetricRow,
-  type MetricTone,
   Card,
   Spinner,
   Table,
@@ -21,16 +20,9 @@ import {
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useScreenRhythm } from '@scf/core/constants/layout'
+import { formatCurrency, paymentSummaryCards } from './payment-summary'
 
 const columnHelper = createColumnHelper<FailedTransactionRow>()
-
-const formatCurrency = (cents: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format(cents / 100)
-}
 
 const formatTransactionType = (type: string): string => {
   return type
@@ -94,42 +86,7 @@ export function OfficePaymentAnalytics() {
     [columnDefs]
   )
 
-  const summaryCards = useMemo((): {
-    label: string
-    value: string
-    subtext: string
-    tone?: MetricTone
-    emphasis?: boolean
-  }[] => {
-    if (!kpis) {
-      return []
-    }
-
-    return [
-      {
-        label: 'Total Revenue',
-        value: formatCurrency(kpis.totalRevenue),
-        subtext: `${kpis.succeededTransactions} successful transactions`,
-      },
-      {
-        label: 'Success Rate',
-        value: `${kpis.successRate.toFixed(1)}%`,
-        subtext: `${kpis.succeededTransactions} of ${kpis.totalTransactions} succeeded`,
-      },
-      {
-        label: 'Failed Transactions',
-        value: kpis.failedTransactions.toString(),
-        subtext: kpis.failedTransactions > 0 ? 'Requires attention' : 'All transactions succeeded',
-        tone: kpis.failedTransactions > 0 ? 'attention' : 'neutral',
-        emphasis: kpis.failedTransactions > 0,
-      },
-      {
-        label: 'Pending',
-        value: kpis.pendingTransactions.toString(),
-        subtext: 'Awaiting completion',
-      },
-    ]
-  }, [kpis])
+  const summaryCards = useMemo(() => (kpis ? paymentSummaryCards(kpis) : []), [kpis])
 
   const typeBreakdown = useMemo(() => {
     if (!breakdowns?.byType) {

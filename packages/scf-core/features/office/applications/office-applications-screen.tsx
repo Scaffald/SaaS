@@ -1,8 +1,7 @@
 import {
   Button,
   ListToolbar,
-  MetricBlock,
-  MetricRow,
+  Row,
   ScreenHeader,
   SegmentedControl,
   Spinner,
@@ -21,7 +20,8 @@ import {
 import { ApplicationsFilters } from './components/ApplicationsFilters'
 import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
 import { ApplicationsLanes } from './components/ApplicationsLanes'
-import { computeTransparencyStats, formatDays, formatPct } from './transparency-stats'
+import { formatDays, formatPct } from './transparency-stats'
+import { useTransparencyStats } from './hooks/useTransparencyStats'
 import { ATSMetricsDashboard } from './components/ATSMetricsDashboard'
 import { useApplications } from './hooks/useApplications'
 import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
@@ -105,15 +105,15 @@ export const OfficeApplicationsScreen = ({
   // current page only, so a paginated board would silently drop matches.
   const filteredApplications = transformedApplications
 
-  // The employer's own public figures, computed from the pipeline already on
-  // screen — no extra request, and nothing invented. Applicants choose where
-  // to apply partly on these, so showing an employer their own ghost rate is
-  // the mechanism that changes behaviour; a stats page nobody opens is not.
-  // Answers open question #5 of the ATS brief (#539) with: loud.
-  const transparency = useMemo(
-    () => computeTransparencyStats(filteredApplications),
-    [filteredApplications]
-  )
+  // The employer's own record — response rate, first response, ghost rate.
+  // Showing an employer their own ghost rate is the mechanism that changes
+  // behaviour; a stats page nobody opens is not. Answers open question #5 of
+  // the ATS brief (#539) with: loud.
+  //
+  // Read over the whole 12-month pipeline, not `filteredApplications`: that is
+  // one page under the board's filters, so narrowing to a job used to move a
+  // figure presented as the employer's record (#1177).
+  const transparency = useTransparencyStats()
 
   // Loading and error are NOT early returns any more (§12 #10, #11). They used
   // to replace the whole screen — header, view switch, filters and all — with
@@ -159,32 +159,34 @@ export const OfficeApplicationsScreen = ({
           />
         }
       >
-        {/* "Candidates can see in" — the prototype's transparency banner.
+        {/* The prototype's transparency band, as one compact row (#1177).
             Hidden while loading or errored rather than rendering dashes: an
             employer glancing at "—" would read it as "we have no rate",
-            which is a different claim from "not loaded yet". */}
-        {!isLoading && !isError && filteredApplications.length > 0 ? (
-          <Stack
-            gap={4}
+            which is a different claim from "not loaded yet".
+
+            Tinted, and on its own ground (#838), so it does not read as one
+            more row of the page's own statistics.
+
+            It does not say candidates can see these: no worker-facing
+            surface shows them until the server aggregate in #632 exists, and
+            the band used to claim they appeared on every posting. There is
+            no "Your public stats" link for the same reason — no such screen
+            exists yet. */}
+        {transparency.stats && transparency.count > 0 ? (
+          <Row
+            align="center"
+            wrap
+            gap={16}
+            rowGap={4}
+            testID="transparency-band"
             style={{
               marginBottom: 12,
-              padding: 12,
+              paddingVertical: 8,
+              paddingHorizontal: 12,
               borderRadius: borderRadius.l,
-              borderWidth: 1,
-              borderColor: colors.border[theme].default,
-              backgroundColor: colors.bg[theme].subtle,
+              backgroundColor: colors.bg[theme].attention,
             }}
           >
-            {/* The framing is the feature. Without it these are three numbers
-                on an internal dashboard; with it they are the employer's
-                public record, which is what makes seeing your own ghost rate
-                change behaviour rather than just inform you.
-
-                Tinted, and on its own ground (#838): the band read as one
-                more row of the page's own statistics, which is precisely the
-                reading it must not have — the private numbers now sit on a
-                plain hairline band in the Metrics view, and these are visibly
-                a different kind of thing. */}
             <Text
               style={{
                 fontSize: fontSize.xxs,
@@ -194,45 +196,33 @@ export const OfficeApplicationsScreen = ({
                 color: colors.text[theme].attention,
               }}
             >
-              Candidates can see in
+              Your response record
             </Text>
-            <Text
-              style={{
-                fontSize: fontSize.sm,
-                fontStyle: 'italic',
-                color: colors.text[theme].tertiary,
-                marginBottom: 4,
-              }}
-            >
-              These numbers appear on every posting you publish.
+            <BandFigure
+              label="Response rate"
+              value={formatPct(transparency.stats.responseRatePct)}
+              theme={theme}
+            />
+            <BandFigure
+              label="Median first response"
+              value={formatDays(transparency.stats.medianFirstResponseDays) ?? '—'}
+              theme={theme}
+            />
+            <BandFigure
+              label="Ghost rate"
+              value={formatPct(transparency.stats.ghostRatePct)}
+              // Up is bad here, so any ghosting reads in the attention hue.
+              emphasis={(transparency.stats.ghostRatePct ?? 0) > 0}
+              theme={theme}
+            />
+            <Text style={{ fontSize: fontSize.xs, color: colors.text[theme].tertiary }}>
+              {transparency.truncated
+                ? `Latest ${transparency.count} applications, last 12 months`
+                : `${transparency.count} application${
+                    transparency.count === 1 ? '' : 's'
+                  }, last 12 months`}
             </Text>
-            <MetricRow bordered minColumnWidth={150}>
-              <MetricBlock
-                label="Response rate"
-                value={formatPct(transparency.responseRatePct)}
-                delta={
-                  transparency.eligibleCount > 0
-                    ? `over ${transparency.eligibleCount} application${
-                        transparency.eligibleCount === 1 ? '' : 's'
-                      }`
-                    : 'not enough history yet'
-                }
-              />
-              <MetricBlock
-                label="Median first response"
-                value={formatDays(transparency.medianFirstResponseDays) ?? '—'}
-              />
-              <MetricBlock
-                label="Ghost rate"
-                value={formatPct(transparency.ghostRatePct)}
-                // Up is bad here, which is why MetricBlock takes tone explicitly
-                // rather than inferring sentiment from direction.
-                emphasis={(transparency.ghostRatePct ?? 0) > 0}
-                tone="attention"
-                delta={transparency.openCount > 0 ? `of ${transparency.openCount} open` : undefined}
-              />
-            </MetricRow>
-          </Stack>
+          </Row>
         ) : null}
 
         <ListToolbar
@@ -292,5 +282,34 @@ export const OfficeApplicationsScreen = ({
         <ApplicationsKanbanBoard applications={filteredApplications} />
       )}
     </Stack>
+  )
+}
+
+/** One inline figure in the transparency band: label, then the value. */
+function BandFigure({
+  label,
+  value,
+  emphasis = false,
+  theme,
+}: {
+  label: string
+  value: string
+  emphasis?: boolean
+  theme: 'light' | 'dark'
+}) {
+  return (
+    <Row align="baseline" gap={6}>
+      <Text style={{ fontSize: fontSize.xs, color: colors.text[theme].tertiary }}>{label}</Text>
+      <Text
+        style={{
+          fontSize: fontSize.sm,
+          fontWeight: '600',
+          fontVariant: ['tabular-nums'],
+          color: emphasis ? colors.text[theme].attention : colors.text[theme].primary,
+        }}
+      >
+        {value}
+      </Text>
+    </Row>
   )
 }

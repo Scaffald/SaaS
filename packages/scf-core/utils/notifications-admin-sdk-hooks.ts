@@ -4,6 +4,8 @@ import type {
   DigestQueueItem,
   AdminListDeliveriesParams,
   AdminListDigestQueueParams,
+  ListNotificationsParams,
+  NotificationsListResponse,
 } from '@scaffald/sdk'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
 
@@ -36,5 +38,29 @@ export function useNotificationDigestQueue(
     },
     enabled: !!client && options?.enabled !== false,
     staleTime: options?.staleTime ?? 30 * 1000,
+  })
+}
+
+/**
+ * The caller's operational notifications — failed cron runs and the like —
+ * which the personal list leaves out (#1178). Office collapses them per job.
+ *
+ * `scope` is an `api` query parameter the SDK's `ListNotificationsParams` does
+ * not declare yet; the resource passes params straight through to the query
+ * string, so the cast is the whole gap until the SDK adds the field.
+ */
+export function useOperationalNotifications(options?: { enabled?: boolean }) {
+  const client = useScaffaldJobsClient()
+  return useQuery<NotificationsListResponse, Error>({
+    queryKey: ['scaffald', 'notifications', 'list', 'operations'],
+    queryFn: async () => {
+      if (!client) throw new Error('Missing client')
+      return client.notifications.list({
+        scope: 'operations',
+        limit: 100,
+      } as ListNotificationsParams)
+    },
+    enabled: !!client && options?.enabled !== false,
+    staleTime: 30 * 1000,
   })
 }

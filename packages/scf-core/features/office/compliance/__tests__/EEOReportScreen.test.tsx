@@ -248,7 +248,16 @@ describe('EEOReportScreen — real figures', () => {
     expect(screen.getByText(/No EEO self-identification has been collected/)).toBeInTheDocument()
     // And no NaN in the hire-rate tile.
     expect(screen.queryByText(/NaN/)).not.toBeInTheDocument()
-    expect(screen.getByText(/no applicants/)).toBeInTheDocument()
+    expect(screen.getByText(/no self-identified applicants/)).toBeInTheDocument()
+    // The band labels its figure as self-identified and carries the banner's
+    // denominator, so "0" no longer sits under "0 of 40" as if they disagreed
+    // (#1174).
+    expect(screen.getByText('Self-identified')).toBeInTheDocument()
+    expect(screen.getByText(/^of 40 applicants/)).toBeInTheDocument()
+    expect(screen.queryByText('Applications')).not.toBeInTheDocument()
+    // Zero flags is "none detected", not "0 flags detected" (#1174).
+    expect(screen.getByText('none detected')).toBeInTheDocument()
+    expect(screen.queryByText(/flags detected/)).not.toBeInTheDocument()
   })
 
   it('surfaces a load failure instead of rendering zeroes as fact', () => {
