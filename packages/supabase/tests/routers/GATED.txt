@@ -45,6 +45,7 @@ feedback.test.ts
 id-verification-list-rest.test.ts
 jobs-list-rest.test.ts
 legal-agreements-rest.test.ts
+luscher-session-no-xp-rest.test.ts
 map.test.ts
 notifications-operations-rest.test.ts
 office-communities-rest.test.ts
