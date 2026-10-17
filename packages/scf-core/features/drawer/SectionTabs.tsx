@@ -95,17 +95,20 @@ const FADE_WIDTH = 24
  * each edge that hides more chips, a trailing gutter matching the leading one
  * (the last chip ran flush to the screen edge), and the active chip scrolled
  * on screen so a sub-route deep in the strip shows which tab owns it (#1120).
+ * Exported for a screen's own folder tabs on a phone (Settings, #1212).
  */
-function PhoneChipStrip({
+export function PhoneChipStrip({
   tabs,
   activeKey,
   gutter,
   onSelect,
+  testID = 'section-tabs',
 }: {
   tabs: { key: string; label: string }[]
   activeKey: string | null
   gutter: number
   onSelect: (key: string) => void
+  testID?: string
 }) {
   const { theme } = useThemeContext()
   const scrollRef = useRef<ScrollView>(null)
@@ -138,7 +141,7 @@ function PhoneChipStrip({
         ref={scrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        testID="section-tabs"
+        testID={testID}
         accessibilityRole="tablist"
         style={{ flexGrow: 0 }}
         // The trailing gutter is a spacer, not paddingRight: a scroll

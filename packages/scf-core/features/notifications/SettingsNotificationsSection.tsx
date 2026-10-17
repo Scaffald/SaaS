@@ -1,28 +1,24 @@
 /**
- * Notifications section for the combined Settings page.
- * Preferences, devices, and notification list.
+ * Notification preferences — channels, quiet hours, digest, devices — for the
+ * Settings screen's Notifications tab.
+ *
+ * This used to carry a second inbox under the preferences: All / Unread tabs
+ * and the whole list again, as cards with CRITICAL tags and per-row buttons,
+ * duplicating /dashboard/notifications in another row style (#1211). There is
+ * one inbox now; this links to it.
  */
 
-import { SiteOverlapNotification } from '@scf/core/features/notifications/components/SiteOverlapNotification'
+import { ROUTES } from '@scf/core/constants/routes'
 import {
   useNotificationPreferences,
   useSavePreferencesMutation,
-  useInfiniteNotifications,
-  useUnreadCount,
   useNotificationDevices,
-  useMarkAsReadMutation,
-  useMarkAsUnreadMutation,
-  useArchiveManyMutation,
 } from '@scf/core/utils/notifications-sdk-hooks'
-import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useQueryClient } from '@tanstack/react-query'
-import { AlertCircle, ExternalLink, Info, ShieldAlert } from 'lucide-react-native'
+import { ArrowRight } from 'lucide-react-native'
 import {
   Button,
   Card,
-  ErrorState,
-  NotificationTag,
-  Tabs,
   Toggle,
   Input,
   Label,
@@ -34,162 +30,20 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
-import type { ComponentType } from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const QUIET_HOURS_FIELD_WIDTH = 104
-
-type NotificationItem = {
-  id: string
-  type: string
-  severity: 'critical' | 'important' | 'info'
-  title: string
-  preview: string
-  createdAt: string
-  read: boolean
-  ctaUrl?: string
-  ctaLabel?: string
-  channels: string[]
-  metadata?: {
-    notification_type?: string
-    site_id?: string
-    overlapping_site_id?: string
-    overlap_percent?: number
-    threshold?: number
-  } | null
-}
-
-interface ApiNotification {
-  id: string
-  type: string
-  severity?: NotificationItem['severity'] | null
-  title: string
-  body?: { preview?: string | null } | null
-  preview?: string | null
-  message?: string | null
-  metadata?: {
-    notification_type?: string
-    site_id?: string
-    overlapping_site_id?: string
-    overlap_percent?: number
-    threshold?: number
-  } | null
-  created_at: string
-  read?: boolean | null
-  cta_url?: string | null
-  cta_label?: string | null
-  routed_channels?: string[] | null
-}
-
-/*
- * No Archived tab: GET /v1/notifications has no archived filter (it ignores an
- * unknown `archived` param and returns everything), so the tab only ever showed
- * what All shows (#1081). Bring it back with the endpoint support.
- */
-const FILTERS = ['All', 'Unread'] as const
-type FilterValue = 'all' | 'unread'
-const FILTER_MAP: Record<(typeof FILTERS)[number], FilterValue> = {
-  All: 'all',
-  Unread: 'unread',
-}
-
-function getSeverityColor(severity: NotificationItem['severity']): string {
-  switch (severity) {
-    case 'critical':
-      return colors.error[500]
-    case 'important':
-      return colors.warning[500]
-    default:
-      return colors.blue[500]
-  }
-}
-
-type SeverityIconProps = {
-  IconComponent: ComponentType<{ size?: number; color?: string }>
-  severity: NotificationItem['severity']
-}
-
-const SeverityIcon = ({ IconComponent, severity }: SeverityIconProps) => {
-  return <IconComponent size={22} color={getSeverityColor(severity)} />
-}
-
-function getSeverityIcon(severity: NotificationItem['severity']) {
-  switch (severity) {
-    case 'critical':
-      return ShieldAlert
-    case 'important':
-      return AlertCircle
-    default:
-      return Info
-  }
-}
-
-function formatRelativeTime(dateString: string): string {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-  const diffMinutes = Math.floor(diffSeconds / 60)
-  const diffHours = Math.floor(diffMinutes / 60)
-  const diffDays = Math.floor(diffHours / 24)
-  if (diffSeconds < 60) return 'Just now'
-  if (diffMinutes < 60) return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'} ago`
-  if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
-  if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7)
-    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`
-  }
-  if (diffDays < 365) {
-    const months = Math.floor(diffDays / 30)
-    return `${months} ${months === 1 ? 'month' : 'months'} ago`
-  }
-  const years = Math.floor(diffDays / 365)
-  return `${years} ${years === 1 ? 'year' : 'years'} ago`
-}
 
 function formatDate(value: string | null | undefined) {
   if (!value) return '—'
   return new Date(value).toLocaleString()
 }
 
-function mapNotification(apiNotification: ApiNotification): NotificationItem {
-  return {
-    channels: Array.isArray(apiNotification.routed_channels) ? apiNotification.routed_channels : [],
-    createdAt: apiNotification.created_at,
-    ctaLabel: apiNotification.cta_label ?? undefined,
-    ctaUrl: apiNotification.cta_url ?? undefined,
-    id: apiNotification.id,
-    preview:
-      typeof apiNotification.body?.preview === 'string'
-        ? apiNotification.body.preview
-        : (apiNotification.preview ?? apiNotification.message ?? ''),
-    read: apiNotification.read ?? false,
-    severity: apiNotification.severity ?? 'info',
-    title: apiNotification.title,
-    type: apiNotification.type,
-    metadata: apiNotification.metadata ?? null,
-  }
-}
-
-export function SettingsNotificationsSection({
-  showHeading = true,
-}: {
-  /**
-   * The section's own "Notifications" heading. Right where this is one section
-   * of /dashboard/settings; off on /dashboard/notifications/settings, whose
-   * shared header already titles the screen (#1025).
-   */
-  showHeading?: boolean
-} = {}) {
+export function SettingsNotificationsSection() {
   const router = useRouter()
   const { theme } = useThemeContext()
   const queryClient = useQueryClient()
-  const [filter, setFilter] = useState<FilterValue>('all')
-  const [activeTab, setActiveTab] = useState<string>('All')
   const preferencesQuery = useNotificationPreferences()
   const savePreferencesMutation = useSavePreferencesMutation({
     onSuccess: () => {
@@ -199,26 +53,6 @@ export function SettingsNotificationsSection({
     },
   })
 
-  // Hold the list until the session's access token is here. Before it, the SDK
-  // client carries only the anon key, so the first fetch 401s; the token change
-  // then invalidates everything, but this infinite query's refetch could still
-  // run with the anon client and 401 again, with nothing left to retry it — the
-  // list sat on "You're all caught up!" while the unread count, fetched after
-  // the token, said 7 (#1081, #964). The client is rebuilt in the same render
-  // that delivers the token, so the fetch that `enabled` flipping starts always
-  // uses the token-bearing client.
-  const { session } = useSessionContext()
-  const hasSessionToken = !!session?.access_token?.trim()
-
-  const notificationsQuery = useInfiniteNotifications(
-    {
-      limit: 25,
-      ...(filter === 'unread' ? { read: false } : {}),
-    },
-    { enabled: hasSessionToken, placeholderData: (previousData) => previousData }
-  )
-
-  const unreadCountQuery = useUnreadCount({ refetchOnMount: false })
   const devicesQuery = useNotificationDevices({ refetchOnMount: false })
 
   type DeviceRow = {
@@ -231,45 +65,6 @@ export function SettingsNotificationsSection({
     metadata?: Record<string, unknown>
   }
   const deviceRows: DeviceRow[] = (devicesQuery.data ?? []) as DeviceRow[]
-
-  const markReadMutation = useMarkAsReadMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list'] })
-      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list-infinite'] })
-      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'unread-count'] })
-    },
-  })
-  const markUnreadMutation = useMarkAsUnreadMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list'] })
-      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list-infinite'] })
-      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'unread-count'] })
-    },
-  })
-  const archiveMutation = useArchiveManyMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list'] })
-      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list-infinite'] })
-    },
-  })
-
-  // Each page is the SDK's `NotificationsListResponse`, `{ data, pagination }`.
-  // Reading `page.items` here left the list permanently empty (#1081).
-  const notifications: NotificationItem[] = useMemo(
-    () =>
-      (notificationsQuery.data?.pages ?? [])
-        .flatMap((page) => (page?.data ?? []) as unknown as ApiNotification[])
-        .map(mapNotification),
-    [notificationsQuery.data]
-  )
-
-  const unreadCount = unreadCountQuery.data?.data?.unread_count ?? 0
-  // `isPending`, not `isLoading`: while the query waits on the session it is
-  // pending but not fetching, and must not read as empty.
-  const isListLoading = notificationsQuery.isPending && !notificationsQuery.isError
-  // A failed request is not an empty inbox.
-  const isListError = notificationsQuery.isError && notifications.length === 0
-  const isEmpty = notifications.length === 0 && !isListLoading && !notificationsQuery.isError
 
   const [preferences, setPreferences] = useState({
     channelEnabled: { email: true, in_app: true, push: true, sms: false },
@@ -311,180 +106,21 @@ export function SettingsNotificationsSection({
     })
   }
 
-  const handleNavigate = (notification: NotificationItem) => {
-    if (notification.ctaUrl) router.push(notification.ctaUrl as Href)
-  }
-
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab)
-    const filterValue = FILTER_MAP[tab as keyof typeof FILTER_MAP] ?? 'all'
-    setFilter(filterValue)
-    notificationsQuery.refetch()
-  }
-
-  const renderNotificationList = () => {
-    if (isListLoading) {
-      return (
-        <Stack gap={12} align="center" style={{ paddingVertical: 40 }}>
-          <Spinner variant="ios" size="lg" color="gray" />
-          <Text style={{ color: colors.text[theme].secondary }}>Loading notifications…</Text>
-        </Stack>
-      )
-    }
-
-    if (isListError) {
-      return (
-        <ErrorState
-          title="Couldn’t load notifications"
-          description="Your notifications did not load. An empty list here does not mean you have none."
-          error={notificationsQuery.error as Error}
-          retry={() => notificationsQuery.refetch()}
-        />
-      )
-    }
-
-    if (isEmpty) {
-      return (
-        <Stack gap={12} align="center" style={{ paddingVertical: 40 }}>
-          <Info size={48} color={colors.icon[theme].muted} />
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text[theme].primary }}>
-            You're all caught up!
-          </Text>
-          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
-            New alerts will show up here when there's something you need to review.
-          </Text>
-        </Stack>
-      )
-    }
-
-    return (
-      <Stack gap={12}>
-        {notifications.map((notification) => {
-          const IconComponent = getSeverityIcon(notification.severity) as ComponentType<{
-            size?: number
-            color?: string
-          }>
-          return (
-            <Stack
-              key={notification.id}
-              style={{
-                backgroundColor: colors.bg[theme].subtle,
-                borderRadius: 7,
-                overflow: 'hidden',
-              }}
-            >
-              <Row style={{ padding: 16, gap: 12, alignItems: 'flex-start' }}>
-                <SeverityIcon IconComponent={IconComponent} severity={notification.severity} />
-                <Stack gap={8} style={{ flex: 1 }}>
-                  <Row justify="space-between" align="center">
-                    <Text style={{ color: colors.text[theme].primary, fontWeight: '500', flex: 1 }}>
-                      {notification.title}
-                    </Text>
-                    <NotificationTag size="md">
-                      {notification.severity.toUpperCase()}
-                    </NotificationTag>
-                  </Row>
-                  <Text style={{ color: colors.text[theme].secondary, fontSize: 14 }}>
-                    {notification.preview}
-                  </Text>
-                  <Row gap={12} align="center">
-                    <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
-                      {formatRelativeTime(notification.createdAt)}
-                    </Text>
-                    {notification.channels.length > 0 && (
-                      <NotificationTag>{notification.channels.join(', ')}</NotificationTag>
-                    )}
-                  </Row>
-                </Stack>
-              </Row>
-
-              {notification.metadata?.notification_type === 'site_overlap' &&
-              notification.metadata?.site_id &&
-              notification.metadata?.overlapping_site_id ? (
-                <Row padding="sm">
-                  <SiteOverlapNotification
-                    notificationId={notification.id}
-                    siteId={notification.metadata.site_id}
-                    overlappingSiteId={notification.metadata.overlapping_site_id}
-                    overlapPercent={notification.metadata.overlap_percent || 0}
-                    threshold={notification.metadata.threshold || 2.0}
-                    onDismiss={(id) => archiveMutation.mutate({ ids: [id] })}
-                  />
-                </Row>
-              ) : (
-                <Row
-                  gap={12}
-                  justify="flex-end"
-                  style={{
-                    paddingHorizontal: 16,
-                    paddingBottom: 12,
-                    paddingTop: 4,
-                  }}
-                >
-                  {!notification.read ? (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onPress={() => markReadMutation.mutate(notification.id)}
-                    >
-                      Mark as read
-                    </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onPress={() => markUnreadMutation.mutate(notification.id)}
-                    >
-                      Mark unread
-                    </Button>
-                  )}
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onPress={() => archiveMutation.mutate({ ids: [notification.id] })}
-                  >
-                    Archive
-                  </Button>
-                  {notification.ctaUrl && (
-                    <Button
-                      size="sm"
-                      color="primary"
-                      iconEnd={ExternalLink}
-                      onPress={() => handleNavigate(notification)}
-                    >
-                      {notification.ctaLabel ?? 'Open'}
-                    </Button>
-                  )}
-                </Row>
-              )}
-            </Stack>
-          )
-        })}
-        {notificationsQuery.hasNextPage && (
-          <Button
-            color="primary"
-            disabled={notificationsQuery.isFetchingNextPage}
-            onPress={() => notificationsQuery.fetchNextPage()}
-          >
-            {notificationsQuery.isFetchingNextPage ? 'Loading…' : 'Load more'}
-          </Button>
-        )}
-      </Stack>
-    )
-  }
-
   return (
     <Stack gap={24}>
-      {showHeading && (
-        <Stack gap={2}>
-          <Text style={{ fontSize: 22, fontWeight: '700', color: colors.text[theme].primary }}>
-            Notifications
-          </Text>
-          <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
-            Stay up to date with applications, opportunities, and platform updates.
-          </Text>
-        </Stack>
-      )}
+      <Row align="center" justify="space-between" gap={12} style={{ flexWrap: 'wrap' }}>
+        <Text style={{ flexShrink: 1, color: colors.text[theme].secondary }}>
+          Read, open and archive your notifications in the inbox.
+        </Text>
+        <Button
+          size="sm"
+          variant="outline"
+          iconEnd={ArrowRight}
+          onPress={() => router.push(ROUTES.DASHBOARD.NOTIFICATIONS.path)}
+        >
+          Open inbox
+        </Button>
+      </Row>
 
       {/* Preferences card */}
       <Card variant="outlined" radius="lg" padding="lg">
@@ -738,21 +374,6 @@ export function SettingsNotificationsSection({
           </Stack>
         </Stack>
       </Card>
-
-      {/* Notification list with tabs */}
-      <Tabs value={activeTab} onValueChange={handleTabChange} type="line">
-        {FILTERS.map((tab) => (
-          <Tabs.Item key={tab} value={tab}>
-            <Tabs.Trigger>
-              {tab}
-              {tab === 'Unread' &&
-                unreadCount > 0 &&
-                ` (${unreadCount > 99 ? '99+' : unreadCount})`}
-            </Tabs.Trigger>
-            <Tabs.Content>{renderNotificationList()}</Tabs.Content>
-          </Tabs.Item>
-        ))}
-      </Tabs>
     </Stack>
   )
 }

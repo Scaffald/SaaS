@@ -239,24 +239,12 @@ export function VanityUrlSection() {
           </Text>
         </Stack>
 
-        {/* Current URL Display */}
-        {currentSlug && !isEditing && (
-          <Stack gap={8}>
-            <Text>Your Profile URL</Text>
-            <Input
-              value={`scaffald.com/users/${currentSlug}`}
-              editable={false}
-              iconEnd={Copy}
-              iconEndOnPress={handleCopyUrl}
-              iconEndAccessibilityLabel="Copy profile URL"
-            />
-          </Stack>
-        )}
-
-        {/* Vanity URL Input */}
+        {/* One field for the URL: it showed twice, as a read-only "Your
+            Profile URL" with copy and again as "Profile Vanity URL" with Edit
+            (#1212). Copy and Edit now both sit on the one field. */}
         <Stack gap={8}>
           <Row align="center" justify="space-between">
-            <Text>Profile Vanity URL</Text>
+            <Text>Profile URL</Text>
             {!isEditing && (
               <Pressable
                 onPress={() => setIsEditing(true)}
@@ -372,6 +360,13 @@ export function VanityUrlSection() {
               editable={false}
               externalAddon="scaffald.com/users/"
               placeholder="No vanity URL set"
+              {...(currentSlug
+                ? {
+                    iconEnd: Copy,
+                    iconEndOnPress: handleCopyUrl,
+                    iconEndAccessibilityLabel: 'Copy profile URL',
+                  }
+                : {})}
             />
           )}
         </Stack>

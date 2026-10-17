@@ -20,6 +20,7 @@ import type { UserIdentity } from '@supabase/auth-js'
 import {
   Button,
   Card,
+  H4,
   Modal,
   ModalActions,
   ModalContent,
@@ -100,7 +101,7 @@ export function ConnectedAccounts() {
 
   return (
     <Stack gap={12} data-testid="connected-accounts">
-      <Text size="xl">{t('auth.connectedAccounts.title')}</Text>
+      <H4>{t('auth.connectedAccounts.title')}</H4>
       <Paragraph size="sm" style={{ color: secondaryText }}>
         {t('auth.connectedAccounts.description')}
       </Paragraph>
@@ -180,11 +181,7 @@ export function ConnectedAccounts() {
           })}
 
           {ALL_PROVIDERS.filter((p) => !linkedProviders.has(p)).map((provider) => (
-            <Card
-              key={`add-${provider}`}
-              padding="md"
-              data-testid={`add-${provider}`}
-            >
+            <Card key={`add-${provider}`} padding="md" data-testid={`add-${provider}`}>
               <Row align="center" justify="space-between" gap={16}>
                 <Stack gap={4} style={{ flex: 1 }}>
                   <Text size="md">{providerLabel(provider, t)}</Text>
