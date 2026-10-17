@@ -375,3 +375,178 @@ function warnUnadvanced(
     feeStatus: fee.status,
   })
 }
+
+// ---------------------------------------------------------------------------
+// Refunds and disputes (#1259)
+//
+// Stripe reports both against a charge, not an intent; the charge carries the
+// intent id. Before this, neither event was handled, so a refunded success fee
+// kept its candidate's contact unlocked and a refunded ID check kept its badge.
+// ---------------------------------------------------------------------------
+
+export interface ChargeReversal {
+  intentId: string
+  /** The whole amount came back (full refund, or a dispute the customer won). */
+  full: boolean
+  amountRefundedCents: number
+  reason: string
+}
+
+export interface ReversalOutcome {
+  intentId: string
+  transactionId: string | null
+  result: 'applied' | 'duplicate' | 'unchanged' | 'not_found'
+  reverted: string[]
+}
+
+/**
+ * Record a refund (or a lost dispute) on the ledger row. A full reversal moves
+ * the row to 'refunded' — only from 'succeeded', the one way a succeeded
+ * payment may change (#1254) — and takes back what the payment bought: the
+ * success fee is cancelled (which relocks contact) and the ID badge is revoked.
+ * A partial refund is recorded on the row and changes nothing else.
+ */
+export async function reversePaymentIntent(
+  supabase: NotificationSupabaseClient,
+  reversal: ChargeReversal,
+  event: SettlementEvent
+): Promise<ReversalOutcome> {
+  const { data: existing, error: loadError } = await supabase
+    .schema('core')
+    .from('payment_transactions')
+    .select('*')
+    .eq('stripe_payment_intent_id', reversal.intentId)
+    .maybeSingle()
+  if (loadError) throw new Error(`Failed to load payment transaction: ${loadError.message}`)
+  if (!existing) {
+    return { intentId: reversal.intentId, transactionId: null, result: 'not_found', reverted: [] }
+  }
+
+  const metadata =
+    existing.metadata && typeof existing.metadata === 'object' && !Array.isArray(existing.metadata)
+      ? (existing.metadata as Record<string, unknown>)
+      : {}
+  if (event.eventId && metadata.last_stripe_event_id === event.eventId) {
+    return { intentId: reversal.intentId, transactionId: existing.id, result: 'duplicate', reverted: [] }
+  }
+
+  const nowIso = new Date().toISOString()
+  const updates: Record<string, unknown> = {
+    metadata: mergeMetadata(existing.metadata ?? null, {
+      last_stripe_event_id: event.eventId ?? null,
+      last_stripe_event_type: event.eventType ?? null,
+      last_stripe_event_at: event.eventAtIso ?? null,
+      amount_refunded_cents: reversal.amountRefundedCents,
+      refund_reason: reversal.reason,
+      refunded_at: reversal.full ? nowIso : undefined,
+    }),
+  }
+  if (reversal.full) updates.status = 'refunded'
+
+  let update = supabase
+    .schema('core')
+    .from('payment_transactions')
+    .update(updates)
+    .eq('id', existing.id)
+  // A full reversal only ever applies to money that actually arrived.
+  if (reversal.full) update = update.eq('status', 'succeeded')
+  const { data: written, error: updateError } = await update.select('id')
+  if (updateError) throw new Error(`Failed to record refund: ${updateError.message}`)
+  if ((written?.length ?? 0) === 0) {
+    console.warn('[payments/settlement] refund against a payment that is not succeeded', {
+      transactionId: existing.id,
+      status: existing.status,
+    })
+    return { intentId: reversal.intentId, transactionId: existing.id, result: 'unchanged', reverted: [] }
+  }
+
+  if (!reversal.full) {
+    return { intentId: reversal.intentId, transactionId: existing.id, result: 'applied', reverted: [] }
+  }
+
+  const reverted: string[] = []
+  if (existing.success_fee_id) {
+    const { data, error } = await supabase
+      .schema('core')
+      .from('success_fees')
+      .update({ status: 'cancelled' })
+      .eq('id', existing.success_fee_id)
+      .in('status', ['upfront_paid', 'completed'])
+      .select('id')
+    if (error) throw new Error(`Failed to cancel refunded success fee: ${error.message}`)
+    if ((data?.length ?? 0) > 0) reverted.push('success_fees.status')
+  }
+  if (existing.id_verification_id) {
+    const { data, error } = await supabase
+      .schema('core')
+      .from('id_verifications')
+      .update({ badge_status: 'revoked', revoked_at: nowIso, revocation_reason: `payment ${reversal.reason}` })
+      .eq('id', existing.id_verification_id)
+      .neq('badge_status', 'revoked')
+      .select('id')
+    if (error) throw new Error(`Failed to revoke refunded ID verification: ${error.message}`)
+    if ((data?.length ?? 0) > 0) reverted.push('id_verifications.badge_status')
+  }
+  if (existing.background_check_id || existing.background_check_access_id) {
+    // No provider is live (#1267); a refunded check needs a person to decide
+    // whether to cancel it with the provider.
+    console.warn('[payments/settlement] refunded background-check payment needs review', {
+      transactionId: existing.id,
+    })
+  }
+
+  return { intentId: reversal.intentId, transactionId: existing.id, result: 'applied', reverted }
+}
+
+/**
+ * Record a dispute's state on the ledger row. A dispute that closes 'lost'
+ * is a full reversal: the money went back to the customer.
+ */
+export async function recordDispute(
+  supabase: NotificationSupabaseClient,
+  dispute: { intentId: string; disputeId: string; status: string; reason: string; amountCents: number },
+  event: SettlementEvent
+): Promise<ReversalOutcome> {
+  if (dispute.status === 'lost') {
+    return reversePaymentIntent(
+      supabase,
+      { intentId: dispute.intentId, full: true, amountRefundedCents: dispute.amountCents, reason: 'dispute lost' },
+      event
+    )
+  }
+
+  const { data: existing, error } = await supabase
+    .schema('core')
+    .from('payment_transactions')
+    .select('id, metadata')
+    .eq('stripe_payment_intent_id', dispute.intentId)
+    .maybeSingle()
+  if (error) throw new Error(`Failed to load payment transaction: ${error.message}`)
+  if (!existing) {
+    return { intentId: dispute.intentId, transactionId: null, result: 'not_found', reverted: [] }
+  }
+
+  const { error: updateError } = await supabase
+    .schema('core')
+    .from('payment_transactions')
+    .update({
+      metadata: mergeMetadata(existing.metadata ?? null, {
+        last_stripe_event_id: event.eventId ?? null,
+        last_stripe_event_type: event.eventType ?? null,
+        dispute_id: dispute.disputeId,
+        dispute_status: dispute.status,
+        dispute_reason: dispute.reason,
+        dispute_amount_cents: dispute.amountCents,
+      }),
+    })
+    .eq('id', existing.id)
+  if (updateError) throw new Error(`Failed to record dispute: ${updateError.message}`)
+  // Disputes have a response deadline; until there is an Office queue for them
+  // (#1259 follow-up), the log line is the signal.
+  console.error('[payments/settlement] dispute recorded — needs a response in Stripe', {
+    transactionId: existing.id,
+    disputeId: dispute.disputeId,
+    status: dispute.status,
+  })
+  return { intentId: dispute.intentId, transactionId: existing.id, result: 'applied', reverted: [] }
+}
