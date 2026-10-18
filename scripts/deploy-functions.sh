@@ -59,6 +59,8 @@ pnpx supabase secrets set --project-ref "$PROJECT_REF" \
 #    payments-reconcile is its backstop, driven by pg_cron (migration 361).
 #    news-import is called nightly by pg_cron (migration 377). It was missing
 #    from this list, so prod ran a 2025-11 build for eleven months (#1155).
+#    account-deletion-process carries out deletion requests daily (migration
+#    391, #1313). Without it requests are recorded and never acted on.
 #    packages/supabase/functions/README.md says why every other directory
 #    there is NOT in this list.
 FUNCTIONS=(
@@ -68,6 +70,7 @@ FUNCTIONS=(
   notify-background-check-expiration notify-id-verification-expiration
   send-team-invitation webhooks-email
   stripe-webhook payments-reconcile
+  account-deletion-process
 )
 
 echo

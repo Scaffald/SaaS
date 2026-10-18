@@ -1712,6 +1712,8 @@ export type Database = {
       }
       account_deletions: {
         Row: {
+          attempts: number
+          cancelled_at: string | null
           completed_at: string | null
           compliance_log: Json
           created_at: string
@@ -1720,12 +1722,14 @@ export type Database = {
           deletion_type: string
           error_message: string | null
           id: string
+          last_attempt_at: string | null
           metadata: Json
           payment_data_anonymized: boolean
           payment_data_anonymized_at: string | null
           reason: string | null
           requested_at: string
           requested_by_user_id: string | null
+          scheduled_for: string
           status: string
           stripe_cleanup_errors: string[] | null
           stripe_customer_deleted: boolean
@@ -1735,6 +1739,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          attempts?: number
+          cancelled_at?: string | null
           completed_at?: string | null
           compliance_log?: Json
           created_at?: string
@@ -1743,12 +1749,14 @@ export type Database = {
           deletion_type: string
           error_message?: string | null
           id?: string
+          last_attempt_at?: string | null
           metadata?: Json
           payment_data_anonymized?: boolean
           payment_data_anonymized_at?: string | null
           reason?: string | null
           requested_at?: string
           requested_by_user_id?: string | null
+          scheduled_for?: string
           status?: string
           stripe_cleanup_errors?: string[] | null
           stripe_customer_deleted?: boolean
@@ -1758,6 +1766,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          attempts?: number
+          cancelled_at?: string | null
           completed_at?: string | null
           compliance_log?: Json
           created_at?: string
@@ -1766,12 +1776,14 @@ export type Database = {
           deletion_type?: string
           error_message?: string | null
           id?: string
+          last_attempt_at?: string | null
           metadata?: Json
           payment_data_anonymized?: boolean
           payment_data_anonymized_at?: string | null
           reason?: string | null
           requested_at?: string
           requested_by_user_id?: string | null
+          scheduled_for?: string
           status?: string
           stripe_cleanup_errors?: string[] | null
           stripe_customer_deleted?: boolean
@@ -1878,7 +1890,7 @@ export type Database = {
       api_keys: {
         Row: {
           created_at: string | null
-          created_by: string
+          created_by: string | null
           expires_at: string | null
           id: string
           is_active: boolean | null
@@ -1893,7 +1905,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          created_by: string
+          created_by?: string | null
           expires_at?: string | null
           id?: string
           is_active?: boolean | null
@@ -1908,7 +1920,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
-          created_by?: string
+          created_by?: string | null
           expires_at?: string | null
           id?: string
           is_active?: boolean | null
@@ -5304,7 +5316,7 @@ export type Database = {
       }
       inquiry_audit_log: {
         Row: {
-          actor_id: string
+          actor_id: string | null
           created_at: string
           event_data: Json | null
           event_type: string
@@ -5312,7 +5324,7 @@ export type Database = {
           inquiry_id: string
         }
         Insert: {
-          actor_id: string
+          actor_id?: string | null
           created_at?: string
           event_data?: Json | null
           event_type: string
@@ -5320,7 +5332,7 @@ export type Database = {
           inquiry_id: string
         }
         Update: {
-          actor_id?: string
+          actor_id?: string | null
           created_at?: string
           event_data?: Json | null
           event_type?: string
@@ -5633,7 +5645,7 @@ export type Database = {
           metadata: Json | null
           notes: string | null
           organization_id: string
-          proposed_by: string
+          proposed_by: string | null
           slot_end: string
           slot_start: string
           status: string
@@ -5650,7 +5662,7 @@ export type Database = {
           metadata?: Json | null
           notes?: string | null
           organization_id: string
-          proposed_by: string
+          proposed_by?: string | null
           slot_end: string
           slot_start: string
           status?: string
@@ -5667,7 +5679,7 @@ export type Database = {
           metadata?: Json | null
           notes?: string | null
           organization_id?: string
-          proposed_by?: string
+          proposed_by?: string | null
           slot_end?: string
           slot_start?: string
           status?: string
@@ -9765,7 +9777,7 @@ export type Database = {
         Row: {
           application_id: string
           created_at: string
-          created_by: string
+          created_by: string | null
           current_bookings: number | null
           expires_at: string
           id: string
@@ -9778,7 +9790,7 @@ export type Database = {
         Insert: {
           application_id: string
           created_at?: string
-          created_by: string
+          created_by?: string | null
           current_bookings?: number | null
           expires_at: string
           id?: string
@@ -9791,7 +9803,7 @@ export type Database = {
         Update: {
           application_id?: string
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           current_bookings?: number | null
           expires_at?: string
           id?: string
@@ -12888,6 +12900,18 @@ export type Database = {
       }
     }
     Functions: {
+      account_deletion_grace_period: { Args: never; Returns: string }
+      account_deletion_purge_unlinked: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
+      account_deletion_storage_objects: {
+        Args: { p_buckets: string[]; p_user_id: string }
+        Returns: {
+          bucket_id: string
+          name: string
+        }[]
+      }
       anonymize_organization_payment_data: {
         Args: { p_organization_id: string }
         Returns: undefined
@@ -12953,6 +12977,48 @@ export type Database = {
           overlap_percent: number
           overlapping_site_id: string
         }[]
+      }
+      claim_due_account_deletions: {
+        Args: {
+          p_ids?: string[]
+          p_limit?: number
+          p_max_attempts?: number
+          p_retry_after?: string
+          p_stale?: string
+        }
+        Returns: {
+          attempts: number
+          cancelled_at: string | null
+          completed_at: string | null
+          compliance_log: Json
+          created_at: string
+          deleted_organization_id: string | null
+          deleted_user_id: string | null
+          deletion_type: string
+          error_message: string | null
+          id: string
+          last_attempt_at: string | null
+          metadata: Json
+          payment_data_anonymized: boolean
+          payment_data_anonymized_at: string | null
+          reason: string | null
+          requested_at: string
+          requested_by_user_id: string | null
+          scheduled_for: string
+          status: string
+          stripe_cleanup_errors: string[] | null
+          stripe_customer_deleted: boolean
+          stripe_customer_deleted_at: string | null
+          stripe_payment_methods_deleted: boolean
+          stripe_payment_methods_deleted_at: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "account_deletions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       cleanup_expired_api_keys: { Args: never; Returns: number }
       cleanup_expired_oauth_codes: { Args: never; Returns: number }
@@ -13159,6 +13225,7 @@ export type Database = {
         Args: { p_secret: string; p_secret_type?: string }
         Returns: string
       }
+      run_account_deletion_processor: { Args: never; Returns: Json }
       search_all_skills: {
         Args: { search_term: string; taxonomy_filter?: string }
         Returns: {
@@ -17484,6 +17551,7 @@ export type Database = {
           public: boolean | null
           type: Database["storage"]["Enums"]["buckettype"]
           updated_at: string | null
+          versioning_status: string
         }
         Insert: {
           allowed_mime_types?: string[] | null
@@ -17497,6 +17565,7 @@ export type Database = {
           public?: boolean | null
           type?: Database["storage"]["Enums"]["buckettype"]
           updated_at?: string | null
+          versioning_status?: string
         }
         Update: {
           allowed_mime_types?: string[] | null
@@ -17510,6 +17579,7 @@ export type Database = {
           public?: boolean | null
           type?: Database["storage"]["Enums"]["buckettype"]
           updated_at?: string | null
+          versioning_status?: string
         }
         Relationships: []
       }
@@ -17682,9 +17752,12 @@ export type Database = {
       }
       objects: {
         Row: {
+          archived_at: string | null
           bucket_id: string | null
           created_at: string | null
           id: string
+          is_delete_marker: boolean
+          is_versioned: boolean
           last_accessed_at: string | null
           metadata: Json | null
           name: string | null
@@ -17696,9 +17769,12 @@ export type Database = {
           version: string | null
         }
         Insert: {
+          archived_at?: string | null
           bucket_id?: string | null
           created_at?: string | null
           id?: string
+          is_delete_marker?: boolean
+          is_versioned?: boolean
           last_accessed_at?: string | null
           metadata?: Json | null
           name?: string | null
@@ -17710,9 +17786,12 @@ export type Database = {
           version?: string | null
         }
         Update: {
+          archived_at?: string | null
           bucket_id?: string | null
           created_at?: string | null
           id?: string
+          is_delete_marker?: boolean
+          is_versioned?: boolean
           last_accessed_at?: string | null
           metadata?: Json | null
           name?: string | null
@@ -18024,12 +18103,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -18053,11 +18132,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -18078,11 +18157,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -18103,11 +18182,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -18120,11 +18199,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

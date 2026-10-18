@@ -165,6 +165,8 @@ gcp_jwt_path = "supabase/gcloud.json"
 # JWT Signing Keys (ES256). The runtime would otherwise pass Uint8Array where
 # jose expects CryptoKey (supabase/edge-runtime#654). Each function that needs
 # auth must verify the token in code (e.g. supabase.auth.getUser(token)).
+[functions.account-deletion-process]
+verify_jwt = false
 [functions.api]
 verify_jwt = false
 [functions.background-check-webhook]

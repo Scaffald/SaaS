@@ -15,6 +15,14 @@ import {
 
 const CCPA = new URL("../../routes/ccpa.ts", import.meta.url);
 const OFFICE_USERS = new URL("../../routes/office-users.ts", import.meta.url);
+const USER_DELETION = new URL(
+  "../../../_shared/user-deletion.ts",
+  import.meta.url,
+);
+const PROCESSOR = new URL(
+  "../../../_shared/account-deletion/process.ts",
+  import.meta.url,
+);
 
 async function read(url: URL): Promise<string> {
   return await Deno.readTextFile(url);
@@ -131,36 +139,67 @@ Deno.test("delete-user never hand-deletes what the cascade owns", async () => {
 });
 
 Deno.test("delete-user checks for blockers before it writes anything", async () => {
-  const source = await read(OFFICE_USERS);
+  // The steps moved to _shared/user-deletion.ts (#1313) so the office route
+  // and the account-deletion processor share them; the order is still each
+  // caller's to keep, so both are pinned.
+  const shared = code(await read(USER_DELETION));
+  assert(shared.includes("BLOCKING_RELATIONS"));
+  assert(shared.includes("RELEASABLE_REFERENCES"));
+  assert(shared.includes("auth.admin.deleteUser"));
 
-  const blockIndex = source.indexOf("BLOCKING_RELATIONS");
-  const releaseIndex = source.indexOf("RELEASABLE_REFERENCES");
-  const deleteIndex = source.indexOf("auth.admin.deleteUser");
+  const route = code(await read(OFFICE_USERS));
+  const blockIndex = route.indexOf("findDeletionBlockers(");
+  const releaseIndex = route.indexOf("releaseNullableReferences(");
+  const deleteIndex = route.indexOf("deleteAuthUser(");
 
   assert(blockIndex >= 0 && releaseIndex >= 0 && deleteIndex >= 0);
   // Order is the guarantee: a user who cannot be deleted must not be partly
   // deleted first.
   assert(
-    source.lastIndexOf("blockedBy") <
-      source.lastIndexOf("auth.admin.deleteUser"),
-    "the blocking check must run before the delete",
+    blockIndex < releaseIndex && releaseIndex < deleteIndex,
+    "the blocking check must run before the release and the delete",
   );
+  assert(
+    route.lastIndexOf("blockedBy") < deleteIndex,
+    "a blocked deletion must answer before the delete",
+  );
+
+  // The processor checks blockers before its first write (detaching payment
+  // records) as well as before the delete.
+  const processor = code(await read(PROCESSOR));
+  const processorBlock = processor.indexOf("findDeletionBlockers(");
+  assert(processorBlock >= 0);
+  for (
+    const write of [
+      "anonymize_worker_payment_data",
+      "account_deletion_purge_unlinked",
+      "removeUserFiles(supabase",
+      "releaseNullableReferences(",
+      "deleteAuthUser(",
+    ]
+  ) {
+    const at = processor.indexOf(write, processorBlock);
+    assert(at > processorBlock, `${write} must come after the blocker check`);
+  }
 });
 
 Deno.test("delete-user reports blockers as a conflict, not a server error", async () => {
-  const source = await read(OFFICE_USERS);
+  const route = await read(OFFICE_USERS);
+  const shared = await read(USER_DELETION);
 
   // RESTRICT references are content the user owns; an operator needs to know
   // what to reassign, not see a 500.
-  assert(source.includes("}, 409)"), "blocked deletion must answer 409");
+  assert(route.includes("}, 409)"), "blocked deletion must answer 409");
   assert(
-    source.includes("blockedBy"),
+    route.includes("blockedBy"),
     "the response must name what blocks the deletion",
   );
-  for (const table of ["tasks", "punchlists", "organization_documents"]) {
+  for (
+    const table of ["tasks", "punchlists", "organization_documents", "projects"]
+  ) {
     assert(
-      source.includes(`table: "${table}"`),
-      `${table} has a RESTRICT reference to core.users and must be checked`,
+      shared.includes(`table: "${table}"`),
+      `${table} has a RESTRICT reference to the user and must be checked`,
     );
   }
 });
