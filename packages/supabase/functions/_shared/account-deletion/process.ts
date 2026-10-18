@@ -265,7 +265,7 @@ async function processOne(
         userId,
         PROCESSOR_ONLY_BLOCKERS,
       );
-      if (!check.ok) return await fail("blockers", check.message);
+      if (check.ok === false) return await fail("blockers", check.message);
       if (check.blocked.length > 0) {
         log.blocked_by = check.blocked;
         return await fail(
@@ -305,7 +305,9 @@ async function processOne(
     // 4. Files.
     if (!done("storage_removed")) {
       const removed = await removeUserFiles(supabase, userId);
-      if (!removed.ok) return await fail("storage_removed", removed.message);
+      if (removed.ok === false) {
+        return await fail("storage_removed", removed.message);
+      }
       log.steps.storage_removed = { at: now(), objects: removed.counts };
       await save({});
     }
@@ -313,7 +315,7 @@ async function processOne(
     // 5. Verification pointers.
     if (!done("references_released")) {
       const released = await releaseNullableReferences(supabase, userId);
-      if (!released.ok) {
+      if (released.ok === false) {
         return await fail("references_released", released.message);
       }
       log.steps.references_released = { at: now() };
@@ -324,7 +326,9 @@ async function processOne(
     // messages, notifications and the rest; FKs clear this row's user ids.
     if (!done("auth_user_deleted")) {
       const deleted = await deleteAuthUser(supabase, userId);
-      if (!deleted.ok) return await fail("auth_user_deleted", deleted.message);
+      if (deleted.ok === false) {
+        return await fail("auth_user_deleted", deleted.message);
+      }
       log.steps.auth_user_deleted = {
         at: now(),
         ...(deleted.alreadyGone ? { note: "already absent" } : {}),

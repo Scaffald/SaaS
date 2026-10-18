@@ -64,7 +64,13 @@ UPDATE core.account_deletions
    SET scheduled_for = requested_at + core.account_deletion_grace_period()
  WHERE scheduled_for IS NULL;
 
+-- 'infinity' is "not given": the insert trigger below replaces it with
+-- requested_at + the grace period. It is a default, rather than none, so the
+-- generated types let an insert leave the column out (they mark a NOT NULL
+-- column without a default as required). Were the trigger ever bypassed, the
+-- row would never come due, which is the safe way to fail.
 ALTER TABLE core.account_deletions
+  ALTER COLUMN scheduled_for SET DEFAULT 'infinity',
   ALTER COLUMN scheduled_for SET NOT NULL;
 
 COMMENT ON COLUMN core.account_deletions.scheduled_for
@@ -114,10 +120,9 @@ BEGIN
   END IF;
 
   NEW.requested_at := COALESCE(NEW.requested_at, now());
-  NEW.scheduled_for := COALESCE(
-    NEW.scheduled_for,
-    NEW.requested_at + core.account_deletion_grace_period()
-  );
+  IF NEW.scheduled_for IS NULL OR NEW.scheduled_for = 'infinity' THEN
+    NEW.scheduled_for := NEW.requested_at + core.account_deletion_grace_period();
+  END IF;
   RETURN NEW;
 END;
 $$;
