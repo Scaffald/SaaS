@@ -45,7 +45,9 @@ app.use("*", authMiddleware);
 const officeOnly = requireRole("office", "platform");
 
 const isOfficeStaff = (
-  assignments: Array<{ role?: { name?: string; scope?: string } | null }>,
+  assignments: Array<
+    { role?: { name?: string | null; scope?: string | null } | null }
+  >,
 ) =>
   assignments.some((a) =>
     a.role?.scope === "platform" && a.role?.name === "office"
