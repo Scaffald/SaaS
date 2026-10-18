@@ -22,9 +22,10 @@ export const SUPPORT_FAQS: readonly SupportFaq[] = [
   },
   {
     // Settings → Account renders AccountDeletionPanel. It files a request and
-    // signs you out; the 30 days is the panel's own promise.
+    // signs you out; the account-deletion-process job carries it out 14 days
+    // later, and signing back in before then offers Cancel (#1313).
     q: 'How do I delete my account?',
-    a: 'Open Settings (on a phone, tap More, then Settings; on a larger screen, tap your name at the foot of the menu, then "Account & settings") and choose the Account tab. Under Delete Account, tap "Request Account Deletion", type DELETE to confirm, and tap "Delete Account". You will be signed out straight away, and deletion completes within 30 days. You can also email support@scaffald.com with the subject "Delete my account".',
+    a: 'Open Settings (on a phone, tap More, then Settings; on a larger screen, tap your name at the foot of the menu, then "Account & settings") and choose the Account tab. Under Delete Account, tap "Request Account Deletion", type DELETE to confirm, and tap "Delete Account". You will be signed out straight away. Your account is deleted 14 days later, and always within 30 days; if you change your mind, sign back in before then and tap "Cancel deletion". You can also email support@scaffald.com with the subject "Delete my account".',
   },
   {
     // ReportAction is on community posts and inquiry messages only; job

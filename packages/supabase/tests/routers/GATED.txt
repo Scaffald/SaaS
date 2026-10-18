@@ -30,6 +30,10 @@
 # the test that caught core.payment_transactions having a set_updated_at
 # trigger and no updated_at column (migration 361).
 
+# account-deletion-process.test.ts drives _shared/account-deletion/process.ts
+# against the real database and storage, like payments-settlement (#1313).
+account-deletion-process.test.ts
+account-deletion-rest.test.ts
 api-keys-org-authz-rest.test.ts
 auth-session-regression.test.ts
 auth.test.ts
@@ -53,6 +57,7 @@ office-jobs-rest.test.ts
 office-organization-requests-rest.test.ts
 office-settings-rest.test.ts
 office-universities-rest.test.ts
+office-users-delete-rest.test.ts
 office-users-list-rest.test.ts
 office.test.ts
 onet.test.ts

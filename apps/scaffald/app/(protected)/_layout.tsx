@@ -3,6 +3,7 @@ import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { usePrerequisitesCheck } from '@scf/core/utils/prerequisites-sdk-hooks'
 import { useNotificationDeviceRegistration } from '@scf/core/hooks/useNotificationDeviceRegistration'
+import { PendingDeletionNotice } from '@scf/core/features/profile/components/PendingDeletionNotice'
 import { Slot, useRouter, useSegments } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
@@ -123,6 +124,9 @@ export default function ProtectedLayout() {
   return (
     <View style={{ flex: 1 }}>
       <Slot />
+      {/* A sibling of the Slot, so it can never unmount the navigator. Waits
+          for the gate so it does not open over the loading overlay (#1313). */}
+      <PendingDeletionNotice enabled={!!user && !showOverlay} />
       {showOverlay &&
         (isPrereqsError || showRetry ? (
           <Stack style={overlayStyle} justify="center" align="center" gap={12}>

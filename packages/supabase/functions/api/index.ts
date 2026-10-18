@@ -52,6 +52,7 @@ import officeOrganizationsRouter from "./routes/office-organizations.ts";
 import officeSettingsRouter from "./routes/office-settings.ts";
 import officeStorageRouter from "./routes/office-storage.ts";
 import officeUsersRouter from "./routes/office-users.ts";
+import officeAccountDeletionsRouter from "./routes/office-account-deletions.ts";
 import officeUniversitiesRouter from "./routes/office-universities.ts";
 import officeCertificationsRouter from "./routes/office-certifications.ts";
 import idVerificationRouter from "./routes/id-verification.ts";
@@ -186,6 +187,7 @@ app.route("/v1/office/organizations", officeOrganizationsRouter); // Office orga
 app.route("/v1/office/settings", officeSettingsRouter); // Office platform settings (office role)
 app.route("/v1/office/storage", officeStorageRouter); // Office storage analytics (office role)
 app.route("/v1/office/users", officeUsersRouter); // Office users management (office role)
+app.route("/v1/office/account-deletions", officeAccountDeletionsRouter); // Deletion requests needing a person (office role, #1313)
 app.route("/v1/office/universities", officeUniversitiesRouter); // University catalog management (office role)
 app.route("/v1/office/certifications", officeCertificationsRouter); // Certification catalog management (office role)
 app.route("/v1/id-verification", idVerificationRouter); // ID verification (pricing, request, confirm, status, list, revoke)

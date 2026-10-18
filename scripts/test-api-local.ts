@@ -51,9 +51,24 @@ const ENDPOINTS: EndpointDef[] = [
   { path: '/v1/resume/wizard-state', method: 'GET', authType: 'requireAuth' },
   { path: '/v1/success-fees/status', method: 'GET', authType: 'requireAuth' },
   { path: '/v1/id-verification/pricing', method: 'GET', authType: 'requireAuth' },
-  { path: '/v1/office/jobs', method: 'GET', authType: 'requireRole', note: '403 without office role' },
-  { path: '/v1/office/organizations', method: 'GET', authType: 'requireRole', note: '403 without office role' },
-  { path: '/v1/notifications/admin', method: 'GET', authType: 'requireRole', note: '403 without office role' },
+  {
+    path: '/v1/office/jobs',
+    method: 'GET',
+    authType: 'requireRole',
+    note: '403 without office role',
+  },
+  {
+    path: '/v1/office/organizations',
+    method: 'GET',
+    authType: 'requireRole',
+    note: '403 without office role',
+  },
+  {
+    path: '/v1/notifications/admin',
+    method: 'GET',
+    authType: 'requireRole',
+    note: '403 without office role',
+  },
   { path: '/v1/onet/skills', method: 'GET', authType: 'none' },
   { path: '/v1/news', method: 'GET', authType: 'none' },
   { path: '/v1/map/location-counts', method: 'GET', authType: 'none' },
@@ -70,7 +85,12 @@ const ENDPOINTS: EndpointDef[] = [
   { path: '/v1/profiles/employment', method: 'GET', authType: 'requireAuth' },
   { path: '/v1/profile-wizard/progress', method: 'GET', authType: 'requireAuth' },
   // User profiles (preview may 400 without userId; smoke check)
-  { path: '/v1/user-profiles/preview', method: 'GET', authType: 'requireAuth', note: 'may 400 if no userId' },
+  {
+    path: '/v1/user-profiles/preview',
+    method: 'GET',
+    authType: 'requireAuth',
+    note: 'may 400 if no userId',
+  },
   // Other
   { path: '/v1/prerequisites', method: 'GET', authType: 'requireAuth' },
   { path: '/v1/teams', method: 'GET', authType: 'requireAuth' },
@@ -78,7 +98,7 @@ const ENDPOINTS: EndpointDef[] = [
   { path: '/v1/inquiries', method: 'GET', authType: 'requireAuth' },
   { path: '/v1/background-checks', method: 'GET', authType: 'requireAuth' },
   { path: '/v1/legal-agreements', method: 'GET', authType: 'requireAuth' },
-  { path: '/v1/account-deletion', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/account-deletion/status', method: 'GET', authType: 'requireAuth' },
   { path: '/v1/documents/storage-preference', method: 'GET', authType: 'requireAuth' },
 ]
 
@@ -116,7 +136,9 @@ async function testHealth(): Promise<boolean> {
     if (!res.ok) {
       console.error(`   Health GET ${url} → ${res.status} ${res.statusText}`)
       if (res.status === 404) {
-        console.error('   A 404 here often means the function server is running old code (e.g. with basePath). Restart: pnpm supa functions serve api')
+        console.error(
+          '   A 404 here often means the function server is running old code (e.g. with basePath). Restart: pnpm supa functions serve api'
+        )
       }
       return false
     }
@@ -125,8 +147,12 @@ async function testHealth(): Promise<boolean> {
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
     console.error(`   Health GET ${url} failed: ${msg}`)
-    console.error('   Ensure Supabase is running (pnpm supa start) and the API function is served (pnpm supa functions serve api).')
-    console.error('   If using .env, ensure EXPO_PUBLIC_SUPABASE_URL or SUPABASE_URL points to local (e.g. http://127.0.0.1:54321).')
+    console.error(
+      '   Ensure Supabase is running (pnpm supa start) and the API function is served (pnpm supa functions serve api).'
+    )
+    console.error(
+      '   If using .env, ensure EXPO_PUBLIC_SUPABASE_URL or SUPABASE_URL points to local (e.g. http://127.0.0.1:54321).'
+    )
     return false
   }
 }
@@ -153,8 +179,12 @@ async function main() {
     })
     if (error || !data.session?.access_token) {
       console.log('\n⚠️  No TEST_ACCESS_TOKEN and test user sign-in failed.')
-      console.log('   Set TEST_ACCESS_TOKEN to a Supabase session access_token, or create test user test@example.com / test123456')
-      console.log('   Proceeding with anon key only (requireAuth/requireRole routes will show 401/403).\n')
+      console.log(
+        '   Set TEST_ACCESS_TOKEN to a Supabase session access_token, or create test user test@example.com / test123456'
+      )
+      console.log(
+        '   Proceeding with anon key only (requireAuth/requireRole routes will show 401/403).\n'
+      )
     } else {
       token = data.session.access_token
       console.log('   Token: from signInWithPassword ✅')
@@ -167,7 +197,9 @@ async function main() {
     const valid = await tokenCheck(token)
     if (!valid) {
       console.log('\n⚠️  Token check failed (GET /v1/auth/session returned non-2xx).')
-      console.log('   Ensure SUPABASE_URL/issuer match where the token was issued (e.g. local 127.0.0.1:54321).')
+      console.log(
+        '   Ensure SUPABASE_URL/issuer match where the token was issued (e.g. local 127.0.0.1:54321).'
+      )
       console.log('   Proceeding anyway to show per-route status.\n')
     } else {
       console.log('   Token validity: ✅\n')
@@ -188,10 +220,14 @@ async function main() {
         : ep.authType === 'requireAuth' && !token && status === 401
           ? ' (expected 401 without token)'
           : ''
-    console.log(`| ${ep.path} | ${ep.method} | ${statusStr} | ${ep.authType} | ${note}${expected} |`)
+    console.log(
+      `| ${ep.path} | ${ep.method} | ${statusStr} | ${ep.authType} | ${note}${expected} |`
+    )
   }
 
-  console.log('\n📊 Done. Use session.access_token (not provider_token) for Bearer auth. See packages/supabase/functions/api/AUTH.md')
+  console.log(
+    '\n📊 Done. Use session.access_token (not provider_token) for Bearer auth. See packages/supabase/functions/api/AUTH.md'
+  )
 }
 
 main()

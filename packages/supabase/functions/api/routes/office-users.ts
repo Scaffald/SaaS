@@ -8,6 +8,11 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { emailsByUserId } from "../../_shared/user-emails.ts";
 import {
+  deleteAuthUser,
+  findDeletionBlockers,
+  releaseNullableReferences,
+} from "../../_shared/user-deletion.ts";
+import {
   type ApiEnv,
   authMiddleware,
   requireRole,
@@ -164,39 +169,10 @@ app.get("/", async (c) => {
 // DELETE /:id - Delete user
 // ============================================================================
 
-/**
- * Relations that block deleting a user, and cannot be resolved automatically.
- *
- * Each is a RESTRICT foreign key over content the user owns rather than a
- * pointer to them — an organization document, a task, a punchlist. Removing the
- * person should not silently remove work other people depend on, and the column
- * is NOT NULL so it cannot be released either. These need a human decision
- * (reassign or delete the content first), so the endpoint reports them instead
- * of guessing.
- */
-const BLOCKING_RELATIONS: ReadonlyArray<{ table: string; column: string }> = [
-  { table: "tasks", column: "created_by_user_id" },
-  { table: "punchlists", column: "created_by_user_id" },
-  { table: "organization_documents", column: "created_by" },
-  { table: "organization_document_versions", column: "uploaded_by" },
-  { table: "organization_document_shares", column: "created_by" },
-  { table: "organization_folders", column: "created_by" },
-  { table: "organization_locations", column: "created_by" },
-];
-
-/**
- * Verification pointers that can be released.
- *
- * These are nullable audit references — "this skill was verified by X". Once X
- * is gone, null is the honest value, and holding the deletion hostage to an
- * audit pointer would make any reviewer undeletable.
- */
-const RELEASABLE_REFERENCES: ReadonlyArray<{ table: string; column: string }> =
-  [
-    { table: "work_logs", column: "verified_by_user_id" },
-    { table: "user_skills", column: "verified_by" },
-    { table: "skill_evidence", column: "verified_by" },
-  ];
+// The blocking relations (BLOCKING_RELATIONS), the releasable verification
+// pointers (RELEASABLE_REFERENCES) and the delete itself live in
+// _shared/user-deletion.ts, so this route and the account-deletion processor
+// (#1313) cannot drift apart.
 
 app.delete("/:id", async (c) => {
   const supabaseAdmin = c.get("supabaseAdmin");
@@ -230,60 +206,42 @@ app.delete("/:id", async (c) => {
   // fails for an unrelated reason those stay released, which loses an audit
   // attribution but destroys no record and is safe to retry.
 
-  const blocked: Array<{ table: string; count: number }> = [];
-  for (const rel of BLOCKING_RELATIONS) {
-    const { count, error } = await supabaseAdmin
-      .schema("core")
-      .from(rel.table)
-      .select("*", { count: "exact", head: true })
-      .eq(rel.column, id);
-
-    // A head-count against a table that cannot be read comes back with a null
-    // count and no error, so null is the failure signal — not `error`.
-    if (count === null) {
-      return c.json({
-        error: "Failed to check whether the user can be deleted",
-        message: `Could not count core.${rel.table}.${rel.column}: ${
-          error?.message ?? "no count returned"
-        }`,
-      }, 500);
-    }
-    if (count > 0) blocked.push({ table: rel.table, count });
+  const check = await findDeletionBlockers(supabaseAdmin, id);
+  if (!check.ok) {
+    return c.json({
+      error: "Failed to check whether the user can be deleted",
+      message: check.message,
+    }, 500);
   }
 
-  if (blocked.length > 0) {
+  if (check.blocked.length > 0) {
     return c.json({
       error: "User owns content that must be reassigned first",
       message:
         "Deleting this user would remove work other people depend on. Reassign or delete it, then retry.",
-      blockedBy: blocked,
+      blockedBy: check.blocked,
     }, 409);
   }
 
-  for (const ref of RELEASABLE_REFERENCES) {
-    const { error } = await supabaseAdmin
-      .schema("core")
-      .from(ref.table)
-      .update({ [ref.column]: null })
-      .eq(ref.column, id);
-
-    if (error) {
-      return c.json({
-        error: "Failed to release verification references",
-        message: `core.${ref.table}.${ref.column}: ${error.message}`,
-      }, 500);
-    }
+  const released = await releaseNullableReferences(supabaseAdmin, id);
+  if (!released.ok) {
+    return c.json({
+      error: "Failed to release verification references",
+      message: released.message,
+    }, 500);
   }
 
   // Cascades: auth.users -> core.users -> the user's profile, skills,
   // education, experience, certifications, applications, work logs, reviews
   // they wrote, and role assignments.
-  const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(id);
+  const deleted = await deleteAuthUser(supabaseAdmin, id);
 
-  if (authError) {
+  // An operator deleting an id that does not exist gets the error they always
+  // did; only the processor treats "already gone" as done.
+  if (!deleted.ok || deleted.alreadyGone) {
     return c.json({
       error: "Failed to delete user",
-      message: authError.message,
+      message: deleted.ok ? "User not found" : deleted.message,
     }, 500);
   }
 
