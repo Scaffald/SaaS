@@ -7,6 +7,7 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
 import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import { blockedUserIds, withoutBlocked } from "../lib/blocks.ts";
+import { PIPELINE_ROLES, userHasOrgAccess } from "../lib/application-access.ts";
 
 /**
  * Service-role client, for the existence lookup in checkApplicationAccess only.
@@ -134,9 +135,13 @@ export function mapApplicationRecord(application: any) {
 }
 
 /**
- * Confirm the caller may see this application, mirroring the legacy tRPC
- * `verifyApplicationAccess`: the applicant themselves, the owner of the hiring
- * organization, or anyone with a role assignment scoped to that organization.
+ * Confirm the caller may see this application: the applicant themselves, the
+ * owner of the hiring organization, or an org admin — the same people who can
+ * open the application in the pipeline (PIPELINE_ROLES, #1312).
+ *
+ * It mirrored the legacy tRPC `verifyApplicationAccess`, which admitted *any*
+ * role scoped to the organisation, so a plain org member could read an inquiry
+ * for a candidate the pipeline would not show them.
  *
  * Returns a discriminated result rather than throwing so the caller can map it
  * onto the right status code — 404 for "no such application" and 403 for "not
@@ -213,17 +218,23 @@ export async function checkApplicationAccess(
     return { ok: true };
   }
 
-  const orgId = job?.organization_id;
+  // A list, not `.maybeSingle()`: that errored for someone holding two roles
+  // in one organisation, and the dropped error read as "no access" (#1312).
+  const orgId = job?.organization_id ?? null;
   if (orgId) {
-    const { data: roleAssignment } = await supabase
-      .schema("core")
-      .from("role_assignments")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("scope_org_id", orgId)
-      .maybeSingle();
-
-    if (roleAssignment) {
+    let admitted: boolean;
+    try {
+      admitted = await userHasOrgAccess(
+        supabase,
+        userId,
+        orgId,
+        organization?.owner_user_id ?? null,
+        { allowedRoles: PIPELINE_ROLES },
+      );
+    } catch (e) {
+      return { ok: false, status: 500, error: (e as Error).message };
+    }
+    if (admitted) {
       return { ok: true };
     }
   }

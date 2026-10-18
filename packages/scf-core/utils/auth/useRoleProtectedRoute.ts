@@ -8,6 +8,12 @@ type UseRoleProtectedRouteOptions = {
   unauthorizedRedirectPath?: string
   onAuthorizationFailure?: (context: { requiredRoles: string[]; userRoles: string[] }) => void
   suppressLogging?: boolean
+  /**
+   * False makes the hook a no-op that never redirects. Hooks cannot be called
+   * conditionally, so a layout that must let one path through (the office
+   * layout's redirects for the old pipeline URLs, #1312) turns it off instead.
+   */
+  enabled?: boolean
 }
 
 const DEFAULT_REDIRECT_PATH = '/dashboard'
@@ -20,6 +26,7 @@ export function useRoleProtectedRoute(
     unauthorizedRedirectPath = DEFAULT_REDIRECT_PATH,
     onAuthorizationFailure,
     suppressLogging = false,
+    enabled = true,
   } = options
   const router = useRouter()
 
@@ -73,7 +80,7 @@ export function useRoleProtectedRoute(
   }, [isAuthenticated])
 
   useEffect(() => {
-    if (isLoading || !isAuthenticated) {
+    if (!enabled || isLoading || !isAuthenticated) {
       return
     }
 
@@ -123,6 +130,7 @@ export function useRoleProtectedRoute(
 
     lastStateRef.current = { authorized: false, error: false }
   }, [
+    enabled,
     isLoading,
     isAuthenticated,
     hasRequiredRole,

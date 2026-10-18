@@ -333,12 +333,9 @@ export const generateOfficeDrawerItem = (isCheckAdmin = false): DrawerItemConfig
       href: ROUTES.OFFICE.CMS.path,
       icon: Users,
     },
-    {
-      key: 'office-applications',
-      titleKey: 'routes.office.applications.title',
-      href: ROUTES.OFFICE.APPLICATIONS.path,
-      icon: Briefcase,
-    },
+    // No Applications tab: the pipeline is the employer's, under /hiring, and
+    // shows the caller's own organisations' applications — not a platform-wide
+    // queue (#1312). Staff reach theirs from Employer mode like anyone else.
     {
       key: 'office-compliance',
       titleKey: 'routes.office.compliance.title',
@@ -441,9 +438,9 @@ const workerNav = (memberships: OrganizationMembership[] | undefined): DrawerIte
 /**
  * The employer's sections: Find talent, their own postings, their
  * applicant pipeline, and their organisations. The pipeline lives at
- * /office/applications, but in employer mode it is the employer's own
- * section — not Office, whose tabs are the admin's (Content Management,
- * Payment Analytics…). The prototype's Recruiting, Stages & rules and Your
+ * /hiring/applications (#1312) — it used to sit under /office, whose layout
+ * turns away anyone without the platform office role, which most employers
+ * are. The prototype's Recruiting, Stages & rules and Your
  * stats are not built yet (#843, #844, the employer stats issue), so they
  * are absent rather than rows that lead nowhere. Home stays until #1117
  * decides what an employer's Home is.
@@ -461,8 +458,8 @@ const employerNav = (memberships: OrganizationMembership[] | undefined): DrawerI
     },
     {
       key: 'employer-applications',
-      titleKey: 'routes.office.applications.title',
-      href: ROUTES.OFFICE.APPLICATIONS.path,
+      titleKey: 'routes.hiring.applications.title',
+      href: ROUTES.HIRING.APPLICATIONS.path,
       icon: ClipboardCheck,
     },
     all.get('employers'),
@@ -489,8 +486,9 @@ export const getNavItems = (
 /**
  * How specifically a top-level item claims `pathname`: the length of the
  * prefix it owns it by, or -1 when it does not. Two items can own one page —
- * Office owns everything under /office, and the employer's Applications owns
- * /office/applications — and the more specific one is the page's section.
+ * one by a prefix, another by a longer prefix inside it (the employer's
+ * Applications under /office did, until #1312) — and the more specific one is
+ * the page's section.
  */
 const topLevelClaim = (item: DrawerItemConfig, pathname: string): number =>
   ownsPath(item, pathname) ? (item.matchPrefix ?? item.href).length : -1
@@ -631,8 +629,8 @@ export const getEmployerMobileSections = ({
     key: 'applications',
     label: 'Apps',
     icon: ClipboardCheck,
-    route: ROUTES.OFFICE.APPLICATIONS.path,
-    matchPrefixes: ['/office/applications'],
+    route: ROUTES.HIRING.APPLICATIONS.path,
+    matchPrefixes: [ROUTES.HIRING.APPLICATIONS.path],
     subItems: [],
   },
   {

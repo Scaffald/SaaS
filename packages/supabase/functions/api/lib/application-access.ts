@@ -169,33 +169,36 @@ export async function userHasOrgAccess(
 
   const { allowedRoles } = options;
 
-  // Without a role filter this is the original behaviour: membership of any
-  // kind. With one, the join lets us name the roles that qualify.
-  if (!allowedRoles) {
-    const { data } = await supabase
-      .schema("core")
-      .from("role_assignments")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("scope_org_id", organizationId)
-      .maybeSingle();
+  if (allowedRoles && allowedRoles.length === 0) return false;
 
-    return !!data;
-  }
-
-  if (allowedRoles.length === 0) return false;
-
-  const { data } = await supabase
+  // Every assignment the user holds in this organisation, as a list. This used
+  // `.maybeSingle()` when no role filter was given, which *errors* when there
+  // are two rows — an admin who is also a member — and the error was dropped,
+  // so holding a second role refused you (#1312). A lookup failure is thrown,
+  // not answered "no": the caller's error handler makes it a 500.
+  const { data, error } = await supabase
     .schema("core")
     .from("role_assignments")
     .select("id, role:roles!role_id(name)")
     .eq("user_id", userId)
     .eq("scope_org_id", organizationId);
 
-  const rows = (data ?? []) as Array<{ role?: { name?: string } | null }>;
+  if (error) {
+    throw new Error(`Failed to load organisation roles: ${error.message}`);
+  }
+
+  const rows = (data ?? []) as Array<
+    { role?: { name?: string } | Array<{ name?: string }> | null }
+  >;
+
+  // Without a role filter, any assignment scoped to the org will do — the
+  // original behaviour, kept for the message thread. With one, it must name a
+  // role on the list.
+  if (!allowedRoles) return rows.length > 0;
 
   return rows.some((row) => {
-    const name = row.role?.name;
+    const role = Array.isArray(row.role) ? row.role[0] : row.role;
+    const name = role?.name;
     return !!name && allowedRoles.includes(name);
   });
 }
@@ -213,11 +216,19 @@ export async function listAccessibleOrganizationIds(
 ): Promise<string[]> {
   const ids = new Set<string>();
 
-  const { data: owned } = await supabase
+  // Errors are thrown rather than read as "no organisations": an empty list
+  // here is an empty pipeline, which would hide a failed lookup for good.
+  const { data: owned, error: ownedError } = await supabase
     .schema("core")
     .from("organizations")
     .select("id")
     .eq("owner_user_id", userId);
+
+  if (ownedError) {
+    throw new Error(
+      `Failed to load owned organisations: ${ownedError.message}`,
+    );
+  }
 
   for (const row of (owned ?? []) as Array<{ id: string }>) {
     ids.add(row.id);
@@ -230,7 +241,13 @@ export async function listAccessibleOrganizationIds(
     .eq("user_id", userId)
     .not("scope_org_id", "is", null);
 
-  const { data: assignments } = await query;
+  const { data: assignments, error: assignmentsError } = await query;
+
+  if (assignmentsError) {
+    throw new Error(
+      `Failed to load organisation roles: ${assignmentsError.message}`,
+    );
+  }
 
   const { allowedRoles } = options;
   const rows = (assignments ?? []) as Array<
@@ -250,6 +267,9 @@ export async function listAccessibleOrganizationIds(
  * Roles that may work an organisation's hiring pipeline.
  *
  * Named rather than inlined so there is one place to widen it if recruiters
- * turn out to hold `member`.
+ * turn out to hold `member`. Since #1312 it is also the rule for an
+ * application's inquiry (routes/inquiries.ts) and its hire fee
+ * (routes/success-fees.ts), which had admitted any org-scoped role: one set of
+ * people can open the pipeline, a candidate, the inquiry and the hire.
  */
 export const PIPELINE_ROLES = ["admin"];

@@ -189,7 +189,7 @@ describe('useApplicationStatusChange', () => {
       })
     })
 
-    expect(pushMock).toHaveBeenCalledWith('/office/applications/app-hire/hire')
+    expect(pushMock).toHaveBeenCalledWith('/hiring/applications/app-hire/hire')
     // Nothing is written here: the screen marks the hire once the fee is paid.
     expect(mutateAsyncMock).not.toHaveBeenCalled()
     expect(result.current.pendingChange).toBeNull()

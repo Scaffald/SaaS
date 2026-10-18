@@ -74,8 +74,8 @@ export function getSectionTabs(
   items: DrawerItemConfig[]
 ): SectionTabStrip | null {
   // The page's section is the one top-level item that owns it most
-  // specifically — in employer mode /office/applications is the employer's
-  // Applications, not Office, so it gets no admin tab strip (#1157).
+  // specifically, so a page inside another section's prefix gets its own
+  // section's strip, not the outer one's (#1157).
   const sectionKey = activeNavKey(items, pathname)
   const section = items.find((item) => item.key === sectionKey)
   if (!section?.subItems?.length) return null

@@ -24,7 +24,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
 
   if (!application) return null
 
-  const detailPath = ROUTES.OFFICE.APPLICATIONS.DETAIL.path.replace(
+  const detailPath = ROUTES.HIRING.APPLICATIONS.DETAIL.path.replace(
     ':applicationId',
     application.id
   )

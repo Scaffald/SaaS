@@ -48,8 +48,8 @@ export const CMS_TABS: OfficeTabsItem[] = [
   },
   {
     key: 'cms-applications',
-    label: i18n.t(ROUTES.OFFICE.APPLICATIONS.titleKey),
-    href: ROUTES.OFFICE.APPLICATIONS.path,
+    label: i18n.t(ROUTES.HIRING.APPLICATIONS.titleKey),
+    href: ROUTES.HIRING.APPLICATIONS.path,
   },
 ]
 
@@ -142,7 +142,7 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
       {
         key: 'ats-dashboard',
         label: 'Applications Dashboard',
-        href: ROUTES.OFFICE.APPLICATIONS.path,
+        href: ROUTES.HIRING.APPLICATIONS.path,
       },
       {
         key: 'ats-background-checks',

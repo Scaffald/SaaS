@@ -81,7 +81,7 @@ const mapInquiryToFormValues = (inquiry: Record<string, any>): InquiryCreateInpu
  * Candidate detail, without a container.
  *
  * Extracted from CandidateDetailModal so the same six tabs render inside the
- * kanban modal *and* at `/office/applications/[applicationId]` (#537). Detail
+ * kanban modal *and* at `/hiring/applications/[applicationId]` (#537, #1312). Detail
  * used to exist only as a modal, so a recruiter could not send a colleague a
  * link to a candidate and the back button did nothing.
  *
