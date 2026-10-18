@@ -51,9 +51,8 @@ export type DrawerLinkProps = {
   isCollapsed?: boolean
   /**
    * Whether this row is the page's section. Decided once for the whole list
-   * (activeNavKey) — two rows can own one page, Office and the employer's
-   * Applications both own /office/applications, and only the more specific
-   * one should light. Falls back to the row's own ownership when omitted.
+   * (activeNavKey) — two rows can own one page, by a prefix and a longer
+   * prefix inside it, and only the more specific one should light. Falls back to the row's own ownership when omitted.
    */
   active?: boolean
 }

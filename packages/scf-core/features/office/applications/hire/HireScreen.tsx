@@ -68,9 +68,7 @@ export function HireScreen({ application }: { application: ATSApplication }) {
   const hireInputs = useMemo(() => deriveHireInputs(application), [application])
   const schedule = useMemo(
     () =>
-      hireInputs
-        ? deriveSchedule(hireInputs.totalHireValueCents, hireInputs.hireStartDate)
-        : null,
+      hireInputs ? deriveSchedule(hireInputs.totalHireValueCents, hireInputs.hireStartDate) : null,
     [hireInputs]
   )
 
@@ -144,7 +142,7 @@ export function HireScreen({ application }: { application: ATSApplication }) {
   }
 
   const backToCandidate = () =>
-    router.replace(buildPath(ROUTES.OFFICE.APPLICATIONS.DETAIL, { applicationId: application.id }))
+    router.replace(buildPath(ROUTES.HIRING.APPLICATIONS.DETAIL, { applicationId: application.id }))
 
   const markHired = async () => {
     await updateApplication.mutateAsync({

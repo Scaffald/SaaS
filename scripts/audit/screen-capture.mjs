@@ -195,7 +195,7 @@ const ROUTES = [
   // admin — office
   { group: 'office', path: '/office', name: 'home' },
   { group: 'office', path: '/office/api-keys', name: 'api-keys' },
-  { group: 'office', path: '/office/applications', name: 'applications' },
+  { group: 'office', path: '/hiring/applications', name: 'applications' },
   { group: 'office', path: '/office/payments', name: 'payments' },
   { group: 'office', path: '/office/transactions', name: 'transactions' },
   { group: 'office', path: '/office/violations', name: 'violations' },

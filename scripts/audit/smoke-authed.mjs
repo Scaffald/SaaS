@@ -59,7 +59,7 @@ if (error) {
 console.log('✓ session minted for', data.user?.email)
 
 const ROUTES = [
-  ['ats-applications', '/office/applications'],
+  ['ats-applications', '/hiring/applications'],
   ['ats-metrics', '/office/ats/metrics'],
   // The screening queue's SLA strip (#633) lives on the ADMIN page
   // (/office/ats/admin), not /office/ats/checks — that one is the org-scoped

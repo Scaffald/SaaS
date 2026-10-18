@@ -158,6 +158,13 @@ describe('employer tabs point at surfaces that exist', () => {
     }
   })
 
+  // #1312: the pipeline left /office, whose layout turns away most employers.
+  it('sends Apps to the pipeline under /hiring and lights it on a candidate', () => {
+    const i = EMPLOYER_PLAIN_SECTIONS.findIndex((s) => s.key === 'applications')
+    expect(EMPLOYER_PLAIN_SECTIONS[i].route).toBe('/hiring/applications')
+    expect(activeIndex('/hiring/applications/abc/inquiry', EMPLOYER_PLAIN_SECTIONS)).toBe(i)
+  })
+
   it('lands Screening on the review queue, not the organisation picker (#1203)', () => {
     const screening = EMPLOYER_MOBILE_SECTIONS.find((s) => s.key === 'screening')
     expect(screening?.route).toBe('/office/ats/admin')

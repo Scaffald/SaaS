@@ -242,7 +242,7 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
       // all three (#836). The screen performs the status change itself once
       // the fee is settled.
       if (toStatus === 'hired') {
-        router.push(buildPath(ROUTES.OFFICE.APPLICATIONS.HIRE, { applicationId }))
+        router.push(buildPath(ROUTES.HIRING.APPLICATIONS.HIRE, { applicationId }))
         return
       }
 

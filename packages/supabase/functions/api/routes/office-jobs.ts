@@ -1,14 +1,22 @@
 /**
- * Office Jobs REST API
- * Office role required. Migrated from tRPC office.listJobs.
+ * Office Jobs REST API. Migrated from tRPC office.listJobs.
+ *
+ * Writes (create, edit, delete, duplicate) are the Office CMS and require the
+ * platform office role. The list is also the employer's: My Listings and the
+ * pipeline's job filter read it, and an organisation's owner or admin may list
+ * their own organisations' postings without the office role (#1312). It was
+ * office-only, so both screens were empty for every employer who is not
+ * Scaffald staff.
  */
 
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import {
+  addSupabaseAdminForUser,
   type ApiEnv,
   authMiddleware,
+  requireAuth,
   requireRole,
 } from "../middleware/auth.ts";
 import {
@@ -16,6 +24,10 @@ import {
   loadUserRoleAssignments,
 } from "../../_shared/permissions/team-permissions.ts";
 import { booleanQueryParam } from "../../_shared/query-schemas.ts";
+import {
+  listAccessibleOrganizationIds,
+  PIPELINE_ROLES,
+} from "../lib/application-access.ts";
 
 const listJobsQuerySchema = z.object({
   organization_id: z.string().uuid().optional(),
@@ -28,93 +40,134 @@ const listJobsQuerySchema = z.object({
 
 const app = new Hono<ApiEnv>();
 app.use("*", authMiddleware);
-app.use("*", requireRole("office", "platform"));
 
-app.get("/", zValidator("query", listJobsQuerySchema), async (c) => {
-  const supabaseAdmin = c.get("supabaseAdmin");
-  const user = c.get("user");
+/** The CMS writes: office staff only. Per route, since the list is not. */
+const officeOnly = requireRole("office", "platform");
 
-  if (!supabaseAdmin || !user?.id) {
-    return c.json(
-      { error: "Unauthorized", message: "User not authenticated" },
-      401,
-    );
-  }
+const isOfficeStaff = (
+  assignments: Array<{ role?: { name?: string; scope?: string } | null }>,
+) =>
+  assignments.some((a) =>
+    a.role?.scope === "platform" && a.role?.name === "office"
+  );
 
-  const input = c.req.valid("query");
+app.get(
+  "/",
+  requireAuth,
+  addSupabaseAdminForUser,
+  zValidator("query", listJobsQuerySchema),
+  async (c) => {
+    const supabaseAdmin = c.get("supabaseAdmin");
+    const user = c.get("user");
 
-  const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
-  const superAdmin = isSuperAdmin(assignments);
-
-  let organizationIds: Set<string> | null = null;
-  if (!superAdmin) {
-    organizationIds = new Set<string>();
-
-    const { data: ownedOrgs, error: ownedError } = await supabaseAdmin
-      .schema("core")
-      .from("organizations")
-      .select("id")
-      .eq("owner_user_id", user.id);
-
-    if (ownedError) {
-      return c.json({
-        error: "Internal Server Error",
-        message: `Failed to fetch owned organizations: ${ownedError.message}`,
-      }, 500);
+    if (!supabaseAdmin || !user?.id) {
+      return c.json(
+        { error: "Unauthorized", message: "User not authenticated" },
+        401,
+      );
     }
 
-    for (const org of ownedOrgs ?? []) {
-      if (org.id) organizationIds.add(org.id as string);
-    }
+    const input = c.req.valid("query");
 
-    const { data: teamMemberships, error: membershipsError } =
-      await supabaseAdmin
+    const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+    const officeStaff = isOfficeStaff(assignments);
+    // Every organisation's postings is a staff view. A super_admin needed the
+    // office role to reach this list before #1312 and still does to see it all.
+    const superAdmin = officeStaff && isSuperAdmin(assignments);
+
+    let organizationIds: Set<string> | null = null;
+    if (!superAdmin && !officeStaff) {
+      // An employer: the organisations they may hire for — owner or org admin,
+      // the pipeline's rule (PIPELINE_ROLES) — and nothing else.
+      organizationIds = new Set(
+        await listAccessibleOrganizationIds(supabaseAdmin, user.id, {
+          allowedRoles: PIPELINE_ROLES,
+        }),
+      );
+    } else if (!superAdmin) {
+      organizationIds = new Set<string>();
+
+      const { data: ownedOrgs, error: ownedError } = await supabaseAdmin
         .schema("core")
-        .from("team_members")
-        .select("teams!inner(organization_id)")
-        .eq("user_id", user.id)
-        .neq("status", "removed");
+        .from("organizations")
+        .select("id")
+        .eq("owner_user_id", user.id);
 
-    if (membershipsError) {
-      return c.json({
-        error: "Internal Server Error",
-        message: `Failed to load team memberships: ${membershipsError.message}`,
-      }, 500);
-    }
-
-    for (const membership of teamMemberships ?? []) {
-      const orgId = (membership as { teams?: { organization_id?: string } })
-        ?.teams?.organization_id;
-      if (orgId && typeof orgId === "string") organizationIds.add(orgId);
-    }
-
-    if (organizationIds.size === 0) {
-      return c.json({ data: { jobs: [], total: 0 } });
-    }
-
-    if (input.organization_id) {
-      if (!organizationIds.has(input.organization_id)) {
+      if (ownedError) {
         return c.json({
-          error: "Forbidden",
-          message: "You do not have access to this organization",
-        }, 403);
+          error: "Internal Server Error",
+          message: `Failed to fetch owned organizations: ${ownedError.message}`,
+        }, 500);
       }
-      organizationIds.clear();
-      organizationIds.add(input.organization_id);
-    }
-  }
 
-  const jobTeamsRelationship = input.team_id || input.myTeamsOnly
-    ? "job_team_assignments!inner"
-    : "job_team_assignments";
-  // NB: this is a PostgREST select string, not TypeScript — `--` inside it
-  // is sent to the server, not stripped. Keep explanations out here.
-  //
-  // `team:teams` must name its constraint: core.jobs has two FKs to
-  // core.teams (team_id and assigned_team_id), and an unqualified embed
-  // makes PostgREST refuse the whole query with "more than one
-  // relationship was found for 'jobs' and 'teams'".
-  const selectClause = `
+      for (const org of ownedOrgs ?? []) {
+        if (org.id) organizationIds.add(org.id as string);
+      }
+
+      const { data: teamMemberships, error: membershipsError } =
+        await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("teams!inner(organization_id)")
+          .eq("user_id", user.id)
+          .neq("status", "removed");
+
+      if (membershipsError) {
+        return c.json({
+          error: "Internal Server Error",
+          message:
+            `Failed to load team memberships: ${membershipsError.message}`,
+        }, 500);
+      }
+
+      for (const membership of teamMemberships ?? []) {
+        const orgId = (membership as { teams?: { organization_id?: string } })
+          ?.teams?.organization_id;
+        if (orgId && typeof orgId === "string") organizationIds.add(orgId);
+      }
+
+      // And, like an employer, any organisation they administer (#1312).
+      for (
+        const id of await listAccessibleOrganizationIds(
+          supabaseAdmin,
+          user.id,
+          {
+            allowedRoles: PIPELINE_ROLES,
+          },
+        )
+      ) {
+        organizationIds.add(id);
+      }
+    }
+
+    if (organizationIds) {
+      if (organizationIds.size === 0) {
+        return c.json({ data: { jobs: [], total: 0 } });
+      }
+
+      if (input.organization_id) {
+        if (!organizationIds.has(input.organization_id)) {
+          return c.json({
+            error: "Forbidden",
+            message: "You do not have access to this organization",
+          }, 403);
+        }
+        organizationIds.clear();
+        organizationIds.add(input.organization_id);
+      }
+    }
+
+    const jobTeamsRelationship = input.team_id || input.myTeamsOnly
+      ? "job_team_assignments!inner"
+      : "job_team_assignments";
+    // NB: this is a PostgREST select string, not TypeScript — `--` inside it
+    // is sent to the server, not stripped. Keep explanations out here.
+    //
+    // `team:teams` must name its constraint: core.jobs has two FKs to
+    // core.teams (team_id and assigned_team_id), and an unqualified embed
+    // makes PostgREST refuse the whole query with "more than one
+    // relationship was found for 'jobs' and 'teams'".
+    const selectClause = `
     id,
     title,
     description,
@@ -141,93 +194,96 @@ app.get("/", zValidator("query", listJobsQuerySchema), async (c) => {
     created_by:users!created_by_user_id(id, username, display_name)
   `;
 
-  let query = supabaseAdmin
-    .schema("core")
-    .from("jobs")
-    .select(selectClause, { count: "exact" })
-    .order("created_at", { ascending: false })
-    .range(input.offset, input.offset + input.limit - 1);
-
-  if (!superAdmin && organizationIds && organizationIds.size > 0) {
-    query = query.in("organization_id", Array.from(organizationIds));
-  } else if (input.organization_id) {
-    query = query.eq("organization_id", input.organization_id);
-  }
-
-  if (input.status) query = query.eq("status", input.status);
-  if (input.team_id) {
-    query = query.eq("team_assignments.team_id", input.team_id);
-  }
-
-  if (input.myTeamsOnly) {
-    const { data: memberships, error: membershipsError } = await supabaseAdmin
+    let query = supabaseAdmin
       .schema("core")
-      .from("team_members")
-      .select("team_id")
-      .eq("user_id", user.id)
-      .neq("status", "removed");
+      .from("jobs")
+      .select(selectClause, { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(input.offset, input.offset + input.limit - 1);
 
-    if (membershipsError) {
+    if (!superAdmin && organizationIds && organizationIds.size > 0) {
+      query = query.in("organization_id", Array.from(organizationIds));
+    } else if (input.organization_id) {
+      query = query.eq("organization_id", input.organization_id);
+    }
+
+    if (input.status) query = query.eq("status", input.status);
+    if (input.team_id) {
+      query = query.eq("team_assignments.team_id", input.team_id);
+    }
+
+    if (input.myTeamsOnly) {
+      const { data: memberships, error: membershipsError } = await supabaseAdmin
+        .schema("core")
+        .from("team_members")
+        .select("team_id")
+        .eq("user_id", user.id)
+        .neq("status", "removed");
+
+      if (membershipsError) {
+        return c.json({
+          error: "Internal Server Error",
+          message:
+            `Failed to load team memberships: ${membershipsError.message}`,
+        }, 500);
+      }
+
+      const teamIds = (memberships ?? [])
+        .map((m: { team_id?: string | null }) => m.team_id as string | null)
+        .filter((id: string | null): id is string => Boolean(id));
+
+      if (teamIds.length === 0) {
+        return c.json({ data: { jobs: [], total: 0 } });
+      }
+      query = query.in("team_assignments.team_id", teamIds);
+    }
+
+    const { data, error, count } = await query;
+
+    if (error) {
       return c.json({
         error: "Internal Server Error",
-        message: `Failed to load team memberships: ${membershipsError.message}`,
+        message: `Failed to fetch jobs: ${error.message}`,
       }, 500);
     }
 
-    const teamIds = (memberships ?? [])
-      .map((m: { team_id?: string | null }) => m.team_id as string | null)
-      .filter((id: string | null): id is string => Boolean(id));
+    const jobs = (data ?? []).map((job: Record<string, unknown>) => {
+      const { team_assignments: jobTeamsRaw, ...rest } = job;
+      const teamAssignments =
+        (jobTeamsRaw as Array<Record<string, unknown>> | null)?.map((
+          assignment: Record<string, unknown>,
+        ) => ({
+          teamId: assignment.team_id as string,
+          isPrimary: Boolean(assignment.is_primary),
+          roleKey: assignment.role_key as string,
+          assignedAt: assignment.assigned_at as string,
+          team: assignment.team
+            ? {
+              id: (assignment.team as Record<string, unknown>).id as string,
+              name: (assignment.team as Record<string, unknown>).name as
+                | string
+                | null,
+              organization_id: (assignment.team as Record<string, unknown>)
+                .organization_id as string,
+            }
+            : null,
+        })) ?? [];
 
-    if (teamIds.length === 0) {
-      return c.json({ data: { jobs: [], total: 0 } });
-    }
-    query = query.in("team_assignments.team_id", teamIds);
-  }
+      const primaryAssignment = teamAssignments.find((a) => a.isPrimary) ??
+        null;
 
-  const { data, error, count } = await query;
+      return {
+        ...rest,
+        teamAssignments,
+        team_ids: teamAssignments.map((a) => a.teamId),
+        primary_team_id: primaryAssignment?.teamId ?? null,
+        team: primaryAssignment?.team ?? null,
+      };
+    });
 
-  if (error) {
-    return c.json({
-      error: "Internal Server Error",
-      message: `Failed to fetch jobs: ${error.message}`,
-    }, 500);
-  }
-
-  const jobs = (data ?? []).map((job: Record<string, unknown>) => {
-    const { team_assignments: jobTeamsRaw, ...rest } = job;
-    const teamAssignments =
-      (jobTeamsRaw as Array<Record<string, unknown>> | null)?.map((
-        assignment: Record<string, unknown>,
-      ) => ({
-        teamId: assignment.team_id as string,
-        isPrimary: Boolean(assignment.is_primary),
-        roleKey: assignment.role_key as string,
-        assignedAt: assignment.assigned_at as string,
-        team: assignment.team
-          ? {
-            id: (assignment.team as Record<string, unknown>).id as string,
-            name: (assignment.team as Record<string, unknown>).name as
-              | string
-              | null,
-            organization_id: (assignment.team as Record<string, unknown>)
-              .organization_id as string,
-          }
-          : null,
-      })) ?? [];
-
-    const primaryAssignment = teamAssignments.find((a) => a.isPrimary) ?? null;
-
-    return {
-      ...rest,
-      teamAssignments,
-      team_ids: teamAssignments.map((a) => a.teamId),
-      primary_team_id: primaryAssignment?.teamId ?? null,
-      team: primaryAssignment?.team ?? null,
-    };
-  });
-
-  return c.json({ data: { jobs, total: count ?? 0 } });
-});
+    return c.json({ data: { jobs, total: count ?? 0 } });
+  },
+);
 
 const createJobBodySchema = z.object({
   organization_id: z.string().uuid("Invalid organization ID"),
@@ -257,80 +313,85 @@ const createJobBodySchema = z.object({
     .optional(),
 });
 
-app.post("/", zValidator("json", createJobBodySchema), async (c) => {
-  const supabaseAdmin = c.get("supabaseAdmin");
-  const user = c.get("user");
+app.post(
+  "/",
+  officeOnly,
+  zValidator("json", createJobBodySchema),
+  async (c) => {
+    const supabaseAdmin = c.get("supabaseAdmin");
+    const user = c.get("user");
 
-  if (!supabaseAdmin || !user?.id) {
-    return c.json(
-      { error: "Unauthorized", message: "User not authenticated" },
-      401,
-    );
-  }
+    if (!supabaseAdmin || !user?.id) {
+      return c.json(
+        { error: "Unauthorized", message: "User not authenticated" },
+        401,
+      );
+    }
 
-  const input = c.req.valid("json");
+    const input = c.req.valid("json");
 
-  // Verify organization access
-  const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
-  const superAdmin = isSuperAdmin(assignments);
+    // Verify organization access
+    const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+    const superAdmin = isSuperAdmin(assignments);
 
-  if (!superAdmin) {
-    const { data: orgAccess } = await supabaseAdmin
-      .schema("core")
-      .from("organizations")
-      .select("id")
-      .eq("id", input.organization_id)
-      .eq("owner_user_id", user.id)
-      .maybeSingle();
-
-    if (!orgAccess) {
-      const { data: teamAccess } = await supabaseAdmin
+    if (!superAdmin) {
+      const { data: orgAccess } = await supabaseAdmin
         .schema("core")
-        .from("team_members")
-        .select("teams!inner(organization_id)")
-        .eq("user_id", user.id)
-        .neq("status", "removed")
-        .filter("teams.organization_id", "eq", input.organization_id)
+        .from("organizations")
+        .select("id")
+        .eq("id", input.organization_id)
+        .eq("owner_user_id", user.id)
         .maybeSingle();
 
-      if (!teamAccess) {
-        return c.json({
-          error: "Forbidden",
-          message: "You do not have access to this organization",
-        }, 403);
+      if (!orgAccess) {
+        const { data: teamAccess } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("teams!inner(organization_id)")
+          .eq("user_id", user.id)
+          .neq("status", "removed")
+          .filter("teams.organization_id", "eq", input.organization_id)
+          .maybeSingle();
+
+        if (!teamAccess) {
+          return c.json({
+            error: "Forbidden",
+            message: "You do not have access to this organization",
+          }, 403);
+        }
       }
     }
-  }
 
-  const { data: job, error } = await supabaseAdmin
-    .schema("core")
-    .from("jobs")
-    .insert({
-      organization_id: input.organization_id,
-      title: input.title,
-      description: input.description,
-      status: input.status,
-      employment_type: input.employment_type,
-      remote_option: input.remote_option,
-      position_level: input.position_level,
-      location: input.location,
-      pay_range_min_cents: input.pay_range_min_cents,
-      pay_range_max_cents: input.pay_range_max_cents,
-      pay_range_type: input.pay_range_type,
-      created_by_user_id: user.id,
-    })
-    .select("*")
-    .single();
+    const { data: job, error } = await supabaseAdmin
+      .schema("core")
+      .from("jobs")
+      .insert({
+        organization_id: input.organization_id,
+        title: input.title,
+        description: input.description,
+        status: input.status,
+        employment_type: input.employment_type,
+        remote_option: input.remote_option,
+        position_level: input.position_level,
+        location: input.location,
+        pay_range_min_cents: input.pay_range_min_cents,
+        pay_range_max_cents: input.pay_range_max_cents,
+        pay_range_type: input.pay_range_type,
+        created_by_user_id: user.id,
+      })
+      .select("*")
+      .single();
 
-  if (error) {
-    return c.json(
-      { error: "Internal Server Error", message: error.message },
-      500,
-    );
-  }
+    if (error) {
+      return c.json(
+        { error: "Internal Server Error", message: error.message },
+        500,
+      );
+    }
 
-  return c.json({ data: { job } }, 201);
-});
+    return c.json({ data: { job } }, 201);
+  },
+);
 
 const updateJobBodySchema = z.object({
   title: z.string().min(1).optional(),
@@ -353,128 +414,133 @@ const updateJobBodySchema = z.object({
   organization_id: z.string().uuid().optional(),
 });
 
-app.patch("/:id", zValidator("json", updateJobBodySchema), async (c) => {
-  const supabaseAdmin = c.get("supabaseAdmin");
-  const user = c.get("user");
-  const { id } = c.req.param();
+app.patch(
+  "/:id",
+  officeOnly,
+  zValidator("json", updateJobBodySchema),
+  async (c) => {
+    const supabaseAdmin = c.get("supabaseAdmin");
+    const user = c.get("user");
+    const { id } = c.req.param();
 
-  if (!supabaseAdmin || !user?.id) {
-    return c.json(
-      { error: "Unauthorized", message: "User not authenticated" },
-      401,
-    );
-  }
+    if (!supabaseAdmin || !user?.id) {
+      return c.json(
+        { error: "Unauthorized", message: "User not authenticated" },
+        401,
+      );
+    }
 
-  const input = c.req.valid("json");
+    const input = c.req.valid("json");
 
-  // Fetch existing job to verify access
-  const { data: existingJob, error: fetchError } = await supabaseAdmin
-    .schema("core")
-    .from("jobs")
-    .select("id, organization_id")
-    .eq("id", id)
-    .single();
-
-  if (fetchError || !existingJob) {
-    return c.json({ error: "Not Found", message: "Job not found" }, 404);
-  }
-
-  const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
-  const superAdmin = isSuperAdmin(assignments);
-
-  if (!superAdmin) {
-    const orgId = existingJob.organization_id as string;
-    const { data: orgAccess } = await supabaseAdmin
+    // Fetch existing job to verify access
+    const { data: existingJob, error: fetchError } = await supabaseAdmin
       .schema("core")
-      .from("organizations")
-      .select("id")
-      .eq("id", orgId)
-      .eq("owner_user_id", user.id)
-      .maybeSingle();
+      .from("jobs")
+      .select("id, organization_id")
+      .eq("id", id)
+      .single();
 
-    if (!orgAccess) {
-      const { data: teamAccess } = await supabaseAdmin
+    if (fetchError || !existingJob) {
+      return c.json({ error: "Not Found", message: "Job not found" }, 404);
+    }
+
+    const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+    const superAdmin = isSuperAdmin(assignments);
+
+    if (!superAdmin) {
+      const orgId = existingJob.organization_id as string;
+      const { data: orgAccess } = await supabaseAdmin
         .schema("core")
-        .from("team_members")
-        .select("teams!inner(organization_id)")
-        .eq("user_id", user.id)
-        .neq("status", "removed")
-        .filter("teams.organization_id", "eq", orgId)
+        .from("organizations")
+        .select("id")
+        .eq("id", orgId)
+        .eq("owner_user_id", user.id)
         .maybeSingle();
 
-      if (!teamAccess) {
-        return c.json({
-          error: "Forbidden",
-          message: "You do not have access to this job",
-        }, 403);
+      if (!orgAccess) {
+        const { data: teamAccess } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("teams!inner(organization_id)")
+          .eq("user_id", user.id)
+          .neq("status", "removed")
+          .filter("teams.organization_id", "eq", orgId)
+          .maybeSingle();
+
+        if (!teamAccess) {
+          return c.json({
+            error: "Forbidden",
+            message: "You do not have access to this job",
+          }, 403);
+        }
       }
     }
-  }
 
-  // SC-120: reject org reassignment that the existing-org access check above
-  // doesn't cover. Without this, a user with access to org A could move a job
-  // to org B (where they have no permission) by including organization_id in
-  // the PATCH body. Cross-org moves should go through a dedicated handler
-  // that verifies access to the destination org.
-  if (
-    input.organization_id !== undefined &&
-    input.organization_id !== existingJob.organization_id
-  ) {
-    return c.json(
-      {
-        error: "Bad Request",
-        message:
-          "Changing organization_id via PATCH is not supported. Use the org-transfer flow.",
-      },
-      400,
-    );
-  }
+    // SC-120: reject org reassignment that the existing-org access check above
+    // doesn't cover. Without this, a user with access to org A could move a job
+    // to org B (where they have no permission) by including organization_id in
+    // the PATCH body. Cross-org moves should go through a dedicated handler
+    // that verifies access to the destination org.
+    if (
+      input.organization_id !== undefined &&
+      input.organization_id !== existingJob.organization_id
+    ) {
+      return c.json(
+        {
+          error: "Bad Request",
+          message:
+            "Changing organization_id via PATCH is not supported. Use the org-transfer flow.",
+        },
+        400,
+      );
+    }
 
-  const updateData: Record<string, unknown> = {};
-  if (input.title !== undefined) updateData.title = input.title;
-  if (input.description !== undefined) {
-    updateData.description = input.description;
-  }
-  if (input.status !== undefined) updateData.status = input.status;
-  if (input.employment_type !== undefined) {
-    updateData.employment_type = input.employment_type;
-  }
-  if (input.remote_option !== undefined) {
-    updateData.remote_option = input.remote_option;
-  }
-  if (input.position_level !== undefined) {
-    updateData.position_level = input.position_level;
-  }
-  if (input.location !== undefined) updateData.location = input.location;
-  if (input.pay_range_min_cents !== undefined) {
-    updateData.pay_range_min_cents = input.pay_range_min_cents;
-  }
-  if (input.pay_range_max_cents !== undefined) {
-    updateData.pay_range_max_cents = input.pay_range_max_cents;
-  }
-  if (input.pay_range_type !== undefined) {
-    updateData.pay_range_type = input.pay_range_type;
-  }
+    const updateData: Record<string, unknown> = {};
+    if (input.title !== undefined) updateData.title = input.title;
+    if (input.description !== undefined) {
+      updateData.description = input.description;
+    }
+    if (input.status !== undefined) updateData.status = input.status;
+    if (input.employment_type !== undefined) {
+      updateData.employment_type = input.employment_type;
+    }
+    if (input.remote_option !== undefined) {
+      updateData.remote_option = input.remote_option;
+    }
+    if (input.position_level !== undefined) {
+      updateData.position_level = input.position_level;
+    }
+    if (input.location !== undefined) updateData.location = input.location;
+    if (input.pay_range_min_cents !== undefined) {
+      updateData.pay_range_min_cents = input.pay_range_min_cents;
+    }
+    if (input.pay_range_max_cents !== undefined) {
+      updateData.pay_range_max_cents = input.pay_range_max_cents;
+    }
+    if (input.pay_range_type !== undefined) {
+      updateData.pay_range_type = input.pay_range_type;
+    }
 
-  const { data: job, error } = await supabaseAdmin
-    .schema("core")
-    .from("jobs")
-    .update(updateData)
-    .eq("id", id)
-    .select("*")
-    .single();
+    const { data: job, error } = await supabaseAdmin
+      .schema("core")
+      .from("jobs")
+      .update(updateData)
+      .eq("id", id)
+      .select("*")
+      .single();
 
-  if (error) {
-    return c.json(
-      { error: "Internal Server Error", message: error.message },
-      500,
-    );
-  }
+    if (error) {
+      return c.json(
+        { error: "Internal Server Error", message: error.message },
+        500,
+      );
+    }
 
-  return c.json({ data: { job } });
-});
+    return c.json({ data: { job } });
+  },
+);
 
-app.delete("/:id", async (c) => {
+app.delete("/:id", officeOnly, async (c) => {
   const supabaseAdmin = c.get("supabaseAdmin");
   const user = c.get("user");
   const { id } = c.req.param();
@@ -560,7 +626,7 @@ app.delete("/:id", async (c) => {
   return c.json({ success: true });
 });
 
-app.post("/:id/duplicate", async (c) => {
+app.post("/:id/duplicate", officeOnly, async (c) => {
   const supabaseAdmin = c.get("supabaseAdmin");
   const user = c.get("user");
   const { id } = c.req.param();

@@ -1,15 +1,27 @@
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
 import { scrollingScreenLayout } from '@scf/core/components/layouts/ScreenScroll'
 import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
+import { isLegacyHiringPath } from '@scf/core/features/hiring/legacy-paths'
 import { useOfficeRouteProtection } from '@scf/core/utils/auth/useOfficeRouteProtection'
 import { useRoleProtectedRoute } from '@scf/core/utils/auth/useRoleProtectedRoute'
+import { usePathname } from '@scf/core/utils/usePathname'
 import { Stack } from 'expo-router'
 import { View } from 'react-native'
 import { Spinner, Text, Stack as UIStack } from '@scaffald/ui'
 
 export default function OfficeLayout() {
-  const { isAuthorized, isLoading } = useRoleProtectedRoute(['office'])
-  const { isTabletOrAbove } = useOfficeRouteProtection()
+  // The employer's pipeline moved to /hiring/applications (#1312). What is
+  // left at /office/applications is redirects, and the people following those
+  // links are mostly employers without the office role — gated here, they
+  // were sent to the dashboard before the redirect could run. So those paths,
+  // and only those, skip the role checks. They render nothing but a
+  // <Redirect>, so there is nothing of Office's to leak.
+  const pathname = usePathname()
+  const legacyHiring = isLegacyHiringPath(pathname)
+  const { isAuthorized, isLoading } = useRoleProtectedRoute(['office'], {
+    enabled: !legacyHiring,
+  })
+  const { isTabletOrAbove } = useOfficeRouteProtection({ enabled: !legacyHiring })
 
   /**
    * The navigator renders unconditionally, with the loading state layered over
@@ -32,7 +44,7 @@ export default function OfficeLayout() {
    * The hooks still perform their own redirects; this only stops the URL being
    * destroyed while they decide.
    */
-  const showOverlay = isLoading || !isAuthorized || !isTabletOrAbove
+  const showOverlay = legacyHiring || isLoading || !isAuthorized || !isTabletOrAbove
 
   return (
     <ErrorBoundary
@@ -55,6 +67,7 @@ export default function OfficeLayout() {
         <DrawerLayout protectionComponent={null} screenLayout={scrollingScreenLayout}>
           <Stack.Screen name="index" options={{ title: 'Office' }} />
 
+          {/* Redirects to /hiring/applications (#1312) — see above. */}
           <Stack.Screen name="applications/index" options={{ title: 'Applications' }} />
           <Stack.Screen
             name="applications/[applicationId]/index"
@@ -64,6 +77,7 @@ export default function OfficeLayout() {
             name="applications/[applicationId]/inquiry"
             options={{ title: 'Inquiry' }}
           />
+          <Stack.Screen name="applications/[applicationId]/hire" options={{ title: 'Hire' }} />
 
           <Stack.Screen name="ats/index" options={{ title: 'ATS' }} />
           <Stack.Screen name="ats/metrics" options={{ title: 'Hiring Metrics' }} />

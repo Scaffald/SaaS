@@ -37,7 +37,7 @@ const EMAIL = process.env.SMOKE_EMAIL
 const PASSWORD = process.env.SMOKE_PASSWORD
 const OUT = process.env.SMOKE_OUT || 'docs/plans/redesign/shots-current'
 
-/** Must match UNDO_WINDOW_MS in features/office/applications/pending-writes.ts. */
+/** Must match UNDO_WINDOW_MS in features/hiring/applications/pending-writes.ts. */
 const UNDO_WINDOW_MS = 5000
 
 const storageKey = `sb-${new URL(SUPABASE_URL).hostname.split('.')[0]}-auth-token`
@@ -113,7 +113,7 @@ async function run(mode) {
     writes.push(`      ↳ ${res.status()} ${detail}`)
   })
 
-  await page.goto(`${BASE}/office/applications`, { waitUntil: 'networkidle', timeout: 90000 })
+  await page.goto(`${BASE}/hiring/applications`, { waitUntil: 'networkidle', timeout: 90000 })
   await page.waitForTimeout(6000)
   await page.evaluate(() => {
     for (const id of ['error-overlay', 'error-toast']) document.getElementById(id)?.remove()

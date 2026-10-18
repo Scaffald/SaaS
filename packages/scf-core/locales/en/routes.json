@@ -138,15 +138,17 @@
       "title": "Work Logs"
     }
   },
-  "home": "Home",
-  "legalUpdate": "Terms update",
-  "office": {
+  "hiring": {
     "applications": {
       "detail": "Candidate Detail",
       "hire": "Hire",
       "inquiry": "Inquiry Detail",
       "title": "Applications"
-    },
+    }
+  },
+  "home": "Home",
+  "legalUpdate": "Terms update",
+  "office": {
     "ats": {
       "checks": {
         "admin": "Review Background Checks",

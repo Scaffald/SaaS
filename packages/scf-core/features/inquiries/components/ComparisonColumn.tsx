@@ -148,12 +148,7 @@ export function ComparisonColumn({
             {jobTitle && <Text color={colors.text[theme].secondary}>{jobTitle}</Text>}
           </Stack>
           {canRemove && onRemove && (
-            <Button
-              size="sm"
-              variant="outline"
-              color="error"
-              onPress={() => onRemove(inquiry.id)}
-            >
+            <Button size="sm" variant="outline" color="error" onPress={() => onRemove(inquiry.id)}>
               Remove
             </Button>
           )}
@@ -184,7 +179,11 @@ export function ComparisonColumn({
                 ) : (
                   <Text color={colors.text[theme].tertiary}>○</Text>
                 )}
-                <Text color={status.accepted ? colors.fg[theme].success : colors.text[theme].tertiary}>{sectionName}</Text>
+                <Text
+                  color={status.accepted ? colors.fg[theme].success : colors.text[theme].tertiary}
+                >
+                  {sectionName}
+                </Text>
                 {commentCount > 0 && (
                   <Row align="center" gap={4}>
                     <MessageSquare size={10} color={colors.fg[theme].info} />
@@ -203,68 +202,68 @@ export function ComparisonColumn({
       <Card variant="glass" padding="sm">
         <Stack gap={8}>
           <Text>Employment</Text>
-        <ComparisonField
-          label="Type"
-          value={formatEmploymentType()}
-          isDifferent={highlightDifferences.has('employmentType')}
-        />
-        <ComparisonField
-          label="Schedule"
-          value={formatWorkSchedule()}
-          isDifferent={highlightDifferences.has('workSchedule')}
-        />
-        <ComparisonField
-          label="Hours"
-          value={formatWorkingHours()}
-          isDifferent={highlightDifferences.has('workingHours')}
-        />
-        <ComparisonField
-          label="Workdays"
-          value={formatWorkdays()}
-          isDifferent={highlightDifferences.has('workdays')}
-        />
-        <ComparisonField
-          label="Start Date"
-          value={formatDate(inquiry.employment_start_date)}
-          isDifferent={highlightDifferences.has('employmentStartDate')}
-        />
-        {inquiry.employment_end_date && (
           <ComparisonField
-            label="End Date"
-            value={formatDate(inquiry.employment_end_date)}
-            isDifferent={false}
+            label="Type"
+            value={formatEmploymentType()}
+            isDifferent={highlightDifferences.has('employmentType')}
           />
-        )}
-        <ComparisonField
-          label="Schedule Negotiable"
-          value={inquiry.work_schedule_negotiable ? 'Yes' : 'No'}
-          isDifferent={highlightDifferences.has('workScheduleNegotiable')}
-        />
-        <ComparisonField
-          label="Working Hours Negotiable"
-          value={inquiry.working_hours_negotiable ? 'Yes' : 'No'}
-          isDifferent={highlightDifferences.has('workingHoursNegotiable')}
-        />
-        <ComparisonField
-          label="Dates Negotiable"
-          value={inquiry.employment_dates_negotiable ? 'Yes' : 'No'}
-          isDifferent={highlightDifferences.has('employmentDatesNegotiable')}
-        />
-        {getSectionStatus('employment').accepted && (
-          <Row align="center" gap={4} marginTop={4}>
-            <Check size={20} color={colors.fg[theme].success} />
-            <Text color={colors.fg[theme].success}>Accepted</Text>
-          </Row>
-        )}
-        {getCommentCount('employment') > 0 && (
-          <Row align="center" gap={4} marginTop={4}>
-            <MessageSquare size={20} color={colors.fg[theme].info} />
-            <Text color={colors.fg[theme].info}>
-              {getCommentCount('employment')} comment
-              {getCommentCount('employment') !== 1 ? 's' : ''}
-            </Text>
-          </Row>
-        )}
+          <ComparisonField
+            label="Schedule"
+            value={formatWorkSchedule()}
+            isDifferent={highlightDifferences.has('workSchedule')}
+          />
+          <ComparisonField
+            label="Hours"
+            value={formatWorkingHours()}
+            isDifferent={highlightDifferences.has('workingHours')}
+          />
+          <ComparisonField
+            label="Workdays"
+            value={formatWorkdays()}
+            isDifferent={highlightDifferences.has('workdays')}
+          />
+          <ComparisonField
+            label="Start Date"
+            value={formatDate(inquiry.employment_start_date)}
+            isDifferent={highlightDifferences.has('employmentStartDate')}
+          />
+          {inquiry.employment_end_date && (
+            <ComparisonField
+              label="End Date"
+              value={formatDate(inquiry.employment_end_date)}
+              isDifferent={false}
+            />
+          )}
+          <ComparisonField
+            label="Schedule Negotiable"
+            value={inquiry.work_schedule_negotiable ? 'Yes' : 'No'}
+            isDifferent={highlightDifferences.has('workScheduleNegotiable')}
+          />
+          <ComparisonField
+            label="Working Hours Negotiable"
+            value={inquiry.working_hours_negotiable ? 'Yes' : 'No'}
+            isDifferent={highlightDifferences.has('workingHoursNegotiable')}
+          />
+          <ComparisonField
+            label="Dates Negotiable"
+            value={inquiry.employment_dates_negotiable ? 'Yes' : 'No'}
+            isDifferent={highlightDifferences.has('employmentDatesNegotiable')}
+          />
+          {getSectionStatus('employment').accepted && (
+            <Row align="center" gap={4} marginTop={4}>
+              <Check size={20} color={colors.fg[theme].success} />
+              <Text color={colors.fg[theme].success}>Accepted</Text>
+            </Row>
+          )}
+          {getCommentCount('employment') > 0 && (
+            <Row align="center" gap={4} marginTop={4}>
+              <MessageSquare size={20} color={colors.fg[theme].info} />
+              <Text color={colors.fg[theme].info}>
+                {getCommentCount('employment')} comment
+                {getCommentCount('employment') !== 1 ? 's' : ''}
+              </Text>
+            </Row>
+          )}
         </Stack>
       </Card>
 
@@ -272,31 +271,31 @@ export function ComparisonColumn({
       <Card variant="glass" padding="sm">
         <Stack gap={8}>
           <Text>Compensation</Text>
-        <ComparisonField
-          label="Rate"
-          value={formatRate()}
-          isDifferent={highlightDifferences.has('rate')}
-        />
-        <ComparisonField
-          label="Negotiable"
-          value={inquiry.rate_negotiable ? 'Yes' : 'No'}
-          isDifferent={highlightDifferences.has('rateNegotiable')}
-        />
-        {getSectionStatus('compensation').accepted && (
-          <Row align="center" gap={4} marginTop={4}>
-            <Check size={20} color={colors.fg[theme].success} />
-            <Text color={colors.fg[theme].success}>Accepted</Text>
-          </Row>
-        )}
-        {getCommentCount('compensation') > 0 && (
-          <Row align="center" gap={4} marginTop={4}>
-            <MessageSquare size={20} color={colors.fg[theme].info} />
-            <Text color={colors.fg[theme].info}>
-              {getCommentCount('compensation')} comment
-              {getCommentCount('compensation') !== 1 ? 's' : ''}
-            </Text>
-          </Row>
-        )}
+          <ComparisonField
+            label="Rate"
+            value={formatRate()}
+            isDifferent={highlightDifferences.has('rate')}
+          />
+          <ComparisonField
+            label="Negotiable"
+            value={inquiry.rate_negotiable ? 'Yes' : 'No'}
+            isDifferent={highlightDifferences.has('rateNegotiable')}
+          />
+          {getSectionStatus('compensation').accepted && (
+            <Row align="center" gap={4} marginTop={4}>
+              <Check size={20} color={colors.fg[theme].success} />
+              <Text color={colors.fg[theme].success}>Accepted</Text>
+            </Row>
+          )}
+          {getCommentCount('compensation') > 0 && (
+            <Row align="center" gap={4} marginTop={4}>
+              <MessageSquare size={20} color={colors.fg[theme].info} />
+              <Text color={colors.fg[theme].info}>
+                {getCommentCount('compensation')} comment
+                {getCommentCount('compensation') !== 1 ? 's' : ''}
+              </Text>
+            </Row>
+          )}
         </Stack>
       </Card>
 
@@ -304,78 +303,78 @@ export function ComparisonColumn({
       {capabilityResponses.length > 0 && (
         <Card variant="glass" padding="sm">
           <Stack gap={8}>
-          <Text>Capabilities</Text>
-          {capabilityResponses.map((response: CapabilityResponseRecord) => (
-            <ComparisonField
-              key={response.capability_name}
-              label={response.capability_name}
-              value={
-                response.response_value !== null
-                  ? response.response_value.toString()
-                  : response.response_text || 'Not answered'
-              }
-              isDifferent={highlightDifferences.has(`capability:${response.capability_name}`)}
-            />
-          ))}
-          {getSectionStatus('capabilities').accepted && (
-            <Row align="center" gap={4} marginTop={4}>
-              <Check size={20} color={colors.fg[theme].success} />
-              <Text color={colors.fg[theme].success}>Accepted</Text>
-            </Row>
-          )}
-          {getCommentCount('capabilities') > 0 && (
-            <Row align="center" gap={4} marginTop={4}>
-              <MessageSquare size={20} color={colors.fg[theme].info} />
-              <Text color={colors.fg[theme].info}>
-                {getCommentCount('capabilities')} comment
-                {getCommentCount('capabilities') !== 1 ? 's' : ''}
-              </Text>
-            </Row>
-          )}
+            <Text>Capabilities</Text>
+            {capabilityResponses.map((response: CapabilityResponseRecord) => (
+              <ComparisonField
+                key={response.capability_name}
+                label={response.capability_name}
+                value={
+                  response.response_value !== null
+                    ? response.response_value.toString()
+                    : response.response_text || 'Not answered'
+                }
+                isDifferent={highlightDifferences.has(`capability:${response.capability_name}`)}
+              />
+            ))}
+            {getSectionStatus('capabilities').accepted && (
+              <Row align="center" gap={4} marginTop={4}>
+                <Check size={20} color={colors.fg[theme].success} />
+                <Text color={colors.fg[theme].success}>Accepted</Text>
+              </Row>
+            )}
+            {getCommentCount('capabilities') > 0 && (
+              <Row align="center" gap={4} marginTop={4}>
+                <MessageSquare size={20} color={colors.fg[theme].info} />
+                <Text color={colors.fg[theme].info}>
+                  {getCommentCount('capabilities')} comment
+                  {getCommentCount('capabilities') !== 1 ? 's' : ''}
+                </Text>
+              </Row>
+            )}
           </Stack>
         </Card>
       )}
 
       <Card variant="glass" padding="sm">
         <Stack gap={8}>
-        <Text>Other Terms</Text>
-        <ComparisonField
-          label="Travel"
-          value={
-            inquiry.willing_to_travel === null || inquiry.willing_to_travel === undefined
-              ? 'Not specified'
-              : inquiry.willing_to_travel
-                ? 'Yes'
-                : 'No'
-          }
-          isDifferent={highlightDifferences.has('willingToTravel')}
-          description={
-            inquiry.travel_distance_miles ? `${inquiry.travel_distance_miles} miles` : undefined
-          }
-        />
-        <ComparisonField
-          label="Overtime"
-          value={
-            inquiry.willing_to_work_overtime === null ||
-            inquiry.willing_to_work_overtime === undefined
-              ? 'Not specified'
-              : inquiry.willing_to_work_overtime
-                ? 'Open to overtime'
-                : 'No overtime'
-          }
-          isDifferent={highlightDifferences.has('willingToWorkOvertime')}
-        />
-        <ComparisonField
-          label="Driver's License"
-          value={
-            inquiry.has_drivers_license === null || inquiry.has_drivers_license === undefined
-              ? 'Not specified'
-              : inquiry.has_drivers_license
-                ? 'Yes'
-                : 'No'
-          }
-          isDifferent={highlightDifferences.has('hasDriversLicense')}
-        />
+          <Text>Other Terms</Text>
+          <ComparisonField
+            label="Travel"
+            value={
+              inquiry.willing_to_travel === null || inquiry.willing_to_travel === undefined
+                ? 'Not specified'
+                : inquiry.willing_to_travel
+                  ? 'Yes'
+                  : 'No'
+            }
+            isDifferent={highlightDifferences.has('willingToTravel')}
+            description={
+              inquiry.travel_distance_miles ? `${inquiry.travel_distance_miles} miles` : undefined
+            }
+          />
+          <ComparisonField
+            label="Overtime"
+            value={
+              inquiry.willing_to_work_overtime === null ||
+              inquiry.willing_to_work_overtime === undefined
+                ? 'Not specified'
+                : inquiry.willing_to_work_overtime
+                  ? 'Open to overtime'
+                  : 'No overtime'
+            }
+            isDifferent={highlightDifferences.has('willingToWorkOvertime')}
+          />
+          <ComparisonField
+            label="Driver's License"
+            value={
+              inquiry.has_drivers_license === null || inquiry.has_drivers_license === undefined
+                ? 'Not specified'
+                : inquiry.has_drivers_license
+                  ? 'Yes'
+                  : 'No'
+            }
+            isDifferent={highlightDifferences.has('hasDriversLicense')}
+          />
         </Stack>
       </Card>
 
@@ -385,7 +384,7 @@ export function ComparisonColumn({
         variant="outline"
         onPress={() =>
           router.push(
-            ROUTES.OFFICE.APPLICATIONS.INQUIRY.path.replace(
+            ROUTES.HIRING.APPLICATIONS.INQUIRY.path.replace(
               ':applicationId',
               inquiry.application_id
             )
@@ -421,7 +420,9 @@ function StatusBadge({ label }: { label: string }) {
       align="center"
       gap={4}
     >
-      <Text color={statusColors[label] ?? colors.text[theme].primary}>{label.replace(/_/g, ' ')}</Text>
+      <Text color={statusColors[label] ?? colors.text[theme].primary}>
+        {label.replace(/_/g, ' ')}
+      </Text>
     </Row>
   )
 }
@@ -429,7 +430,12 @@ function StatusBadge({ label }: { label: string }) {
 function SubtleBadge({ label }: { label: string }) {
   const { theme } = useThemeContext()
   return (
-    <Row paddingHorizontal={8} paddingVertical={4} backgroundColor={colors.bg[theme].subtle} borderRadius={12}>
+    <Row
+      paddingHorizontal={8}
+      paddingVertical={4}
+      backgroundColor={colors.bg[theme].subtle}
+      borderRadius={12}
+    >
       <Text color={colors.text[theme].secondary}>{label}</Text>
     </Row>
   )

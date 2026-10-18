@@ -30,15 +30,16 @@ const APP_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
 
 /**
  * Minimal stub of the query-builder chain the handler uses. `applications`
- * resolves to the given row; `role_assignments` resolves to a row only for
- * `memberUserId`.
+ * resolves to the given row; `role_assignments`, awaited as a list, resolves
+ * to one row per role name in `roles[userId]`.
  */
 function stubSupabase(
   // deno-lint-ignore no-explicit-any
   opts: {
     application?: any;
     error?: { message: string };
-    memberUserId?: string;
+    roles?: Record<string, string[]>;
+    rolesError?: { message: string };
   },
 ) {
   return {
@@ -67,15 +68,29 @@ function stubSupabase(
               error: null,
             });
           }
-          if (self._table === "role_assignments") {
-            const match = opts.memberUserId !== undefined &&
-              self._filters.user_id === opts.memberUserId;
-            return Promise.resolve({
-              data: match ? { id: "role-1" } : null,
-              error: null,
-            });
-          }
           return Promise.resolve({ data: null, error: null });
+        },
+        // The role lookup is awaited as a list (#1312): `.maybeSingle()`
+        // errored for anyone holding two roles in one organisation.
+        then(
+          resolve: (value: unknown) => unknown,
+          reject?: (reason: unknown) => unknown,
+        ) {
+          if (self._table !== "role_assignments") {
+            return Promise.resolve({ data: [], error: null }).then(
+              resolve,
+              reject,
+            );
+          }
+          if (opts.rolesError) {
+            return Promise.resolve({ data: null, error: opts.rolesError })
+              .then(resolve, reject);
+          }
+          const names = opts.roles?.[self._filters.user_id as string] ?? [];
+          return Promise.resolve({
+            data: names.map((name, i) => ({ id: `role-${i}`, role: { name } })),
+            error: null,
+          }).then(resolve, reject);
         },
       };
       return self;
@@ -124,13 +139,58 @@ Deno.test("access: the hiring organization's owner is allowed", async () => {
   assertEquals(result, { ok: true });
 });
 
-Deno.test("access: a user with a role assignment scoped to the org is allowed", async () => {
+Deno.test("access: the hiring organization's admin is allowed", async () => {
   const result = await checkApplicationAccess(
-    stubSupabase({ application: applicationRow(), memberUserId: MEMBER }),
+    stubSupabase({
+      application: applicationRow(),
+      roles: { [MEMBER]: ["admin"] },
+    }),
     MEMBER,
     APP_ID,
   );
   assertEquals(result, { ok: true });
+});
+
+// #1312: two roles in one organisation made `.maybeSingle()` error, and the
+// dropped error refused an admin.
+Deno.test("access: an admin who also holds another org role is still allowed", async () => {
+  const result = await checkApplicationAccess(
+    stubSupabase({
+      application: applicationRow(),
+      roles: { [MEMBER]: ["member", "admin"] },
+    }),
+    MEMBER,
+    APP_ID,
+  );
+  assertEquals(result, { ok: true });
+});
+
+// #1312: the pipeline admits the owner and org admins only; this admitted any
+// org-scoped role, so a plain member could read what the pipeline hid.
+Deno.test("access: a plain org member is refused, as the pipeline refuses them", async () => {
+  const result = await checkApplicationAccess(
+    stubSupabase({
+      application: applicationRow(),
+      roles: { [MEMBER]: ["member"] },
+    }),
+    MEMBER,
+    APP_ID,
+  );
+  assertEquals(result.ok, false);
+  assertObjectMatch(result as Record<string, unknown>, { status: 403 });
+});
+
+Deno.test("access: a failed role lookup is 500, not a refusal", async () => {
+  const result = await checkApplicationAccess(
+    stubSupabase({
+      application: applicationRow(),
+      rolesError: { message: "boom" },
+    }),
+    MEMBER,
+    APP_ID,
+  );
+  assertEquals(result.ok, false);
+  assertObjectMatch(result as Record<string, unknown>, { status: 500 });
 });
 
 Deno.test("access: an unrelated user is refused with 403, not 404", async () => {

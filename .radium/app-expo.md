@@ -79,6 +79,25 @@ drawer's footer row, not a Home tab.
 Role switching is the drawer's account row (`useAccountContexts`, shared with
 the phone's `MobileAccountSheet`), not a segmented control in the nav.
 
+## Office Is Staff-Only
+
+`(admin)/office/_layout.tsx` admits only the platform `office` role. Every
+seeded named user holds it, so a screen put under `/office` looks fine in
+every audit and is unreachable for real employers — organisation owners and
+admins don't hold `office`. That is how the employer's pipeline, candidate,
+inquiry and hire screens shipped unreachable (#1312).
+
+- An employer screen goes under `(protected)/` (the hiring screens live at
+  `(protected)/hiring/`, `ROUTES.HIRING`), and the api decides whose rows the
+  caller sees. Check with the `orgAdmin` persona
+  (`packages/supabase/tests/shared/personas.ts`), not a seeded office user.
+- Don't link an employer screen to an Office page (the CMS job form, say)
+  without gating the link on `hasOfficeRole`.
+- Moving a route out of `/office` leaves a `<Redirect>` at the old path, and
+  the office layout must skip its role gate for it (`isLegacyHiringPath`) —
+  otherwise the people following the old link are sent to the dashboard
+  before the redirect runs.
+
 ## Navigation Guard Pattern
 
 Navigation guards must set state **synchronously before** calling async operations.

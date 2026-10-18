@@ -408,7 +408,7 @@ INSERT INTO core.notifications (user_id, type, title, message, cta_url, created_
 SELECT au.id, 'info',
   'New application received',
   'Marcus Rivera applied for Commercial Electrician at Wizard Construction.',
-  '/office/applications',
+  '/hiring/applications',
   NOW() - INTERVAL '3 days'
 FROM auth.users au
 WHERE au.email IN ('brian.carter@wizard.construction', 'sarah.mitchell@wizard.construction')
@@ -418,7 +418,7 @@ INSERT INTO core.notifications (user_id, type, title, message, cta_url, created_
 SELECT au.id, 'info',
   'New application received',
   'Jake Hendricks applied for Plumbing Foreman at Wizard Construction.',
-  '/office/applications',
+  '/hiring/applications',
   NOW() - INTERVAL '5 days'
 FROM auth.users au
 WHERE au.email IN ('brian.carter@wizard.construction', 'sarah.mitchell@wizard.construction')
@@ -429,7 +429,7 @@ INSERT INTO core.notifications (user_id, type, title, message, cta_url, created_
 SELECT au.id, 'info',
   'New application received',
   'Derek Johnson applied for Construction Project Manager at Unicorn.',
-  '/office/applications',
+  '/hiring/applications',
   NOW() - INTERVAL '4 days'
 FROM auth.users au
 WHERE au.email IN ('clay@unicorn.love', 'zach@unicorn.love')

@@ -114,15 +114,17 @@
       "title": "Work Logs"
     }
   },
-  "home": "Home",
-  "legalUpdate": "Mise à jour des conditions",
-  "office": {
+  "hiring": {
     "applications": {
       "detail": "Détail du candidat",
       "hire": "Embaucher",
       "inquiry": "Inquiry Detail",
       "title": "Applications"
-    },
+    }
+  },
+  "home": "Home",
+  "legalUpdate": "Mise à jour des conditions",
+  "office": {
     "ats": {
       "checks": {
         "admin": "Review Background Checks",

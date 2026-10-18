@@ -39,6 +39,7 @@ certifications-verification-guard-rest.test.ts
 community-ai-functions.test.ts
 db-access-hardening-rest.test.ts
 employer-applications-assignee-rest.test.ts
+employer-hiring-org-admin-rest.test.ts
 employers-rest.test.ts
 employers.test.ts
 feedback.test.ts

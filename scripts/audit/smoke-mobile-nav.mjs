@@ -59,7 +59,7 @@ const CASES = [
   },
   {
     mode: 'employer',
-    path: '/office/applications',
+    path: '/hiring/applications',
     expectTabs: ['Talent', 'Apps', 'Jobs', 'Screening'],
     expectActive: 'Apps',
     expectRole: 'Employer',
