@@ -1908,7 +1908,7 @@ export const inquiriesRouter = router({
               severity: 'info',
               title: `New Comment from ${senderName}`,
               message: `${senderName} commented on the ${sectionLabel} section`,
-              cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
+              cta_url: `/hiring/applications/${inquiry.application_id}/inquiry`,
               metadata: {
                 inquiry_id: inquiry.id,
                 application_id: inquiry.application_id,
@@ -2109,7 +2109,7 @@ export const inquiriesRouter = router({
                 severity: 'info',
                 title: 'All Terms Accepted',
                 message: `${candidateName} has accepted all inquiry terms`,
-                cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
+                cta_url: `/hiring/applications/${inquiry.application_id}/inquiry`,
                 metadata: {
                   inquiry_id: inquiry.id,
                   application_id: inquiry.application_id,
@@ -2134,7 +2134,7 @@ export const inquiriesRouter = router({
                 severity: 'info',
                 title: 'Section Accepted',
                 message: `${candidateName} accepted the ${sectionLabel} terms`,
-                cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
+                cta_url: `/hiring/applications/${inquiry.application_id}/inquiry`,
                 metadata: {
                   inquiry_id: inquiry.id,
                   application_id: inquiry.application_id,
@@ -2233,7 +2233,7 @@ export const inquiriesRouter = router({
               severity: 'info',
               title: 'Capability Question Answered',
               message: `${candidateName} answered a capability question`,
-              cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
+              cta_url: `/hiring/applications/${inquiry.application_id}/inquiry`,
               metadata: {
                 inquiry_id: inquiry.id,
                 application_id: inquiry.application_id,

@@ -31,7 +31,7 @@ export function ATSMetricsScreen() {
         title="Hiring metrics"
         tip="Funnel, stage conversion, source of hire and time to hire, read from the applicant pipeline."
         actions={
-          <TextLink onPress={() => router.push(ROUTES.OFFICE.APPLICATIONS.path)}>
+          <TextLink onPress={() => router.push(ROUTES.HIRING.APPLICATIONS.path)}>
             Open the pipeline
           </TextLink>
         }

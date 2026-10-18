@@ -1,6 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { EmployerJobsList } from '@scf/core/features/jobs/EmployerJobsList'
+import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { Button } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 
@@ -14,6 +15,9 @@ import { useRouter } from 'expo-router'
  */
 export default function MyListingsRoute() {
   const router = useRouter()
+  // "Post a job" opens the Office CMS form, which only office staff can open;
+  // there is no employer-side job form yet (#1312).
+  const { hasOfficeRole } = useUserRoles()
 
   return (
     <DashboardPage
@@ -22,13 +26,15 @@ export default function MyListingsRoute() {
       screenActions={
         // Outline, as in the prototype (#1199): the screen's subject is the
         // postings, and a filled primary out-shouted every row under it.
-        <Button
-          size="sm"
-          variant="outline"
-          onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
-        >
-          Post a job
-        </Button>
+        hasOfficeRole ? (
+          <Button
+            size="sm"
+            variant="outline"
+            onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
+          >
+            Post a job
+          </Button>
+        ) : undefined
       }
       leftContent={<EmployerJobsList />}
     />

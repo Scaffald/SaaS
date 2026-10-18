@@ -26,7 +26,8 @@ import { formatDays, formatPct } from './transparency-stats'
 import { useTransparencyStats } from './hooks/useTransparencyStats'
 import { ATSMetricsDashboard } from './components/ATSMetricsDashboard'
 import { useApplications } from './hooks/useApplications'
-import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
+import { useEmployerJobs } from '@scf/core/utils/jobs-sdk-hooks'
+import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { STATUS_MAP, useApplicationStatusChange } from './hooks/useApplicationStatusChange'
 import { toATSApplication } from './transform'
 import { matchesPipelineSearch } from './row-labels'
@@ -65,6 +66,10 @@ export const OfficeApplicationsScreen = ({
   const router = useRouter()
   const { user } = useUser()
   const { gutter, verticalPadding } = useScreenRhythm()
+  // Posting a job is the Office CMS form, which only office staff can open;
+  // there is no employer-side job form yet (#1312). Offering the button to
+  // anyone else sent them to the dashboard, so it is not offered.
+  const { hasOfficeRole } = useUserRoles()
   const [viewMode, setViewMode] = useState<OfficeApplicationsView>(initialView)
   const [tipCollapsed, setTipCollapsed] = useState(false)
   const [filters, setFilters] = useState<ApplicationFilterState>(() => ({
@@ -93,7 +98,11 @@ export const OfficeApplicationsScreen = ({
   // The job filter's options. `jobs={[]}` was hardcoded, so "Filter by Job" was
   // a permanently empty dropdown. Only open jobs — filtering a pipeline by a
   // closed req is not a case worth the extra rows.
-  const jobsQuery = useOfficeListJobs({ status: 'open', limit: 100 })
+  //
+  // The employer's own postings (#1312): this read the office-only list, which
+  // answered 403 to an employer without the office role, so their filter was
+  // empty.
+  const jobsQuery = useEmployerJobs({ status: 'open', limit: 100 })
   const jobOptions = useMemo(
     () =>
       (jobsQuery.data?.jobs ?? []).map((job) => ({
@@ -272,13 +281,15 @@ export const OfficeApplicationsScreen = ({
           actions={
             <Row gap={8} align="center" wrap>
               {viewSwitch}
-              <Button
-                size="sm"
-                variant="outline"
-                onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
-              >
-                Post a job
-              </Button>
+              {hasOfficeRole ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
+                >
+                  Post a job
+                </Button>
+              ) : null}
             </Row>
           }
           filtersOpen={filtersOpen}
@@ -333,7 +344,7 @@ export const OfficeApplicationsScreen = ({
           // A row opens the candidate's own page (#1196); before this Lanes
           // rows were plain Views with no way into a candidate at all.
           onSelect={(app) =>
-            router.push(buildPath(ROUTES.OFFICE.APPLICATIONS.DETAIL, { applicationId: app.id }))
+            router.push(buildPath(ROUTES.HIRING.APPLICATIONS.DETAIL, { applicationId: app.id }))
           }
           onMove={(app, toStatus) =>
             changeStatus({

@@ -38,6 +38,33 @@ export function useOfficeListJobs(
   })
 }
 
+/**
+ * The employer's own postings, every status — My Listings and the pipeline's
+ * job filter (#1312).
+ *
+ * Same endpoint as useOfficeListJobs: `GET /v1/office/jobs`'s list now admits
+ * an organisation's owner or admin as well as office staff, and scopes the
+ * rows to the organisations the caller may hire for. It answered 403 to every
+ * employer without the office role, so My Listings was empty for them and the
+ * pipeline's job filter had no options. A separate hook so the call sites say
+ * what they want, not which role used to be able to ask for it.
+ */
+export function useEmployerJobs(
+  params?: Pick<OfficeListJobsParams, 'organization_id' | 'status' | 'limit' | 'offset'>,
+  options?: { enabled?: boolean }
+) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['jobs', 'employer', params],
+    queryFn: async () => {
+      if (!client) throw new Error('Missing client')
+      return client.jobs.officeListJobs(params)
+    },
+    enabled: !!client && options?.enabled !== false,
+    staleTime: 60 * 1000,
+  })
+}
+
 export function useJobDetails(jobId: string | undefined, options?: { enabled?: boolean }) {
   const client = useScaffaldJobsClient()
   return useQuery({

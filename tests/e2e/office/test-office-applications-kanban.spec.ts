@@ -42,7 +42,7 @@ function cardTitle(text: string): string {
   return text.split('\n').map((l) => l.trim()).find(Boolean) ?? ''
 }
 
-test.describe('Office • /office/applications - Kanban Board', () => {
+test.describe('Office • /hiring/applications - Kanban Board', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/super-admin.json)
     // Pre-answer the cookie banner: it floats over the bottom of the board and
@@ -71,7 +71,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
         })
       )
     }
-    await page.goto('/office/applications', { waitUntil: 'domcontentloaded' })
+    await page.goto('/hiring/applications', { waitUntil: 'domcontentloaded' })
     // The page opens in the Lanes view; the board this suite drives sits
     // behind the "Board" segment (office-applications-screen.tsx, #553).
     await page.getByTestId('applications-view-switch').getByText('Board', { exact: true }).first().click()

@@ -1,0 +1,79 @@
+import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
+import { LoadFailure } from '@scf/core/components/ui'
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
+import { HireScreen } from '@scf/core/features/office/applications/hire/HireScreen'
+import { toATSApplication } from '@scf/core/features/office/applications/transform'
+import { useEmployerApplication } from '@scf/core/utils/applications-sdk-hooks'
+import { Spinner, Stack, Text } from '@scaffald/ui'
+import { useLocalSearchParams } from 'expo-router'
+import { useMemo } from 'react'
+import { ScrollView } from 'react-native'
+
+/**
+ * Hiring a candidate (#836). The fee, the acknowledgement and the card were a
+ * branch inside the status-change modal; they need the room.
+ */
+export default function HiringApplicationHireRoute() {
+  const { applicationId } = useLocalSearchParams<{ applicationId?: string }>()
+  const id = typeof applicationId === 'string' ? applicationId : ''
+
+  const { data, isLoading, error, refetch } = useEmployerApplication(id, { enabled: id.length > 0 })
+
+  // The same transform the board and candidate detail use, so the three cannot
+  // disagree about what this application is.
+  const application = useMemo(() => (data ? toATSApplication(data) : null), [data])
+
+  const body = () => {
+    if (!id) return <Text color="gray">Missing application ID</Text>
+
+    if (isLoading) {
+      return (
+        <Stack align="center" gap={8}>
+          <Spinner size="lg" />
+          <Text>Loading candidate…</Text>
+        </Stack>
+      )
+    }
+
+    if (error) {
+      return (
+        <LoadFailure
+          error={error}
+          noun="candidate"
+          retry={() => refetch()}
+          back={{ label: 'Applications', href: ROUTES.HIRING.APPLICATIONS.path }}
+        />
+      )
+    }
+
+    if (!application) {
+      return <Text color="secondary">Candidate not found.</Text>
+    }
+
+    return <HireScreen application={application} />
+  }
+
+  return (
+    <OfficeLayout
+      showBreadcrumb
+      // No 'Office' crumb: these are the employer's screens, and Office is a
+      // staff section most employers cannot open (#1312).
+      breadcrumbItems={[
+        { label: 'Applications', href: ROUTES.HIRING.APPLICATIONS.path },
+        {
+          label: application?.candidate.name ?? 'Candidate',
+          href: id ? buildPath(ROUTES.HIRING.APPLICATIONS.DETAIL, { applicationId: id }) : '',
+        },
+        { label: 'Hire', href: '' },
+      ]}
+      leftContent={
+        <ScrollView>
+          <Stack gap={16} padding={16}>
+            {body()}
+          </Stack>
+        </ScrollView>
+      }
+      leftContainerProps={{ minWidth: '100%' }}
+    />
+  )
+}

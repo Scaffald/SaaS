@@ -74,9 +74,11 @@ describe('getSectionTabs', () => {
     expect(getSectionTabs('/office/integrations/hris', office)?.activeKey).toBe(
       'office-integrations'
     )
-    expect(getSectionTabs('/office/applications/abc', office)?.activeKey).toBe(
-      'office-applications'
-    )
+  })
+
+  // #1312: the pipeline is the employer's, under /hiring, not an Office tab.
+  it('has no Applications tab in Office', () => {
+    expect(office[0].subItems?.map((t) => t.key)).not.toContain('office-applications')
   })
 
   // #1203: no Office tab owned /office/ats/*, so screening lit nothing.
@@ -141,7 +143,7 @@ describe('getSectionTabs', () => {
   })
 
   it('does not offer Office tabs to someone without the role', () => {
-    expect(getSectionTabs('/office/applications', worker)).toBeNull()
+    expect(getSectionTabs('/office/cms', worker)).toBeNull()
   })
 
   it('lands Jobs on the signed-in listing and owns the rest of /jobs', () => {
@@ -259,10 +261,13 @@ describe('navigation follows the mode (#1157)', () => {
     expect(top(employerAdmin)[0]).toBe('office')
   })
 
-  it("lights the employer's Applications, not Office, on the pipeline — and draws no admin tabs there", () => {
-    expect(activeNavKey(employerAdmin, '/office/applications')).toBe('employer-applications')
-    expect(activeNavKey(employerAdmin, '/office/applications/abc')).toBe('employer-applications')
-    expect(getSectionTabs('/office/applications', employerAdmin)).toBeNull()
+  it("lights the employer's Applications on the pipeline and its candidates (#1312)", () => {
+    for (const items of [employer, employerAdmin]) {
+      expect(activeNavKey(items, '/hiring/applications')).toBe('employer-applications')
+      expect(activeNavKey(items, '/hiring/applications/abc')).toBe('employer-applications')
+      expect(activeNavKey(items, '/hiring/applications/abc/hire')).toBe('employer-applications')
+      expect(getSectionTabs('/hiring/applications', items)).toBeNull()
+    }
   })
 
   it('still gives an admin Office and its tabs everywhere else under /office', () => {

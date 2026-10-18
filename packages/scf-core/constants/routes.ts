@@ -560,6 +560,42 @@ const ROUTES_CONFIG = {
     },
   },
 
+  // The employer's hiring screens (#1312). They lived under /office, whose
+  // layout admits only the platform `office` role, so an organisation's own
+  // admin — who the api already lets read and work the pipeline — was sent to
+  // the dashboard. Office is staff-only; these are the employer's.
+  HIRING: {
+    APPLICATIONS: {
+      path: '/hiring/applications',
+      titleKey: 'routes.hiring.applications.title',
+      protected: true,
+      exact: false,
+      icon: ClipboardCheck,
+      // Per-application candidate detail (#537).
+      DETAIL: {
+        path: '/hiring/applications/:applicationId',
+        titleKey: 'routes.hiring.applications.detail',
+        protected: true,
+        exact: true,
+      },
+      INQUIRY: {
+        path: '/hiring/applications/:applicationId/inquiry',
+        titleKey: 'routes.hiring.applications.inquiry',
+        protected: true,
+        exact: true,
+      },
+      // Hiring is a screen rather than a branch inside the status-change
+      // modal: it carries a fee breakdown, a clickwrap and a card form, and
+      // it is the most consequential thing an employer does here (#836).
+      HIRE: {
+        path: '/hiring/applications/:applicationId/hire',
+        titleKey: 'routes.hiring.applications.hire',
+        protected: true,
+        exact: true,
+      },
+    },
+  },
+
   /** @deprecated Use EMPLOYERS.ORG instead — kept for backward compatibility */
   ORG: {
     path: '/employers/org',
@@ -1288,38 +1324,16 @@ const ROUTES_CONFIG = {
         exact: true,
       },
     },
-    APPLICATIONS: {
+    // Where the employer's pipeline used to live. Only redirects are left
+    // here, to ROUTES.HIRING.APPLICATIONS (#1312): old notifications, bookmarks
+    // and shared candidate links still point at these. Hidden, so Office's
+    // own navigation never lists them. Link to HIRING, never to these.
+    LEGACY_APPLICATIONS: {
       path: '/office/applications',
-      titleKey: 'routes.office.applications.title',
+      titleKey: 'routes.hiring.applications.title',
       protected: true,
       exact: false,
-      icon: ClipboardCheck,
-      // Per-application candidate detail. Previously the ATS declared a
-      // `/office/ats/:id` DETAIL route with no file behind it, while candidate
-      // detail existed only as a modal on the kanban board — so it had no URL
-      // at all (#537). This is the real route, alongside the existing
-      // INQUIRY child rather than under /office/ats.
-      DETAIL: {
-        path: '/office/applications/:applicationId',
-        titleKey: 'routes.office.applications.detail',
-        protected: true,
-        exact: true,
-      },
-      INQUIRY: {
-        path: '/office/applications/:applicationId/inquiry',
-        titleKey: 'routes.office.applications.inquiry',
-        protected: true,
-        exact: true,
-      },
-      // Hiring is a screen rather than a branch inside the status-change
-      // modal: it carries a fee breakdown, a clickwrap and a card form, and
-      // it is the most consequential thing an employer does here (#836).
-      HIRE: {
-        path: '/office/applications/:applicationId/hire',
-        titleKey: 'routes.office.applications.hire',
-        protected: true,
-        exact: true,
-      },
+      hidden: true,
     },
     COMPLIANCE: {
       path: '/office/compliance',

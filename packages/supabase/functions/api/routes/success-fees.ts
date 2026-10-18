@@ -15,6 +15,7 @@ import {
 // The shared loader: same Vault key path, plus STRIPE_MOCK_MODE for the REST
 // tests (#937) — this file used to carry its own copy without it.
 import { loadStripeClient } from "../../_shared/id-verification-api.ts";
+import { PIPELINE_ROLES, userHasOrgAccess } from "../lib/application-access.ts";
 
 const FEE_PERCENTAGE = 10;
 
@@ -41,17 +42,29 @@ type SuccessFeeRecord = {
   created_at: string;
 };
 
+/**
+ * Who may read or pay an organisation's hire fees: platform office or
+ * super_admin staff, the organisation's owner, or its org `admin` — the same
+ * people who can open the hire screen's application in the pipeline
+ * (PIPELINE_ROLES). It admitted any role scoped to the organisation, a wider
+ * set than the pipeline, and looked that up with `.maybeSingle()`, which
+ * errors for someone holding two roles in one organisation (#1312).
+ */
 // biome-ignore lint/suspicious/noExplicitAny: Supabase client/result typed as any
 async function ensureOrganizationAccess(
   supabaseAdmin: any,
   userId: string,
   organizationId: string,
 ): Promise<void> {
-  const { data: roleData } = await supabaseAdmin
+  const { data: roleData, error: roleError } = await supabaseAdmin
     .schema("core")
     .from("role_assignments")
     .select("role:roles(name, scope)")
     .eq("user_id", userId);
+
+  if (roleError) {
+    throw new Error(`Failed to load roles: ${roleError.message}`);
+  }
 
   const hasPlatformRole = Boolean(
     roleData?.some(
@@ -80,22 +93,14 @@ async function ensureOrganizationAccess(
     err.status = 404;
     throw err;
   }
-  if (organization.owner_user_id === userId) return;
-
-  const { data: assignment, error: assignmentError } = await supabaseAdmin
-    .schema("core")
-    .from("role_assignments")
-    .select("scope_org_id")
-    .eq("user_id", userId)
-    .eq("scope_org_id", organizationId)
-    .maybeSingle();
-
-  if (assignmentError) {
-    throw new Error(
-      `Failed to verify organization access: ${assignmentError.message}`,
-    );
-  }
-  if (!assignment) {
+  const admitted = await userHasOrgAccess(
+    supabaseAdmin,
+    userId,
+    organizationId,
+    organization.owner_user_id ?? null,
+    { allowedRoles: PIPELINE_ROLES },
+  );
+  if (!admitted) {
     const err = new Error("You do not have access to this organization") as
       & Error
       & { status: number };
@@ -200,8 +205,12 @@ app.get(
     try {
       await ensureOrganizationAccess(supabaseAdmin, user.id, organizationId);
     } catch (e) {
+      // A lookup that failed is a 500, not a refusal (#1312).
       const err = e as Error & { status?: number };
-      return c.json({ error: err.message }, (err.status ?? 403) as 403 | 404);
+      return c.json(
+        { error: err.message },
+        (err.status ?? 500) as 403 | 404 | 500,
+      );
     }
 
     const { data, error } = await supabaseAdmin
@@ -266,8 +275,12 @@ app.post(
         input.organizationId,
       );
     } catch (e) {
+      // A lookup that failed is a 500, not a refusal (#1312).
       const err = e as Error & { status?: number };
-      return c.json({ error: err.message }, (err.status ?? 403) as 403 | 404);
+      return c.json(
+        { error: err.message },
+        (err.status ?? 500) as 403 | 404 | 500,
+      );
     }
 
     // The application, its job and the organization must belong together,
@@ -513,8 +526,12 @@ app.post(
         successFee.organization_id,
       );
     } catch (e) {
+      // A lookup that failed is a 500, not a refusal (#1312).
       const err = e as Error & { status?: number };
-      return c.json({ error: err.message }, (err.status ?? 403) as 403 | 404);
+      return c.json(
+        { error: err.message },
+        (err.status ?? 500) as 403 | 404 | 500,
+      );
     }
 
     if (!successFee.upfront_payment_intent_id) {

@@ -9,16 +9,18 @@ import { useUserRoles } from './useUserRoles'
  * to their dashboard. `isTabletOrAbove` is kept as an alias for `isAllowed` so
  * existing consumers (the office layout) work unchanged.
  */
-export const useOfficeRouteProtection = () => {
+export const useOfficeRouteProtection = ({ enabled = true }: { enabled?: boolean } = {}) => {
   const router = useRouter()
   const { hasOfficeRole, isLoading } = useUserRoles()
   const isAllowed = hasOfficeRole
 
+  // `enabled: false` lets the office layout pass the old pipeline URLs through
+  // to their redirects for people without the role (#1312).
   useEffect(() => {
-    if (!isLoading && !isAllowed) {
+    if (enabled && !isLoading && !isAllowed) {
       router.replace(ROUTES.DASHBOARD.path as Parameters<typeof router.replace>[0])
     }
-  }, [isAllowed, isLoading, router])
+  }, [enabled, isAllowed, isLoading, router])
 
   return { isAllowed, isLoading, isTabletOrAbove: isAllowed }
 }

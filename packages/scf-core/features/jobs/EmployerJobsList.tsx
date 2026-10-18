@@ -1,6 +1,8 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useEmployerApplications } from '@scf/core/utils/applications-sdk-hooks'
-import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
+import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
+import { useEmployerJobs } from '@scf/core/utils/jobs-sdk-hooks'
+import { primaryHiringOrganization } from '@scf/core/utils/organization-memberships'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -58,28 +60,22 @@ export function EmployerJobsList() {
   const stacked = width > 0 && width < 768
 
   const { data: memberships } = useOrganizations()
+  // Posting and editing are the Office CMS forms, which only office staff can
+  // open, and there is no employer-side job form yet. Offered to anyone else,
+  // both buttons sent them to the dashboard (#1312), so they are not offered.
+  const { hasOfficeRole } = useUserRoles()
 
-  const orgIds = useMemo(() => {
-    if (!memberships?.length) return []
-    const seen = new Set<string>()
-    return memberships
-      .filter((m) => {
-        if (seen.has(m.organization_id)) return false
-        seen.add(m.organization_id)
-        return true
-      })
-      .map((m) => m.organization_id)
-  }, [memberships])
+  // The SDK takes one org at a time; multi-org employers see the first they
+  // can hire for — the list and the counts below both refuse an organisation
+  // the caller only belongs to through a team (#1312).
+  const organizationId = primaryHiringOrganization(memberships)?.organization_id
 
-  const organizationId = orgIds[0]
-
-  // The SDK takes one org at a time; multi-org employers see their first.
   const {
     data: response,
     isLoading,
     isError,
     refetch,
-  } = useOfficeListJobs(organizationId ? { organization_id: organizationId } : undefined, {
+  } = useEmployerJobs(organizationId ? { organization_id: organizationId } : undefined, {
     enabled: !!organizationId,
   })
 
@@ -172,13 +168,15 @@ export function EmployerJobsList() {
         <Text style={{ color: colors.text[t].secondary }}>
           Nothing posted yet. A posting appears here as soon as you save it, draft or live.
         </Text>
-        <Button
-          size="md"
-          variant="outline"
-          onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
-        >
-          Post a job
-        </Button>
+        {hasOfficeRole ? (
+          <Button
+            size="md"
+            variant="outline"
+            onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
+          >
+            Post a job
+          </Button>
+        ) : null}
       </Stack>
     )
   }
@@ -279,7 +277,7 @@ export function EmployerJobsList() {
                         } for ${job.title}`}
                         onPress={() =>
                           router.push({
-                            pathname: ROUTES.OFFICE.APPLICATIONS.path,
+                            pathname: ROUTES.HIRING.APPLICATIONS.path,
                             params: { job: job.id },
                           })
                         }
@@ -321,15 +319,17 @@ export function EmployerJobsList() {
                     // Stacked, a full button under every posting made each one
                     // five lines tall (#1199); a text button keeps Edit on
                     // the row without spending a line on its outline.
-                    <Button
-                      size="sm"
-                      variant={stacked ? 'text' : 'outline'}
-                      onPress={() =>
-                        router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
-                      }
-                    >
-                      Edit
-                    </Button>
+                    hasOfficeRole ? (
+                      <Button
+                        size="sm"
+                        variant={stacked ? 'text' : 'outline'}
+                        onPress={() =>
+                          router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
+                        }
+                      >
+                        Edit
+                      </Button>
+                    ) : undefined
                   }
                 />
               )
