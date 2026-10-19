@@ -13035,6 +13035,9 @@ export type Database = {
         }
         Returns: string
       }
+      current_user_applied_job_ids: { Args: never; Returns: string[] }
+      current_user_is_platform_staff: { Args: never; Returns: boolean }
+      current_user_job_org_ids: { Args: never; Returns: string[] }
       decrypt_background_check_results: {
         Args: { p_encrypted: string; p_secret: string }
         Returns: Json
