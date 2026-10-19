@@ -33,6 +33,7 @@
 # account-deletion-process.test.ts drives _shared/account-deletion/process.ts
 # against the real database and storage, like payments-settlement (#1313).
 account-deletion-process.test.ts
+account-deletion-organization-authz-rest.test.ts
 account-deletion-rest.test.ts
 api-keys-org-authz-rest.test.ts
 auth-session-regression.test.ts

@@ -20,6 +20,8 @@ import {
   type ApiEnv,
   requireAuth,
 } from "../middleware/auth.ts";
+import { userHasOrgAccess } from "../lib/application-access.ts";
+import { userHasPlatformRole } from "../../_shared/id-verification-api.ts";
 
 const app = new Hono<ApiEnv>();
 app.use("*", requireAuth);
@@ -38,6 +40,13 @@ const OPEN_STATUSES = ["pending", "in_progress", "failed", "partial"];
  * 'partial' are not: something has already been deleted.
  */
 const CANCELLABLE_STATUSES = ["pending", "failed"];
+
+/**
+ * Organisation roles that may ask for their organisation to be deleted, besides
+ * its owner and platform office staff. Deliberately not "any role in the org"
+ * (#1321).
+ */
+const ORG_DELETION_ROLES = ["admin"];
 
 const REQUEST_COLUMNS =
   "id, status, requested_at, scheduled_for, created_at, deletion_type";
@@ -237,37 +246,44 @@ app.post(
 
     const { organizationId, reason } = c.req.valid("json");
 
-    // Check user has access to this organization
-    const { data: roleCheck } = await supabaseAdmin
+    // Who may ask for an organisation to be deleted: platform office staff, or
+    // the organisation's owner or an org admin. This checked "office" with
+    // an equality filter on core.role_assignments.role, a column that does
+    // not exist: the query always errored, the error was dropped, and the
+    // fallback admitted any role scoped to the organisation. So any member
+    // could file the request, office staff were refused, and someone holding
+    // two roles in the org was refused by `.maybeSingle()` (#1321). A failed
+    // lookup is a 500 here, never "no access".
+    const { data: org, error: orgError } = await supabaseAdmin
       .schema("core")
-      .from("role_assignments")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "office")
+      .from("organizations")
+      .select("owner_user_id")
+      .eq("id", organizationId)
       .maybeSingle();
 
-    if (!roleCheck) {
-      const { data: org } = await supabaseAdmin
-        .schema("core")
-        .from("organizations")
-        .select("owner_user_id")
-        .eq("id", organizationId)
-        .maybeSingle();
-
-      if (!org) return c.json({ error: "Organization not found" }, 404);
-
-      if (org.owner_user_id !== user.id) {
-        const { data: assignment } = await supabaseAdmin
-          .schema("core")
-          .from("role_assignments")
-          .select("scope_org_id")
-          .eq("user_id", user.id)
-          .eq("scope_org_id", organizationId)
-          .maybeSingle();
-
-        if (!assignment) return c.json({ error: "Forbidden" }, 403);
-      }
+    if (orgError) {
+      return c.json({
+        error: `Failed to load organization: ${orgError.message}`,
+      }, 500);
     }
+    if (!org) return c.json({ error: "Organization not found" }, 404);
+
+    let allowed: boolean;
+    try {
+      allowed = await userHasPlatformRole(supabaseAdmin, user.id) ||
+        // The owner-or-org-admin rule the hiring routes use (#1312).
+        await userHasOrgAccess(
+          supabaseAdmin,
+          user.id,
+          organizationId,
+          (org as { owner_user_id: string | null }).owner_user_id,
+          { allowedRoles: ORG_DELETION_ROLES },
+        );
+    } catch (error) {
+      return c.json({ error: (error as Error).message }, 500);
+    }
+
+    if (!allowed) return c.json({ error: "Forbidden" }, 403);
 
     // Organization requests are recorded and scheduled like a worker's, but
     // the processor does not carry them out: deleting an organization needs
