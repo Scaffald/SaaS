@@ -2,7 +2,11 @@ import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
 import type { Context } from '../context.ts'
+import { userHasPlatformRole } from '../../_shared/id-verification-api.ts'
 import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
+
+// The shared helper's client type is narrower than the typed tRPC client.
+type PlatformRoleClient = Parameters<typeof userHasPlatformRole>[0]
 
 async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
   if (!ctx.user?.id) {
@@ -16,16 +20,10 @@ async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
     })
   }
 
-  // Office users have access to all organizations
-  const { data: roleCheck } = await ctx.supabaseAdmin
-    .schema('core')
-    .from('role_assignments')
-    .select('role')
-    .eq('user_id', ctx.user.id)
-    .eq('role', 'office')
-    .maybeSingle()
-
-  if (roleCheck) {
+  // Platform office staff have access to every organisation. This queried a
+  // `role` column core.role_assignments does not have, so it always errored
+  // and office staff were never recognised (#1321).
+  if (await userHasPlatformRole(ctx.supabaseAdmin as unknown as PlatformRoleClient, ctx.user.id)) {
     return
   }
 
