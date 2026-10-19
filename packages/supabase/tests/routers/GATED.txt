@@ -49,6 +49,7 @@ employers.test.ts
 feedback.test.ts
 id-verification-list-rest.test.ts
 jobs-list-rest.test.ts
+jobs-read-rls-rest.test.ts
 legal-agreements-rest.test.ts
 luscher-session-no-xp-rest.test.ts
 map.test.ts

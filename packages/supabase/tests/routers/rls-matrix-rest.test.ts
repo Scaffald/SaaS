@@ -153,6 +153,20 @@ const MATRIX: Row[] = [
     why: "a worker never sees another worker's applications; an employer sees applicants to its jobs",
   },
   { target: 'core.api_keys', expect: { anon: 'denied', userA: 'none' }, why: 'org API keys' },
+
+  // --- 392: core.jobs (#1317) — full per-role cases in jobs-read-rls-rest ------
+  {
+    target: 'core.jobs',
+    filter: 'status=eq.draft',
+    expect: { anon: 'none', userA: 'none', userB: 'none', office: 'rows', service: 'rows' },
+    why: 'drafts reach their organisation and platform staff, not the anon key',
+  },
+  {
+    target: 'core.jobs',
+    filter: 'status=eq.open',
+    expect: { anon: 'rows', userA: 'rows', office: 'rows' },
+    why: 'signed-out job browse',
+  },
   { target: 'public.webhooks', expect: { anon: 'denied', userA: 'none', service: 'none' }, why: 'org webhooks and their secrets; prod had no grants at all until 373' },
 ]
 
