@@ -155,7 +155,7 @@ catalog:
   # One vitest for the whole workspace. Was three: 2.1.9 (scaffald-cli, which
   # bypassed the catalog), 4.0.18 (ai-pipeline via this entry) and 4.1.7 (root).
   vitest: ~4.1.10
-  zod: ~4.6.5
+  zod: ~4.6.7
   zustand: ~5.0.15
 
 ignoredBuiltDependencies:
