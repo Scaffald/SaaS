@@ -62,7 +62,9 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v3
         with:
-          version: latest
+          # Same CLI as the pnpm catalog (pnpm-workspace.yaml). `latest` became
+          # v3 on 2026-11-11, which rejects config.toml's [inbucket] and broke every run.
+          version: 2.117.0
 
       - name: Start Supabase local instance
         run: pnpm supa start
@@ -129,7 +131,9 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v3
         with:
-          version: latest
+          # Same CLI as the pnpm catalog (pnpm-workspace.yaml). `latest` became
+          # v3 on 2026-11-11, which rejects config.toml's [inbucket] and broke every run.
+          version: 2.117.0
 
       # `supa start` applies migrations, runs every seeds/*.sql (the ATS
       # fixtures the kanban suite's precondition block insists on), and boots
