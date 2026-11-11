@@ -37,10 +37,14 @@ echo
 
 cd packages/supabase
 
+# `pnpm exec`, not `pnpx`: pnpx fetches the newest CLI, and Supabase CLI v3
+# rejects this repo's config.toml ([inbucket]), which failed every deploy on
+# 2026-11-11. The version is pinned in the pnpm catalog.
+
 # 1. Bake commit + timestamp into the project's secrets so /v1/health can
 #    return them. These are project-level — re-setting overwrites.
 echo "→ Setting GIT_COMMIT + DEPLOYED_AT secrets…"
-pnpx supabase secrets set --project-ref "$PROJECT_REF" \
+pnpm exec supabase secrets set --project-ref "$PROJECT_REF" \
   "GIT_COMMIT=$GIT_COMMIT" \
   "DEPLOYED_AT=$DEPLOYED_AT"
 
@@ -75,7 +79,7 @@ FUNCTIONS=(
 
 echo
 echo "→ Deploying edge functions…"
-pnpx supabase functions deploy "${FUNCTIONS[@]}" \
+pnpm exec supabase functions deploy "${FUNCTIONS[@]}" \
   --project-ref "$PROJECT_REF" \
   --use-api
 
