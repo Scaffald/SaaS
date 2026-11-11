@@ -2,9 +2,19 @@ import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { useSearchOccupations } from '@scf/core/utils/onet-sdk-hooks'
 import type { Occupation as SDKOccupation } from '@scaffald/sdk'
-import { useEffect, useRef, useState } from 'react'
-import { Pressable } from 'react-native'
-import { Input, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { useEffect, useId, useRef, useState } from 'react'
+import { Pressable, View } from 'react-native'
+import {
+  AnchoredOverlay,
+  Input,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+  getMenuItemStyle,
+  useListboxNavigation,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 interface OccupationSearchProps {
@@ -44,6 +54,8 @@ export function OccupationSearch({
   const [showResults, setShowResults] = useState(false)
   const debouncedSearch = useDebounce(searchTerm, 300)
   const lastTrackedSearchRef = useRef<string>('') // Track last searched query to avoid duplicate tracking
+  const anchorRef = useRef<View>(null)
+  const listboxId = `occupation-results-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
 
   // Track occupation searches for engagement analytics
   const trackEventMutation = useTrackEngagementMutation()
@@ -133,49 +145,60 @@ export function OccupationSearch({
   const occupations = (data as { occupations?: SDKOccupation[] } | undefined)?.occupations ?? (data as { data?: SDKOccupation[] } | undefined)?.data ?? []
   const showDropdown =
     showResults && debouncedSearch.length >= 2 && occupations.length > 0 && !queryError
+  const showError = showResults && debouncedSearch.length >= 2 && !!queryError
+  const showEmpty =
+    showResults && debouncedSearch.length >= 2 && !isLoading && occupations.length === 0 && !queryError
+  const menuOpen = showDropdown || showError || showEmpty
+  const nav = useListboxNavigation({
+    id: listboxId,
+    itemCount: showDropdown ? occupations.length : 0,
+    open: menuOpen,
+    onSelectIndex: (index) => {
+      const occupation = occupations[index]
+      if (occupation) handleSelect(occupation)
+    },
+    onClose: () => setShowResults(false),
+  })
 
   return (
     <Stack gap={8} width="100%" style={{ position: 'relative' }}>
-      <Row gap={8} align="center">
-        <Input
-          style={{ flex: 1 }}
-          placeholder={placeholder}
-          value={searchTerm}
-          onChangeText={handleInputChange}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-          disabled={disabled}
-        />
-        {isLoading && <Spinner variant="ios" size="sm" />}
-      </Row>
+      <View ref={anchorRef}>
+        <Row gap={8} align="center">
+          <Input
+            style={{ flex: 1 }}
+            placeholder={placeholder}
+            value={searchTerm}
+            onChangeText={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+            disabled={disabled}
+            {...nav.inputProps}
+          />
+          {isLoading && <Spinner variant="ios" size="sm" />}
+        </Row>
+      </View>
 
-      {showDropdown && (
-        <Stack
-          gap={0}
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            marginTop: 4,
-            borderWidth: 1,
-            borderColor: 'var(--color-border)',
-            borderRadius: 7,
-            backgroundColor: 'var(--color-background)',
-            maxHeight: 300,
-            overflow: 'scroll',
-            zIndex: 1000,
-            shadowColor: 'var(--color-shadow)',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-          }}
-        >
-          {occupations.map((occupation: SDKOccupation) => {
+      {/* Results, error or "no occupations" — portalled above the page on web (#1330) */}
+      <AnchoredOverlay
+        anchorRef={anchorRef}
+        open={menuOpen}
+        onRequestClose={() => setShowResults(false)}
+        maxHeight={300}
+        {...nav.listboxProps}
+      >
+        {showDropdown ? (
+          occupations.map((occupation: SDKOccupation, index: number) => {
             const { onetCode, title } = toDisplayOcc(occupation)
             return (
-              <Pressable key={onetCode} onPress={() => handleSelect(occupation)}>
-                <Row padding="sm" gap={8} style={{ cursor: 'pointer' }}>
+              <Pressable
+                key={onetCode}
+                onPress={() => handleSelect(occupation)}
+                {...nav.getOptionProps(index)}
+                style={({ pressed }) =>
+                  getMenuItemStyle(t, { active: nav.activeIndex === index, pressed })
+                }
+              >
+                <Row gap={8}>
                   <Stack style={{ flex: 1 }} gap={4}>
                     <Text>{title}</Text>
                     <Text style={{ color: colors.text[t].secondary }}>{onetCode}</Text>
@@ -183,51 +206,21 @@ export function OccupationSearch({
                 </Row>
               </Pressable>
             )
-          })}
-        </Stack>
-      )}
-
-      {debouncedSearch.length >= 2 && queryError && (
-        <Stack
-          padding="sm"
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            marginTop: 4,
-            borderWidth: 1,
-            borderColor: 'var(--color-border)',
-            borderRadius: 7,
-            backgroundColor: 'var(--color-background)',
-            zIndex: 1000,
-          }}
-        >
-          <Text style={{ color: colors.error[t === 'light' ? 700 : 300] }}>
-            {queryError.message || 'Unable to load occupations. Please try again.'}
-          </Text>
-        </Stack>
-      )}
-
-      {debouncedSearch.length >= 2 && !isLoading && occupations.length === 0 && showResults && (
-        <Stack
-          padding="sm"
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            marginTop: 4,
-            borderWidth: 1,
-            borderColor: 'var(--color-border)',
-            borderRadius: 7,
-            backgroundColor: 'var(--color-background)',
-            zIndex: 1000,
-          }}
-        >
-          <Text style={{ color: colors.text[t].secondary }}>No occupations found for "{debouncedSearch}"</Text>
-        </Stack>
-      )}
+          })
+        ) : showError ? (
+          <Stack padding="sm">
+            <Text style={{ color: colors.error[t === 'light' ? 700 : 300] }}>
+              {queryError?.message || 'Unable to load occupations. Please try again.'}
+            </Text>
+          </Stack>
+        ) : (
+          <Stack padding="sm">
+            <Text style={{ color: colors.text[t].secondary }}>
+              No occupations found for "{debouncedSearch}"
+            </Text>
+          </Stack>
+        )}
+      </AnchoredOverlay>
     </Stack>
   )
 }

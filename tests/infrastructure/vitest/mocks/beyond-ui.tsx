@@ -219,6 +219,40 @@ export const Tooltip = ({ children, ...rest }: { children?: ReactNode; [key: str
 export const Portal = ({ children }: { children?: ReactNode; [key: string]: unknown }) =>
   createElement(React.Fragment, null, children)
 
+// AnchoredOverlay renders inline here; the portal and placement are tested in
+// packages/ui/src/__tests__/components/AnchoredOverlay.test.tsx.
+export const AnchoredOverlay = ({
+  open,
+  children,
+  id,
+  role,
+  testID,
+  maxHeight = 300,
+}: {
+  open: boolean
+  children?: ReactNode | ((info: { maxHeight: number; side: 'below' | 'above' }) => ReactNode)
+  id?: string
+  role?: string
+  testID?: string
+  maxHeight?: number
+  [key: string]: unknown
+}) =>
+  open
+    ? createElement(
+        'div',
+        { id, role, 'data-testid': testID },
+        typeof children === 'function' ? children({ maxHeight, side: 'below' }) : children,
+      )
+    : null
+export const ANCHORED_OVERLAY_Z_INDEX = 2147483647
+export const getMenuSurfaceStyle = () => ({})
+export const getMenuItemStyle = () => ({})
+// The real hook: it only depends on React.
+export {
+  useListboxNavigation,
+  getListboxOptionId,
+} from '../../../../packages/ui/src/components/AnchoredOverlay/useListboxNavigation'
+
 // Misc
 export const EmptyState = createEl('div')
 export const Fieldset = createEl('fieldset')
