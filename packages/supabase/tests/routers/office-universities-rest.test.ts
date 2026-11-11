@@ -75,6 +75,9 @@ Deno.test({
     const id = (created.body?.university as { id: string }).id
 
     try {
+      const fetched = await call(`/${id}`, office!)
+      assertEquals(fetched.status, 200, `office reads it by id, got ${JSON.stringify(fetched.body)}`)
+
       const renamed = await call(`/${id}`, office!, { method: 'PATCH', body: JSON.stringify({ name: 'Probe U' }) })
       assertEquals(renamed.status, 200, `office renames it, got ${JSON.stringify(renamed.body)}`)
       assertEquals((renamed.body?.university as { name: string }).name, 'Probe U', 'rename persisted')
@@ -124,6 +127,40 @@ Deno.test({
     } finally {
       await admin.schema('core').from('user_education').delete().eq('id', edu.data.id)
       await admin.schema('data').from('universities').delete().eq('id', id)
+    }
+  },
+})
+
+Deno.test({
+  name: 'Office universities REST - a worker can search the catalog (GET /search is not swallowed by /:id)',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    // `GET /:id` was registered before `GET /search`, so /search matched /:id
+    // with id = "search": a worker got 403 (office role required) and office
+    // staff got 404. The education form's institution search never returned a
+    // result for anyone. Found smoke-testing #1330.
+    await requireAuthSetup()
+    const tokens = await loadCachedTokens()
+    assertExists(tokens, 'Cached tokens should exist')
+    const admin = createAdminClient()
+    const name = `Searchprobe ${crypto.randomUUID().slice(0, 8)} University`
+    const inserted = await admin
+      .schema('data')
+      .from('universities')
+      .insert({ name, slug: slug(), country: 'United States', alpha_two_code: 'US' })
+      .select('id')
+      .single()
+    assertExists(inserted.data, `seed a university: ${JSON.stringify(inserted.error)}`)
+
+    try {
+      const query = encodeURIComponent(name.split(' ').slice(0, 2).join(' '))
+      const found = await call(`/search?query=${query}&country=United+States&limit=5`, tokens!.regular.token)
+      assertEquals(found.status, 200, `a worker can search, got ${found.status} ${JSON.stringify(found.body)}`)
+      const names = ((found.body?.universities ?? []) as { name: string }[]).map((u) => u.name)
+      assertEquals(names.includes(name), true, `the probe university is found, got ${JSON.stringify(names)}`)
+    } finally {
+      await admin.schema('data').from('universities').delete().eq('id', inserted.data.id)
     }
   },
 })

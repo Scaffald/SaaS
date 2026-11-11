@@ -94,28 +94,8 @@ app.get(
   },
 );
 
-// GET /:id - Get single university (office role)
-app.get("/:id", requireRole("office", "platform"), async (c) => {
-  const supabase = c.get("supabase");
-  const { id } = c.req.param();
-
-  const { data, error } = await supabase
-    .schema("data")
-    .from("universities")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error) {
-    return c.json(
-      { error: "University not found", message: error.message },
-      404,
-    );
-  }
-
-  return c.json({ university: data });
-});
-
+// Registered before `/:id`: Hono matches in order, and `/:id` would take
+// "search" as an id — a 403 for workers, a 404 for office staff.
 // GET /search - Search universities (authenticated users)
 app.get("/search", zValidator("query", searchQuerySchema), async (c) => {
   const supabase = c.get("supabase");
@@ -138,6 +118,28 @@ app.get("/search", zValidator("query", searchQuerySchema), async (c) => {
   }
 
   return c.json({ universities: data || [] });
+});
+
+// GET /:id - Get single university (office role)
+app.get("/:id", requireRole("office", "platform"), async (c) => {
+  const supabase = c.get("supabase");
+  const { id } = c.req.param();
+
+  const { data, error } = await supabase
+    .schema("data")
+    .from("universities")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    return c.json(
+      { error: "University not found", message: error.message },
+      404,
+    );
+  }
+
+  return c.json({ university: data });
 });
 
 // POST / - Create university (office role)
