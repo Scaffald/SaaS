@@ -1,7 +1,16 @@
-import { useCallback, useEffect, useState } from 'react'
-import { Input, Text, Stack, Spinner, useThemeContext } from '@scaffald/ui'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import {
+  AnchoredOverlay,
+  Input,
+  Text,
+  Stack,
+  Spinner,
+  getMenuItemStyle,
+  useListboxNavigation,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { Pressable, ScrollView } from 'react-native'
+import { Pressable, View } from 'react-native'
 
 export interface University {
   id: string
@@ -52,6 +61,8 @@ export function UniversityAutocomplete({
   const t = theme === 'dark' ? 'dark' : 'light'
   const [isOpen, setIsOpen] = useState(false)
   const [inputValue, setInputValue] = useState(value)
+  const anchorRef = useRef<View>(null)
+  const listboxId = `university-results-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
   const isControlled = controlledInputValue !== undefined
   const displayValue = isControlled ? controlledInputValue : inputValue
 
@@ -87,74 +98,74 @@ export function UniversityAutocomplete({
 
   const errorMessage = error || searchError
   const showDropdown = isOpen && displayValue.trim().length >= MIN_SEARCH_LENGTH
+  const nav = useListboxNavigation({
+    id: listboxId,
+    itemCount: loading ? 0 : results.length,
+    open: showDropdown,
+    onSelectIndex: (index) => {
+      const university = results[index]
+      if (university) handleSelect(university)
+    },
+    onClose: () => setIsOpen(false),
+  })
 
   return (
     <Stack gap={4} style={styles.container}>
-      <Input
-        value={displayValue}
-        onChangeText={handleInputChange}
-        placeholder={placeholder}
-        disabled={disabled}
-        error={!!errorMessage}
-        helperText={errorMessage}
-        onFocus={() => displayValue.trim().length >= MIN_SEARCH_LENGTH && setIsOpen(true)}
-        onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-        style={{ flex: 1 }}
-      />
-      {showDropdown && (
-        <Stack style={{
-          position: 'absolute',
-          top: '100%',
-          left: 0,
-          right: 0,
-          marginTop: 4,
-          maxHeight: 250,
-          backgroundColor: colors.bg[t].default,
-          borderRadius: 8,
-          borderWidth: 1,
-          borderColor: colors.border[t].default,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
-          elevation: 3,
-          zIndex: 1000,
-        }}>
-          {loading ? (
-            <Stack padding="md" align="center">
-              <Spinner size="sm" />
-            </Stack>
-          ) : results.length === 0 ? (
-            <Stack padding="md">
-              <Text size="sm" color="secondary">
-                No results found
-              </Text>
-            </Stack>
-          ) : (
-            <ScrollView style={{ maxHeight: 220 }} keyboardShouldPersistTaps="handled">
-              {results.map((uni) => (
-                <Pressable
-                  key={uni.id}
-                  onPress={() => handleSelect(uni)}
-                  style={({ pressed }) => [
-                    { paddingHorizontal: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.bg[t].subtle },
-                    pressed && { backgroundColor: colors.bg[t].subtle },
-                  ]}
-                >
-                  <Stack gap={2}>
-                    <Text size="sm">{uni.name}</Text>
-                    {uni.country && (
-                      <Text size="sm" color="secondary">
-                        {uni.country}
-                      </Text>
-                    )}
-                  </Stack>
-                </Pressable>
-              ))}
-            </ScrollView>
-          )}
-        </Stack>
-      )}
+      <View ref={anchorRef}>
+        <Input
+          value={displayValue}
+          onChangeText={handleInputChange}
+          placeholder={placeholder}
+          disabled={disabled}
+          error={!!errorMessage}
+          helperText={errorMessage}
+          onFocus={() => displayValue.trim().length >= MIN_SEARCH_LENGTH && setIsOpen(true)}
+          onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+          style={{ flex: 1 }}
+          {...nav.inputProps}
+        />
+      </View>
+      {/* Results menu — portalled above the page on web (#1330) */}
+      <AnchoredOverlay
+        anchorRef={anchorRef}
+        open={showDropdown}
+        onRequestClose={() => setIsOpen(false)}
+        maxHeight={250}
+        {...nav.listboxProps}
+      >
+        {loading ? (
+          <Stack padding="md" align="center">
+            <Spinner size="sm" />
+          </Stack>
+        ) : results.length === 0 ? (
+          <Stack padding="md">
+            <Text size="sm" color="secondary">
+              No results found
+            </Text>
+          </Stack>
+        ) : (
+          results.map((uni, index) => (
+            <Pressable
+              key={uni.id}
+              onPress={() => handleSelect(uni)}
+              {...nav.getOptionProps(index)}
+              style={({ pressed }) => [
+                getMenuItemStyle(t, { active: nav.activeIndex === index, pressed }),
+                { borderBottomWidth: 1, borderBottomColor: colors.bg[t].subtle },
+              ]}
+            >
+              <Stack gap={2}>
+                <Text size="sm">{uni.name}</Text>
+                {uni.country && (
+                  <Text size="sm" color="secondary">
+                    {uni.country}
+                  </Text>
+                )}
+              </Stack>
+            </Pressable>
+          ))
+        )}
+      </AnchoredOverlay>
     </Stack>
   )
 }
