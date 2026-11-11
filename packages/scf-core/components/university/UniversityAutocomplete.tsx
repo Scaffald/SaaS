@@ -90,11 +90,13 @@ export function UniversityAutocomplete({
     [isControlled, onUniversitySelect, onChange]
   )
 
+  // Follow `value` when the form changes it (a selection, a reset). Not on
+  // every keystroke: with inputValue in the deps, typing made the two differ
+  // and each character was immediately reset to the form's value, so nothing
+  // could be typed into the field at all.
   useEffect(() => {
-    if (!isControlled && value !== inputValue) {
-      setInputValue(value)
-    }
-  }, [value, isControlled, inputValue])
+    if (!isControlled) setInputValue(value)
+  }, [value, isControlled])
 
   const errorMessage = error || searchError
   const showDropdown = isOpen && displayValue.trim().length >= MIN_SEARCH_LENGTH
