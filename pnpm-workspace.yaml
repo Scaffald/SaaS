@@ -8,7 +8,6 @@ packages:
   - packages/ui/docs-site
   - packages/sdk
   - packages/sdk/docs-site
-  - packages/docs-shared
   - packages/scaffald-cli
   - packages/ai-pipeline
   - examples/*

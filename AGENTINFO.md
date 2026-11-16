@@ -761,7 +761,7 @@ Publishing `@scaffald/ui` and `@scaffald/sdk` to npm requires `NPM_TOKEN` in Git
 
 ### @scaffald/ui docs (GitHub Pages)
 
-- **Docs site** (e.g. https://ui.scaffald.com) is **not** deployed from this monorepo. It is built and deployed from the **[Scaffald/ui](https://github.com/Scaffald/ui)** repo.
+- **Docs site** (https://ui.scaffald.com) is **not** deployed from this monorepo. It is built and deployed to GitHub Pages from the **[Scaffald/ui](https://github.com/Scaffald/ui)** repo. The SDK docs (https://sdk.scaffald.com) deploy the same way from **[Scaffald/sdk](https://github.com/Scaffald/sdk)**. There is no S3 or CloudFront in front of either (retired in #1340).
 - **Sync**: Pushing to `main` with `packages/ui/**` changes runs **Sync @scaffald/ui to Public Repository**, which updates Scaffald/ui. The workflow **Deploy Docs** (`.github/workflows/deploy-docs.yml`) lives inside `packages/ui` and runs in Scaffald/ui after sync.
 - **Enable Pages**: In the Scaffald/ui repo, set Settings → Pages → Source to **GitHub Actions**. See `packages/ui/RELEASE.md` and `packages/ui/AGENTINFO.md` (synced to Scaffald/ui) for details.
 
