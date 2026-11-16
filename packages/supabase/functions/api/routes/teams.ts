@@ -10,6 +10,11 @@ import {
   type ApiEnv,
   authMiddleware,
 } from "../middleware/auth.ts";
+import {
+  checkTeamPermission,
+  type TeamPermissionKey,
+  TeamPermissions,
+} from "../../_shared/permissions/team-permissions.ts";
 
 const app = new OpenAPIHono<ApiEnv>();
 
@@ -69,15 +74,6 @@ const teamInvitationSchema = z
     created_at: z.string(),
   })
   .openapi("TeamInvitation");
-
-const teamJobAssignmentSchema = z
-  .object({
-    id: z.string().uuid(),
-    team_id: z.string().uuid(),
-    job_id: z.string().uuid(),
-    assigned_at: z.string(),
-  })
-  .openapi("TeamJobAssignment");
 
 // Request schemas
 const listTeamsQuerySchema = z.object({
@@ -140,10 +136,6 @@ const _respondToInvitationWithTokenSchema = z.object({
   accept: z.boolean(),
 });
 
-const createJobAssignmentSchema = z.object({
-  jobId: z.string().uuid(),
-});
-
 // Response schemas
 const teamsListResponseSchema = z
   .object({
@@ -180,18 +172,6 @@ const teamInvitationResponseSchema = z
     invitation: teamInvitationSchema,
   })
   .openapi("TeamInvitationResponse");
-
-const teamJobAssignmentsListResponseSchema = z
-  .object({
-    assignments: z.array(teamJobAssignmentSchema),
-  })
-  .openapi("TeamJobAssignmentsListResponse");
-
-const teamJobAssignmentResponseSchema = z
-  .object({
-    assignment: teamJobAssignmentSchema,
-  })
-  .openapi("TeamJobAssignmentResponse");
 
 const deleteResponseSchema = z
   .object({
@@ -1124,184 +1104,283 @@ app.openapi(cancelInvitationRoute, async (c) => {
 // Job Assignment Routes
 // ============================================================================
 
-// GET /:id/job-assignments - List job assignments
-const listJobAssignmentsRoute = createRoute({
-  method: "get",
-  path: "/{id}/job-assignments",
-  summary: "List team job assignments",
-  request: {
-    params: z.object({ id: z.string().uuid() }),
-  },
-  responses: {
-    200: {
-      content: {
-        "application/json": { schema: teamJobAssignmentsListResponseSchema },
-      },
-      description: "List of job assignments",
-    },
-  },
-});
+// ============================================================================
+// Job assignments (#1348)
+// ============================================================================
+//
+// These lived at /{id}/job-assignments, wrote with the caller's JWT (which
+// holds only SELECT on core.job_team_assignments), left out the NOT NULL
+// organization_id, and answered raw snake_case rows. The SDK calls
+// /v1/teams/:id/jobs and expects camelCase TeamJobAssignment objects, so no
+// call ever worked. They now serve the SDK's paths and shape, check the team
+// permission explicitly, and write with the service role.
 
-app.openapi(listJobAssignmentsRoute, async (c) => {
-  const supabase = c.get("supabase");
-  const user = c.get("user");
-  const { id } = c.req.valid("param");
+type AssignmentRow = {
+  id: string;
+  team_id: string;
+  job_id: string;
+  is_primary: boolean;
+  assigned_at: string;
+  assigned_by: string | null;
+  job: {
+    id: string;
+    title: string;
+    status: string;
+    organization_id: string;
+  } | null;
+};
 
-  if (!user) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
+const ASSIGNMENT_SELECT =
+  "id, team_id, job_id, is_primary, assigned_at, assigned_by, job:jobs(id, title, status, organization_id)";
 
-  try {
-    const { data, error } = await supabase
-      .schema("core")
-      .from("job_team_assignments")
-      .select("*")
-      .eq("team_id", id)
-      .order("assigned_at", { ascending: false });
-
-    if (error) {
-      return c.json({
-        error: "Failed to fetch job assignments",
-        message: error.message,
-      }, 500);
+const toAssignment = (row: AssignmentRow) => ({
+  id: row.id,
+  teamId: row.team_id,
+  jobId: row.job_id,
+  isPrimary: row.is_primary,
+  assignedAt: row.assigned_at,
+  assignedBy: row.assigned_by,
+  job: row.job
+    ? {
+      id: row.job.id,
+      title: row.job.title,
+      status: row.job.status,
+      organizationId: row.job.organization_id,
     }
-
-    return c.json({ assignments: data || [] });
-  } catch (error) {
-    console.error("Error listing job assignments:", error);
-    return c.json(
-      {
-        error: "Internal server error",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
-      500,
-    );
-  }
+    : null,
 });
 
-// POST /:id/job-assignments - Create job assignment
-const createJobAssignmentRoute = createRoute({
-  method: "post",
-  path: "/{id}/job-assignments",
-  summary: "Assign a job to the team",
-  request: {
-    params: z.object({ id: z.string().uuid() }),
-    body: {
-      content: { "application/json": { schema: createJobAssignmentSchema } },
-    },
-  },
-  responses: {
-    200: {
-      content: {
-        "application/json": { schema: teamJobAssignmentResponseSchema },
-      },
-      description: "Created job assignment",
-    },
-  },
+const jobAssignmentBodySchema = z.object({
+  jobId: z.string().uuid(),
+  isPrimary: z.boolean().optional(),
 });
 
-app.openapi(createJobAssignmentRoute, async (c) => {
-  const supabase = c.get("supabase");
+/** May this user change which jobs the team works on? */
+async function canManageTeamJobs(
+  // deno-lint-ignore no-explicit-any
+  supabaseAdmin: any,
+  userId: string,
+  teamId: string,
+) {
+  const manage = await checkTeamPermission({
+    supabaseAdmin,
+    userId,
+    teamId,
+    permission: TeamPermissions.MANAGE,
+  });
+  if (manage.allowed) return manage;
+  // The team role permission the job_team_assignments RLS policy also accepts.
+  return await checkTeamPermission({
+    supabaseAdmin,
+    userId,
+    teamId,
+    permission: "job.manage" as TeamPermissionKey,
+    team: manage.team,
+  });
+}
+
+/** Keep core.jobs.team_ids / assigned_team_id in step, as the job form does. */
+// deno-lint-ignore no-explicit-any
+async function syncJobTeamColumns(supabaseAdmin: any, jobId: string) {
+  const { data } = await supabaseAdmin
+    .schema("core")
+    .from("job_team_assignments")
+    .select("team_id, is_primary")
+    .eq("job_id", jobId);
+  const rows = (data ?? []) as Array<{ team_id: string; is_primary: boolean }>;
+  await supabaseAdmin
+    .schema("core")
+    .from("jobs")
+    .update({
+      team_ids: rows.map((r) => r.team_id),
+      assigned_team_id: rows.find((r) => r.is_primary)?.team_id ??
+        rows[0]?.team_id ?? null,
+    })
+    .eq("id", jobId);
+}
+
+const uuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// GET /:id/jobs — the team's job assignments
+app.get("/:id/jobs", async (c) => {
+  const supabaseAdmin = c.get("supabaseAdmin");
   const user = c.get("user");
-  const { id } = c.req.valid("param");
-  const body = await c.req.json();
-
-  if (!user) {
+  const teamId = c.req.param("id");
+  if (!user?.id || !supabaseAdmin) {
     return c.json({ error: "Unauthorized" }, 401);
   }
+  if (!uuidPattern.test(teamId)) {
+    return c.json({ error: "Not found" }, 404);
+  }
 
-  const result = createJobAssignmentSchema.safeParse(body);
-  if (!result.success) {
+  const view = await checkTeamPermission({
+    supabaseAdmin,
+    userId: user.id,
+    teamId,
+    permission: TeamPermissions.VIEW,
+  });
+  if (!view.allowed) {
+    return c.json({ error: "Forbidden" }, 403);
+  }
+
+  const { data, error } = await supabaseAdmin
+    .schema("core")
+    .from("job_team_assignments")
+    .select(ASSIGNMENT_SELECT)
+    .eq("team_id", teamId)
+    .order("assigned_at", { ascending: false });
+  if (error) {
+    return c.json({
+      error: "Failed to fetch job assignments",
+      message: error.message,
+    }, 500);
+  }
+  return c.json({
+    assignments: ((data ?? []) as AssignmentRow[]).map(toAssignment),
+  });
+});
+
+// POST /:id/jobs — assign a job to the team
+app.post("/:id/jobs", async (c) => {
+  const supabaseAdmin = c.get("supabaseAdmin");
+  const user = c.get("user");
+  const teamId = c.req.param("id");
+  if (!user?.id || !supabaseAdmin) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  if (!uuidPattern.test(teamId)) {
+    return c.json({ error: "Not found" }, 404);
+  }
+
+  const parsed = jobAssignmentBodySchema.safeParse(
+    await c.req.json().catch(() => null),
+  );
+  if (!parsed.success) {
     return c.json(
-      { error: "Validation error", message: result.error.message },
+      { error: "Validation error", message: parsed.error.message },
       400,
     );
   }
+  const { jobId, isPrimary } = parsed.data;
 
-  try {
-    const { data, error } = await supabase
-      .schema("core")
-      .from("job_team_assignments")
-      .insert({
-        team_id: id,
-        job_id: result.data.jobId,
-      })
-      .select()
-      .single();
-
-    if (error || !data) {
-      return c.json({
-        error: "Failed to create job assignment",
-        message: error?.message,
-      }, 500);
-    }
-
-    return c.json({ assignment: data });
-  } catch (error) {
-    console.error("Error creating job assignment:", error);
-    return c.json(
-      {
-        error: "Internal server error",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
-      500,
-    );
+  const access = await canManageTeamJobs(supabaseAdmin, user.id, teamId);
+  if (!access.allowed || !access.team) {
+    return c.json({ error: "Forbidden" }, 403);
   }
+
+  const { data: job } = await supabaseAdmin
+    .schema("core")
+    .from("jobs")
+    .select("id, organization_id")
+    .eq("id", jobId)
+    .maybeSingle();
+  if (!job) {
+    return c.json({ error: "Not found", message: "Job not found" }, 404);
+  }
+  if (job.organization_id !== access.team.organization_id) {
+    return c.json({
+      error: "Bad Request",
+      message: "The job belongs to a different organization than the team",
+    }, 400);
+  }
+
+  const { data, error } = await supabaseAdmin
+    .schema("core")
+    .from("job_team_assignments")
+    .insert({
+      team_id: teamId,
+      job_id: jobId,
+      organization_id: job.organization_id,
+      assigned_by: user.id,
+      // The trigger makes the first assignment primary either way.
+      is_primary: isPrimary ?? false,
+    })
+    .select(ASSIGNMENT_SELECT)
+    .single();
+  if (error || !data) {
+    if (error?.code === "23505") {
+      return c.json({
+        error: "Conflict",
+        message: "The job is already assigned to this team",
+      }, 409);
+    }
+    return c.json({
+      error: "Failed to create job assignment",
+      message: error?.message,
+    }, 500);
+  }
+
+  await syncJobTeamColumns(supabaseAdmin, jobId);
+  // Re-read: the primary trigger may have changed is_primary on this row.
+  const { data: fresh } = await supabaseAdmin
+    .schema("core")
+    .from("job_team_assignments")
+    .select(ASSIGNMENT_SELECT)
+    .eq("id", (data as AssignmentRow).id)
+    .single();
+  return c.json({ assignment: toAssignment((fresh ?? data) as AssignmentRow) });
 });
 
-// DELETE /:id/job-assignments/:assignmentId - Delete job assignment
-const deleteJobAssignmentRoute = createRoute({
-  method: "delete",
-  path: "/{id}/job-assignments/{assignmentId}",
-  summary: "Remove a job assignment",
-  request: {
-    params: z.object({
-      id: z.string().uuid(),
-      assignmentId: z.string().uuid(),
-    }),
-  },
-  responses: {
-    200: {
-      content: { "application/json": { schema: deleteResponseSchema } },
-      description: "Job assignment removed",
-    },
-  },
-});
-
-app.openapi(deleteJobAssignmentRoute, async (c) => {
-  const supabase = c.get("supabase");
+// DELETE /:id/jobs/:assignmentId — by assignment id or job id
+app.delete("/:id/jobs/:assignmentId", async (c) => {
+  const supabaseAdmin = c.get("supabaseAdmin");
   const user = c.get("user");
-  const { assignmentId } = c.req.valid("param");
-
-  if (!user) {
+  const teamId = c.req.param("id");
+  const ref = c.req.param("assignmentId");
+  if (!user?.id || !supabaseAdmin) {
     return c.json({ error: "Unauthorized" }, 401);
   }
+  if (!uuidPattern.test(teamId) || !uuidPattern.test(ref)) {
+    return c.json({ error: "Not found" }, 404);
+  }
 
-  try {
-    const { error } = await supabase
+  const access = await canManageTeamJobs(supabaseAdmin, user.id, teamId);
+  if (!access.allowed) {
+    return c.json({ error: "Forbidden" }, 403);
+  }
+
+  // Only this team's rows: an id from another team must not be deletable here.
+  const { data: removed, error } = await supabaseAdmin
+    .schema("core")
+    .from("job_team_assignments")
+    .delete()
+    .eq("team_id", teamId)
+    .or(`id.eq.${ref},job_id.eq.${ref}`)
+    .select("job_id");
+  if (error) {
+    return c.json({
+      error: "Failed to delete job assignment",
+      message: error.message,
+    }, 500);
+  }
+  const rows = (removed ?? []) as Array<{ job_id: string }>;
+  if (rows.length === 0) {
+    return c.json({ error: "Not found", message: "No such assignment" }, 404);
+  }
+
+  for (const jobId of new Set(rows.map((r) => r.job_id))) {
+    // Removing the primary leaves none: promote the oldest remaining one.
+    const { data: rest } = await supabaseAdmin
       .schema("core")
       .from("job_team_assignments")
-      .delete()
-      .eq("id", assignmentId);
-
-    if (error) {
-      return c.json({
-        error: "Failed to delete job assignment",
-        message: error.message,
-      }, 500);
+      .select("id, is_primary")
+      .eq("job_id", jobId)
+      .order("assigned_at", { ascending: true });
+    const remaining = (rest ?? []) as Array<
+      { id: string; is_primary: boolean }
+    >;
+    if (remaining.length > 0 && !remaining.some((r) => r.is_primary)) {
+      await supabaseAdmin
+        .schema("core")
+        .from("job_team_assignments")
+        .update({ is_primary: true })
+        .eq("id", remaining[0].id);
     }
-
-    return c.json({ success: true });
-  } catch (error) {
-    console.error("Error deleting job assignment:", error);
-    return c.json(
-      {
-        error: "Internal server error",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
-      500,
-    );
+    await syncJobTeamColumns(supabaseAdmin, jobId);
   }
+
+  return c.json({ success: true });
 });
 
 // ============================================================================
