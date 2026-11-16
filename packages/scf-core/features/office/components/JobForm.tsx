@@ -1,4 +1,8 @@
-import type { OfficeCreateJobParams, OfficeUpdateJobParams } from '@scaffald/sdk'
+import type {
+  OfficeCreateJobParams,
+  OfficeJobDetailParams,
+  OfficeUpdateJobParams,
+} from '@scaffald/sdk'
 import { useTeams } from '@scaffald/sdk/react'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import {
@@ -44,6 +48,7 @@ import { Toggle } from '@scaffald/ui'
 import { JobPreviewModal } from './JobPreviewModal'
 import { JobTaxonomyPicker } from './JobTaxonomyPicker'
 import { useMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
+import { useScaffaldJobsClient } from '@scf/core/utils/jobs-sdk-context'
 import { colors } from '@scaffald/ui/tokens'
 import {
   ApplicationProcessSection,
@@ -65,6 +70,7 @@ type JobFormData = {
   description: string | JSONContent | null
   organization_id: string
   skill_ids?: string[]
+  optional_skill_ids?: string[]
   certification_ids?: string[]
   assigned_team_id?: string | null
   team_ids?: string[]
@@ -185,10 +191,117 @@ type JobFormProps = {
   mode: 'create' | 'edit'
   jobId?: string
   initialData?: Partial<JobFormData>
+  /** Names for the saved skills and certificates, so their chips can show. */
+  initialRelations?: {
+    skills?: Array<{ id: string; name: string }>
+    certifications?: Array<{ id: string; name: string }>
+  }
   onSuccess?: () => void
 }
 
-export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
+/**
+ * Every core.jobs column the form edits beyond the basics. buildJobParams
+ * sends them all; before #1342 it sent ten fields and the rest of the form was
+ * never saved.
+ */
+const DETAIL_FIELDS = [
+  'address',
+  'hiring_manager_id',
+  'recruiter_id',
+  'require_current_location',
+  'require_relocation_willingness',
+  'minimum_years_experience',
+  'require_work_authorization',
+  'require_earliest_start_date',
+  'enable_auto_reject',
+  'auto_reject_criteria',
+  'minimum_score',
+  'internal_job_code',
+  'department',
+  'cost_center',
+  'number_of_openings',
+  'priority_level',
+  'requisition_number',
+  'job_category',
+  'is_confidential',
+  'application_deadline',
+  'target_start_date',
+  'estimated_hire_date',
+  'scheduled_publish_at',
+  'minimum_education_level',
+  'require_background_check',
+  'background_check_type',
+  'require_drug_test',
+  'require_drivers_license',
+  'drivers_license_type',
+  'security_clearance_required',
+  'travel_percentage',
+  'shift_requirements',
+  'benefits_summary',
+  'has_bonus_structure',
+  'bonus_details',
+  'has_equity',
+  'equity_details',
+  'sign_on_bonus_cents',
+  'has_relocation_package',
+  'relocation_package_details',
+  'overtime_eligible',
+  'pay_frequency',
+  'requires_assessment',
+  'assessment_details',
+  'requires_video_interview',
+  'estimated_application_time_minutes',
+  'application_expiry_days',
+  'inquiry_capability_questions',
+  'relocation_assistance_offered',
+  'relocation_assistance_details',
+  'work_schedule_details',
+  'timezone',
+  'is_featured',
+  'featured_until',
+  'seo_keywords',
+  'external_application_url',
+  'eeo_job_category',
+  'is_veteran_friendly',
+  'is_disability_friendly',
+  'affirmative_action_plan',
+  'source_tracking_enabled',
+  'required_soft_skills',
+] as const satisfies ReadonlyArray<keyof JobFormData & keyof OfficeJobDetailParams>
+
+/** Typed as YYYY-MM-DD in the form; checked before saving. */
+const DATE_FIELDS = [
+  'application_deadline',
+  'target_start_date',
+  'estimated_hire_date',
+  'featured_until',
+] as const
+
+const isBlank = (value: unknown) =>
+  value === undefined || value === null || (typeof value === 'string' && value.trim() === '')
+
+/**
+ * The form's starting values from a saved job (GET /v1/office/jobs/:id).
+ * Date-only inputs show YYYY-MM-DD, so stored timestamps are cut to the day.
+ */
+export function officeJobToFormData(job: Record<string, unknown>): Partial<JobFormData> {
+  const data: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(job)) {
+    if (value !== null) data[key] = value
+  }
+  for (const key of DATE_FIELDS) {
+    if (typeof data[key] === 'string') data[key] = (data[key] as string).slice(0, 10)
+  }
+  const skills = (job.skills ?? []) as Array<{ id: string; is_required: boolean }>
+  data.skill_ids = skills.filter((s) => s.is_required).map((s) => s.id)
+  data.optional_skill_ids = skills.filter((s) => !s.is_required).map((s) => s.id)
+  data.certification_ids = ((job.certifications ?? []) as Array<{ id: string }>).map((c) => c.id)
+  delete data.skills
+  delete data.certifications
+  return data as Partial<JobFormData>
+}
+
+export function JobForm({ mode, jobId, initialData, initialRelations, onSuccess }: JobFormProps) {
   const { theme } = useThemeContext()
   const geocodingProvider = useMapboxGeocodingProvider()
   const router = useRouter()
@@ -214,6 +327,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   }
 
   const [formData, setFormData] = useState<JobFormData>({
+    // Every saved field, then the ones that need a default or a conversion.
+    ...initialData,
     title: initialData?.title || '',
     description: getInitialDescription(),
     organization_id: initialData?.organization_id || '',
@@ -231,6 +346,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     hiring_manager_id: initialData?.hiring_manager_id,
     recruiter_id: initialData?.recruiter_id,
     skill_ids: initialData?.skill_ids || [],
+    optional_skill_ids: initialData?.optional_skill_ids || [],
     certification_ids: initialData?.certification_ids || [],
     inquiry_capability_questions: initialData?.inquiry_capability_questions || [],
     required_soft_skills: initialData?.required_soft_skills || null,
@@ -497,8 +613,41 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     if (formData.pay_range_type) {
       params.pay_range_type = formData.pay_range_type as PayRangeType
     }
+
+    // The rest of the form (#1342). Creating, a blank field is left out;
+    // editing, it is sent as null so clearing a field clears it.
+    const detail = params as unknown as Record<string, unknown>
+    for (const key of DETAIL_FIELDS) {
+      const value = formData[key]
+      if (!isBlank(value)) detail[key] = value
+      else if (mode === 'edit') detail[key] = null
+    }
+    if (mode === 'edit') {
+      for (const key of [
+        'employment_type',
+        'remote_option',
+        'position_level',
+        'location',
+        'pay_range_min_cents',
+        'pay_range_max_cents',
+        'pay_range_type',
+      ] as const) {
+        if (isBlank(formData[key])) detail[key] = null
+      }
+    }
+    params.skill_ids = formData.skill_ids ?? []
+    params.optional_skill_ids = formData.optional_skill_ids ?? []
+    params.certification_ids = formData.certification_ids ?? []
+    params.team_ids = formData.team_ids ?? []
+    params.primary_team_id = formData.primary_team_id ?? null
     return params
   }
+
+  /** A half-typed date would fail the save; say which one instead. */
+  const invalidDateField = DATE_FIELDS.find((key) => {
+    const value = formData[key]
+    return !isBlank(value) && !/^\d{4}-\d{2}-\d{2}$/.test(String(value).trim())
+  })
 
   const handleSubmit = (asDraft = true) => {
     if (!meetsDraftMinimums) {
@@ -507,6 +656,15 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       toast.show({
         title: 'Missing required fields',
         message: `Title must be at least ${JOB_TITLE_MIN_LENGTH} characters, description at least ${JOB_DESCRIPTION_MIN_LENGTH}, and an organization is required.`,
+        variant: 'error',
+      })
+      return
+    }
+
+    if (invalidDateField) {
+      toast.show({
+        title: 'Check the dates',
+        message: `${invalidDateField.replace(/_/g, ' ')} must be a date like 2027-01-31.`,
         variant: 'error',
       })
       return
@@ -531,15 +689,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   // Skills and certifications handlers
   const searchParentSkillsMutation = useSearchParentSkillsMutation()
   const { data: primaryIndustryData } = usePrimaryIndustry()
-  // Certifications search: no SDK hook yet; stub returns empty until office certifications search is available
-  const searchCertificationsQuery = useMemo(
-    () => ({
-      data: { certifications: [] as Array<{ id: string; name: string; slug: string; parent_slug: string | null }> },
-      isLoading: false,
-      refetch: async () => ({ data: { certifications: [] as Array<{ id: string; name: string; slug: string }> } }),
-    }),
-    []
-  )
+  const jobsClient = useScaffaldJobsClient()
 
   const handleSearchSkills = useCallback(
     async (query: string) => {
@@ -561,7 +711,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           csi_code: string[] | null
           child_count: number
         }
-        return ((result.skills || []) as unknown as SkillHit[]).map((skill) => ({
+        // Jobs store CSI MasterFormat skills only (core.job_skills); the
+        // search also returns industry skills, which have no CSI code.
+        return ((result.skills || []) as unknown as SkillHit[])
+          .filter((skill) => skill.csi_display !== null)
+          .map((skill) => ({
           id: skill.skill_id,
           name: skill.skill_name,
           code: skill.csi_display || skill.skill_id,
@@ -574,25 +728,26 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     [searchParentSkillsMutation, primaryIndustryData]
   )
 
+  // The certification catalog the profile uses (data.certifications), which
+  // job_certifications now references (migration 394). This was a stub that
+  // always answered nothing (#1342).
   const handleSearchCertifications = useCallback(
     async (query: string) => {
-      if (!query.trim()) return []
+      if (!query.trim() || !jobsClient) return []
       try {
-        const result = await searchCertificationsQuery.refetch()
-        return (
-          result.data?.certifications?.map((cert: { id: string; name: string; slug: string }) => ({
-            id: cert.id,
-            name: cert.name,
-            slug: cert.slug,
-            parent_slug: null,
-          })) || []
+        const result = await jobsClient.certifications.getTopLevelCertifications({
+          search: query.trim(),
+          limit: 25,
+        })
+        return ((result.certifications ?? []) as Array<{ id: string; title: string }>).map(
+          (cert) => ({ id: cert.id, name: cert.title })
         )
       } catch (error) {
         console.error('Failed to search certifications', error)
         return []
       }
     },
-    [searchCertificationsQuery]
+    [jobsClient]
   )
 
   return (
@@ -898,8 +1053,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             <JobTaxonomyPicker
               testID="job-required-skills"
               selectedIds={formData.skill_ids || []}
-              onChange={(skillIds) => setFormData({ ...formData, skill_ids: skillIds })}
+              onChange={(skillIds) => setFormData((prev) => ({ ...prev, skill_ids: skillIds }))}
               onSearch={handleSearchSkills}
+              initialItems={initialRelations?.skills}
               placeholder="Search and add skills"
               disabled={isLoading}
             />
@@ -909,9 +1065,13 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           <Stack gap={8}>
             <Text>Optional skills</Text>
             <JobTaxonomyPicker
-              selectedIds={[]}
-              onChange={() => {}}
+              testID="job-optional-skills"
+              selectedIds={formData.optional_skill_ids || []}
+              onChange={(skillIds) =>
+                setFormData((prev) => ({ ...prev, optional_skill_ids: skillIds }))
+              }
               onSearch={handleSearchSkills}
+              initialItems={initialRelations?.skills}
               placeholder="Search and add skills"
               disabled={isLoading}
             />
@@ -923,8 +1083,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             <JobTaxonomyPicker
               testID="job-required-certificates"
               selectedIds={formData.certification_ids || []}
-              onChange={(certIds) => setFormData({ ...formData, certification_ids: certIds })}
+              onChange={(certIds) => setFormData((prev) => ({ ...prev, certification_ids: certIds }))}
               onSearch={handleSearchCertifications}
+              initialItems={initialRelations?.certifications}
               placeholder="Search certificates"
               disabled={isLoading}
             />

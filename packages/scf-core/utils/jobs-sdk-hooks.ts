@@ -362,6 +362,22 @@ export function useOfficeCreateJobMutation(
   })
 }
 
+/** Office: the whole job for the edit form, with named skills and certificates (#1342) */
+export function useOfficeJob(jobId: string | undefined, options?: { enabled?: boolean }) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['office', 'job', jobId],
+    queryFn: async () => {
+      if (!client || !jobId) throw new Error('Missing client or jobId')
+      return client.jobs.officeGetJob(jobId)
+    },
+    enabled: !!client && !!jobId && options?.enabled !== false,
+    // The edit form is seeded once from this; a stale copy would overwrite
+    // someone else's edit on save.
+    staleTime: 0,
+  })
+}
+
 /** Office: Delete a job (admin role required) */
 export function useOfficeDeleteJobMutation(
   options?: UseMutationOptions<{ success: boolean }, Error, string>

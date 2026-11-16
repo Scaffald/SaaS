@@ -62,33 +62,29 @@ export function UserSearch({
   const anchorRef = useRef<View>(null)
   const listboxId = `user-results-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
 
-  // Fetch all users (filter client-side)
-  const { data, isLoading } = useOfficeListUsers()
-
-  // Debounce search term for filtering
+  // Debounce search term for the server search
   const debouncedSearch = useDebounce(searchTerm, 300)
+  // The field shows the chosen user's name; that is not a new search.
+  const query = debouncedSearch.trim()
+  const searching = query.length >= 2 && query !== selectedUserName
 
-  // Filter users based on search term
-  const filteredUsers = (data?.users || []).filter((user: OfficeUser) => {
-    if (!debouncedSearch || debouncedSearch.length < 2) return false
-
-    const searchLower = debouncedSearch.toLowerCase()
-    const firstName = (user.first_name || '').toLowerCase()
-    const lastName = (user.last_name || '').toLowerCase()
-    const username = (user.username || '').toLowerCase()
-    const displayName = (user.display_name || '').toLowerCase()
-
-    return (
-      firstName.includes(searchLower) ||
-      lastName.includes(searchLower) ||
-      username.includes(searchLower) ||
-      displayName.includes(searchLower) ||
-      `${firstName} ${lastName}`.trim().includes(searchLower)
-    )
+  // Search on the server (#1343). This used to fetch the 50 newest users and
+  // filter them here, so anyone older could not be found.
+  const { data, isLoading } = useOfficeListUsers({
+    search: query,
+    limit: 20,
+    enabled: searching,
   })
+  const filteredUsers: OfficeUser[] = searching ? (data?.users ?? []) : []
 
-  // Get selected user details when value is provided (for edit mode)
-  const selectedUser = value ? (data?.users || []).find((u: OfficeUser) => u.id === value) : null
+  // Name the saved user (edit mode) by id: they need not match any search.
+  const { data: selectedData } = useOfficeListUsers({
+    ids: value ? [value] : [],
+    enabled: Boolean(value),
+  })
+  const selectedUser = value
+    ? ((selectedData?.users ?? []).find((u: OfficeUser) => u.id === value) ?? null)
+    : null
 
   // Update display name when value changes (edit mode)
   useEffect(() => {
@@ -144,9 +140,9 @@ export function UserSearch({
   }
 
   const showDropdown =
-    showResults && debouncedSearch.length >= 2 && (filteredUsers.length > 0 || isLoading)
+    showResults && searching && (filteredUsers.length > 0 || isLoading)
   const showNoResults =
-    showResults && debouncedSearch.length >= 2 && !isLoading && filteredUsers.length === 0
+    showResults && searching && !isLoading && filteredUsers.length === 0
   const menuOpen = showDropdown || showNoResults
   const nav = useListboxNavigation({
     id: listboxId,

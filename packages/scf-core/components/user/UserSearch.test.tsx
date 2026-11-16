@@ -1,16 +1,19 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { renderWithProviders } from '@test-helpers/test-utils'
 import { useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { UserSearch } from './UserSearch'
 
-vi.mock('@scf/core/utils/office-users-sdk-hooks', () => ({
-  useOfficeListUsers: () => ({
-    data: {
-      users: [{ id: 'u1', first_name: 'Ada', last_name: 'Lovelace', username: 'ada' }],
-    },
+const listUsers = vi.fn(
+  (options?: { search?: string; ids?: string[]; enabled?: boolean }) => ({
+    data: { users: [{ id: 'u1', first_name: 'Ada', last_name: 'Lovelace', username: 'ada' }] },
     isLoading: false,
-  }),
+    options,
+  })
+)
+vi.mock('@scf/core/utils/office-users-sdk-hooks', () => ({
+  useOfficeListUsers: (options?: { search?: string; ids?: string[]; enabled?: boolean }) =>
+    listUsers(options),
 }))
 
 // The real Input draws its trailing icon as a button; this stand-in keeps that
@@ -77,5 +80,22 @@ describe('UserSearch (#1335)', () => {
   it('has no clear button while the field is empty', () => {
     renderWithProviders(<UserSearch placeholder="Hiring manager" />)
     expect(screen.queryByRole('button', { name: 'Clear' })).toBeNull()
+  })
+
+  it('searches on the server, not in a first page of users (#1343)', async () => {
+    listUsers.mockClear()
+    renderWithProviders(<UserSearch placeholder="Hiring manager" />)
+    fireEvent.change(screen.getByPlaceholderText('Hiring manager'), { target: { value: 'love' } })
+    await waitFor(() =>
+      expect(listUsers).toHaveBeenCalledWith(
+        expect.objectContaining({ search: 'love', enabled: true })
+      )
+    )
+  })
+
+  it('names a saved user by id, without a search (#1343)', () => {
+    listUsers.mockClear()
+    renderWithProviders(<UserSearch value="u1" placeholder="Hiring manager" />)
+    expect(listUsers).toHaveBeenCalledWith(expect.objectContaining({ ids: ['u1'], enabled: true }))
   })
 })
