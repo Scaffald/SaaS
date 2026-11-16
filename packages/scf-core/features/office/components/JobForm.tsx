@@ -27,7 +27,6 @@ import {
   Input,
   ResponsiveSelect,
   ScreenHeader,
-  ScrollView,
   Separator,
   Spinner,
   Text,
@@ -37,13 +36,15 @@ import {
 } from '@scaffald/ui'
 import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@scaffald/ui'
 import type { JSONContent } from '@tiptap/core'
-import { Eye, X } from 'lucide-react-native'
+import { Eye } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Card, Toggle } from '@scaffald/ui'
+import { Toggle } from '@scaffald/ui'
 import { JobPreviewModal } from './JobPreviewModal'
-import { borderRadius, colors } from '@scaffald/ui/tokens'
+import { JobTaxonomyPicker } from './JobTaxonomyPicker'
+import { useMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
+import { colors } from '@scaffald/ui/tokens'
 import {
   ApplicationProcessSection,
   ApplicationScreeningSection,
@@ -189,6 +190,7 @@ type JobFormProps = {
 
 export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const { theme } = useThemeContext()
+  const geocodingProvider = useMapboxGeocodingProvider()
   const router = useRouter()
   const toast = useToast()
   const { data: organizationsData } = useAllOrganizations()
@@ -593,322 +595,6 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     [searchCertificationsQuery]
   )
 
-  // Inline component for skills input
-  const JobSkillsInput = ({
-    selectedSkillIds,
-    onSkillsChange,
-    onSearchSkills,
-    placeholder,
-    disabled,
-  }: {
-    selectedSkillIds: string[]
-    onSkillsChange: (skillIds: string[]) => void
-    onSearchSkills: (query: string) => Promise<Array<{ id: string; name: string; code: string }>>
-    placeholder: string
-    disabled?: boolean
-  }) => {
-    const [searchQuery, setSearchQuery] = useState('')
-    const [searchResults, setSearchResults] = useState<
-      Array<{ id: string; name: string; code: string }>
-    >([])
-    const [showResults, setShowResults] = useState(false)
-
-    const handleSearch = useCallback(
-      async (query: string) => {
-        if (!query.trim()) {
-          setSearchResults([])
-          setShowResults(false)
-          return
-        }
-        try {
-          const results = await onSearchSkills(query)
-          setSearchResults(results)
-          setShowResults(true)
-        } catch (error) {
-          console.error('Error searching skills:', error)
-        }
-      },
-      [onSearchSkills]
-    )
-
-    const debouncedSearch = useCallback(
-      (() => {
-        let timeout: ReturnType<typeof setTimeout>
-        return (query: string) => {
-          clearTimeout(timeout)
-          timeout = setTimeout(() => handleSearch(query), 300)
-        }
-      })(),
-      []
-    )
-
-    const handleAddSkill = (skill: { id: string; name: string; code: string }) => {
-      if (!selectedSkillIds.includes(skill.id)) {
-        setSelectedSkillsMap((prev) => new Map(prev).set(skill.id, skill))
-        onSkillsChange([...selectedSkillIds, skill.id])
-      }
-      setSearchQuery('')
-      setShowResults(false)
-    }
-
-    const handleRemoveSkill = (skillId: string) => {
-      onSkillsChange(selectedSkillIds.filter((id) => id !== skillId))
-    }
-
-    // Store selected skills with names in component state
-    const [selectedSkillsMap, setSelectedSkillsMap] = useState<
-      Map<string, { id: string; name: string; code: string }>
-    >(new Map())
-
-    // Update map when skillIds change
-    useEffect(() => {
-      // Keep existing skills, remove ones not in selectedSkillIds
-      setSelectedSkillsMap((prev) => {
-        const next = new Map(prev)
-        for (const [id] of next) {
-          if (!selectedSkillIds.includes(id)) {
-            next.delete(id)
-          }
-        }
-        return next
-      })
-    }, [selectedSkillIds])
-
-    const availableResults = searchResults.filter((skill) => !selectedSkillIds.includes(skill.id))
-    const selectedSkills = Array.from(selectedSkillsMap.values())
-
-    return (
-      <Stack gap={8} style={{ position: 'relative' }}>
-        <Input
-          placeholder={placeholder}
-          value={searchQuery}
-          onChangeText={(text) => {
-            setSearchQuery(text)
-            debouncedSearch(text)
-          }}
-          onFocus={() => searchQuery && setShowResults(true)}
-          disabled={disabled}
-        />
-        {selectedSkillIds.length > 0 && (
-          <Row gap={8} wrap>
-            {selectedSkills.map((skill) => (
-              <Row
-                key={skill.id}
-                style={{ backgroundColor: colors.bg[theme].muted }}
-                paddingHorizontal={8}
-                paddingVertical={4}
-                borderRadius={borderRadius.l}
-                gap={4}
-                align="center"
-              >
-                <Text>{skill.name}</Text>
-                <Button
-                  size="sm"
-                  variant="text"
-                  onPress={() => handleRemoveSkill(skill.id)}
-                  disabled={disabled}
-                >
-                  <X size={16} />
-                </Button>
-              </Row>
-            ))}
-          </Row>
-        )}
-        {showResults && availableResults.length > 0 && (
-          <Card
-            elevation="lg"
-            style={{
-              position: 'absolute',
-              top: 48,
-              left: 0,
-              right: 0,
-              zIndex: 1000,
-              height: 300,
-              overflow: 'hidden',
-            }}
-          >
-            <ScrollView style={{ height: 300 }}>
-              <Stack>
-                {availableResults.map((skill) => (
-                  <Button
-                    key={skill.id}
-                    variant="text"
-                    onPress={() => handleAddSkill(skill)}
-                    style={{ padding: 8, backgroundColor: colors.bg[theme].subtle }}
-                  >
-                    <Text>{skill.name}</Text>
-                  </Button>
-                ))}
-              </Stack>
-            </ScrollView>
-          </Card>
-        )}
-      </Stack>
-    )
-  }
-
-  // Inline component for certifications input
-  const JobCertificationsInput = ({
-    selectedCertificationIds,
-    onCertificationsChange,
-    onSearchCertifications,
-    placeholder,
-    disabled,
-  }: {
-    selectedCertificationIds: string[]
-    onCertificationsChange: (certIds: string[]) => void
-    onSearchCertifications: (
-      query: string
-    ) => Promise<Array<{ id: string; name: string; slug: string; parent_slug: string | null }>>
-    placeholder: string
-    disabled?: boolean
-  }) => {
-    const [searchQuery, setSearchQuery] = useState('')
-    const [searchResults, setSearchResults] = useState<
-      Array<{ id: string; name: string; slug: string; parent_slug: string | null }>
-    >([])
-    const [showResults, setShowResults] = useState(false)
-
-    const handleSearch = useCallback(
-      async (query: string) => {
-        if (!query.trim()) {
-          setSearchResults([])
-          setShowResults(false)
-          return
-        }
-        try {
-          const results = await onSearchCertifications(query)
-          setSearchResults(results)
-          setShowResults(true)
-        } catch (error) {
-          console.error('Error searching certifications:', error)
-        }
-      },
-      [onSearchCertifications]
-    )
-
-    const debouncedSearch = useCallback(
-      (() => {
-        let timeout: ReturnType<typeof setTimeout>
-        return (query: string) => {
-          clearTimeout(timeout)
-          timeout = setTimeout(() => handleSearch(query), 300)
-        }
-      })(),
-      []
-    )
-
-    const handleAddCertification = (cert: {
-      id: string
-      name: string
-      slug: string
-      parent_slug: string | null
-    }) => {
-      if (!selectedCertificationIds.includes(cert.id)) {
-        setSelectedCertsMap((prev) => new Map(prev).set(cert.id, cert))
-        onCertificationsChange([...selectedCertificationIds, cert.id])
-      }
-      setSearchQuery('')
-      setShowResults(false)
-    }
-
-    const handleRemoveCertification = (certId: string) => {
-      onCertificationsChange(selectedCertificationIds.filter((id) => id !== certId))
-    }
-
-    // Store selected certifications with names in component state
-    const [selectedCertsMap, setSelectedCertsMap] = useState<
-      Map<string, { id: string; name: string; slug: string; parent_slug: string | null }>
-    >(new Map())
-
-    // Update map when certIds change
-    useEffect(() => {
-      setSelectedCertsMap((prev) => {
-        const next = new Map(prev)
-        for (const [id] of next) {
-          if (!selectedCertificationIds.includes(id)) {
-            next.delete(id)
-          }
-        }
-        return next
-      })
-    }, [selectedCertificationIds])
-
-    const availableResults = searchResults.filter(
-      (cert) => !selectedCertificationIds.includes(cert.id)
-    )
-    const selectedCerts = Array.from(selectedCertsMap.values())
-
-    return (
-      <Stack gap={8} style={{ position: 'relative' }}>
-        <Input
-          placeholder={placeholder}
-          value={searchQuery}
-          onChangeText={(text) => {
-            setSearchQuery(text)
-            debouncedSearch(text)
-          }}
-          onFocus={() => searchQuery && setShowResults(true)}
-          disabled={disabled}
-        />
-        {selectedCertificationIds.length > 0 && (
-          <Row gap={8} wrap>
-            {selectedCerts.map((cert) => (
-              <Row
-                key={cert.id}
-                style={{ backgroundColor: colors.bg[theme].muted }}
-                paddingHorizontal={8}
-                paddingVertical={4}
-                borderRadius={borderRadius.l}
-                gap={4}
-                align="center"
-              >
-                <Text>{cert.name}</Text>
-                <Button
-                  size="sm"
-                  variant="text"
-                  onPress={() => handleRemoveCertification(cert.id)}
-                  disabled={disabled}
-                >
-                  <X size={16} />
-                </Button>
-              </Row>
-            ))}
-          </Row>
-        )}
-        {showResults && availableResults.length > 0 && (
-          <Card
-            elevation="lg"
-            style={{
-              position: 'absolute',
-              top: 48,
-              left: 0,
-              right: 0,
-              zIndex: 1000,
-              height: 300,
-              overflow: 'hidden',
-            }}
-          >
-            <ScrollView style={{ height: 300 }}>
-              <Stack>
-                {availableResults.map((cert) => (
-                  <Button
-                    key={cert.id}
-                    variant="text"
-                    onPress={() => handleAddCertification(cert)}
-                    style={{ padding: 8, backgroundColor: colors.bg[theme].subtle }}
-                  >
-                    <Text>{cert.name}</Text>
-                  </Button>
-                ))}
-              </Stack>
-            </ScrollView>
-          </Card>
-        )}
-      </Stack>
-    )
-  }
-
   return (
     // The page scrolls; a scroll view here boxed the form inside the screen
     // shell, and on a phone the inner box was the one that scrolled.
@@ -1015,7 +701,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             <AddressForm
               mode="hybrid"
               placeholder="Search location"
-              provider={null}
+              provider={geocodingProvider}
               searchOptions={{ zoomLevel: 'city' }}
               addressValue={{
                 streetAddress: formData.address?.street || '',
@@ -1209,10 +895,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           {/* Required Skills */}
           <Stack gap={8}>
             <Text>Required skills</Text>
-            <JobSkillsInput
-              selectedSkillIds={formData.skill_ids || []}
-              onSkillsChange={(skillIds) => setFormData({ ...formData, skill_ids: skillIds })}
-              onSearchSkills={handleSearchSkills}
+            <JobTaxonomyPicker
+              testID="job-required-skills"
+              selectedIds={formData.skill_ids || []}
+              onChange={(skillIds) => setFormData({ ...formData, skill_ids: skillIds })}
+              onSearch={handleSearchSkills}
               placeholder="Search and add skills"
               disabled={isLoading}
             />
@@ -1221,10 +908,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           {/* Optional Skills */}
           <Stack gap={8}>
             <Text>Optional skills</Text>
-            <JobSkillsInput
-              selectedSkillIds={[]}
-              onSkillsChange={() => {}}
-              onSearchSkills={handleSearchSkills}
+            <JobTaxonomyPicker
+              selectedIds={[]}
+              onChange={() => {}}
+              onSearch={handleSearchSkills}
               placeholder="Search and add skills"
               disabled={isLoading}
             />
@@ -1233,12 +920,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           {/* Required Certificates */}
           <Stack gap={8}>
             <Text>Required certificates</Text>
-            <JobCertificationsInput
-              selectedCertificationIds={formData.certification_ids || []}
-              onCertificationsChange={(certIds) =>
-                setFormData({ ...formData, certification_ids: certIds })
-              }
-              onSearchCertifications={handleSearchCertifications}
+            <JobTaxonomyPicker
+              testID="job-required-certificates"
+              selectedIds={formData.certification_ids || []}
+              onChange={(certIds) => setFormData({ ...formData, certification_ids: certIds })}
+              onSearch={handleSearchCertifications}
               placeholder="Search certificates"
               disabled={isLoading}
             />
