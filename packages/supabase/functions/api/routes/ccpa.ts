@@ -6,6 +6,7 @@
 import { Hono } from "hono";
 import { createClient } from "@supabase/supabase-js";
 import type { ApiEnv } from "../middleware/auth.ts";
+import { emailsByUserId } from "../../_shared/user-emails.ts";
 
 const ccpaRouter = new Hono<ApiEnv>();
 
@@ -523,15 +524,12 @@ ccpaRouter.get("/admin-requests", async (c) => {
       };
     }
 
-    // Emails live in auth.users, which PostgREST does not serve; the admin API
-    // is the only way to resolve them.
-    const admin = getServiceClient();
-    await Promise.all(userIds.map(async (uid: string) => {
-      const { data } = await admin.auth.admin.getUserById(uid);
-      if (data?.user?.email && userMap[uid]) {
-        userMap[uid].email = data.user.email;
-      }
-    }));
+    // Emails live in auth.users, which PostgREST does not serve. One lookup
+    // for the page, not one admin call per user (#1337).
+    const emails = await emailsByUserId(getServiceClient(), userIds);
+    for (const [uid, email] of emails) {
+      if (email && userMap[uid]) userMap[uid].email = email;
+    }
   }
 
   const requests = rows.map((row: Record<string, unknown>) => {

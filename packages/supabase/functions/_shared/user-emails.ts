@@ -8,6 +8,11 @@
 // biome-ignore lint/suspicious/noExplicitAny: untyped Deno Supabase client (#477)
 type SupabaseLike = any;
 
+/** Ids per `core.user_emails` call; the function itself caps at 200. */
+const RPC_BATCH = 200;
+/** Admin API lookups in flight at once, when the RPC is unavailable. */
+const FALLBACK_CONCURRENCY = 5;
+
 /**
  * Emails for a set of user ids, from `auth.users`.
  *
@@ -18,9 +23,14 @@ type SupabaseLike = any;
  * did it again (#1020). Moved here from background-checks-admin so both use one
  * lookup.
  *
- * One `getUserById` per distinct id, in parallel, bounded by the caller's page
- * size. Requires the service-role client; `auth.users` is not reachable
- * through a request-scoped one.
+ * One `core.user_emails` RPC per 200 ids (migration 393). This used to be one
+ * Admin Auth API call per id, all at once: a 50-user page of /office/users
+ * opened 50 requests through Kong, exhausted its connections, and Kong reset
+ * other requests in flight — their auth checks came back 401 (#1337).
+ *
+ * If the RPC is missing (the function deployed before the migration), it
+ * falls back to the per-id lookups, a few at a time. Requires the
+ * service-role client either way.
  */
 export async function emailsByUserId(
   supabaseAdmin: SupabaseLike,
@@ -29,27 +39,49 @@ export async function emailsByUserId(
   const unique = [...new Set(ids.filter((id): id is string => Boolean(id)))];
   if (unique.length === 0) return new Map();
 
-  // The Admin Auth API, not a PostgREST query: the `auth` schema is not
-  // exposed through PostgREST, so `.schema("auth").from("users")` fails and
-  // every email comes back null — a quieter version of the same bug.
-  //
-  // `getUserById` per id rather than `listUsers`, which is the pattern in
-  // routes/auth.ts: that one pages through EVERY user in the project to find
-  // one address. Here the ids are already known and bounded by the page size,
-  // so targeted lookups are both cheaper and correct as the user table grows.
-  const entries = await Promise.all(
-    unique.map(async (id) => {
+  const emails = new Map<string, string | null>(unique.map((id) => [id, null]));
+  try {
+    for (let i = 0; i < unique.length; i += RPC_BATCH) {
+      const { data, error } = await supabaseAdmin
+        .schema("core")
+        .rpc("user_emails", { p_user_ids: unique.slice(i, i + RPC_BATCH) });
+      if (error) throw error;
+      for (
+        const row of (data ?? []) as Array<
+          { user_id: string; email: string | null }
+        >
+      ) {
+        emails.set(row.user_id, row.email ?? null);
+      }
+    }
+    return emails;
+  } catch (error) {
+    console.error(
+      "core.user_emails failed; resolving emails one by one:",
+      (error as { message?: string })?.message ?? error,
+    );
+  }
+
+  // The Admin Auth API, not a PostgREST query on `auth`: that schema is not
+  // exposed, so `.schema("auth").from("users")` returns every email as null.
+  let next = 0;
+  const worker = async () => {
+    while (next < unique.length) {
+      const id = unique[next++];
       const { data, error } = await supabaseAdmin.auth.admin.getUserById(id);
       if (error) {
-        // A missing email is a degraded row, not a failed request: the queue
-        // is still usable without it, and failing the whole call would
-        // reintroduce exactly the outage this fixes.
+        // A missing email is a degraded row, not a failed request.
         console.error(`Failed to resolve email for ${id}:`, error.message);
-        return [id, null] as const;
+        continue;
       }
-      return [id, (data?.user?.email as string | undefined) ?? null] as const;
-    }),
+      emails.set(id, (data?.user?.email as string | undefined) ?? null);
+    }
+  };
+  await Promise.all(
+    Array.from(
+      { length: Math.min(FALLBACK_CONCURRENCY, unique.length) },
+      worker,
+    ),
   );
-
-  return new Map(entries);
+  return emails;
 }
