@@ -6,6 +6,7 @@
  */
 
 import type { AddressResult, AddressSearchOptions, GeocodingProvider } from '@scaffald/ui'
+import { useMemo } from 'react'
 
 interface MapboxFeature {
   id: string
@@ -13,6 +14,7 @@ interface MapboxFeature {
   center: [number, number]
   address?: string
   text?: string
+  properties?: { short_code?: string }
   context?: Array<{ id: string; text: string; short_code?: string }>
 }
 
@@ -21,12 +23,22 @@ interface MapboxGeocodingResponse {
   features: MapboxFeature[]
 }
 
-function parseMapboxFeature(feature: MapboxFeature): AddressResult {
-  const context = feature.context ?? []
-  const place = context.find((c) => c.id.startsWith('place.'))
-  const region = context.find((c) => c.id.startsWith('region.'))
-  const postcode = context.find((c) => c.id.startsWith('postcode.'))
-  const country = context.find((c) => c.id.startsWith('country.'))
+export function parseMapboxFeature(feature: MapboxFeature): AddressResult {
+  // A feature is itself one level of the address (an address, a place, a
+  // region…) and its `context` holds only the levels above it. So a city
+  // result has no `place.` entry in its context: its name is the feature's own
+  // text. Reading only the context left city searches with an empty city, and
+  // treated the city's name as a street (#1336).
+  const kind = feature.id.split('.')[0]
+  const own = { id: feature.id, text: feature.text ?? '', short_code: feature.properties?.short_code }
+  const level = (prefix: string) =>
+    kind === prefix ? own : (feature.context ?? []).find((c) => c.id.startsWith(`${prefix}.`))
+
+  const place = level('place')
+  const region = level('region')
+  const postcode = level('postcode')
+  const country = level('country')
+  const isAddress = kind === 'address'
 
   const [lng, lat] = feature.center
 
@@ -39,9 +51,9 @@ function parseMapboxFeature(feature: MapboxFeature): AddressResult {
   return {
     id: feature.id,
     formattedAddress: feature.place_name,
-    streetNumber: feature.address ?? '',
-    route: feature.text ?? '',
-    streetAddress: [feature.address, feature.text].filter(Boolean).join(' '),
+    streetNumber: isAddress ? (feature.address ?? '') : '',
+    route: isAddress ? (feature.text ?? '') : '',
+    streetAddress: isAddress ? [feature.address, feature.text].filter(Boolean).join(' ') : '',
     locality: place?.text ?? '',
     administrativeAreaLevel1: region?.text ?? '',
     stateAbbreviation,
@@ -82,4 +94,16 @@ export function createMapboxGeocodingProvider(apiKey: string): GeocodingProvider
   return {
     search,
   }
+}
+
+/**
+ * The Mapbox provider for an address field, or null without a token, in which
+ * case AddressForm / AddressAutocomplete fall back to manual entry. Passing a
+ * bare `provider={null}` instead left fields that never suggested anything
+ * (#1336).
+ */
+export function useMapboxGeocodingProvider(
+  token: string | undefined = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
+): GeocodingProvider | null {
+  return useMemo(() => (token ? createMapboxGeocodingProvider(token) : null), [token])
 }

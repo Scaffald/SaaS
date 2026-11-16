@@ -6,6 +6,7 @@ import { randomUUID } from 'expo-crypto'
 import { useCallback, useEffect, useRef } from 'react'
 import { Button, Input, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { useMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
 
 interface OrganizationLocationsInputProps {
   value: OrganizationLocation[]
@@ -41,6 +42,7 @@ export function OrganizationLocationsInput({
   apiKey,
 }: OrganizationLocationsInputProps) {
   const { theme } = useThemeContext()
+  const geocodingProvider = useMapboxGeocodingProvider()
   // provider and apiKey props are kept for API compatibility but AddressAutocomplete
   // requires a GeocodingProvider object — pass null to use default behaviour
   void provider
@@ -172,7 +174,7 @@ export function OrganizationLocationsInput({
                   value={getAddressString(location.address ?? {})}
                   onAddressSelect={(address: AddressResult) => handleAddressSelect(index, address)}
                   placeholder="Search for an address..."
-                  provider={null}
+                  provider={geocodingProvider}
                   disabled={disabled}
                   debounceMs={300}
                   minLength={3}

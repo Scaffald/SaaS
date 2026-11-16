@@ -6,7 +6,6 @@ import { Pressable, View } from 'react-native'
 import {
   AnchoredOverlay,
   Input,
-  Spinner,
   Text,
   Row,
   Stack,
@@ -15,6 +14,7 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { X } from 'lucide-react-native'
 
 export interface UserSearchProps {
   value?: string // user ID
@@ -161,36 +161,23 @@ export function UserSearch({
 
   return (
     <Stack gap={8} style={{ position: 'relative', width: '100%' }}>
+      {/* One Input with its own trailing clear button. A bordered Row around a
+          full-width Input overflowed, and the × landed outside the field (#1335).
+          While a search runs, the menu says "Searching…". */}
       <View ref={anchorRef}>
-        <Row
-          gap={8}
-          align="center"
-          style={{
-            borderWidth: 1,
-            borderColor: error ? colors.error[600] : colors.border[t].default,
-            borderRadius: 16,
-            backgroundColor: colors.bg[t].default,
-            paddingHorizontal: 12,
-            paddingVertical: 8,
-          }}
-        >
-          <Input
-            style={{ flex: 1 }}
-            placeholder={placeholder}
-            value={searchTerm}
-            onChangeText={handleInputChange}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            disabled={disabled}
-            {...nav.inputProps}
-          />
-          {isLoading && <Spinner size="sm" />}
-          {searchTerm && !isLoading ? (
-            <Text color="secondary" onPress={handleClear} style={{ paddingHorizontal: 8 }}>
-              ✕
-            </Text>
-          ) : null}
-        </Row>
+        <Input
+          placeholder={placeholder}
+          value={searchTerm}
+          onChangeText={handleInputChange}
+          onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
+          disabled={disabled}
+          error={!!error}
+          iconEnd={searchTerm && !disabled ? X : undefined}
+          iconEndOnPress={searchTerm && !disabled ? handleClear : undefined}
+          iconEndAccessibilityLabel="Clear"
+          {...nav.inputProps}
+        />
       </View>
 
       {/* Results menu (or "no users found") — portalled above the page on web (#1330) */}
