@@ -84,21 +84,94 @@ const updateUserEmploymentBodySchema = z.object({
 // GET / - List users
 // ============================================================================
 
-app.get("/", async (c) => {
+const listUsersQuerySchema = z.object({
+  /**
+   * Matches username, display name, first or last name, or "First Last"
+   * (#1343). The hiring manager and recruiter pickers used to filter the 50
+   * newest users in the browser, so nobody older could be found.
+   */
+  search: z.string().trim().max(100).optional(),
+  limit: z.coerce.number().int().min(1).max(50).default(50),
+  /** Comma-separated user ids: name a saved hiring manager or recruiter. */
+  ids: z
+    .string()
+    .transform((v) => v.split(",").map((id) => id.trim()).filter(Boolean))
+    .pipe(z.array(z.string().uuid()).max(50))
+    .optional(),
+});
+
+/** Strip what would break a PostgREST `or=` filter or act as a wildcard. */
+const searchTerm = (raw: string) =>
+  raw.replace(/[%,()*\\:."]/g, " ").replace(/\s+/g, " ").trim();
+
+app.get("/", zValidator("query", listUsersQuerySchema), async (c) => {
   const supabaseAdmin = c.get("supabaseAdmin");
 
   if (!supabaseAdmin) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const { data: usersData, error: usersError, count } = await supabaseAdmin
+  const { search, limit, ids } = c.req.valid("query");
+  const term = search ? searchTerm(search) : "";
+
+  let query = supabaseAdmin
     .schema("core")
     .from("users")
     .select("id, username, display_name, avatar_path, created_at, updated_at", {
       count: "exact",
     })
     .order("created_at", { ascending: false })
-    .limit(50);
+    .limit(limit);
+
+  if (ids && ids.length > 0) query = query.in("id", ids);
+
+  if (term) {
+    // Names live in core.profile; find those ids first, then match them
+    // alongside the username and display name.
+    const words = term.split(" ");
+    const profileMatches = [
+      supabaseAdmin
+        .schema("core")
+        .from("profile")
+        .select("user_id")
+        .or(`first_name.ilike.%${term}%,last_name.ilike.%${term}%`)
+        .limit(200),
+    ];
+    if (words.length > 1) {
+      profileMatches.push(
+        supabaseAdmin
+          .schema("core")
+          .from("profile")
+          .select("user_id")
+          .ilike("first_name", `%${words[0]}%`)
+          .ilike("last_name", `%${words[words.length - 1]}%`)
+          .limit(200),
+      );
+    }
+    const results = await Promise.all(profileMatches);
+    const failed = results.find((r) => r.error);
+    if (failed?.error) {
+      return c.json({
+        error: "Failed to search users",
+        message: failed.error.message,
+      }, 500);
+    }
+    const nameIds = [
+      ...new Set(
+        results.flatMap((r) =>
+          ((r.data ?? []) as Array<{ user_id: string }>).map((p) => p.user_id)
+        ),
+      ),
+    ];
+    const clauses = [
+      `username.ilike.%${term}%`,
+      `display_name.ilike.%${term}%`,
+    ];
+    if (nameIds.length > 0) clauses.push(`id.in.(${nameIds.join(",")})`);
+    query = query.or(clauses.join(","));
+  }
+
+  const { data: usersData, error: usersError, count } = await query;
 
   if (usersError) {
     return c.json({

@@ -26,6 +26,8 @@ export interface JobTaxonomyPickerProps<T extends JobTaxonomyItem> {
   placeholder: string
   disabled?: boolean
   testID?: string
+  /** Names for ids already saved (edit mode), so their chips can show. */
+  initialItems?: JobTaxonomyItem[]
 }
 
 const SEARCH_DEBOUNCE_MS = 300
@@ -45,6 +47,7 @@ export function JobTaxonomyPicker<T extends JobTaxonomyItem>({
   placeholder,
   disabled,
   testID,
+  initialItems,
 }: JobTaxonomyPickerProps<T>) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
@@ -52,7 +55,9 @@ export function JobTaxonomyPicker<T extends JobTaxonomyItem>({
   const [results, setResults] = useState<T[]>([])
   const [open, setOpen] = useState(false)
   // Names for the chips: the ids come from the form, the names from searches.
-  const [chosen, setChosen] = useState<Map<string, T>>(new Map())
+  const [chosen, setChosen] = useState<Map<string, T>>(
+    () => new Map((initialItems ?? []).map((item) => [item.id, item as T]))
+  )
   const anchorRef = useRef<View>(null)
   const listboxId = `job-taxonomy-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
 

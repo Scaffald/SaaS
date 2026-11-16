@@ -1,11 +1,16 @@
 import { OfficeLayout } from '@scf/core/components/layouts'
-import { JobForm } from '@scf/core/features/office/components/JobForm'
-import { useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
+import { JobForm, officeJobToFormData } from '@scf/core/features/office/components/JobForm'
+import { useOfficeJob } from '@scf/core/utils/jobs-sdk-hooks'
 import { Spinner, Stack } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
 
 export default function EditJobPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
+
+  // The office read carries every field the form edits, with the saved skills
+  // and certificates named. The public job detail this used carried a handful,
+  // so the rest of the form opened blank (#1342).
+  const { data: job, isLoading } = useOfficeJob(id || undefined, { enabled: !!id })
 
   if (!id) {
     return (
@@ -15,8 +20,6 @@ export default function EditJobPage() {
     )
   }
 
-  const { data, isLoading } = useJobDetails(id || undefined, { enabled: !!id })
-
   if (isLoading) {
     return (
       <Stack align="center" justify="center">
@@ -25,7 +28,7 @@ export default function EditJobPage() {
     )
   }
 
-  if (!data) {
+  if (!job) {
     return (
       <Stack align="center" justify="center">
         <Stack>Job not found</Stack>
@@ -33,30 +36,17 @@ export default function EditJobPage() {
     )
   }
 
-  const job = data as unknown as Record<string, unknown>
-
   return (
     <OfficeLayout
       showBreadcrumb
       leftContent={
         <JobForm
+          // Remount when a different job loads, so the form reseeds.
+          key={job.id}
           mode="edit"
           jobId={id}
-          initialData={{
-            assigned_team_id: (job.assigned_team_id as string | null) || null,
-            description: (job.description as string) || '',
-            employment_type: (job.employment_type as string) || undefined,
-            location: (job.location as string) || undefined,
-            organization_id: job.organization_id as string,
-            pay_range_max_cents: (job.pay_range_max_cents as number) || undefined,
-            pay_range_min_cents: (job.pay_range_min_cents as number) || undefined,
-            pay_range_type: (job.pay_range_type as string) || undefined,
-            position_level: (job.position_level as string) || undefined,
-            primary_team_id: (job.primary_team_id as string | null) || null,
-            remote_option: (job.remote_option as string) || undefined,
-            team_ids: (job.team_ids as string[]) || [],
-            title: (job.title as string) || '',
-          }}
+          initialData={officeJobToFormData(job as unknown as Record<string, unknown>)}
+          initialRelations={{ skills: job.skills, certifications: job.certifications }}
         />
       }
     />

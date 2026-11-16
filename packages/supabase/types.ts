@@ -5875,13 +5875,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "job_certifications_certification_id_fkey"
-            columns: ["certification_id"]
-            isOneToOne: false
-            referencedRelation: "certifications"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "job_certifications_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: false

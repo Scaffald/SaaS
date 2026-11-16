@@ -56,6 +56,7 @@ luscher-session-no-xp-rest.test.ts
 map.test.ts
 notifications-operations-rest.test.ts
 office-communities-rest.test.ts
+office-jobs-fields-rest.test.ts
 office-jobs-rest.test.ts
 office-organization-requests-rest.test.ts
 office-settings-rest.test.ts

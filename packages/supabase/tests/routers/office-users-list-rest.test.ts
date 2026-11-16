@@ -72,3 +72,57 @@ Deno.test({
     assert(response.status === 401 || response.status === 403, `got ${response.status}`)
   },
 })
+
+Deno.test({
+  name: 'Office users REST - search finds a user outside the newest 50, by name, "First Last" or username (#1343)',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    // UserSearch (hiring manager / recruiter) filtered the first page — the 50
+    // newest users — in the browser, so anyone older could never be found.
+    await requireAuthSetup()
+    const tokens = await loadCachedTokens()
+    const office = tokens?.office?.token ?? ''
+    assertExists(office || null, 'An office-role token is required')
+    const admin = createAdminClient()
+    const tag = crypto.randomUUID().slice(0, 8)
+    const email = `search-probe-${tag}@example.com`
+    const created = await admin.auth.admin.createUser({ email, password: crypto.randomUUID(), email_confirm: true })
+    const id = created.data.user?.id
+    assertExists(id, `create probe user: ${JSON.stringify(created.error)}`)
+
+    try {
+      // Old enough to sit behind every recently created test user.
+      await admin.schema('core').from('users').update({ created_at: '2001-01-01T00:00:00Z', username: `zz_probe_${tag}` }).eq('id', id)
+      const profile = await admin
+        .schema('core')
+        .from('profile')
+        .upsert({ user_id: id, first_name: `Quillon${tag}`, last_name: `Marbury${tag}` }, { onConflict: 'user_id' })
+      assert(!profile.error, `profile: ${JSON.stringify(profile.error)}`)
+
+      const search = async (term: string) => {
+        const res = await fetch(`${API}/office/users?search=${encodeURIComponent(term)}`, {
+          headers: { apikey: TEST_SUPABASE_ANON_KEY, Authorization: `Bearer ${office}` },
+        })
+        const body = await res.json()
+        assertEquals(res.status, 200, `search ${term}: ${JSON.stringify(body)}`)
+        return ((body.users ?? body.data?.users ?? []) as ListedUser[]).map((u) => u.id)
+      }
+
+      const firstPage = await fetch(`${API}/office/users`, {
+        headers: { apikey: TEST_SUPABASE_ANON_KEY, Authorization: `Bearer ${office}` },
+      }).then((r) => r.json())
+      const pageIds = ((firstPage.users ?? firstPage.data?.users ?? []) as ListedUser[]).map((u) => u.id)
+      assert(!pageIds.includes(id), 'the probe is not on the unfiltered first page')
+
+      assert((await search(`quillon${tag}`)).includes(id), 'found by first name, case-insensitive')
+      assert((await search(`Quillon${tag} Marbury${tag}`)).includes(id), 'found by "First Last"')
+      assert((await search(`zz_probe_${tag}`)).includes(id), 'found by username')
+      assertEquals((await search(`nobody-${tag}`)).length, 0, 'an unmatched term returns nobody')
+      // PostgREST filter syntax in the term must not become a filter of its own.
+      assertEquals((await search(`x),id.eq.${id}`)).includes(id), false, 'filter syntax in the term is inert')
+    } finally {
+      await admin.auth.admin.deleteUser(id)
+    }
+  },
+})

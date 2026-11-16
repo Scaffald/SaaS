@@ -28,6 +28,27 @@ import {
   listAccessibleOrganizationIds,
   PIPELINE_ROLES,
 } from "../lib/application-access.ts";
+import {
+  checkJobRelations,
+  jobDetailColumns,
+  jobDetailFieldsSchema,
+  jobRelationFieldsSchema,
+  readJobRelations,
+  writeJobRelations,
+} from "../lib/office-job-fields.ts";
+
+/** A foreign-key violation (an unknown hiring manager, say) is the caller's mistake. */
+function jobWriteError(error: { code?: string; message: string }) {
+  return error.code === "23503" || error.code === "23514"
+    ? {
+      status: 400 as const,
+      body: { error: "Bad Request", message: error.message },
+    }
+    : {
+      status: 500 as const,
+      body: { error: "Internal Server Error", message: error.message },
+    };
+}
 
 const listJobsQuerySchema = z.object({
   organization_id: z.string().uuid().optional(),
@@ -313,7 +334,10 @@ const createJobBodySchema = z.object({
   pay_range_max_cents: z.number().int().positive().optional(),
   pay_range_type: z.enum(["hourly", "salary", "contract", "project"])
     .optional(),
-});
+})
+  // #1342: the rest of the job form. Without these, zod stripped them.
+  .merge(jobDetailFieldsSchema)
+  .merge(jobRelationFieldsSchema);
 
 app.post(
   "/",
@@ -364,10 +388,21 @@ app.post(
       }
     }
 
+    const relations = await checkJobRelations(
+      supabaseAdmin,
+      input.organization_id,
+      input,
+    );
+    if (!relations.ok) {
+      return c.json({ error: "Bad Request", message: relations.message }, 400);
+    }
+
     const { data: job, error } = await supabaseAdmin
       .schema("core")
       .from("jobs")
       .insert({
+        ...jobDetailColumns(input),
+        ...relations.teamColumns,
         organization_id: input.organization_id,
         title: input.title,
         description: input.description,
@@ -385,8 +420,23 @@ app.post(
       .single();
 
     if (error) {
+      const failure = jobWriteError(error);
+      return c.json(failure.body, failure.status);
+    }
+
+    const relationError = await writeJobRelations(
+      supabaseAdmin,
+      job,
+      user.id,
+      input,
+    );
+    if (relationError) {
       return c.json(
-        { error: "Internal Server Error", message: error.message },
+        {
+          error: "Internal Server Error",
+          message: relationError,
+          job_id: job.id,
+        },
         500,
       );
     }
@@ -399,22 +449,26 @@ const updateJobBodySchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
   status: z.enum(["draft", "open", "paused", "closed"]).optional(),
+  // Nullable so the edit form can clear them (#1342).
   employment_type: z.enum([
     "full_time",
     "part_time",
     "contract",
     "temp",
     "intern",
-  ]).optional(),
-  remote_option: z.enum(["on_site", "hybrid", "remote"]).optional(),
-  position_level: z.string().optional(),
-  location: z.string().optional(),
-  pay_range_min_cents: z.number().int().positive().optional(),
-  pay_range_max_cents: z.number().int().positive().optional(),
+  ]).nullable().optional(),
+  remote_option: z.enum(["on_site", "hybrid", "remote"]).nullable().optional(),
+  position_level: z.string().nullable().optional(),
+  location: z.string().nullable().optional(),
+  pay_range_min_cents: z.number().int().positive().nullable().optional(),
+  pay_range_max_cents: z.number().int().positive().nullable().optional(),
   pay_range_type: z.enum(["hourly", "salary", "contract", "project"])
+    .nullable()
     .optional(),
   organization_id: z.string().uuid().optional(),
-});
+})
+  .merge(jobDetailFieldsSchema)
+  .merge(jobRelationFieldsSchema);
 
 app.patch(
   "/:id",
@@ -523,17 +577,36 @@ app.patch(
       updateData.pay_range_type = input.pay_range_type;
     }
 
-    const { data: job, error } = await supabaseAdmin
-      .schema("core")
-      .from("jobs")
-      .update(updateData)
-      .eq("id", id)
-      .select("*")
-      .single();
+    const relations = await checkJobRelations(
+      supabaseAdmin,
+      existingJob.organization_id as string,
+      input,
+    );
+    if (!relations.ok) {
+      return c.json({ error: "Bad Request", message: relations.message }, 400);
+    }
+    Object.assign(updateData, jobDetailColumns(input), relations.teamColumns);
+
+    // A save that only changes skills or teams has no column to update.
+    const jobs = supabaseAdmin.schema("core").from("jobs");
+    const { data: job, error } = Object.keys(updateData).length > 0
+      ? await jobs.update(updateData).eq("id", id).select("*").single()
+      : await jobs.select("*").eq("id", id).single();
 
     if (error) {
+      const failure = jobWriteError(error);
+      return c.json(failure.body, failure.status);
+    }
+
+    const relationError = await writeJobRelations(
+      supabaseAdmin,
+      job,
+      user.id,
+      input,
+    );
+    if (relationError) {
       return c.json(
-        { error: "Internal Server Error", message: error.message },
+        { error: "Internal Server Error", message: relationError },
         500,
       );
     }
@@ -541,6 +614,74 @@ app.patch(
     return c.json({ data: { job } });
   },
 );
+
+/**
+ * GET /v1/office/jobs/:id — the whole job for the office edit form (#1342),
+ * with its skills and certificates named and its team assignments. The edit
+ * page used the public /v1/jobs/:id, which carries a handful of fields, so
+ * everything else came back blank and the next save could not round-trip it.
+ */
+app.get("/:id", officeOnly, async (c) => {
+  const supabaseAdmin = c.get("supabaseAdmin");
+  const user = c.get("user");
+  const { id } = c.req.param();
+  if (!supabaseAdmin || !user?.id) {
+    return c.json(
+      { error: "Unauthorized", message: "User not authenticated" },
+      401,
+    );
+  }
+  if (!/^[0-9a-f-]{36}$/i.test(id)) {
+    return c.json({ error: "Not Found", message: "Job not found" }, 404);
+  }
+
+  const { data: job, error } = await supabaseAdmin
+    .schema("core")
+    .from("jobs")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) {
+    return c.json(
+      { error: "Internal Server Error", message: error.message },
+      500,
+    );
+  }
+  if (!job) {
+    return c.json({ error: "Not Found", message: "Job not found" }, 404);
+  }
+
+  const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+  if (!isSuperAdmin(assignments)) {
+    const orgId = job.organization_id as string;
+    const { data: orgAccess } = await supabaseAdmin
+      .schema("core")
+      .from("organizations")
+      .select("id")
+      .eq("id", orgId)
+      .eq("owner_user_id", user.id)
+      .maybeSingle();
+    if (!orgAccess) {
+      const { data: teamAccess } = await supabaseAdmin
+        .schema("core")
+        .from("team_members")
+        .select("teams!inner(organization_id)")
+        .eq("user_id", user.id)
+        .neq("status", "removed")
+        .filter("teams.organization_id", "eq", orgId)
+        .maybeSingle();
+      if (!teamAccess) {
+        return c.json({
+          error: "Forbidden",
+          message: "You do not have access to this job",
+        }, 403);
+      }
+    }
+  }
+
+  const relations = await readJobRelations(supabaseAdmin, id);
+  return c.json({ data: { job: { ...job, ...relations } } });
+});
 
 app.delete("/:id", officeOnly, async (c) => {
   const supabaseAdmin = c.get("supabaseAdmin");

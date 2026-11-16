@@ -98,4 +98,18 @@ describe('JobTaxonomyPicker (#1334)', () => {
     await act(async () => resolveFirst(skills))
     expect(screen.getAllByRole('option').map((o) => o.textContent)).toEqual(['Wiring'])
   })
+
+  it('names chips for ids already saved, before any search (#1342)', () => {
+    renderWithProviders(
+      <JobTaxonomyPicker
+        selectedIds={['s2']}
+        onChange={() => {}}
+        onSearch={async () => []}
+        placeholder="Search and add skills"
+        initialItems={skills}
+      />
+    )
+    expect(screen.getByText('Wiring')).toBeTruthy()
+    expect(screen.queryByText('Welding')).toBeNull()
+  })
 })

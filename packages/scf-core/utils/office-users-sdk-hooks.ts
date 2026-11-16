@@ -12,13 +12,21 @@ import type {
 } from '@scaffald/sdk'
 
 /** List all users (office role) */
-export function useOfficeListUsers(options?: { enabled?: boolean }) {
+export function useOfficeListUsers(
+  options?: { enabled?: boolean; search?: string; limit?: number; ids?: string[] }
+) {
   const client = useScaffaldJobsClient()
+  const search = options?.search?.trim() || undefined
+  const ids = options?.ids?.filter(Boolean)
   return useQuery({
-    queryKey: ['office', 'users'],
+    queryKey: ['office', 'users', { search: search ?? null, limit: options?.limit ?? null, ids: ids ?? null }],
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
-      return client.officeUsers.list()
+      return client.officeUsers.list(
+        search || options?.limit || ids?.length
+          ? { search, limit: options?.limit, ids }
+          : undefined
+      )
     },
     enabled: !!client && options?.enabled !== false,
     staleTime: 60 * 1000,
