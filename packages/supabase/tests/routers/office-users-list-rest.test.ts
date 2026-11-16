@@ -19,7 +19,9 @@ import {
 } from '../shared/setup.ts'
 import { requireAuthSetup } from '../shared/test-context.ts'
 
-const API = `${TEST_SUPABASE_URL}/functions/v1/api/v1`
+// Set OFFICE_TEST_API_BASE=http://127.0.0.1:8000 to test a worktree's api run
+// directly instead of the shared edge runtime.
+const API = `${Deno.env.get('OFFICE_TEST_API_BASE') ?? `${TEST_SUPABASE_URL}/functions/v1/api`}/v1`
 
 type ListedUser = { id: string; email?: string | null; display_name?: string | null }
 

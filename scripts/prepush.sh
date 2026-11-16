@@ -87,6 +87,23 @@ if curl -sf --max-time 2 http://127.0.0.1:54321/auth/v1/health >/dev/null 2>&1; 
     GATED_PATHS="$GATED_PATHS tests/routers/$gated_file"
   done < packages/supabase/tests/routers/GATED.txt
 
+  # Health of the shared edge runtime first (#1337). A degraded runtime
+  # answers in 10-20 s or cancels requests, and then dozens of unrelated
+  # gated tests fail and look like a broken change. The first call may boot a
+  # worker (~1-2 s); the second is the one that is timed.
+  API_HEALTH=http://127.0.0.1:54321/functions/v1/api/v1/health
+  curl -s -o /dev/null --max-time 30 "$API_HEALTH" >/dev/null 2>&1
+  HEALTH=$(curl -s -o /dev/null --max-time 15 -w "%{http_code} %{time_total}" "$API_HEALTH" 2>/dev/null)
+  HEALTH_CODE=${HEALTH%% *}
+  HEALTH_SECS=${HEALTH##* }
+  if [ "$HEALTH_CODE" != "200" ] || awk "BEGIN{exit !($HEALTH_SECS > 3)}"; then
+    echo "   The local edge runtime is unhealthy (api /health: HTTP ${HEALTH_CODE:-none} in ${HEALTH_SECS:-?}s)."
+    echo "   The gated tests would fail for that reason, not your change. Restart it and rerun:"
+    echo "     docker restart supabase_edge_runtime_scaffald"
+    GATED_STATUS=1
+    GATED_PATHS=""
+  fi
+
   if [ -n "$GATED_PATHS" ]; then
     # shellcheck disable=SC2086
     GATED_OUT=$(cd packages/supabase && npx deno test --allow-all --no-check \

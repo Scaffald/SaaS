@@ -13244,6 +13244,13 @@ export type Database = {
       send_profile_completion_reminders: { Args: never; Returns: number }
       unpin_review: { Args: { p_review_id: string }; Returns: undefined }
       update_stale_applications: { Args: never; Returns: number }
+      user_emails: {
+        Args: { p_user_ids: string[] }
+        Returns: {
+          email: string
+          user_id: string
+        }[]
+      }
       user_has_any_team_permission: {
         Args: {
           p_permission: Database["core"]["Enums"]["team_permission"]
