@@ -46,16 +46,26 @@ export const Input = ({
   value,
   onChangeText,
   placeholder,
+  onSubmitEditing,
+  returnKeyType: _returnKeyType,
   ...rest
 }: {
   value?: string
   onChangeText?: (text: string) => void
   placeholder?: string
+  onSubmitEditing?: () => void
+  returnKeyType?: string
   [key: string]: unknown
 }) =>
   createElement('input', {
     value: value ?? '',
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChangeText?.(e.target.value),
+    // react-native-web's TextInput calls onSubmitEditing on Enter.
+    onKeyDown: onSubmitEditing
+      ? (e: React.KeyboardEvent<HTMLInputElement>) => {
+          if (e.key === 'Enter') onSubmitEditing()
+        }
+      : undefined,
     placeholder,
     ...rest,
   })
