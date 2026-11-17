@@ -3095,6 +3095,7 @@ export type Database = {
           display_name: string
           estimated_completion_days: number | null
           id: string
+          is_active: boolean
           metadata: Json
           platform_cost_cents: number
           provider_check_code: string | null
@@ -3112,6 +3113,7 @@ export type Database = {
           display_name: string
           estimated_completion_days?: number | null
           id?: string
+          is_active?: boolean
           metadata?: Json
           platform_cost_cents: number
           provider_check_code?: string | null
@@ -3129,6 +3131,7 @@ export type Database = {
           display_name?: string
           estimated_completion_days?: number | null
           id?: string
+          is_active?: boolean
           metadata?: Json
           platform_cost_cents?: number
           provider_check_code?: string | null
