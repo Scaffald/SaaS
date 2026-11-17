@@ -907,15 +907,23 @@ app.post(
       }, 500);
     }
 
-    await supabaseAdmin
+    const { error: logError } = await supabaseAdmin
       .schema("core")
       .from("background_check_access_log")
       .insert({
         background_check_id: doc.background_check_id,
         accessed_by_user_id: user.id,
         access_type: "document_download",
-        accessed_data: { document_id: documentId },
+        // The table has no `accessed_data`; this used to name it, so the
+        // insert failed, the unchecked error was dropped, and no document
+        // download was ever logged.
+        metadata: { document_id: documentId },
       });
+    if (logError) {
+      console.error(
+        `[background-checks-admin] download of ${documentId} not logged: ${logError.message}`,
+      );
+    }
 
     return c.json({
       data: {

@@ -163,8 +163,10 @@ app.route("/v1/profiles", profilesRouter);
 app.route("/v1/profile-views", profileViewsRouter); // Profile views tracking
 app.route("/v1/symbolicate", symbolicateRouter); // Symbolicate stub (Expo/Metro; no-op)
 app.route("/symbolicate", symbolicateRouter); // Same stub for clients that call /api/symbolicate
+// Admin first: the worker router has GET /{checkId}/disputes, which would
+// otherwise read GET /admin/disputes as checkId "admin" and 400 it.
+app.route("/v1/background-checks/admin", backgroundChecksAdminRouter); // Background checks (office)
 app.route("/v1/background-checks", backgroundChecksRouter);
-app.route("/v1/background-checks/admin", backgroundChecksAdminRouter); // Background checks
 app.route("/v1/inquiries", inquiriesRouter); // User inquiries
 app.route("/v1/work-logs", workLogsRouter); // Work logs
 app.route("/v1/tasks", tasksRouter); // Tasks (Phase 3 dogfood)

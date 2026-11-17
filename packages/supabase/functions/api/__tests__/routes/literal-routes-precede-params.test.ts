@@ -25,6 +25,7 @@ const ROUTE_FILES = [
   "skill-analytics.ts",
   "profiles.ts",
   "webhooks.ts",
+  "background-checks.ts",
 ];
 
 interface Declaration {
