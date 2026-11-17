@@ -26,6 +26,12 @@ export interface ApplicationFormState {
   submittedAt?: string | null
   lastSavedAt?: Date | null
   saveError?: string | null
+  /**
+   * Set when a save fails; the debounced and interval autosaves stay off
+   * until the next edit, so a failing save is not retried every second
+   * (#1353). Explicit saves (step navigation, submit) still run.
+   */
+  autosavePaused?: boolean
 }
 
 const INITIAL_STATE: Omit<ApplicationFormState, 'jobId'> = {
@@ -36,6 +42,7 @@ const INITIAL_STATE: Omit<ApplicationFormState, 'jobId'> = {
   attachments: {},
   isDirty: false,
   isSaving: false,
+  autosavePaused: false,
 }
 
 /**
@@ -124,6 +131,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
         isDirty: false,
         lastSavedAt: new Date(),
         saveError: null,
+        autosavePaused: false,
       }))
 
       return applicationId
@@ -133,6 +141,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
         ...prev,
         isSaving: false,
         saveError: error instanceof Error ? error.message : 'Failed to save',
+        autosavePaused: true,
       }))
       throw error
     }
@@ -185,6 +194,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
         isSaving: false,
         lastSavedAt: new Date(),
         saveError: null,
+        autosavePaused: false,
       }))
     } catch (error) {
       console.error('Failed to save progress:', error)
@@ -192,6 +202,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
         ...prev,
         isSaving: false,
         saveError: error instanceof Error ? error.message : 'Failed to save',
+        autosavePaused: true,
       }))
       throw error
     }
@@ -205,6 +216,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
       ...prev,
       screeningAnswers: { ...prev.screeningAnswers, ...answers },
       isDirty: true,
+      autosavePaused: false,
     }))
   }, [])
 
@@ -216,6 +228,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
       ...prev,
       customQuestionAnswers: answers,
       isDirty: true,
+      autosavePaused: false,
     }))
   }, [])
 
@@ -227,6 +240,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
       ...prev,
       attachments: { ...prev.attachments, [type]: metadata },
       isDirty: true,
+      autosavePaused: false,
     }))
   }, [])
 
@@ -238,6 +252,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
       ...prev,
       attachments,
       isDirty: true,
+      autosavePaused: false,
     }))
   }, [])
 
@@ -294,7 +309,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
   // Debounced auto-save (500ms delay)
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   useEffect(() => {
-    if (!state.isDirty || state.isSaving) {
+    if (!state.isDirty || state.isSaving || state.autosavePaused) {
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current)
         debounceTimeoutRef.current = null
@@ -319,12 +334,12 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
         clearTimeout(debounceTimeoutRef.current)
       }
     }
-  }, [state.isDirty, state.isSaving, saveProgress])
+  }, [state.isDirty, state.isSaving, state.autosavePaused, saveProgress])
 
   // Interval-based auto-save (30 seconds)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   useEffect(() => {
-    if (!state.isDirty || state.isSaving) {
+    if (!state.isDirty || state.isSaving || state.autosavePaused) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current)
         intervalRef.current = null
@@ -346,7 +361,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
         clearInterval(intervalRef.current)
       }
     }
-  }, [state.isDirty, state.isSaving, saveProgress])
+  }, [state.isDirty, state.isSaving, state.autosavePaused, saveProgress])
 
   const invalidateSubmitted = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['application', 'my', jobId] })
