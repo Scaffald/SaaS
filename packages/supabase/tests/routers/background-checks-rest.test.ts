@@ -9,7 +9,8 @@
  *     neither exists, so every request 500'd. It also returned `pi_mock`
  *     instead of a real intent and wrote no ledger row.
  *   - `paid_by: 'employer'` is not a value of the `background_check_paid_by`
- *     enum (worker | organization | platform).
+ *     enum (worker | organization | platform); the Office request form sends
+ *     it for every employer-paid check, so that whole flow 500'd too.
  *   - The SDK called five routes the api never had: confirm-payment, the two
  *     document routes, create dispute and list disputes.
  *   - `/packages` selected `*`, sending `platform_cost_cents` to every worker.
@@ -198,18 +199,82 @@ Deno.test({
 })
 
 Deno.test({
-  name: 'background checks REST - employer paid_by is refused, not sent to an enum it is not in',
+  name: 'background checks REST - employer-paid: staff order for a worker (invited, no worker consent recorded); outsiders get 403',
   sanitizeResources: false,
   sanitizeOps: false,
   async fn() {
+    const admin = createAdminClient()
+    // deno-lint-ignore no-explicit-any
+    const core = (admin as any).schema('core')
     const workerToken = await token(TEST_USERS.regular)
+    const officeToken = await token(TEST_USERS.office)
+    const workerId = await getUserIdByEmail(admin, TEST_USERS.regular.email)
+    const officeId = await getUserIdByEmail(admin, TEST_USERS.office.email)
     const pkg = await firstPackage(workerToken)
-    const res = await callREST('/background-checks/request', {
-      method: 'POST',
-      authToken: workerToken,
-      body: JSON.stringify({ package_id: pkg.id, paid_by: 'employer', consent: consent() }),
+    const { data: org } = await core.from('organizations').select('id, owner_user_id')
+      .neq('owner_user_id', workerId).limit(1).single()
+    assertExists(org, 'no organization seeded')
+    const created: string[] = []
+    const employerBody = (orgId: string) => JSON.stringify({
+      package_id: pkg.id,
+      paid_by: 'employer',
+      consent: { ...consent(), consent_signature: 'organization_request' },
+      metadata: { organization_id: orgId, worker_user_id: workerId, requested_via: 'office_dashboard' },
     })
-    assertEquals(res.status, 400)
+
+    try {
+      // A worker with no role in the organization cannot order on its behalf.
+      const outsider = await callREST('/background-checks/request', {
+        method: 'POST', authToken: workerToken, body: employerBody(org.id),
+      })
+      assertEquals(outsider.status, 403, `outsider: ${JSON.stringify(outsider.body)}`)
+
+      // Missing worker/org is a 400, not a check about nobody.
+      const incomplete = await callREST('/background-checks/request', {
+        method: 'POST', authToken: officeToken,
+        body: JSON.stringify({ package_id: pkg.id, paid_by: 'employer', consent: consent() }),
+      })
+      assertEquals(incomplete.status, 400)
+
+      const ordered = await callREST('/background-checks/request', {
+        method: 'POST', authToken: officeToken, body: employerBody(org.id),
+      })
+      assertEquals(ordered.status, 201, `employer request: ${JSON.stringify(ordered.body)}`)
+      const { backgroundCheckId, paymentIntentId } = ordered.body as Json
+      created.push(backgroundCheckId)
+
+      const { data: check } = await core.from('background_checks').select('*').eq('id', backgroundCheckId).single()
+      assertEquals(check.user_id, workerId)
+      assertEquals(check.organization_id, org.id)
+      assertEquals(check.requested_by_user_id, officeId)
+      assertEquals(check.paid_by, 'organization')
+      assertEquals(check.initiated_by, 'organization')
+      assertEquals(check.status, 'invited')
+      assertExists(check.invited_at)
+      // The requester's placeholder is not recorded as the worker's consent.
+      assertEquals(check.consent_signature, null)
+      assertEquals(check.consent_given_at, null)
+
+      const { data: ledger } = await core.from('payment_transactions').select('user_id, organization_id')
+        .eq('stripe_payment_intent_id', paymentIntentId).single()
+      assertEquals(ledger.user_id, officeId)
+      assertEquals(ledger.organization_id, org.id)
+
+      // The requester (payer) confirms; the check stays invited, now paid.
+      const confirm = await callREST('/background-checks/confirm-payment', {
+        method: 'POST', authToken: officeToken,
+        body: JSON.stringify({ background_check_id: backgroundCheckId, payment_intent_id: paymentIntentId }),
+      })
+      assertEquals(confirm.status, 200, `employer confirm: ${JSON.stringify(confirm.body)}`)
+      assertEquals((confirm.body as Json).status, 'invited')
+      assertExists((confirm.body as Json).paid_at)
+
+      // The worker sees the check they were invited to.
+      const mine = await callREST('/background-checks', { authToken: workerToken })
+      assert((mine.body as Json[]).some((c) => c.id === backgroundCheckId))
+    } finally {
+      await cleanup(core, created)
+    }
   },
 })
 

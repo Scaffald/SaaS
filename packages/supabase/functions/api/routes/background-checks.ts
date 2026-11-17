@@ -31,6 +31,7 @@ import {
   requireAuth,
 } from "../middleware/auth.ts";
 import { loadStripeClient } from "../../_shared/id-verification-api.ts";
+import { canReadOrgInternals } from "../lib/org-access.ts";
 
 const app = new Hono<ApiEnv>();
 
@@ -69,14 +70,17 @@ async function loadOwnCheck(
   checkId: string,
   userId: string,
   columns = "*",
+  opts: { orRequester?: boolean } = {},
 ): Promise<Record<string, unknown> | null> {
-  const { data, error } = await admin
+  const base = admin
     .schema("core")
     .from("background_checks")
     .select(columns)
-    .eq("id", checkId)
-    .eq("user_id", userId)
-    .maybeSingle();
+    .eq("id", checkId);
+  const { data, error } =
+    await (opts.orRequester
+      ? base.or(`user_id.eq.${userId},requested_by_user_id.eq.${userId}`)
+      : base.eq("user_id", userId)).maybeSingle();
   if (error) {
     throw new Error(`Failed to load background check: ${error.message}`);
   }
@@ -124,6 +128,43 @@ function toDispute(row: Record<string, unknown>) {
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
+}
+
+/** What the Office request form sends for an employer-paid check. */
+const employerMetadataSchema = z.object({
+  organization_id: z.string().uuid(),
+  worker_user_id: z.string().uuid(),
+  job_id: z.string().uuid().optional(),
+}).passthrough();
+
+/**
+ * Whether the caller may order (and pay for) a check on an organization's
+ * behalf: its owner or anyone with a role in it (the same rule as reading its
+ * checks, lib/org-access.ts), or platform screening staff.
+ */
+async function mayRequestForOrganization(
+  admin: Admin,
+  userId: string,
+  organizationId: string,
+): Promise<boolean> {
+  const { data: roles, error } = await admin
+    .schema("core")
+    .from("role_assignments")
+    .select("role:roles(name, scope)")
+    .eq("user_id", userId);
+  if (error) throw new Error(`Unable to verify roles: ${error.message}`);
+  const staff = (roles ?? []).some((a: { role: unknown }) => {
+    const role = (Array.isArray(a.role) ? a.role[0] : a.role) as
+      | { name?: string; scope?: string }
+      | null;
+    return role?.scope === "platform" &&
+      ["office", "super_admin", "background_check_admin"].includes(
+        role.name ?? "",
+      );
+  });
+  if (staff) return true;
+  const access = await canReadOrgInternals(admin, organizationId, userId);
+  return access.allowed;
 }
 
 // ============================================================================
@@ -222,9 +263,7 @@ app.get("/", requireAuth, async (c) => {
 const requestSchema = z.object({
   package_id: z.string().uuid(),
   tier: z.string().max(100).optional(),
-  // The SDK says 'employer'; the table says 'organization'. Only the worker
-  // can pay for a check from this route today — an employer-paid check is
-  // requested against a candidate, which is the hiring pipeline's flow.
+  // The SDK says 'employer'; the table says 'organization'.
   paid_by: z.enum(["worker", "employer"]).default("worker"),
   consent: z.object({
     consent_signature: z.string().trim().min(1).max(200),
@@ -249,13 +288,64 @@ app.post(
     if (!admin) return fail(c, 500, "Admin client not available");
 
     const body = c.req.valid("json");
-    if (body.paid_by !== "worker") {
-      return fail(
-        c,
-        400,
-        "Employer-paid checks are requested from the hiring pipeline, not here.",
-      );
+
+    // Who the check is about, who pays, and on whose behalf. A worker buying
+    // their own check is the default; an employer (or office staff for an
+    // organization) names the worker and the organization in `metadata`,
+    // which is what the Office request form sends.
+    let subject: {
+      workerId: string;
+      organizationId: string | null;
+      jobId: string | null;
+    } = { workerId: user.id, organizationId: null, jobId: null };
+
+    if (body.paid_by === "employer") {
+      const parsed = employerMetadataSchema.safeParse(body.metadata ?? {});
+      if (!parsed.success) {
+        return fail(
+          c,
+          400,
+          "An employer request needs the organization and the worker.",
+        );
+      }
+      const { organization_id, worker_user_id, job_id } = parsed.data;
+
+      let allowed: boolean;
+      try {
+        allowed = await mayRequestForOrganization(
+          admin,
+          user.id,
+          organization_id,
+        );
+      } catch (e) {
+        return fail(c, 500, (e as Error).message);
+      }
+      if (!allowed) {
+        return fail(
+          c,
+          403,
+          "You cannot request checks for this organization.",
+        );
+      }
+
+      const { data: worker, error: workerError } = await admin
+        .schema("core")
+        .from("users")
+        .select("id")
+        .eq("id", worker_user_id)
+        .maybeSingle();
+      if (workerError) {
+        return fail(c, 500, "Failed to load worker", workerError.message);
+      }
+      if (!worker) return fail(c, 404, "Worker not found");
+
+      subject = {
+        workerId: worker_user_id,
+        organizationId: organization_id,
+        jobId: job_id ?? null,
+      };
     }
+    const employerPaid = subject.organizationId !== null;
 
     const { data: pkg, error: pkgError } = await admin
       .schema("core")
@@ -280,34 +370,47 @@ app.post(
     const forwarded = c.req.header("x-forwarded-for")?.split(",")[0]?.trim();
     const ip = forwarded || null;
 
+    // Consent is the WORKER's to give. On an employer request the requester
+    // cannot give it for them, so nothing is recorded here and the check
+    // starts as `invited`: the worker's own disclosure and consent come next
+    // (the FCRA flow, #845). Recording the employer's placeholder as the
+    // worker's signature would be a false consent record.
+    const workerConsent = employerPaid ? {} : {
+      consent_signature: body.consent.consent_signature,
+      consent_given_at: body.consent.consent_given_at,
+      consent_ip_address: ip,
+      consent_user_agent: body.consent.consent_user_agent ??
+        c.req.header("user-agent") ?? null,
+      disclosure_provided_at: body.consent.disclosure_provided_at,
+      summary_of_rights_provided_at: body.consent.summary_of_rights_provided_at,
+    };
+    const initialStatus = employerPaid ? "invited" : "pending";
+
     const { data: check, error: insertError } = await admin
       .schema("core")
       .from("background_checks")
       .insert({
-        user_id: user.id,
+        user_id: subject.workerId,
+        organization_id: subject.organizationId,
+        job_id: subject.jobId,
         requested_by_user_id: user.id,
-        initiated_by: "worker",
+        initiated_by: employerPaid ? "organization" : "worker",
         package_id: pkg.id,
         check_type_ids: pkg.check_type_ids ?? [],
         tier: body.tier ?? pkg.slug,
-        paid_by: "worker",
-        status: "pending",
+        paid_by: employerPaid ? "organization" : "worker",
+        status: initialStatus,
+        invited_at: employerPaid ? new Date().toISOString() : null,
         status_history: historyWith([], {
-          status: "pending",
-          actor: "worker",
+          status: initialStatus,
+          actor: employerPaid ? "organization" : "worker",
+          requested_by_user_id: user.id,
           notes: "Requested; awaiting payment",
         }),
         cost_cents: priceCents,
         base_price_cents: priceCents,
         total_price_cents: priceCents,
-        consent_signature: body.consent.consent_signature,
-        consent_given_at: body.consent.consent_given_at,
-        consent_ip_address: ip,
-        consent_user_agent: body.consent.consent_user_agent ??
-          c.req.header("user-agent") ?? null,
-        disclosure_provided_at: body.consent.disclosure_provided_at,
-        summary_of_rights_provided_at:
-          body.consent.summary_of_rights_provided_at,
+        ...workerConsent,
         custom_configuration: body.metadata ? { request: body.metadata } : {},
       })
       .select("id")
@@ -340,7 +443,9 @@ app.post(
         metadata: {
           service_type: "background_check",
           background_check_id: check.id,
-          worker_user_id: user.id,
+          worker_user_id: subject.workerId,
+          payer_user_id: user.id,
+          organization_id: subject.organizationId ?? "",
           package_id: pkg.id,
         },
         automatic_payment_methods: { enabled: true },
@@ -368,6 +473,7 @@ app.post(
       .from("payment_transactions")
       .insert({
         user_id: user.id,
+        organization_id: subject.organizationId,
         amount_cents: priceCents,
         currency: intent.currency ?? "usd",
         transaction_type: "background_check",
@@ -431,7 +537,17 @@ app.post(
 
     let check: Record<string, unknown> | null;
     try {
-      check = await loadOwnCheck(admin, body.background_check_id, user.id);
+      // The payer confirms: the worker for their own check, or whoever
+      // requested it on an organization's behalf.
+      check = await loadOwnCheck(
+        admin,
+        body.background_check_id,
+        user.id,
+        "*",
+        {
+          orRequester: true,
+        },
+      );
     } catch (e) {
       return fail(c, 500, (e as Error).message);
     }
