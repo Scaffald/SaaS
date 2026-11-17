@@ -156,3 +156,18 @@ export function useContactInfo(
     staleTime: 1 * 60 * 1000, // 1 minute - sensitive data, fresher cache
   })
 }
+
+/**
+ * A worker's Scaffald score: `gamified_score` from core.v_profile_search, the
+ * figure Find talent ranks and shows (Clay, 2026-11-17, #1355). The profile
+ * screens showed community.scaffold_scores instead — community reputation,
+ * which starts every member at 100 — so one person read 70 in the talent list
+ * and 100 on their profile. Null when the profile cannot be read; callers hide
+ * the score rather than show a stand-in.
+ */
+export function useWorkerScore(userId: string | undefined, options?: { enabled?: boolean }) {
+  const query = useUserProfile(userId, options)
+  const raw = query.data?.gamified_score
+  const score = typeof raw === 'number' ? Math.max(0, Math.min(100, Math.round(raw))) : null
+  return { ...query, score }
+}

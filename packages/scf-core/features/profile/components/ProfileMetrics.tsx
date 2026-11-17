@@ -1,16 +1,15 @@
 import { MetricBlock, MetricRow, Text, useThemeContext } from '@scaffald/ui'
 import { colors, fontSize, fontWeight, lineHeight } from '@scaffald/ui/tokens'
-import { useUserScaffoldScore } from '@scf/core/utils/communities-sdk-hooks'
 import { useViewAnalytics } from '@scf/core/utils/profile-views-sdk-hooks'
 import { useCertificationsWidget, useSkillsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
+import { useWorkerScore } from '@scf/core/utils/user-profiles-sdk-hooks'
 
 /**
  * The profile's figures, under the identity block (#1034).
  *
  * The prototype's row is score · profile views · proven skills · endorsements.
- * The Scaffald score is the community reputation figure the app already shows
- * on /communities and the public profile (useUserScaffoldScore), so it leads
- * here too (#1188). There is no endorsement count yet, so that one is not
+ * The Scaffald score is the worker's gamified_score — the figure Find talent
+ * shows (useWorkerScore, #1355) — so it leads here too (#1188). There is no endorsement count yet, so that one is not
  * drawn. The rest come from queries the page's own widgets already make:
  * views from profile analytics, verified skills out of those listed, and
  * certifications on record.
@@ -18,12 +17,11 @@ import { useCertificationsWidget, useSkillsWidget } from '@scf/core/utils/profil
 export function ProfileMetrics({ userId }: { userId?: string }) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
-  const { data: scoreResponse } = useUserScaffoldScore(userId)
+  const { score } = useWorkerScore(userId)
   const { data: analytics } = useViewAnalytics()
   const { data: skills } = useSkillsWidget({ userId })
   const { data: certifications } = useCertificationsWidget({ userId })
 
-  const score = scoreResponse?.data?.score
   const listed = skills?.length ?? 0
   const verified = skills?.filter((skill) => skill.verified).length ?? 0
   const trend = analytics?.trend

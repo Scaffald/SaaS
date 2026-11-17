@@ -9,7 +9,7 @@ import {
   ReviewsWidget,
 } from '@scf/core/features/profile/widgets'
 import { identityFacts } from '@scf/core/features/profile/utils/identity'
-import { useUserScaffoldScore } from '@scf/core/utils/communities-sdk-hooks'
+import { useWorkerScore } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useAppMode } from '@scf/core/utils/useAppMode'
@@ -185,7 +185,8 @@ export function DiscoverWorkerProfileScreen({
   const { session } = useSessionContext()
   const currentUserId = session?.user?.id
   const { mode } = useAppMode()
-  const { data: scoreResponse } = useUserScaffoldScore(safeUserId ?? undefined)
+  // The score Find talent shows, so the list and the profile agree (#1355).
+  const { score } = useWorkerScore(safeUserId ?? undefined)
 
   const generalInfoQuery = useGeneralInfoWidget(
     { userId: safeUserId || '' },
@@ -272,7 +273,6 @@ export function DiscoverWorkerProfileScreen({
   // prototype puts beside the name. The identity card below drops its own
   // copy of the name and facts.
   const facts = identityFacts(generalInfo)
-  const score = scoreResponse?.data?.score
   const screenTip =
     facts.length > 0 || score != null ? (
       <Text style={{ color: colors.text[t].secondary }}>
