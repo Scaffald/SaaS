@@ -19,6 +19,6 @@ describe('useAllOrganizations', () => {
 
     expect(result).toBe(expected)
     expect(useOfficeOrganizationsMock).toHaveBeenCalledTimes(1)
-    expect(useOfficeOrganizationsMock).toHaveBeenCalledWith()
+    expect(useOfficeOrganizationsMock).toHaveBeenCalledWith(undefined)
   })
 })

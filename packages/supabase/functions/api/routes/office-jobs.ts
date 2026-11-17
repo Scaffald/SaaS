@@ -1,8 +1,9 @@
 /**
  * Office Jobs REST API. Migrated from tRPC office.listJobs.
  *
- * Writes (create, edit, delete, duplicate) are the Office CMS and require the
- * platform office role. The list is also the employer's: My Listings and the
+ * Writes (create, edit, delete, duplicate) serve the Office CMS and the
+ * employer's own postings: office staff may write any organisation's jobs, an
+ * owner or org admin their own (canWriteJobsFor). The list is also the employer's: My Listings and the
  * pipeline's job filter read it, and an organisation's owner or admin may list
  * their own organisations' postings without the office role (#1312). It was
  * office-only, so both screens were empty for every employer who is not
@@ -17,7 +18,6 @@ import {
   type ApiEnv,
   authMiddleware,
   requireAuth,
-  requireRole,
 } from "../middleware/auth.ts";
 import {
   isSuperAdmin,
@@ -27,6 +27,7 @@ import { booleanQueryParam } from "../../_shared/query-schemas.ts";
 import {
   listAccessibleOrganizationIds,
   PIPELINE_ROLES,
+  userHasOrgAccess,
 } from "../lib/application-access.ts";
 import {
   checkJobRelations,
@@ -62,8 +63,12 @@ const listJobsQuerySchema = z.object({
 const app = new Hono<ApiEnv>();
 app.use("*", authMiddleware);
 
-/** The CMS writes: office staff only. Per route, since the list is not. */
-const officeOnly = requireRole("office", "platform");
+/**
+ * The writes and the edit read. Who may write which organisation's jobs is
+ * canWriteJobsFor's call: office staff any, an owner or org admin their own.
+ * They were office-only, so an employer had no way to post a job at all.
+ */
+const jobWriter = [requireAuth, addSupabaseAdminForUser] as const;
 
 const isOfficeStaff = (
   assignments: Array<
@@ -73,6 +78,45 @@ const isOfficeStaff = (
   assignments.some((a) =>
     a.role?.scope === "platform" && a.role?.name === "office"
   );
+
+/**
+ * Whether the user may write (create, edit, delete, duplicate, open for edit)
+ * a job in this organisation. Office staff run the CMS for every organisation —
+ * the job form's picker lists them all — so they may write any. Otherwise the
+ * organisation's owner or an org admin (PIPELINE_ROLES), the same people who
+ * see the list (#1312).
+ *
+ * This replaced four inline copies that admitted only a super_admin, the owner
+ * or a team member, and read the team row with `.maybeSingle()` — which errors
+ * on two rows, the error dropped — so office staff and org admins got "You do
+ * not have access to this organization" on every save.
+ */
+async function canWriteJobsFor(
+  // deno-lint-ignore no-explicit-any
+  supabaseAdmin: any,
+  userId: string,
+  organizationId: string,
+): Promise<boolean> {
+  const assignments = await loadUserRoleAssignments(supabaseAdmin, userId);
+  if (isOfficeStaff(assignments) || isSuperAdmin(assignments)) return true;
+  const { data: org, error } = await supabaseAdmin
+    .schema("core")
+    .from("organizations")
+    .select("owner_user_id")
+    .eq("id", organizationId)
+    .maybeSingle();
+  if (error) {
+    throw new Error(`Failed to load organisation: ${error.message}`);
+  }
+  if (!org) return false;
+  return await userHasOrgAccess(
+    supabaseAdmin,
+    userId,
+    organizationId,
+    (org.owner_user_id as string | null) ?? null,
+    { allowedRoles: PIPELINE_ROLES },
+  );
+}
 
 app.get(
   "/",
@@ -341,7 +385,7 @@ const createJobBodySchema = z.object({
 
 app.post(
   "/",
-  officeOnly,
+  ...jobWriter,
   zValidator("json", createJobBodySchema),
   async (c) => {
     const supabaseAdmin = c.get("supabaseAdmin");
@@ -356,36 +400,13 @@ app.post(
 
     const input = c.req.valid("json");
 
-    // Verify organization access
-    const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
-    const superAdmin = isSuperAdmin(assignments);
-
-    if (!superAdmin) {
-      const { data: orgAccess } = await supabaseAdmin
-        .schema("core")
-        .from("organizations")
-        .select("id")
-        .eq("id", input.organization_id)
-        .eq("owner_user_id", user.id)
-        .maybeSingle();
-
-      if (!orgAccess) {
-        const { data: teamAccess } = await supabaseAdmin
-          .schema("core")
-          .from("team_members")
-          .select("teams!inner(organization_id)")
-          .eq("user_id", user.id)
-          .neq("status", "removed")
-          .filter("teams.organization_id", "eq", input.organization_id)
-          .maybeSingle();
-
-        if (!teamAccess) {
-          return c.json({
-            error: "Forbidden",
-            message: "You do not have access to this organization",
-          }, 403);
-        }
-      }
+    if (
+      !(await canWriteJobsFor(supabaseAdmin, user.id, input.organization_id))
+    ) {
+      return c.json({
+        error: "Forbidden",
+        message: "You do not have access to this organization",
+      }, 403);
     }
 
     const relations = await checkJobRelations(
@@ -472,7 +493,7 @@ const updateJobBodySchema = z.object({
 
 app.patch(
   "/:id",
-  officeOnly,
+  ...jobWriter,
   zValidator("json", updateJobBodySchema),
   async (c) => {
     const supabaseAdmin = c.get("supabaseAdmin");
@@ -500,36 +521,17 @@ app.patch(
       return c.json({ error: "Not Found", message: "Job not found" }, 404);
     }
 
-    const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
-    const superAdmin = isSuperAdmin(assignments);
-
-    if (!superAdmin) {
-      const orgId = existingJob.organization_id as string;
-      const { data: orgAccess } = await supabaseAdmin
-        .schema("core")
-        .from("organizations")
-        .select("id")
-        .eq("id", orgId)
-        .eq("owner_user_id", user.id)
-        .maybeSingle();
-
-      if (!orgAccess) {
-        const { data: teamAccess } = await supabaseAdmin
-          .schema("core")
-          .from("team_members")
-          .select("teams!inner(organization_id)")
-          .eq("user_id", user.id)
-          .neq("status", "removed")
-          .filter("teams.organization_id", "eq", orgId)
-          .maybeSingle();
-
-        if (!teamAccess) {
-          return c.json({
-            error: "Forbidden",
-            message: "You do not have access to this job",
-          }, 403);
-        }
-      }
+    if (
+      !(await canWriteJobsFor(
+        supabaseAdmin,
+        user.id,
+        existingJob.organization_id as string,
+      ))
+    ) {
+      return c.json({
+        error: "Forbidden",
+        message: "You do not have access to this job",
+      }, 403);
     }
 
     // SC-120: reject org reassignment that the existing-org access check above
@@ -621,7 +623,7 @@ app.patch(
  * page used the public /v1/jobs/:id, which carries a handful of fields, so
  * everything else came back blank and the next save could not round-trip it.
  */
-app.get("/:id", officeOnly, async (c) => {
+app.get("/:id", ...jobWriter, async (c) => {
   const supabaseAdmin = c.get("supabaseAdmin");
   const user = c.get("user");
   const { id } = c.req.param();
@@ -651,39 +653,24 @@ app.get("/:id", officeOnly, async (c) => {
     return c.json({ error: "Not Found", message: "Job not found" }, 404);
   }
 
-  const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
-  if (!isSuperAdmin(assignments)) {
-    const orgId = job.organization_id as string;
-    const { data: orgAccess } = await supabaseAdmin
-      .schema("core")
-      .from("organizations")
-      .select("id")
-      .eq("id", orgId)
-      .eq("owner_user_id", user.id)
-      .maybeSingle();
-    if (!orgAccess) {
-      const { data: teamAccess } = await supabaseAdmin
-        .schema("core")
-        .from("team_members")
-        .select("teams!inner(organization_id)")
-        .eq("user_id", user.id)
-        .neq("status", "removed")
-        .filter("teams.organization_id", "eq", orgId)
-        .maybeSingle();
-      if (!teamAccess) {
-        return c.json({
-          error: "Forbidden",
-          message: "You do not have access to this job",
-        }, 403);
-      }
-    }
+  if (
+    !(await canWriteJobsFor(
+      supabaseAdmin,
+      user.id,
+      job.organization_id as string,
+    ))
+  ) {
+    return c.json({
+      error: "Forbidden",
+      message: "You do not have access to this job",
+    }, 403);
   }
 
   const relations = await readJobRelations(supabaseAdmin, id);
   return c.json({ data: { job: { ...job, ...relations } } });
 });
 
-app.delete("/:id", officeOnly, async (c) => {
+app.delete("/:id", ...jobWriter, async (c) => {
   const supabaseAdmin = c.get("supabaseAdmin");
   const user = c.get("user");
   const { id } = c.req.param();
@@ -706,39 +693,17 @@ app.delete("/:id", officeOnly, async (c) => {
     return c.json({ error: "Not Found", message: "Job not found" }, 404);
   }
 
-  const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
-  const superAdmin = isSuperAdmin(assignments);
-
-  if (!superAdmin) {
-    const organizationId = existingJob.organization_id as string;
-    const organizationIds = new Set<string>();
-
-    const { data: ownedOrgs } = await supabaseAdmin
-      .schema("core").from("organizations").select("id").eq(
-        "owner_user_id",
-        user.id,
-      );
-    for (const org of ownedOrgs ?? []) {
-      if (org.id) organizationIds.add(org.id as string);
-    }
-
-    const { data: teamMemberships } = await supabaseAdmin
-      .schema("core").from("team_members").select(
-        "teams!inner(organization_id)",
-      )
-      .eq("user_id", user.id).neq("status", "removed");
-    for (const membership of teamMemberships ?? []) {
-      const orgId = (membership as { teams?: { organization_id?: string } })
-        ?.teams?.organization_id;
-      if (orgId && typeof orgId === "string") organizationIds.add(orgId);
-    }
-
-    if (!organizationIds.has(organizationId)) {
-      return c.json({
-        error: "Forbidden",
-        message: "You do not have access to this job",
-      }, 403);
-    }
+  if (
+    !(await canWriteJobsFor(
+      supabaseAdmin,
+      user.id,
+      existingJob.organization_id as string,
+    ))
+  ) {
+    return c.json({
+      error: "Forbidden",
+      message: "You do not have access to this job",
+    }, 403);
   }
 
   await supabaseAdmin.schema("core").from("job_certifications").delete().eq(
@@ -769,7 +734,7 @@ app.delete("/:id", officeOnly, async (c) => {
   return c.json({ success: true });
 });
 
-app.post("/:id/duplicate", officeOnly, async (c) => {
+app.post("/:id/duplicate", ...jobWriter, async (c) => {
   const supabaseAdmin = c.get("supabaseAdmin");
   const user = c.get("user");
   const { id } = c.req.param();
@@ -788,39 +753,17 @@ app.post("/:id/duplicate", officeOnly, async (c) => {
     return c.json({ error: "Not Found", message: "Job not found" }, 404);
   }
 
-  const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
-  const superAdmin = isSuperAdmin(assignments);
-
-  if (!superAdmin) {
-    const organizationId = originalJob.organization_id as string;
-    const organizationIds = new Set<string>();
-
-    const { data: ownedOrgs } = await supabaseAdmin
-      .schema("core").from("organizations").select("id").eq(
-        "owner_user_id",
-        user.id,
-      );
-    for (const org of ownedOrgs ?? []) {
-      if (org.id) organizationIds.add(org.id as string);
-    }
-
-    const { data: teamMemberships } = await supabaseAdmin
-      .schema("core").from("team_members").select(
-        "teams!inner(organization_id)",
-      )
-      .eq("user_id", user.id).neq("status", "removed");
-    for (const membership of teamMemberships ?? []) {
-      const orgId = (membership as { teams?: { organization_id?: string } })
-        ?.teams?.organization_id;
-      if (orgId && typeof orgId === "string") organizationIds.add(orgId);
-    }
-
-    if (!organizationIds.has(organizationId)) {
-      return c.json({
-        error: "Forbidden",
-        message: "You do not have access to this job",
-      }, 403);
-    }
+  if (
+    !(await canWriteJobsFor(
+      supabaseAdmin,
+      user.id,
+      originalJob.organization_id as string,
+    ))
+  ) {
+    return c.json({
+      error: "Forbidden",
+      message: "You do not have access to this job",
+    }, 403);
   }
 
   const {

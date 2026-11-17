@@ -551,6 +551,20 @@ const ROUTES_CONFIG = {
       titleKey: 'routes.dashboard.discover.jobs.myListings',
       protected: true,
       exact: true,
+      // The employer's own posting form (#1351): the CMS form outside the
+      // Office shell, offering only the organisations they can hire for.
+      CREATE: {
+        path: '/jobs/my-listings/new',
+        titleKey: 'routes.dashboard.discover.jobs.myListingsCreate',
+        protected: true,
+        exact: true,
+      },
+      EDIT: {
+        path: '/jobs/my-listings/:id/edit',
+        titleKey: 'routes.dashboard.discover.jobs.myListingsEdit',
+        protected: true,
+        exact: true,
+      },
     },
     SAVED: {
       path: '/jobs/saved',

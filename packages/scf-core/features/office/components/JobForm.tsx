@@ -197,6 +197,13 @@ type JobFormProps = {
     certifications?: Array<{ id: string; name: string }>
   }
   onSuccess?: () => void
+  /**
+   * The organisations the picker offers. Omitted, it is every organisation —
+   * the Office CMS, where staff post for anyone. The employer's own form
+   * passes the organisations they can hire for, since the all-organisations
+   * read is office-only (#1351).
+   */
+  organizations?: Array<{ id: string; name: string }>
 }
 
 /**
@@ -301,12 +308,22 @@ export function officeJobToFormData(job: Record<string, unknown>): Partial<JobFo
   return data as Partial<JobFormData>
 }
 
-export function JobForm({ mode, jobId, initialData, initialRelations, onSuccess }: JobFormProps) {
+export function JobForm({
+  mode,
+  jobId,
+  initialData,
+  initialRelations,
+  onSuccess,
+  organizations: scopedOrganizations,
+}: JobFormProps) {
   const { theme } = useThemeContext()
   const geocodingProvider = useMapboxGeocodingProvider()
   const router = useRouter()
   const toast = useToast()
-  const { data: organizationsData } = useAllOrganizations()
+  const { data: allOrganizationsData } = useAllOrganizations({ enabled: !scopedOrganizations })
+  const organizationsData = scopedOrganizations
+    ? { organizations: scopedOrganizations }
+    : allOrganizationsData
 
   const initialTeamIds =
     initialData?.team_ids ?? (initialData?.assigned_team_id ? [initialData.assigned_team_id] : [])
@@ -684,7 +701,7 @@ export function JobForm({ mode, jobId, initialData, initialRelations, onSuccess 
   const organizations = organizationsData?.organizations || []
   const [previewOpen, setPreviewOpen] = useState(false)
 
-  type Organization = { id: string; name: string; slug: string; owner_user_id: string | null }
+  type Organization = { id: string; name: string }
 
   // Skills and certifications handlers
   const searchParentSkillsMutation = useSearchParentSkillsMutation()
@@ -869,8 +886,11 @@ export function JobForm({ mode, jobId, initialData, initialRelations, onSuccess 
               value={formData.location}
               onChange={(text: string) => setFormData({ ...formData, location: text })}
               onAddressSelect={(address: AddressResult) => {
-                setFormData({
-                  ...formData,
+                // Functional: AddressForm calls onAddressSelect and
+                // onAddressChange in the same tick, and a spread of the
+                // render's formData would let one overwrite the other.
+                setFormData((prev) => ({
+                  ...prev,
                   location: address.formattedAddress,
                   address: {
                     street: address.streetAddress || address.route || '',
@@ -881,7 +901,26 @@ export function JobForm({ mode, jobId, initialData, initialRelations, onSuccess 
                     latitude: address.coordinates?.lat,
                     longitude: address.coordinates?.lng,
                   },
-                })
+                }))
+              }}
+              // The street, city, state and ZIP fields are controlled by
+              // addressValue and report edits only through onAddressChange.
+              // Without it every keystroke was dropped, so once a Location was
+              // picked those fields could not be corrected (QA, 2026-11-11).
+              onAddressChange={(address: Partial<AddressResult>) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  address: {
+                    ...prev.address,
+                    street: address.streetAddress ?? prev.address?.street ?? '',
+                    city: address.locality ?? prev.address?.city ?? '',
+                    state: address.stateAbbreviation ?? prev.address?.state ?? '',
+                    zip: address.postalCode ?? prev.address?.zip ?? '',
+                    country: address.country ?? prev.address?.country ?? '',
+                    latitude: address.coordinates?.lat ?? prev.address?.latitude,
+                    longitude: address.coordinates?.lng ?? prev.address?.longitude,
+                  },
+                }))
               }}
             />
           </Stack>
