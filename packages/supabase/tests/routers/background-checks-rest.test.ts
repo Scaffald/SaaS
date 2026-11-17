@@ -269,6 +269,16 @@ Deno.test({
       assertEquals((confirm.body as Json).status, 'invited')
       assertExists((confirm.body as Json).paid_at)
 
+      // The organization's list names the worker, package and requester's
+      // row (it read "Unknown worker · Unknown package" before).
+      const orgList = await callREST(`/organizations/${org.id}/background-checks`, { authToken: officeToken })
+      assertEquals(orgList.status, 200, `org list: ${JSON.stringify(orgList.body)}`)
+      const row = (orgList.body as Json[]).find((c) => c.id === backgroundCheckId)
+      assertExists(row, 'employer check missing from the organization list')
+      assertEquals(row.worker_user_id, workerId)
+      assertExists(row.worker?.display_name ?? row.worker?.username)
+      assertEquals(row.package?.id, pkg.id)
+
       // The worker sees the check they were invited to.
       const mine = await callREST('/background-checks', { authToken: workerToken })
       assert((mine.body as Json[]).some((c) => c.id === backgroundCheckId))

@@ -8,6 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
 import { canReadOrgInternals } from "../lib/org-access.ts";
 import { firstOf } from "../lib/postgrest.ts";
+import { emailsByUserId } from "../../_shared/user-emails.ts";
 
 // Nine route files carry their own copy of this; following the local
 // convention rather than refactoring all of them from a bug fix.
@@ -902,10 +903,18 @@ app.openapi(
       return c.json({ error: "Organization not found" }, 404);
     }
 
-    let query = supabase
+    // canReadOrgInternals above is the gate. The read goes through the
+    // service client because RLS on background_checks only admits the
+    // subject, the requester and platform staff: an organization admin
+    // reading through their own session saw only the checks they had
+    // personally requested, not the organization's.
+    const admin = getServiceClient();
+    let query = admin
       .schema("core")
       .from("background_checks")
-      .select("*")
+      .select(
+        "*, package:background_check_packages(id, display_name, slug), worker:users!background_checks_user_id_fkey(id, display_name, username, avatar_path), job:jobs(id, title)",
+      )
       .eq("organization_id", id)
       .order("created_at", { ascending: false })
       .limit(limit ?? 100);
@@ -921,7 +930,27 @@ app.openapi(
       );
     }
 
-    return c.json(data ?? []);
+    // The page names rows by `worker` and `worker_user_id`; without them every
+    // row read "Unknown worker · Unknown package".
+    const rows = (data ?? []) as Array<Record<string, unknown>>;
+    const emails = await emailsByUserId(
+      admin,
+      rows.map((r) => r.user_id as string),
+    );
+    return c.json(rows.map((r) => {
+      const worker = firstOf(r.worker as never) as
+        | Record<string, unknown>
+        | null;
+      return {
+        ...r,
+        worker_user_id: r.user_id,
+        package: firstOf(r.package as never),
+        job: firstOf(r.job as never),
+        worker: worker
+          ? { ...worker, email: emails.get(r.user_id as string) ?? null }
+          : null,
+      };
+    }));
   },
 );
 
