@@ -466,3 +466,19 @@ Deno.test({
     }
   },
 })
+
+Deno.test({
+  name: 'background checks REST - the admin catalog lists packages and check types (395 adds is_active)',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const officeToken = await token(TEST_USERS.office)
+    for (const path of ['/background-checks/admin/packages', '/background-checks/admin/check-types']) {
+      const res = await callREST(path, { authToken: officeToken })
+      assertEquals(res.status, 200, `${path}: ${JSON.stringify(res.body)}`)
+      const rows = (res.body as Json).data as Json[]
+      assert(rows.length > 0, `${path} returned nothing`)
+      assert(rows.every((r) => typeof r.is_active === 'boolean'))
+    }
+  },
+})
