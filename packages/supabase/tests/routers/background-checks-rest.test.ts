@@ -489,6 +489,11 @@ Deno.test({
       const rows = (res.body as Json).data as Json[]
       assert(rows.length > 0, `${path} returned nothing`)
       assert(rows.every((r) => typeof r.is_active === 'boolean'))
+      // Toggling a row on (a no-op on an active row) is the catalog's write.
+      const toggle = await callREST(`${path}/${rows[0].id}/active`, {
+        method: 'PATCH', authToken: officeToken, body: JSON.stringify({ is_active: true }),
+      })
+      assertEquals(toggle.status, 200, `${path} toggle: ${JSON.stringify(toggle.body)}`)
     }
   },
 })
