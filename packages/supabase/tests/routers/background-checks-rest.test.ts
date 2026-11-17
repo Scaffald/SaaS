@@ -492,3 +492,62 @@ Deno.test({
     }
   },
 })
+
+Deno.test({
+  name: 'background checks REST - admin review saves, privacy writes real columns, resolving the last dispute restores the status',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient()
+    // deno-lint-ignore no-explicit-any
+    const core = (admin as any).schema('core')
+    const workerToken = await token(TEST_USERS.regular)
+    const officeToken = await token(TEST_USERS.office)
+    const pkg = await firstPackage(workerToken)
+    const created: string[] = []
+
+    try {
+      const req = await requestCheck(workerToken, pkg.id)
+      const checkId = (req.body as Json).backgroundCheckId
+      created.push(checkId)
+      await core.from('background_checks').update({ summary: 'Provider summary', findings: { records: [] } }).eq('id', checkId)
+
+      // The review dialog's save: status and notes only. It 500'd on the
+      // component_statuses NOT NULL, and would have wiped summary/findings.
+      const review = await callREST(`/background-checks/admin/checks/${checkId}/status`, {
+        method: 'PATCH', authToken: officeToken,
+        body: JSON.stringify({ status: 'completed_consider', notes: 'reviewed' }),
+      })
+      assertEquals(review.status, 200, `review: ${JSON.stringify(review.body)}`)
+      const { data: reviewed } = await core.from('background_checks').select('status, summary, findings, completed_at').eq('id', checkId).single()
+      assertEquals(reviewed.status, 'completed_consider')
+      assertEquals(reviewed.summary, 'Provider summary')
+      assertExists(reviewed.findings)
+      assertExists(reviewed.completed_at)
+
+      const privacy = await callREST(`/background-checks/admin/checks/${checkId}/privacy`, {
+        method: 'PATCH', authToken: officeToken,
+        body: JSON.stringify({ share_publicly: true, shared_with_organization_ids: [] }),
+      })
+      assertEquals(privacy.status, 200, `admin privacy: ${JSON.stringify(privacy.body)}`)
+      const { data: shared } = await core.from('background_checks').select('is_public').eq('id', checkId).single()
+      assertEquals(shared.is_public, true)
+
+      const dispute = await callREST('/background-checks/disputes', {
+        method: 'POST', authToken: workerToken,
+        body: JSON.stringify({ background_check_id: checkId, reason: 'Not my record' }),
+      })
+      assertEquals(dispute.status, 201)
+      const resolve = await callREST(`/background-checks/admin/disputes/${(dispute.body as Json).id}/resolve`, {
+        method: 'PATCH', authToken: officeToken,
+        body: JSON.stringify({ status: 'resolved', resolution: 'Record removed' }),
+      })
+      assertEquals(resolve.status, 200, `resolve: ${JSON.stringify(resolve.body)}`)
+      const { data: restored } = await core.from('background_checks').select('status').eq('id', checkId).single()
+      assertEquals(restored.status, 'completed_consider')
+    } finally {
+      await core.from('background_check_access_log').delete().in('background_check_id', created)
+      await cleanup(core, created)
+    }
+  },
+})
