@@ -16,7 +16,7 @@ import {
   ModalHeader,
   ResponsiveSelect,
 } from '@scaffald/ui'
-import { MonthYearPicker } from './components/MonthYearPicker'
+import { MonthPicker } from './components/MonthYearPicker'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertTriangle, Check, CheckCircle, Plus, X } from 'lucide-react-native'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -455,13 +455,9 @@ export function ProfileExperienceLeft() {
                     name={`experience_entries.${index}.start_date`}
                     control={control}
                     render={({ field }) => (
-                      <MonthYearPicker
-                        value={field.value ? new Date(field.value) : null}
-                        onChange={(date) => {
-                          // Store as YYYY-MM-DD format (first day of month)
-                          const dateStr = date ? date.toISOString().split('T')[0] : null
-                          field.onChange(dateStr || undefined)
-                        }}
+                      <MonthPicker
+                        value={field.value}
+                        onChange={(value) => field.onChange(value ?? undefined)}
                         error={errors.experience_entries?.[index]?.start_date?.message}
                         label="Start Date"
                       />
@@ -474,13 +470,9 @@ export function ProfileExperienceLeft() {
                     name={`experience_entries.${index}.end_date`}
                     control={control}
                     render={({ field }) => (
-                      <MonthYearPicker
-                        value={field.value ? new Date(field.value) : null}
-                        onChange={(date) => {
-                          // Store as YYYY-MM-DD format (first day of month)
-                          const dateStr = date ? date.toISOString().split('T')[0] : null
-                          field.onChange(dateStr || undefined)
-                        }}
+                      <MonthPicker
+                        value={field.value}
+                        onChange={(value) => field.onChange(value ?? undefined)}
                         disabled={watch(`experience_entries.${index}.is_current`)}
                         error={errors.experience_entries?.[index]?.end_date?.message}
                         label="End Date"

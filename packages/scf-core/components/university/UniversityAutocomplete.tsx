@@ -70,6 +70,10 @@ export function UniversityAutocomplete({
     (text: string) => {
       if (!isControlled) setInputValue(text)
       onInputChange?.(text)
+      // The typed text is the field's value until something is picked. Only a
+      // selection used to report it, so typing over a pick left the form on
+      // the old name and university_id (#1359).
+      onChange?.(text)
       if (text.trim().length >= MIN_SEARCH_LENGTH) {
         onSearch(text)
         setIsOpen(true)
@@ -77,7 +81,7 @@ export function UniversityAutocomplete({
         setIsOpen(false)
       }
     },
-    [isControlled, onSearch, onInputChange]
+    [isControlled, onSearch, onInputChange, onChange]
   )
 
   const handleSelect = useCallback(

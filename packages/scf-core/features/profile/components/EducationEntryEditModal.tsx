@@ -12,7 +12,7 @@ import {
   ResponsiveModal,
   ResponsiveSelect,
 } from '@scaffald/ui'
-import { MonthYearPicker } from './MonthYearPicker'
+import { MonthPicker } from './MonthYearPicker'
 import { UniversityAutocomplete } from '@scf/core/components/university'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@scaffald/ui'
@@ -114,6 +114,7 @@ export function EducationEntryEditModal({
     control,
     handleSubmit,
     reset,
+    getValues,
     setValue,
     watch,
     formState: { errors, isDirty },
@@ -199,7 +200,16 @@ export function EducationEntryEditModal({
                           <>
                             <UniversityAutocomplete
                               value={nameField.value || ''}
-                              onChange={nameField.onChange}
+                              onChange={(text) => {
+                                // A selection has already written its name (and id).
+                                if (text === getValues('institution_name')) return
+                                nameField.onChange(text)
+                                // Typed away from the catalog pick (#1359).
+                                if (getValues('university_id')) {
+                                  universityField.onChange(null)
+                                  setValue('is_verified', false, { shouldValidate: false })
+                                }
+                              }}
                               onUniversitySelect={(university: University) => {
                                 universityField.onChange(university.id)
                                 nameField.onChange(university.name)
@@ -413,12 +423,9 @@ export function EducationEntryEditModal({
                   name="start_date"
                   control={control}
                   render={({ field }) => (
-                    <MonthYearPicker
-                      value={field.value ? new Date(field.value) : null}
-                      onChange={(date) => {
-                        const dateStr = date ? date.toISOString().split('T')[0] : null
-                        field.onChange(dateStr || undefined)
-                      }}
+                    <MonthPicker
+                      value={field.value}
+                      onChange={(value) => field.onChange(value ?? undefined)}
                       label="Start Date"
                       error={errors.start_date?.message}
                     />
@@ -430,12 +437,9 @@ export function EducationEntryEditModal({
                   name="end_date"
                   control={control}
                   render={({ field }) => (
-                    <MonthYearPicker
-                      value={field.value ? new Date(field.value) : null}
-                      onChange={(date) => {
-                        const dateStr = date ? date.toISOString().split('T')[0] : null
-                        field.onChange(dateStr || undefined)
-                      }}
+                    <MonthPicker
+                      value={field.value}
+                      onChange={(value) => field.onChange(value ?? undefined)}
                       disabled={watch('is_current')}
                       label="End Date"
                       error={errors.end_date?.message}
@@ -477,12 +481,9 @@ export function EducationEntryEditModal({
                 name="expected_graduation_date"
                 control={control}
                 render={({ field }) => (
-                  <MonthYearPicker
-                    value={field.value ? new Date(field.value) : null}
-                    onChange={(date) => {
-                      const dateStr = date ? date.toISOString().split('T')[0] : null
-                      field.onChange(dateStr || undefined)
-                    }}
+                  <MonthPicker
+                    value={field.value}
+                    onChange={(value) => field.onChange(value ?? undefined)}
                     label="Expected Graduation Date"
                     error={errors.expected_graduation_date?.message}
                   />
