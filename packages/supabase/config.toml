@@ -169,6 +169,11 @@ gcp_jwt_path = "supabase/gcloud.json"
 verify_jwt = false
 [functions.api]
 verify_jwt = false
+
+# Supabase Auth "Send Email" hook (Standard Webhooks signed; the function
+# verifies the signature itself). See docs/agents/auth-email-hook.md.
+[functions.auth-email-hook]
+verify_jwt = false
 [functions.background-check-webhook]
 verify_jwt = false
 [functions.ccpa-deadline-check]
