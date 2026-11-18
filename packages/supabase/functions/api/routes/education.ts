@@ -5,6 +5,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
+import { prepareEducationWrites } from "../lib/education-entries.ts";
 
 const app = new OpenAPIHono<ApiEnv>();
 
@@ -102,6 +103,14 @@ const getEducationRoute = createRoute({
         },
       },
     },
+    500: {
+      description: "Server error",
+      content: {
+        "application/json": {
+          schema: errorResponseSchema,
+        },
+      },
+    },
   },
   security: [{ bearerAuth: [] }],
 });
@@ -129,7 +138,7 @@ app.openapi(getEducationRoute, async (c) => {
     }, 500);
   }
 
-  return c.json(entries || []);
+  return c.json(entries || [], 200);
 });
 
 /**
@@ -153,6 +162,14 @@ const getEducationLevelRoute = createRoute({
     },
     401: {
       description: "Unauthorized",
+      content: {
+        "application/json": {
+          schema: errorResponseSchema,
+        },
+      },
+    },
+    500: {
+      description: "Server error",
       content: {
         "application/json": {
           schema: errorResponseSchema,
@@ -188,7 +205,7 @@ app.openapi(getEducationLevelRoute, async (c) => {
 
   return c.json({
     education_level: profile?.education_level || null,
-  });
+  }, 200);
 });
 
 /**
@@ -227,6 +244,14 @@ const saveEducationRoute = createRoute({
         },
       },
     },
+    500: {
+      description: "Server error",
+      content: {
+        "application/json": {
+          schema: errorResponseSchema,
+        },
+      },
+    },
   },
   security: [{ bearerAuth: [] }],
 });
@@ -242,38 +267,69 @@ app.openapi(saveEducationRoute, async (c) => {
 
   // Update education level if provided
   if (education_level !== undefined) {
-    await supabase
+    const { error: levelError } = await supabase
       .schema("core")
       .from("user_profiles")
       .update({ education_level, updated_at: new Date().toISOString() })
       .eq("id", user.id);
+
+    if (levelError) {
+      console.error("Error saving education level:", levelError);
+      return c.json(
+        { error: "Failed to save education", message: levelError.message },
+        500,
+      );
+    }
   }
 
-  // Upsert education entries
-  const entriesToUpsert = education_entries.map((entry) => ({
-    ...entry,
-    user_id: user.id,
-    updated_at: new Date().toISOString(),
-  }));
+  // Rebuilt from real columns, blanks as null, and new rows kept apart from
+  // existing ones so an insert never carries a NULL id (#1357).
+  const { updates, inserts } = prepareEducationWrites(
+    education_entries,
+    user.id,
+  );
+  // Rows as PostgREST returns them; typed loosely like the GET handler's.
+  // deno-lint-ignore no-explicit-any
+  const savedEntries: any[] = [];
 
-  const { data: savedEntries, error } = await supabase
-    .schema("core")
-    .from("user_education")
-    .upsert(entriesToUpsert, { onConflict: "id" })
-    .select();
+  if (updates.length > 0) {
+    const { data, error } = await supabase
+      .schema("core")
+      .from("user_education")
+      .upsert(updates, { onConflict: "id" })
+      .select();
 
-  if (error) {
-    console.error("Error saving education:", error);
-    return c.json(
-      { error: "Failed to save education", message: error.message },
-      500,
-    );
+    if (error) {
+      console.error("Error saving education:", error);
+      return c.json(
+        { error: "Failed to save education", message: error.message },
+        500,
+      );
+    }
+    savedEntries.push(...(data ?? []));
+  }
+
+  if (inserts.length > 0) {
+    const { data, error } = await supabase
+      .schema("core")
+      .from("user_education")
+      .insert(inserts)
+      .select();
+
+    if (error) {
+      console.error("Error saving education:", error);
+      return c.json(
+        { error: "Failed to save education", message: error.message },
+        500,
+      );
+    }
+    savedEntries.push(...(data ?? []));
   }
 
   return c.json({
     success: true,
-    education_entries: savedEntries || [],
-  });
+    education_entries: savedEntries,
+  }, 200);
 });
 
 /**
@@ -312,6 +368,14 @@ const deleteEducationRoute = createRoute({
         },
       },
     },
+    500: {
+      description: "Server error",
+      content: {
+        "application/json": {
+          schema: errorResponseSchema,
+        },
+      },
+    },
   },
   security: [{ bearerAuth: [] }],
 });
@@ -340,7 +404,7 @@ app.openapi(deleteEducationRoute, async (c) => {
     }, 500);
   }
 
-  return c.json({ success: true });
+  return c.json({ success: true }, 200);
 });
 
 export default app;

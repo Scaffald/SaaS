@@ -15,7 +15,7 @@ import {
   Popover,
   PopoverContent,
 } from '@scaffald/ui'
-import { MonthYearPicker } from './components/MonthYearPicker'
+import { MonthPicker } from './components/MonthYearPicker'
 import { colors } from '@scaffald/ui/tokens'
 import { workerPalette } from '@scf/core/components/ui/styles'
 import { UniversityAutocomplete } from '@scf/core/components/university'
@@ -76,6 +76,16 @@ const ERROR_FIELD_LABELS: Record<string, string> = {
   location: 'Location',
 }
 
+/** The validation summary and the failed-save message share one look. */
+const errorBannerStyle = {
+  marginTop: 8,
+  padding: 12,
+  borderWidth: 1,
+  borderColor: colors.error[300],
+  backgroundColor: colors.error[50],
+  borderRadius: 7,
+}
+
 interface ProfileEducationLeftProps {
   editingEntryId?: string | null
   onEditComplete?: () => void
@@ -105,8 +115,20 @@ export function ProfileEducationLeft({
   const educationLevelQuery = useEducationLevel()
   const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
 
+  // A failed save must not cost the user what they typed (#1357). The hook
+  // rolls the cache back on error and refetches; the load effect below then
+  // reset() the form from that cache, and the new entry silently vanished.
+  // While this is set the form keeps its own values; the next submit clears it.
+  const keepFormAfterFailedSaveRef = useRef(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+
   // Mutations
-  const saveEducationMutation = useSaveEducationMutationWithSync()
+  const saveEducationMutation = useSaveEducationMutationWithSync({
+    onError: () => {
+      keepFormAfterFailedSaveRef.current = true
+    },
+  })
+  const isSaving = saveEducationMutation.isPending
 
   // University search state
   const [searchQuery, setSearchQuery] = useState('')
@@ -133,6 +155,7 @@ export function ProfileEducationLeft({
     control,
     handleSubmit,
     reset,
+    getValues,
     setValue,
     watch,
     formState: { errors, isDirty },
@@ -219,6 +242,11 @@ export function ProfileEducationLeft({
 
   // Load data when queries succeed
   useEffect(() => {
+    // Mid-save the cache holds the optimistic copy, then the rollback or the
+    // refetch; after a failure it holds data without the user's edits. Either
+    // way it is not something to reset the form to. `isSaving` is a dependency
+    // so a successful save resets once, from the refetched rows (new ids).
+    if (isSaving || keepFormAfterFailedSaveRef.current) return
     if (educationQuery.data && educationLevelQuery.data) {
       const entries = educationEntries.map((edu, index) => {
         // Set manual entry mode if no university_id
@@ -240,7 +268,7 @@ export function ProfileEducationLeft({
       // Clear hidden entries - we'll set them after fields update
       setHiddenEntryIds(new Set())
     }
-  }, [educationQuery.data, educationLevelQuery.data, reset, educationEntries])
+  }, [educationQuery.data, educationLevelQuery.data, reset, educationEntries, isSaving])
 
   // Hide all existing entries after form data loads
   useEffect(() => {
@@ -327,6 +355,8 @@ export function ProfileEducationLeft({
 
   const onSubmit = async (data: EducationProfileFormData) => {
     setIsLoading(true)
+    setSaveError(null)
+    keepFormAfterFailedSaveRef.current = false
 
     // Track which entries are new (without IDs) before save
     const newEntryFieldIds: string[] = []
@@ -360,7 +390,15 @@ export function ProfileEducationLeft({
         onEditComplete?.()
       }
     } catch (error) {
+      // The form still holds the entries (see keepFormAfterFailedSaveRef);
+      // say why they did not save, next to the button that tried.
+      keepFormAfterFailedSaveRef.current = true
       console.error('Error saving education:', error)
+      setSaveError(
+        error instanceof Error && error.message
+          ? `Your education could not be saved: ${error.message}`
+          : 'Your education could not be saved. Please try again.'
+      )
     } finally {
       setIsLoading(false)
     }
@@ -401,14 +439,9 @@ export function ProfileEducationLeft({
       {errorSummary.length > 0 && (
         <Stack
           style={{
-            marginTop: 8,
+            ...errorBannerStyle,
             marginBottom: 8,
-            padding: 12,
             gap: 8,
-            borderWidth: 1,
-            borderColor: colors.error[300],
-            backgroundColor: colors.error[50],
-            borderRadius: 7,
           }}
         >
           <Text style={{ color: colors.error[700] }}>Please resolve the following issues:</Text>
@@ -529,13 +562,29 @@ export function ProfileEducationLeft({
                                 {!isManualMode ? (
                                   <>
                                     <UniversityAutocomplete
+                                      // Uncontrolled input that follows the form's name: typing
+                                      // writes through onChange, a selection or reset comes back
+                                      // in as `value`. A controlled `inputValue` with no
+                                      // onInputChange froze the field on the old name (#1359).
                                       value={nameField.value || ''}
-                                      // Control input value when editing to display institution name
-                                      // This ensures the value shows even if not in search results yet
-                                      inputValue={
-                                        isEditing && nameField.value ? nameField.value : undefined
-                                      }
-                                      onChange={nameField.onChange}
+                                      onChange={(text) => {
+                                        // A selection has already written its name (and id).
+                                        if (
+                                          text ===
+                                          getValues(`education_entries.${index}.institution_name`)
+                                        ) {
+                                          return
+                                        }
+                                        nameField.onChange(text)
+                                        // Typed away from the catalog pick: it is no longer
+                                        // that university, so no longer verified either.
+                                        if (getValues(`education_entries.${index}.university_id`)) {
+                                          universityField.onChange(null)
+                                          setValue(`education_entries.${index}.is_verified`, false, {
+                                            shouldValidate: false,
+                                          })
+                                        }
+                                      }}
                                       onUniversitySelect={(university: University) => {
                                         universityField.onChange(university.id)
                                         nameField.onChange(university.name)
@@ -780,13 +829,9 @@ export function ProfileEducationLeft({
                           name={`education_entries.${index}.start_date`}
                           control={control}
                           render={({ field }) => (
-                            <MonthYearPicker
-                              value={field.value ? new Date(field.value) : null}
-                              onChange={(date) => {
-                                // Store as YYYY-MM-DD format (first day of month)
-                                const dateStr = date ? date.toISOString().split('T')[0] : null
-                                field.onChange(dateStr || undefined)
-                              }}
+                            <MonthPicker
+                              value={field.value}
+                              onChange={(value) => field.onChange(value ?? undefined)}
                               error={entryErrors?.start_date?.message}
                               label="Start Date"
                             />
@@ -798,13 +843,9 @@ export function ProfileEducationLeft({
                           name={`education_entries.${index}.end_date`}
                           control={control}
                           render={({ field }) => (
-                            <MonthYearPicker
-                              value={field.value ? new Date(field.value) : null}
-                              onChange={(date) => {
-                                // Store as YYYY-MM-DD format (first day of month)
-                                const dateStr = date ? date.toISOString().split('T')[0] : null
-                                field.onChange(dateStr || undefined)
-                              }}
+                            <MonthPicker
+                              value={field.value}
+                              onChange={(value) => field.onChange(value ?? undefined)}
                               disabled={watch(`education_entries.${index}.is_current`)}
                               error={entryErrors?.end_date?.message}
                               label="End Date"
@@ -857,13 +898,9 @@ export function ProfileEducationLeft({
                               name={`education_entries.${index}.expected_graduation_date`}
                               control={control}
                               render={({ field: expectedField }) => (
-                                <MonthYearPicker
-                                  value={expectedField.value ? new Date(expectedField.value) : null}
-                                  onChange={(date) => {
-                                    // Store as YYYY-MM-DD format (first day of month)
-                                    const dateStr = date ? date.toISOString().split('T')[0] : null
-                                    expectedField.onChange(dateStr || undefined)
-                                  }}
+                                <MonthPicker
+                                  value={expectedField.value}
+                                  onChange={(value) => expectedField.onChange(value ?? undefined)}
                                   error={entryErrors?.expected_graduation_date?.message}
                                   label="Expected Graduation Date"
                                 />
@@ -908,6 +945,12 @@ export function ProfileEducationLeft({
           )}
         </Stack>
 
+        {saveError && (
+          <Stack role="alert" style={errorBannerStyle}>
+            <Text style={{ color: colors.error[700] }}>{saveError}</Text>
+          </Stack>
+        )}
+
         {/* Action Buttons */}
         <Row justify="flex-end" gap={12} style={{ paddingTop: 16 }}>
           <Button
@@ -943,6 +986,8 @@ export function ProfileEducationLeft({
               color: 'error',
               onPress: () => {
                 if (originalDataRef.current) {
+                  keepFormAfterFailedSaveRef.current = false
+                  setSaveError(null)
                   reset(originalDataRef.current)
                   setShowCancelDialog(false)
                 }

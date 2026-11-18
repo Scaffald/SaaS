@@ -1,4 +1,6 @@
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
+
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/
 
 /**
  * Format a date string to a readable format
@@ -8,7 +10,11 @@ import { format } from 'date-fns'
 export function formatDate(dateStr: string | null | undefined): string {
   if (!dateStr) return 'N/A'
   try {
-    return format(new Date(dateStr), 'MMM yyyy')
+    // `new Date('YYYY-MM-DD')` is UTC midnight, which format() reads in local
+    // time: the previous month anywhere west of UTC (#1358). parseISO reads a
+    // bare date as local midnight; a full timestamp means the same instant
+    // either way.
+    return format(DATE_ONLY.test(dateStr) ? parseISO(dateStr) : new Date(dateStr), 'MMM yyyy')
   } catch {
     return dateStr
   }

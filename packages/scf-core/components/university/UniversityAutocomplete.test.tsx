@@ -52,3 +52,31 @@ describe('UniversityAutocomplete (uncontrolled)', () => {
     expect(input.value).toBe('Harvard University')
   })
 })
+
+describe('UniversityAutocomplete reports typing (#1359)', () => {
+  // Only a selection used to call onChange, so after picking an institution,
+  // typing a different name left the form on the old name and university_id.
+  it('calls onChange with each typed value', () => {
+    const onChange = vi.fn()
+    renderWithProviders(
+      <UniversityAutocomplete value="Harvard University" onChange={onChange} onSearch={vi.fn()} results={[]} loading={false} placeholder="Search for institution..." />,
+    )
+    const input = screen.getByPlaceholderText('Search for institution...') as HTMLInputElement
+    fireEvent.change(input, { target: { value: 'Red Rocks Community College' } })
+    expect(onChange).toHaveBeenLastCalledWith('Red Rocks Community College')
+    expect(input.value).toBe('Red Rocks Community College')
+  })
+
+  it('shows what was typed once the form writes it back as `value`', () => {
+    const onChange = vi.fn()
+    const { rerender } = renderWithProviders(
+      <UniversityAutocomplete value="Harvard University" onChange={onChange} onSearch={vi.fn()} results={[]} loading={false} placeholder="Search for institution..." />,
+    )
+    const input = screen.getByPlaceholderText('Search for institution...') as HTMLInputElement
+    fireEvent.change(input, { target: { value: 'Red Rocks' } })
+    rerender(
+      <UniversityAutocomplete value="Red Rocks" onChange={onChange} onSearch={vi.fn()} results={[]} loading={false} placeholder="Search for institution..." />,
+    )
+    expect(input.value).toBe('Red Rocks')
+  })
+})
