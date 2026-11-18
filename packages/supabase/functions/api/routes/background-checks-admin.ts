@@ -721,7 +721,7 @@ app.patch(
       .schema("core")
       .from("background_checks")
       .select(
-        "status_history, user_id, requested_by_user_id, package:background_check_packages(display_name, slug)",
+        "status_history, completed_at, user_id, requested_by_user_id, package:background_check_packages(display_name, slug)",
       )
       .eq("id", id)
       .maybeSingle();
@@ -751,17 +751,34 @@ app.patch(
       reviewer_user_id: user.id,
     });
 
+    // Only what the reviewer sent. This used to write `?? null` for every
+    // optional field, so a status change with no `component_statuses` hit
+    // that column's NOT NULL and 500'd (every "Save changes" in the review
+    // dialog), and one that omitted summary/findings would have wiped the
+    // provider's. `undefined` now means "leave it"; an explicit null clears.
+    const patch: Record<string, unknown> = {
+      status: input.status,
+      status_history: history,
+    };
+    if (input.summary !== undefined) patch.summary = input.summary;
+    if (input.findings !== undefined) patch.findings = input.findings;
+    if (input.expires_at !== undefined) patch.expires_at = input.expires_at;
+    if (input.component_statuses !== undefined) {
+      patch.component_statuses = input.component_statuses ?? [];
+    }
+    // The queue's "Completed" column and the average-completion metric read
+    // completed_at; a reviewer closing a case is when it completed.
+    if (
+      input.status.startsWith("completed_") &&
+      !(existing as Record<string, unknown>).completed_at
+    ) {
+      patch.completed_at = new Date().toISOString();
+    }
+
     const { data: updated, error: updateError } = await supabaseAdmin
       .schema("core")
       .from("background_checks")
-      .update({
-        status: input.status,
-        summary: input.summary ?? null,
-        findings: input.findings ?? null,
-        component_statuses: input.component_statuses ?? null,
-        status_history: history,
-        expires_at: input.expires_at ?? null,
-      })
+      .update(patch)
       .eq("id", id)
       .select(
         "id, status, updated_at, summary, findings, component_statuses, status_history, expires_at, user_id, requested_by_user_id, package:background_check_packages(display_name, slug)",
@@ -797,55 +814,35 @@ app.patch(
     const { id } = c.req.valid("param");
     const input = c.req.valid("json");
 
-    const { data: existing, error: fetchError } = await supabaseAdmin
-      .schema("core")
-      .from("background_checks")
-      .select("metadata")
-      .eq("id", id)
-      .maybeSingle();
-
-    if (fetchError) {
-      return c.json({
-        error: "Failed to load check",
-        message: fetchError.message,
-      }, 500);
-    }
-    if (!existing) {
-      return c.json({
-        error: "Check not found",
-        message: "Background check not found",
-      }, 404);
-    }
-
-    const existingMetadata = (existing as Record<string, unknown>).metadata &&
-        typeof (existing as Record<string, unknown>).metadata === "object" &&
-        !Array.isArray((existing as Record<string, unknown>).metadata)
-      ? ((existing as Record<string, unknown>).metadata as Record<
-        string,
-        unknown
-      >)
-      : {};
+    // background_checks has no `metadata` column (see the note on GET
+    // /checks/:id); this read and wrote one, so every privacy change 500'd.
+    // The table's own columns are is_public and shared_with_org_ids — the
+    // same pair the worker's privacy toggle writes.
     const updatedPrivacy = {
       share_publicly: input.share_publicly,
       shared_with_organization_ids: input.shared_with_organization_ids,
     };
-    const privacy = (existingMetadata.privacy as Record<string, unknown>) ?? {};
-    const updatedMetadata = {
-      ...existingMetadata,
-      privacy: { ...privacy, ...updatedPrivacy },
-    };
-
-    const { error: updateError } = await supabaseAdmin
+    const { data: written, error: updateError } = await supabaseAdmin
       .schema("core")
       .from("background_checks")
-      .update({ metadata: updatedMetadata })
-      .eq("id", id);
+      .update({
+        is_public: input.share_publicly,
+        shared_with_org_ids: input.shared_with_organization_ids,
+      })
+      .eq("id", id)
+      .select("id");
 
     if (updateError) {
       return c.json({
         error: "Failed to update privacy",
         message: updateError.message,
       }, 500);
+    }
+    if ((written?.length ?? 0) === 0) {
+      return c.json({
+        error: "Check not found",
+        message: "Background check not found",
+      }, 404);
     }
     return c.json({ data: { privacy: updatedPrivacy } });
   },
@@ -907,15 +904,23 @@ app.post(
       }, 500);
     }
 
-    await supabaseAdmin
+    const { error: logError } = await supabaseAdmin
       .schema("core")
       .from("background_check_access_log")
       .insert({
         background_check_id: doc.background_check_id,
         accessed_by_user_id: user.id,
         access_type: "document_download",
-        accessed_data: { document_id: documentId },
+        // The table has no `accessed_data`; this used to name it, so the
+        // insert failed, the unchecked error was dropped, and no document
+        // download was ever logged.
+        metadata: { document_id: documentId },
       });
+    if (logError) {
+      console.error(
+        `[background-checks-admin] download of ${documentId} not logged: ${logError.message}`,
+      );
+    }
 
     return c.json({
       data: {
@@ -1035,6 +1040,54 @@ const resolveDisputeSchema = z.object({
   resolution_notes: z.string().nullable().optional(),
 });
 
+// deno-lint-ignore no-explicit-any
+async function restoreStatusAfterDisputes(
+  admin: any,
+  checkId: string,
+  userId: string,
+  outcome: string,
+) {
+  const { count, error: openError } = await admin
+    .schema("core")
+    .from("background_check_disputes")
+    .select("id", { count: "exact", head: true })
+    .eq("background_check_id", checkId)
+    .in("status", ["pending", "under_review"]);
+  if (openError) throw new Error(openError.message);
+  if ((count ?? 0) > 0) return;
+
+  const { data: check, error: checkError } = await admin
+    .schema("core")
+    .from("background_checks")
+    .select("status, status_history")
+    .eq("id", checkId)
+    .maybeSingle();
+  if (checkError) throw new Error(checkError.message);
+  if (!check || check.status !== "disputed") return;
+
+  const history = Array.isArray(check.status_history)
+    ? [...check.status_history] as Array<Record<string, unknown>>
+    : [];
+  const previous = [...history].reverse()
+    .map((h) => h?.status as string | undefined)
+    .find((st) => st && st !== "disputed") ?? "under_review";
+  history.push({
+    status: previous,
+    occurred_at: new Date().toISOString(),
+    actor: "admin",
+    reviewer_user_id: userId,
+    notes: `Dispute ${outcome}; status restored`,
+  });
+
+  const { error } = await admin
+    .schema("core")
+    .from("background_checks")
+    .update({ status: previous, status_history: history })
+    .eq("id", checkId)
+    .eq("status", "disputed");
+  if (error) throw new Error(error.message);
+}
+
 // PATCH /disputes/:id/resolve
 app.patch(
   "/disputes/:id/resolve",
@@ -1062,7 +1115,9 @@ app.patch(
         resolved_by_user_id: user.id,
       })
       .eq("id", id)
-      .select("id, status, resolved_at, resolution, resolution_notes")
+      .select(
+        "id, status, resolved_at, resolution, resolution_notes, background_check_id",
+      )
       .single();
 
     if (error || !data) {
@@ -1070,6 +1125,25 @@ app.patch(
         error: "Failed to resolve dispute",
         message: error?.message,
       }, 500);
+    }
+
+    // Filing a dispute moves the check to `disputed`. Closing the last open
+    // one puts it back where it was, so it stops counting as an open case
+    // and against the SLA. A reviewer who corrects the result sets the new
+    // status from the review dialog as usual.
+    try {
+      await restoreStatusAfterDisputes(
+        supabaseAdmin,
+        data.background_check_id as string,
+        user.id,
+        input.status,
+      );
+    } catch (e) {
+      console.error(
+        `[background-checks-admin] dispute ${id} resolved; check status not restored: ${
+          (e as Error).message
+        }`,
+      );
     }
     return c.json({ data });
   },

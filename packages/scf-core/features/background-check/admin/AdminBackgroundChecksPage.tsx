@@ -168,8 +168,11 @@ export function AdminBackgroundChecksPage() {
     { enabled: isAdmin, staleTime: 30_000 }
   )
 
+  // Fetched up front, not only on the Disputes tab: the header's "Pending
+  // disputes" figure reads this query, and gating it on the tab made that
+  // figure 0 on every first view of the page, with a dispute waiting.
   const disputesQuery = useAdminDisputes(undefined, {
-    enabled: isAdmin && activeTab === 'disputes',
+    enabled: isAdmin,
     staleTime: 30_000,
   })
 
