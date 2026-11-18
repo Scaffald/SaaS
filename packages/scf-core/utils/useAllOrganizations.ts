@@ -12,6 +12,6 @@ import { useOfficeOrganizations } from './office-organizations-sdk-hooks'
  * For regular users fetching organizations they belong to,
  * use `useOrganizations()` instead.
  */
-export const useAllOrganizations = () => {
-  return useOfficeOrganizations()
+export const useAllOrganizations = (options?: { enabled?: boolean }) => {
+  return useOfficeOrganizations(options)
 }

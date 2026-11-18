@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useEmployerApplications } from '@scf/core/utils/applications-sdk-hooks'
-import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { useEmployerJobs } from '@scf/core/utils/jobs-sdk-hooks'
+import { useJobPostingRoutes } from './useJobPostingRoutes'
 import { primaryHiringOrganization } from '@scf/core/utils/organization-memberships'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { useRouter } from 'expo-router'
@@ -60,10 +60,9 @@ export function EmployerJobsList() {
   const stacked = width > 0 && width < 768
 
   const { data: memberships } = useOrganizations()
-  // Posting and editing are the Office CMS forms, which only office staff can
-  // open, and there is no employer-side job form yet. Offered to anyone else,
-  // both buttons sent them to the dashboard (#1312), so they are not offered.
-  const { hasOfficeRole } = useUserRoles()
+  // Post and Edit go to the employer's own form for someone who can hire, the
+  // Office CMS form for office staff, and nowhere for anyone else (#1351).
+  const postingRoutes = useJobPostingRoutes()
 
   // The SDK takes one org at a time; multi-org employers see the first they
   // can hire for — the list and the counts below both refuse an organisation
@@ -168,11 +167,11 @@ export function EmployerJobsList() {
         <Text style={{ color: colors.text[t].secondary }}>
           Nothing posted yet. A posting appears here as soon as you save it, draft or live.
         </Text>
-        {hasOfficeRole ? (
+        {postingRoutes ? (
           <Button
             size="md"
             variant="outline"
-            onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
+            onPress={() => router.push(postingRoutes.create as never)}
           >
             Post a job
           </Button>
@@ -319,13 +318,11 @@ export function EmployerJobsList() {
                     // Stacked, a full button under every posting made each one
                     // five lines tall (#1199); a text button keeps Edit on
                     // the row without spending a line on its outline.
-                    hasOfficeRole ? (
+                    postingRoutes ? (
                       <Button
                         size="sm"
                         variant={stacked ? 'text' : 'outline'}
-                        onPress={() =>
-                          router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
-                        }
+                        onPress={() => router.push(postingRoutes.edit(job.id) as never)}
                       >
                         Edit
                       </Button>

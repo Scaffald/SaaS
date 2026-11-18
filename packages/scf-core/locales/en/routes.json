@@ -78,6 +78,8 @@
         "browse": "Browse jobs",
         "detail": "Job Details",
         "myListings": "My Listings",
+        "myListingsCreate": "Post a job",
+        "myListingsEdit": "Edit posting",
         "title": "Jobs"
       },
       "map": "Map",

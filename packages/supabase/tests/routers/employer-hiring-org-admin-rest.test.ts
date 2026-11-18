@@ -15,8 +15,12 @@
  *     persona's own organisation and refuse another's;
  *   - the job list behind My Listings and the pipeline's job filter
  *     (`GET /v1/office/jobs`) answers an org admin, scoped to their
- *     organisations — it was office-only, so both were empty for them —
- *     while creating a job there stays office-only;
+ *     organisations — it was office-only, so both were empty for them;
+ *   - creating a job (#1350, #1351): an org admin posts for their own
+ *     organisation and not another's; office staff — without super_admin —
+ *     post for any (the CMS lists every organisation); a member or a worker
+ *     posts for none. Writes were office-only and then admitted only a
+ *     super_admin, the owner or a team member, so both groups were refused;
  *   - one rule across pipeline, inquiries and fees: the owner or an org
  *     `admin`. Inquiries and fees admitted *any* role scoped to the org, and
  *     looked it up with `.maybeSingle()`, which errors — and so refused — a
@@ -85,6 +89,8 @@ interface Fixture {
   twoRoles: { id: string; token: string }
   /** Holds only `member` in Apex. */
   memberOnly: { id: string; token: string; email: string }
+  /** Holds the platform `office` role and nothing else — no super_admin, no team. */
+  officeOnly: { id: string; token: string }
 }
 
 /** Everything setup made, recorded as it is made, so a half-built fixture is still removed. */
@@ -139,6 +145,7 @@ async function build(): Promise<Fixture> {
   const otherAppId = await application(otherJobId, 'other')
 
   const adminRole = await roleId('admin', 'organization')
+  const officeRole = await roleId('office', 'platform')
   const memberRole = await roleId('member', 'organization')
 
   // A second fresh user for the member-only case; userA is the two-roles one.
@@ -155,14 +162,27 @@ async function build(): Promise<Fixture> {
   const memberToken = await getAuthToken(email, password)
   assertExists(memberToken, 'member-only user should sign in')
 
+  const officeEmail = `persona-office-${RUN}@example.com`
+  const { data: officeUser, error: officeError } = await admin.auth.admin.createUser({
+    email: officeEmail,
+    password,
+    email_confirm: true,
+  })
+  if (officeError || !officeUser.user) throw new Error(`office-only user: ${officeError?.message}`)
+  made.users.push(officeUser.user.id)
+
   const inserted = await must(
     'role assignments',
     core().from('role_assignments').insert([
       { user_id: personas.userA.id, role_id: adminRole, scope_org_id: apexId },
       { user_id: personas.userA.id, role_id: memberRole, scope_org_id: apexId },
       { user_id: created.user.id, role_id: memberRole, scope_org_id: apexId },
+      { user_id: officeUser.user.id, role_id: officeRole },
     ]).select('id'),
   )
+  // Signed in after the role exists, so the token is not stale on any claim.
+  const officeToken = await getAuthToken(officeEmail, password)
+  assertExists(officeToken, 'office-only user should sign in')
 
   made.assignments.push(...(inserted as Array<{ id: string }>).map((r) => r.id))
 
@@ -177,6 +197,7 @@ async function build(): Promise<Fixture> {
     applicantId,
     twoRoles: { id: personas.userA.id, token: personas.userA.token },
     memberOnly: { id: created.user.id, token: memberToken, email },
+    officeOnly: { id: officeUser.user.id, token: officeToken },
   }
 }
 
@@ -235,7 +256,7 @@ Deno.test({
 })
 
 Deno.test({
-  name: "Hiring (#1312) - the employer job list answers an org admin with their own postings; creating stays office-only",
+  name: 'Hiring (#1312) - the employer job list answers an org admin with their own postings',
   ...opts,
   async fn() {
     const f = await setup()
@@ -255,15 +276,78 @@ Deno.test({
     assertEquals(scoped.status, 200, 'filtering to their own organisation')
     assertEquals((await call(`/office/jobs?organization_id=${f.otherOrgId}`, token)).status, 403, 'another org')
 
-    const create = await call('/office/jobs', token, { method: 'POST', body: JSON.stringify({}) })
-    assertEquals(create.status, 403, 'creating a job through the Office CMS stays office-only')
-
     // Office staff keep their list.
     assertEquals((await call('/office/jobs?limit=5', f.personas.office.token)).status, 200, 'office staff')
     // And a person with no organisation gets an empty list, not someone else's.
     const stranger = await call('/office/jobs?limit=100', f.personas.userB.token)
     assertEquals(stranger.status, 200, 'a plain worker')
     assertEquals((stranger.body as { data?: { jobs?: unknown[] } }).data?.jobs?.length ?? 0, 0, 'with no postings')
+  },
+})
+
+const draft = (orgId: string, label: string) => ({
+  method: 'POST',
+  body: JSON.stringify({
+    organization_id: orgId,
+    title: `hiring-1350-${RUN}-${label}`,
+    description: 'A posting made by the job-write access test.',
+    status: 'draft',
+  }),
+})
+
+/** POST a draft; record any job it made so teardown removes it. */
+async function post(token: string, orgId: string, label: string) {
+  const res = await call('/office/jobs', token, draft(orgId, label))
+  const id = (res.body as { data?: { job?: { id?: string } } } | null)?.data?.job?.id
+  if (id) made.jobs.push(id)
+  return res
+}
+
+Deno.test({
+  name: 'Jobs (#1350, #1351) - an org admin posts for their own organisation, not another; a member or worker posts for none',
+  ...opts,
+  async fn() {
+    const f = await setup()
+
+    const own = await post(f.personas.orgAdmin.token, f.apexId, 'admin-own')
+    assertEquals(own.status, 201, `org admin, own organisation: ${JSON.stringify(own.body)}`)
+    const ownId = (own.body as { data: { job: { id: string } } }).data.job.id
+
+    // The edit read and the edit itself follow the same rule.
+    assertEquals((await call(`/office/jobs/${ownId}`, f.personas.orgAdmin.token)).status, 200, 'edit read')
+    const patched = await call(`/office/jobs/${ownId}`, f.personas.orgAdmin.token, {
+      method: 'PATCH',
+      body: JSON.stringify({ title: `hiring-1350-${RUN}-renamed` }),
+    })
+    assertEquals(patched.status, 200, `edit: ${JSON.stringify(patched.body)}`)
+
+    assertEquals((await post(f.personas.orgAdmin.token, f.otherOrgId, 'admin-other')).status, 403, 'another org')
+    assertEquals(
+      (await call(`/office/jobs/${f.otherJobId}`, f.personas.orgAdmin.token, {
+        method: 'PATCH',
+        body: JSON.stringify({ title: 'nope' }),
+      })).status,
+      403,
+      "editing another organisation's job",
+    )
+
+    // Admin and member in one organisation: `.maybeSingle()` refused this (#1318's bug).
+    assertEquals((await post(f.twoRoles.token, f.apexId, 'two-roles')).status, 201, 'admin with a second role')
+
+    assertEquals((await post(f.memberOnly.token, f.apexId, 'member')).status, 403, 'a plain member')
+    assertEquals((await post(f.personas.userB.token, f.apexId, 'worker')).status, 403, 'a worker')
+  },
+})
+
+Deno.test({
+  name: 'Jobs (#1350) - office staff without super_admin post for any organisation',
+  ...opts,
+  async fn() {
+    const f = await setup()
+    for (const [orgId, label] of [[f.apexId, 'office-apex'], [f.otherOrgId, 'office-other']]) {
+      const res = await post(f.officeOnly.token, orgId, label)
+      assertEquals(res.status, 201, `${label}: ${JSON.stringify(res.body)}`)
+    }
   },
 })
 
