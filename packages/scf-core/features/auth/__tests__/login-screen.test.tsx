@@ -232,6 +232,51 @@ describe('LoginScreen', () => {
     })
   })
 
+  // #1362: the shared Form is a View, not a <form>, so Enter has to be wired.
+  describe('Enter submits', () => {
+    it('Enter in the email field sends the magic link', async () => {
+      const { LoginScreen } = await import('../login-screen')
+      mockMutateAsync.mockResolvedValue({ mode: 'magic_link' })
+      const { getByPlaceholderText } = render(<LoginScreen />)
+
+      const input = getByPlaceholderText('your@email.acme')
+      fireEvent.change(input, { target: { value: 'Enter@Example.com' } })
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' })
+
+      await waitFor(() => {
+        expect(mockMutateAsync).toHaveBeenCalledWith({
+          email: 'enter@example.com',
+          redirectTo: 'https://example.com/auth',
+        })
+      })
+    })
+
+    it('Enter in the password field signs in with the password', async () => {
+      const signInWithPassword = vi.fn().mockResolvedValue({ error: null })
+      const { supabase } = await import('@scf/core/utils/supabase/client')
+      ;(supabase.auth as unknown as { signInWithPassword: typeof signInWithPassword })
+        .signInWithPassword = signInWithPassword
+      const { LoginScreen } = await import('../login-screen')
+      const { getByText, getByPlaceholderText } = render(<LoginScreen />)
+
+      fireEvent.click(getByText('auth.login.switchToPassword'))
+      fireEvent.change(getByPlaceholderText('your@email.acme'), {
+        target: { value: 'pw@example.com' },
+      })
+      const password = getByPlaceholderText('auth.login.passwordPlaceholder')
+      fireEvent.change(password, { target: { value: 'hunter22' } })
+      fireEvent.keyDown(password, { key: 'Enter', code: 'Enter' })
+
+      await waitFor(() => {
+        expect(signInWithPassword).toHaveBeenCalledWith({
+          email: 'pw@example.com',
+          password: 'hunter22',
+        })
+      })
+      expect(mockMutateAsync).not.toHaveBeenCalled()
+    })
+  })
+
   // #1210: the Sign in / Create account switch.
   describe('Sign in / Create account', () => {
     it('opens on Sign in, with the password and one-time-code paths', async () => {

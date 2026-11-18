@@ -24,7 +24,7 @@ import { Lock, Mail } from 'lucide-react-native'
 import { type Href, Link, useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, FormProvider, type Resolver, useForm } from 'react-hook-form'
-import { Platform, Pressable, Text, type TextStyle } from 'react-native'
+import { Platform, Pressable, Text, type TextInput, type TextStyle } from 'react-native'
 import { z } from 'zod'
 import {
   AUTH_MODES,
@@ -71,6 +71,7 @@ export const LoginScreen = () => {
   // when an `email` param is stripped, and the tab must not jump back then.
   const [mode, setMode] = useState<AuthMode>(() => initialAuthMode(params ?? {}))
   const requestMagicLink = useRequestMagicLinkMutation()
+  const passwordInputRef = useRef<TextInput>(null)
   const { t } = useTranslation()
   const { theme } = useThemeContext()
 
@@ -228,6 +229,9 @@ export const LoginScreen = () => {
           selectedIndex={AUTH_MODES.indexOf(mode)}
           onSelectionChange={(i) => selectMode(AUTH_MODES[i] ?? 'signin')}
           testID="auth-mode"
+          // Full card width (#1361): left to size itself the control shrank
+          // to its content and "Create account" ellipsized at phone width.
+          style={{ alignSelf: 'stretch' }}
         />
 
         <IntentBanner />
@@ -252,6 +256,14 @@ export const LoginScreen = () => {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoComplete="email"
+                  // Enter / Return submits (#1362): the shared Form renders a
+                  // View, not a <form>, so nothing submits implicitly. With the
+                  // password field showing, Return moves to it instead.
+                  returnKeyType={passwordActive ? 'next' : 'go'}
+                  onSubmitEditing={() => {
+                    if (passwordActive) passwordInputRef.current?.focus()
+                    else handleSubmit()
+                  }}
                   iconStart={Mail}
                   error={!!error}
                   errorMessage={error?.message}
@@ -265,6 +277,7 @@ export const LoginScreen = () => {
                 name="password"
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <Input
+                    ref={passwordInputRef}
                     label={t('auth.login.passwordLabel')}
                     labelStyle={fieldLabelStyle}
                     placeholder={t('auth.login.passwordPlaceholder')}
@@ -274,6 +287,8 @@ export const LoginScreen = () => {
                     secureTextEntry
                     autoCapitalize="none"
                     autoComplete="current-password"
+                    returnKeyType="go"
+                    onSubmitEditing={() => handleSubmit()}
                     iconStart={Lock}
                     error={!!error}
                     errorMessage={error?.message}
