@@ -37,6 +37,25 @@ const settingsSelect = [
 const app = new Hono<ApiEnv>();
 app.use("*", requireRole("office", "platform"));
 
+// @scaffald/sdk reads an error's text from `message` (or `error.message`);
+// these routes answer `{ error: "…" }`, so the page only ever saw
+// "HTTP 400 error" and showed a fixed toast. Copy `error` into `message` on
+// every error response so the settings page can say what was wrong.
+app.use("*", async (c, next) => {
+  await next();
+  if (c.res.status < 400) return;
+  const type = c.res.headers.get("content-type") ?? "";
+  if (!type.includes("application/json")) return;
+  const body = await c.res.clone().json().catch(() => null) as
+    | Record<string, unknown>
+    | null;
+  if (!body || typeof body.error !== "string" || "message" in body) return;
+  c.res = new Response(JSON.stringify({ ...body, message: body.error }), {
+    status: c.res.status,
+    headers: c.res.headers,
+  });
+});
+
 // core.stripe_settings is granted to service_role only, and that is right for
 // a table holding payment configuration. Every read and write here used the
 // caller's client, so all of them answered `permission denied for table
@@ -303,22 +322,15 @@ app.put(
     const { secret } = c.req.valid("json");
     const trimmed = secret.trim();
 
-    // A key must be a Stripe secret key for the current mode (#1259).
-    const keyMode = secretKeyMode(trimmed);
-    if (!keyMode) {
+    // A webhook signing secret, not an API key. This route used to run the
+    // API-key check above it (sk_/rk_ only, #1259), so every real secret
+    // (`whsec_…`) was refused with 400 and nothing could be saved (found
+    // setting up the dev sandbox, 2026-11-18). Signing secrets carry no
+    // test/live marker, so there is no mode to compare.
+    if (!/^whsec_[A-Za-z0-9+/=_-]{16,}$/.test(trimmed)) {
       return c.json({
         error:
-          "That is not a Stripe secret key. It should start with sk_test_, sk_live_, rk_test_ or rk_live_.",
-      }, 400);
-    }
-    const { testMode } = await loadMode(supabaseAdmin);
-    if ((keyMode === "test") !== testMode) {
-      return c.json({
-        error: `Stripe is in ${
-          testMode ? "test" : "live"
-        } mode, and this is a ${keyMode} key. Switch the mode first or use a ${
-          testMode ? "test" : "live"
-        } key.`,
+          "That is not a Stripe webhook signing secret. Copy the whsec_… value from the endpoint's Signing secret in Stripe.",
       }, 400);
     }
 
