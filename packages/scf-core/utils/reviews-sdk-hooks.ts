@@ -37,6 +37,7 @@ import type {
   DeleteDraftParams,
   DeleteDraftResponse,
 } from '@scaffald/sdk'
+import { unwrapMyReviews } from '@scf/core/features/reviews/lib/review-drafts'
 
 // ============================================================================
 // Query Hooks
@@ -142,7 +143,9 @@ export function useMyReviews(options?: Omit<UseQueryOptions<Review[]>, 'queryKey
     queryKey: ['scaffald', 'reviews', 'my-reviews'],
     queryFn: async () => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.reviews.getMyReviews()
+      // The api answers `{ reviews }`; SDK builds before the fix return that
+      // object as-is despite typing it `Review[]` (#1356).
+      return unwrapMyReviews<Review>(await client.reviews.getMyReviews())
     },
     enabled: !!client && (options?.enabled ?? true),
     ...options,

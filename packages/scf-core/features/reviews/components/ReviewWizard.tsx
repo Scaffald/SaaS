@@ -14,6 +14,7 @@ import { Button, Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useReviewAutoSave } from '../hooks/useReviewAutoSave'
 import { useReviewDraft } from '../hooks/useReviewDraft'
+import { findResumableDraft } from '../lib/review-drafts'
 import { ratableSkillsFromSubject, softSkillsInCategory } from '../lib/review-skill-options'
 import { ReviewProgress } from './ReviewProgress'
 import { ReviewStep1Skills } from './ReviewStep1Skills'
@@ -45,7 +46,11 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
   const createDraftMutation = useCreateReviewDraftMutation()
   const saveDraftMutation = useSaveDraftMutation()
   const submitReviewMutation = useSubmitReviewMutation()
-  const { data: myReviews, isLoading: isLoadingReviews } = useMyReviews()
+  const myReviewsQuery = useMyReviews()
+  const { data: myReviews, isLoading: isLoadingReviews } = myReviewsQuery
+  // Finding or creating the draft failed; shown with a retry instead of the
+  // endless "Preparing review form..." it used to leave behind (#1356).
+  const [draftError, setDraftError] = useState<unknown>(null)
 
   // What the steps rate and tag: the subject's own skills and the soft-skill
   // catalog. These were hardcoded lists with made-up ids, the same for
@@ -59,31 +64,28 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
   useEffect(() => {
     const initializeDraft = async () => {
       if (reviewId) return // Already initialized
+      if (draftError) return // Shown with a retry; the retry clears it
       if (isLoadingReviews) return // Wait for reviews to finish loading
       if (!myReviews) return // Wait for reviews data
 
       setIsCreatingDraft(true)
       try {
-        // Check if a draft already exists
-        const existingDraft = myReviews.find(
-          (review) => review.subject_id === subjectId && review.subject_type === 'user'
-        )
+        // Resume only an open draft for this person, never a submitted review.
+        const existingDraft = findResumableDraft(myReviews, subjectId)
 
         if (existingDraft) {
-          // Resume existing draft
           setReviewId(existingDraft.id)
-          console.log('Resuming existing draft:', existingDraft.id)
         } else {
-          // Create new draft
           const result = await createDraftMutation.mutateAsync({
             subjectId,
             subjectType: 'user',
           })
+          if (!result?.id) throw new Error('The review draft came back without an id')
           setReviewId(result.id)
-          console.log('Created new draft:', result.id)
         }
       } catch (error) {
         console.error('Failed to initialize review draft:', error)
+        setDraftError(error)
       } finally {
         setIsCreatingDraft(false)
       }
@@ -97,6 +99,7 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
     isLoadingReviews,
     createDraftMutation.mutateAsync,
     reviewId,
+    draftError,
     createDraftMutation,
   ]) // Run when subjectId, myReviews, or loading state changes
 
@@ -182,6 +185,20 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
     } catch (error) {
       console.error('Failed to submit review:', error)
     }
+  }
+
+  const setupError = myReviewsQuery.error ?? draftError
+  if (setupError && !reviewId) {
+    return (
+      <LoadFailure
+        error={setupError}
+        noun="review form"
+        retry={() => {
+          setDraftError(null)
+          if (myReviewsQuery.error) void myReviewsQuery.refetch()
+        }}
+      />
+    )
   }
 
   const optionsError = subjectSkillsQuery.error ?? softSkillsQuery.error
