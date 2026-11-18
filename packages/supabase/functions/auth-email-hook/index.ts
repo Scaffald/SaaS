@@ -14,6 +14,7 @@
 import {
   buildEmails,
   type HookPayload,
+  type OutgoingEmail,
   sendViaNevarMail,
   verifyHookSignature,
 } from "../_shared/auth-email-hook.ts";
@@ -53,7 +54,7 @@ Deno.serve(async (req) => {
     return hookError(400, "Malformed hook payload");
   }
 
-  let emails;
+  let emails: OutgoingEmail[];
   try {
     emails = buildEmails(payload);
   } catch (e) {
