@@ -22,6 +22,7 @@ which the nightly cron calls — had not been redeployed since 2025-11.
 | `webhooks-email` | Resend delivery events (Svix-signed). Entry point for `webhooks/email/index.ts`. |
 | `stripe-webhook`, `payments-reconcile` | Stripe events; pg_cron reconcile backstop (migration 362) |
 | `account-deletion-process` | pg_cron `account-deletion-process`, daily, via `core.run_account_deletion_processor()` (migration 391). Carries out deletion requests past their grace period (#1313). Service-role Bearer only. |
+| `auth-email-hook` | Supabase Auth's **Send Email** hook (HTTPS, Standard Webhooks signed). Renders the branded templates in `email-templates/` and sends through NevarMail (`mail.scaffald.com`). Inert until the hook is enabled per project — `docs/agents/auth-email-hook.md`. |
 
 ## In the repo, deliberately not deployed
 
