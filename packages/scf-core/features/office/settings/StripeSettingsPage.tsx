@@ -25,6 +25,13 @@ import {
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
+/** The server's own message when there is one, else the fallback. */
+function errorMessage(error: unknown, fallback: string): string {
+  const message = error instanceof Error ? error.message.trim() : ''
+  // The SDK's placeholder when a response carried no text says nothing useful.
+  return message.length > 0 && !/^HTTP \d+ error$/.test(message) ? message : fallback
+}
+
 function formatDate(value?: string | null): string | null {
   if (!value) return null
   try {
@@ -53,9 +60,11 @@ export function StripeSettingsPage() {
         variant: 'success',
       })
     },
-    onError: () => {
+    onError: (error) => {
       toast.show({
-        message: 'Error updating publishable key',
+        // The server says why (wrong key type, wrong mode); a fixed string
+        // hid that and made a refused value look like a broken save.
+        message: errorMessage(error, 'Error updating publishable key'),
         variant: 'error',
       })
     },
@@ -70,9 +79,11 @@ export function StripeSettingsPage() {
         variant: 'success',
       })
     },
-    onError: () => {
+    onError: (error) => {
       toast.show({
-        message: 'Error storing API secret',
+        // The server says why (wrong key type, wrong mode); a fixed string
+        // hid that and made a refused value look like a broken save.
+        message: errorMessage(error, 'Error storing API secret'),
         variant: 'error',
       })
     },
@@ -87,9 +98,11 @@ export function StripeSettingsPage() {
         variant: 'success',
       })
     },
-    onError: () => {
+    onError: (error) => {
       toast.show({
-        message: 'Error storing webhook secret',
+        // The server says why (wrong key type, wrong mode); a fixed string
+        // hid that and made a refused value look like a broken save.
+        message: errorMessage(error, 'Error storing webhook secret'),
         variant: 'error',
       })
     },
@@ -99,9 +112,11 @@ export function StripeSettingsPage() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['stripe-settings'] })
     },
-    onError: () => {
+    onError: (error) => {
       toast.show({
-        message: 'Error updating test mode',
+        // The server says why (wrong key type, wrong mode); a fixed string
+        // hid that and made a refused value look like a broken save.
+        message: errorMessage(error, 'Error updating test mode'),
         variant: 'error',
       })
     },
@@ -116,9 +131,11 @@ export function StripeSettingsPage() {
         variant: 'success',
       })
     },
-    onError: () => {
+    onError: (error) => {
       toast.show({
-        message: 'Error testing connection',
+        // The server says why (wrong key type, wrong mode); a fixed string
+        // hid that and made a refused value look like a broken save.
+        message: errorMessage(error, 'Error testing connection'),
         variant: 'error',
       })
     },

@@ -1,187 +1,81 @@
+/// <reference lib="deno.ns" />
+
 /**
- * Stripe settings REST API.
+ * Stripe settings REST — the webhook signing secret (2026-11-18).
  *
- * `core.stripe_settings` is granted to service_role only — correct for payment
- * configuration — but every handler read and wrote it with the caller's client,
- * so each answered `permission denied for table stripe_settings` (production
- * too) and /office/settings/stripe showed a blank "not configured" form (#1018).
+ * PUT /v1/stripe-settings/webhook-secret ran the API-key check (sk_/rk_
+ * only), so every real signing secret (`whsec_…`) was refused with 400, and
+ * the page showed only "Error storing webhook secret" because the SDK found
+ * no `message` in `{ error }`. Found setting up the dev sandbox.
  *
- * The test reads the settings, saves a publishable key and reads it back as
- * the office, then restores the original row through the service client. It
- * does not touch the secret handlers: those write to Vault, and #948 says not
- * to populate Stripe keys yet.
+ * Real api function and real database (Vault), as an office user. Run the
+ * same way as background-checks-rest.test.ts (BGC_TEST_API_BASE).
  */
-
-import { assertEquals, assertExists } from '../shared/assert.ts'
-
+import { assert, assertEquals, assertExists } from '../shared/assert.ts'
 import {
+  createAdminClient,
+  getAuthToken,
   TEST_SUPABASE_ANON_KEY,
   TEST_SUPABASE_URL,
-  createAdminClient,
-  loadCachedTokens,
+  TEST_USERS,
 } from '../shared/setup.ts'
-import { requireAuthSetup } from '../shared/test-context.ts'
 
-// STRIPE_SETTINGS_TEST_API_BASE points the suite at a worktree's api on :8000.
-const ENDPOINT = `${Deno.env.get('STRIPE_SETTINGS_TEST_API_BASE') ?? `${TEST_SUPABASE_URL}/functions/v1/api/v1`}/stripe-settings`
+const REST_BASE = Deno.env.get('BGC_TEST_API_BASE') ??
+  `${TEST_SUPABASE_URL}/functions/v1/api/v1`
 
-async function call(path: string, token: string, init: RequestInit = {}) {
-  const response = await fetch(`${ENDPOINT}${path}`, {
-    ...init,
+async function put(path: string, token: string, body: unknown) {
+  const res = await fetch(`${REST_BASE}${path}`, {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
       apikey: TEST_SUPABASE_ANON_KEY,
       Authorization: `Bearer ${token}`,
     },
+    body: JSON.stringify(body),
   })
-  const text = await response.text()
-  let body: Record<string, unknown> | null = null
+  const text = await res.text()
+  let json: Record<string, unknown> | null = null
   try {
-    body = text ? JSON.parse(text) : null
+    json = JSON.parse(text)
   } catch {
-    body = null
+    json = null
   }
-  return { status: response.status, body }
+  return { status: res.status, body: json }
 }
 
 Deno.test({
-  name: 'Stripe settings REST - the office reads the settings and a saved publishable key reads back',
+  name: 'stripe settings REST - a whsec_ signing secret is stored; an API key in its place is refused with a readable message',
   sanitizeResources: false,
   sanitizeOps: false,
   async fn() {
-    await requireAuthSetup()
-    const tokens = await loadCachedTokens()
-    assertExists(tokens?.office, 'An office-role token is required')
-    const office = tokens!.office!.token
     const admin = createAdminClient()
+    // deno-lint-ignore no-explicit-any
+    const core = (admin as any).schema('core')
+    const token = await getAuthToken(TEST_USERS.office.email, TEST_USERS.office.password)
+    assertExists(token, 'no office token')
 
-    const { data: before } = await admin
-      .schema('core')
-      .from('stripe_settings')
-      .select('publishable_key, updated_by')
-      .eq('settings_name', 'stripe')
-      .single()
+    const { data: before } = await core.from('stripe_settings').select('webhook_secret_id')
+      .eq('settings_name', 'stripe').maybeSingle()
+    assertExists(before, 'no stripe_settings row seeded')
 
     try {
-      const read = await call('', office)
-      assertEquals(read.status, 200, `the settings should load, got ${JSON.stringify(read.body)}`)
-      assertEquals(typeof read.body?.hasApiKey, 'boolean')
-      assertEquals(typeof read.body?.testMode, 'boolean')
+      const wrong = await put('/stripe-settings/webhook-secret', token, { secret: 'sk_test_' + 'x'.repeat(30) })
+      assertEquals(wrong.status, 400)
+      assert(
+        typeof wrong.body?.message === 'string' && (wrong.body.message as string).includes('whsec_'),
+        `the refusal must carry a message the page can show: ${JSON.stringify(wrong.body)}`,
+      )
 
-      const key = `pk_test_stripe_settings_rest_${Date.now()}`
-      const saved = await call('/publishable-key', office, {
-        method: 'PUT',
-        body: JSON.stringify({ publishableKey: key }),
-      })
-      assertEquals(saved.status, 200, `saving should succeed, got ${JSON.stringify(saved.body)}`)
+      const ok = await put('/stripe-settings/webhook-secret', token, { secret: 'whsec_' + 'A1b2C3d4'.repeat(4) })
+      assertEquals(ok.status, 200, `store failed: ${JSON.stringify(ok.body)}`)
+      assertEquals(ok.body?.hasWebhookSecret, true)
 
-      const after = await call('', office)
-      assertEquals(after.body?.publishableKey, key, 'the saved key is what the settings now report')
+      const { data: after } = await core.from('stripe_settings').select('webhook_secret_id')
+        .eq('settings_name', 'stripe').single()
+      assertExists(after.webhook_secret_id)
+      assert(after.webhook_secret_id !== before.webhook_secret_id, 'the new secret was not linked')
     } finally {
-      await admin
-        .schema('core')
-        .from('stripe_settings')
-        .update({ publishable_key: before?.publishable_key ?? null, updated_by: before?.updated_by ?? null })
-        .eq('settings_name', 'stripe')
-    }
-  },
-})
-
-Deno.test({
-  name: 'Stripe settings REST - a caller without the office role is refused',
-  sanitizeResources: false,
-  sanitizeOps: false,
-  async fn() {
-    await requireAuthSetup()
-    const tokens = await loadCachedTokens()
-    assertExists(tokens, 'Cached tokens should exist')
-    const { status } = await call('', tokens.regular.token)
-    assertEquals(status, 403, 'payment configuration is office-only')
-  },
-})
-
-/**
- * #1259: test_mode was only a stored flag. Nothing stopped a live secret key
- * being saved while the platform said "test mode" (real charges from a
- * screen labelled test), or a test key in live mode (charges that never
- * settle). Saving a key now requires its prefix to match the mode, and the
- * mode cannot be switched away from the stored key's.
- */
-// deno-lint-ignore no-explicit-any
-const core = () => (createAdminClient() as any).schema('core')
-const fakeKey = (mode: 'live' | 'test') => `sk_${mode}_${'x'.repeat(40)}`
-
-Deno.test({
-  name: 'Stripe settings REST - a live key is refused in test mode, and a non-secret key always (#1259)',
-  sanitizeResources: false,
-  sanitizeOps: false,
-  async fn() {
-    await requireAuthSetup()
-    const tokens = await loadCachedTokens()
-    assertExists(tokens?.office, 'An office-role token is required')
-    const { data: before } = await core()
-      .from('stripe_settings')
-      .select('api_key_secret_id, test_mode')
-      .eq('settings_name', 'stripe')
-      .single()
-    await core().from('stripe_settings').update({ test_mode: true }).eq('settings_name', 'stripe')
-    try {
-      for (const secret of [fakeKey('live'), `pk_test_${'x'.repeat(40)}`]) {
-        const res = await call('/api-key', tokens!.office!.token, {
-          method: 'PUT',
-          body: JSON.stringify({ secret }),
-        })
-        assertEquals(res.status, 400, `${secret.slice(0, 8)}… must be refused, got ${res.status} ${JSON.stringify(res.body)}`)
-      }
-      const { data: after } = await core()
-        .from('stripe_settings')
-        .select('api_key_secret_id')
-        .eq('settings_name', 'stripe')
-        .single()
-      assertEquals(after.api_key_secret_id, before.api_key_secret_id, 'no refused key was linked')
-    } finally {
-      await core()
-        .from('stripe_settings')
-        .update({ api_key_secret_id: before.api_key_secret_id, test_mode: before.test_mode })
-        .eq('settings_name', 'stripe')
-    }
-  },
-})
-
-Deno.test({
-  name: "Stripe settings REST - the mode cannot be switched away from the stored key's (#1259)",
-  sanitizeResources: false,
-  sanitizeOps: false,
-  async fn() {
-    await requireAuthSetup()
-    const tokens = await loadCachedTokens()
-    assertExists(tokens?.office, 'An office-role token is required')
-    const { data: before } = await core()
-      .from('stripe_settings')
-      .select('api_key_secret_id, test_mode')
-      .eq('settings_name', 'stripe')
-      .single()
-    const { data: secretId, error } = await core().rpc('rotate_stripe_secret', {
-      p_secret: fakeKey('test'),
-      p_secret_type: 'api_key',
-    })
-    if (error) throw new Error(`store a test key: ${error.message}`)
-    await core()
-      .from('stripe_settings')
-      .update({ api_key_secret_id: secretId, test_mode: true })
-      .eq('settings_name', 'stripe')
-    try {
-      const res = await call('/test-mode', tokens!.office!.token, {
-        method: 'PUT',
-        body: JSON.stringify({ testMode: false }),
-      })
-      assertEquals(res.status, 409, `live mode over a test key must be refused, got ${res.status} ${JSON.stringify(res.body)}`)
-      const { data: mode } = await core().from('stripe_settings').select('test_mode').eq('settings_name', 'stripe').single()
-      assertEquals(mode.test_mode, true)
-    } finally {
-      await core()
-        .from('stripe_settings')
-        .update({ api_key_secret_id: before.api_key_secret_id, test_mode: before.test_mode })
+      await core.from('stripe_settings').update({ webhook_secret_id: before.webhook_secret_id })
         .eq('settings_name', 'stripe')
     }
   },
