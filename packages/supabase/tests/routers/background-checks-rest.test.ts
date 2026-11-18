@@ -538,6 +538,9 @@ Deno.test({
       const { data: shared } = await core.from('background_checks').select('is_public').eq('id', checkId).single()
       assertEquals(shared.is_public, true)
 
+      // A case can be completed with no history entry for it (seeded or
+      // provider-written rows); resolving must still restore that status.
+      await core.from('background_checks').update({ status_history: [] }).eq('id', checkId)
       const dispute = await callREST('/background-checks/disputes', {
         method: 'POST', authToken: workerToken,
         body: JSON.stringify({ background_check_id: checkId, reason: 'Not my record' }),

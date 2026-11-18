@@ -891,6 +891,10 @@ app.post(
           actor: "worker",
           notes: body.reason,
           dispute_id: data.id,
+          // What resolving the dispute puts back. History alone cannot be
+          // trusted for this: a case can reach a completed status without a
+          // history entry (seeded or provider-written rows).
+          previous_status: check.status,
         }),
       })
       .eq("id", check.id);

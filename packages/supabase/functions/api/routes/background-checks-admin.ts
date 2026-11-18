@@ -1068,9 +1068,18 @@ async function restoreStatusAfterDisputes(
   const history = Array.isArray(check.status_history)
     ? [...check.status_history] as Array<Record<string, unknown>>
     : [];
-  const previous = [...history].reverse()
-    .map((h) => h?.status as string | undefined)
-    .find((st) => st && st !== "disputed") ?? "under_review";
+  // Prefer what the dispute recorded it replaced (previous_status, written
+  // since 2026-11-18); then the last non-disputed status in the history; and
+  // only then under_review, which a reviewer can move on from.
+  const reversed = [...history].reverse();
+  const recorded = reversed.find((h) =>
+    h?.status === "disputed" && typeof h?.previous_status === "string" &&
+    h.previous_status !== "disputed"
+  )?.previous_status as string | undefined;
+  const previous = recorded ??
+    reversed.map((h) => h?.status as string | undefined)
+      .find((st) => st && st !== "disputed") ??
+    "under_review";
   history.push({
     status: previous,
     occurred_at: new Date().toISOString(),
