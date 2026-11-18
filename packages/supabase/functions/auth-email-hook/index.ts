@@ -6,6 +6,8 @@
  *   NEVARMAIL_API_KEY        a NevarMail API key (nvm_…) for the Unicorn org
  *   NEVARMAIL_USE_CASE_ID    "Scaffald sign-in" use case id
  *   NEVARMAIL_BASE_URL       optional, defaults to https://app.nevarmail.com
+ *   AUTH_SITE_URL            the app the links open, e.g. https://dev.scaffald.com
+ *                            (the payload's site_url is the auth server, not the app)
  *
  * Fails closed: an unsigned or mis-signed request is 401 and sends nothing.
  * A send failure answers 500 with Supabase's error shape, so the user sees
@@ -56,7 +58,9 @@ Deno.serve(async (req) => {
 
   let emails: OutgoingEmail[];
   try {
-    emails = buildEmails(payload);
+    emails = buildEmails(payload, {
+      siteUrl: Deno.env.get("AUTH_SITE_URL") ?? undefined,
+    });
   } catch (e) {
     return hookError(400, (e as Error).message);
   }

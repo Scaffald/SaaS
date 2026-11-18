@@ -47,7 +47,12 @@ prod `qmfmpcyxsihhfttvqpbw`):
        pnpm exec supabase secrets set --project-ref <ref> \
          AUTH_EMAIL_HOOK_SECRET='v1,whsec_…' \
          NEVARMAIL_API_KEY='nvm_…' \
-         NEVARMAIL_USE_CASE_ID=fc1f51bc-25f3-4201-8cfa-57025af1bd92
+         NEVARMAIL_USE_CASE_ID=fc1f51bc-25f3-4201-8cfa-57025af1bd92 \
+         AUTH_SITE_URL=https://dev.scaffald.com   # the env's app origin
+
+   `AUTH_SITE_URL` matters: the hook payload's `site_url` is the auth server
+   (`https://<ref>.supabase.co/auth/v1`), not the app, so without it links
+   fall back to `redirect_to`'s origin and then to that auth-server URL.
 
 4. Enable the hook. Request a magic link for a real inbox and confirm it
    arrives from `signin@mail.scaffald.com` and the link signs in.
