@@ -1,6 +1,6 @@
 import { Text, Stack, Row, DashboardWidget, H4, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { useUserScaffoldScore } from '@scf/core/utils/communities-sdk-hooks'
+import { useWorkerScore } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { ScaffoldScoreBadge } from './ScaffoldScoreBadge'
 
 interface Props {
@@ -8,19 +8,20 @@ interface Props {
 }
 
 /**
- * ProfileScaffoldScore — Shows a user's Scaffold Score on their profile.
+ * ProfileScaffoldScore — Shows a user's Scaffald score on their profile.
  * Displays the circular badge with score and a brief description.
+ *
+ * The score is gamified_score, the one Find talent shows (#1355). It was the
+ * community reputation figure, which starts everyone at 100.
  */
 export function ProfileScaffoldScore({ userId }: Props) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
-  const { data } = useUserScaffoldScore(userId)
+  const { score } = useWorkerScore(userId)
 
-  if (!data?.data) {
+  if (score == null) {
     return null
   }
-
-  const { score } = data.data
 
   return (
     <DashboardWidget>
@@ -31,7 +32,7 @@ export function ProfileScaffoldScore({ userId }: Props) {
           <Stack gap={4} style={{ flex: 1 }}>
             <Text style={{ fontWeight: '600', fontSize: 15 }}>{score}/100</Text>
             <Text style={{ fontSize: 11, color: colors.text[t].secondary }}>
-              Community reputation based on posts, ratings, and peer feedback
+              Based on experience, listed skills, and availability
             </Text>
           </Stack>
         </Row>
