@@ -222,3 +222,39 @@ Deno.test("templates: the generated module matches email-templates/ and config.t
     .output();
   assert(out.success, new TextDecoder().decode(out.stderr));
 });
+
+Deno.test("links open the app: AUTH_SITE_URL, then redirect_to's origin, never the auth server", () => {
+  // What Supabase actually sends: site_url is the auth server's own URL.
+  const real = payload("magiclink", {
+    site_url: "https://pmtdqrfpumqwkdhpgwcz.supabase.co/auth/v1",
+    redirect_to: "https://dev.scaffald.com/auth/callback",
+  });
+
+  const [configured] = buildEmails(real, {
+    siteUrl: "https://dev.scaffald.com/",
+  });
+  assertStringIncludes(
+    configured.html,
+    'href="https://dev.scaffald.com/auth/confirm?token_hash=',
+  );
+  assert(
+    !configured.html.includes("supabase.co"),
+    "a link points at the auth server",
+  );
+
+  const [fromRedirect] = buildEmails(real);
+  assertStringIncludes(
+    fromRedirect.text,
+    "https://dev.scaffald.com/auth/confirm?token_hash=",
+  );
+
+  // A native deep link is not a web origin; with nothing else, site_url is used.
+  const native = payload("magiclink", {
+    site_url: "https://app.example.test",
+    redirect_to: "com.scaffald://auth",
+  });
+  assertStringIncludes(
+    buildEmails(native)[0].text,
+    "https://app.example.test/auth/confirm",
+  );
+});

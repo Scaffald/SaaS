@@ -177,8 +177,40 @@ const LINK_TYPE: Record<AuthEmailKind, string> = {
  * (both addresses must confirm) produces two. `reauthentication` is a bare
  * code with no template of ours.
  */
-export function buildEmails(payload: HookPayload): OutgoingEmail[] {
+/**
+ * Where the email's link should land: the app, not the auth server.
+ *
+ * The hook payload's `site_url` is the auth server's own URL
+ * (https://<ref>.supabase.co/auth/v1), not the project's Site URL that
+ * Supabase's built-in mailer fills into {{ .SiteURL }}. Using it sent every
+ * link to <ref>.supabase.co/auth/v1/auth/confirm, which 404s (seen on dev
+ * 2026-11-18). So: the environment's AUTH_SITE_URL first, then the origin of
+ * an http(s) `redirect_to`, and `site_url` only as a last resort.
+ */
+export function resolveSiteUrl(
+  payload: HookPayload,
+  configured?: string,
+): string {
+  if (configured && /^https?:\/\//.test(configured)) {
+    return configured.replace(/\/+$/, "");
+  }
+  const redirect = payload.email_data.redirect_to;
+  if (redirect && /^https?:\/\//.test(redirect)) {
+    try {
+      return new URL(redirect).origin;
+    } catch {
+      // fall through
+    }
+  }
+  return payload.email_data.site_url.replace(/\/+$/, "");
+}
+
+export function buildEmails(
+  payload: HookPayload,
+  opts: { siteUrl?: string } = {},
+): OutgoingEmail[] {
   const { user, email_data: d } = payload;
+  const siteUrl = resolveSiteUrl(payload, opts.siteUrl);
   const action = d.email_action_type;
 
   if (action === "reauthentication") {
@@ -197,12 +229,12 @@ export function buildEmails(payload: HookPayload): OutgoingEmail[] {
 
   const one = (to: string, token: string, tokenHash: string): OutgoingEmail => {
     const { subject, html } = renderTemplate(kind, {
-      siteUrl: d.site_url,
+      siteUrl,
       token,
       tokenHash,
       newEmail: user.new_email,
     });
-    const link = confirmLink(d.site_url, tokenHash, LINK_TYPE[kind]);
+    const link = confirmLink(siteUrl, tokenHash, LINK_TYPE[kind]);
     return { to, subject, html, text: textFor(kind, link, token) };
   };
 
