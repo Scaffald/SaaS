@@ -2,6 +2,7 @@ import { Button, Row } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { ROUTES } from '@scf/core/constants/routes'
 import { useAnalyticsSummary } from '@scf/core/utils/analytics-sdk-hooks'
+import { useGeneralInfo } from '@scf/core/utils/profile-general-sdk-hooks'
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { openPublicProfileInNewTab } from '@scf/core/utils/publicProfileUrl'
 import { useUser } from '@scf/core/utils/useUser'
@@ -52,6 +53,10 @@ function useHomeHeader() {
   const router = useRouter()
   const { user } = useUser()
   const { data: profile } = useGeneralInfoWidget()
+  // The owner's own first name from the private core.profile row (#1370).
+  // display_name stays the sign-up handle, and copying the name there would
+  // make it public, which Find talent's anonymity rules out (#1261).
+  const { data: generalInfo } = useGeneralInfo()
   // Appearances in others' searches, from the analytics summary — the same
   // query (and cache entry) as the metric row's "Search appearances" (#1249).
   const { data: summary } = useAnalyticsSummary({ days: 30 })
@@ -69,8 +74,9 @@ function useHomeHeader() {
 
   const sessionName =
     typeof user?.user_metadata?.name === 'string' ? user.user_metadata.name : undefined
+  const ownFirstName = generalInfo?.first_name?.trim()
   const name = profile?.display_name ?? sessionName
-  const firstName = name?.trim().split(/\s+/)[0]
+  const firstName = ownFirstName || name?.trim().split(/\s+/)[0]
   const title = firstName
     ? `${partOfDay(now.getHours())}, ${firstName}.`
     : `${partOfDay(now.getHours())}.`

@@ -6,7 +6,9 @@ import { colors } from '@scaffald/ui/tokens'
 import {
   type BackgroundCheckDetail,
   type BackgroundCheckStatus,
+  getStatusDescription,
   getStatusMetadata,
+  type StatusAudience,
   getStatusProgress,
   getStatusToneColors,
 } from './status.utils'
@@ -32,6 +34,8 @@ interface CheckProgressTrackerProps {
   estimatedCompletionDate?: string | null
   completedAt?: string | null
   expiresAt?: string | null
+  /** Who is reading: the worker (default) or a reviewer looking at someone else's check. */
+  audience?: StatusAudience
 }
 
 export const CheckProgressTracker = memo(function CheckProgressTracker({
@@ -42,6 +46,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
   estimatedCompletionDate,
   completedAt,
   expiresAt,
+  audience = 'worker',
 }: CheckProgressTrackerProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
@@ -112,7 +117,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
           <Text color={colors.text[t].secondary}>{progress}%</Text>
         </Row>
         <ProgressBarBase value={progress} color="primary" />
-        <Text color={colors.text[t].secondary}>{statusMeta.description}</Text>
+        <Text color={colors.text[t].secondary}>{getStatusDescription(status as BackgroundCheckStatus, audience)}</Text>
       </Stack>
 
       {normalizedComponents.length > 0 && (

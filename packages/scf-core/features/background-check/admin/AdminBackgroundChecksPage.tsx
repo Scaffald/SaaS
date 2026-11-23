@@ -661,7 +661,9 @@ export function AdminBackgroundChecksPage() {
       {activeTab === 'checks' ? (
         <OfficePageLayout
           resultNoun="check"
-          title="Screenings under review"
+          title={
+            statusFilter === 'all' ? 'All screenings' : getStatusMetadata(statusFilter).label
+          }
           searchPlaceholder="Search by worker, organization, or package"
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
