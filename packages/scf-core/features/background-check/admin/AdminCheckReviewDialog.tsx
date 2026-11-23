@@ -422,6 +422,7 @@ export function AdminCheckReviewDialog({
                 </Stack>
 
                 <CheckProgressTracker
+                  audience="reviewer"
                   status={
                     typeof detailedCheck.status === 'string'
                       ? (detailedCheck.status as BackgroundCheckStatus)

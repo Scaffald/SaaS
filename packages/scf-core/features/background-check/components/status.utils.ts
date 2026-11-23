@@ -165,6 +165,39 @@ const COMPONENT_COMPLETE_STATUSES = new Set<BackgroundCheckStatus>([
 
 const MS_IN_DAY = 1000 * 60 * 60 * 24
 
+/**
+ * The same statuses described for someone reviewing another person's
+ * screening (office admins, the employer who ordered it). STATUS_METADATA's
+ * descriptions speak to the worker ("your screening").
+ */
+const REVIEWER_DESCRIPTIONS: Record<BackgroundCheckStatus, string> = {
+  pending: "Waiting on the worker's information before the screening can start.",
+  invited: 'The worker has been invited and has steps to complete.',
+  submitted: "The worker's information has been sent to the screening provider.",
+  in_progress: 'The provider is running the screening.',
+  under_review: 'Findings are being reviewed.',
+  completed_clear: 'No issues were found.',
+  completed_consider: 'Findings need a review before the result is shared.',
+  completed_not_clear: 'Findings need attention before the result is shared.',
+  partially_completed: 'Some components are still outstanding with the provider.',
+  failed: 'The screening could not be completed.',
+  cancelled: 'This screening request was cancelled.',
+  disputed: 'The worker has disputed the result. Waiting on resolution.',
+  expired: 'The result is no longer current.',
+  refunded: 'The payment was refunded.',
+}
+
+export type StatusAudience = 'worker' | 'reviewer'
+
+/** The status description for whoever is reading it. */
+export function getStatusDescription(
+  status: BackgroundCheckStatus,
+  audience: StatusAudience = 'worker'
+): string {
+  if (audience === 'reviewer') return REVIEWER_DESCRIPTIONS[status] ?? ''
+  return STATUS_METADATA[status]?.description ?? ''
+}
+
 export function getStatusMetadata(status: BackgroundCheckStatus) {
   return (
     STATUS_METADATA[status] ?? {
