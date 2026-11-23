@@ -48,7 +48,7 @@ catalog:
   '@types/geojson': ~7946.0.16
   '@types/mapbox-gl': ~3.5.0
   '@types/node': ~20.0.0
-  '@types/react': 19.2.14
+  '@types/react': 19.3.0
   awesome-phonenumber: ~7.8.0
   babel-loader: ~8.3.0
   babel-plugin-module-resolver: ~4.1.0
@@ -108,8 +108,8 @@ catalog:
   moti: ~0.30.0
   msw: 2.12.14
   openapi-typescript: ~7.4.4
-  react: 19.2.3
-  react-dom: ^19.2.3
+  react: 19.3.1
+  react-dom: ^19.3.1
   react-dropzone: ~15.0.0
   react-hook-form: ~7.88.0
   react-native: 0.85.3
