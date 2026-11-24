@@ -253,3 +253,44 @@ Deno.test({
     }
   },
 })
+
+Deno.test({
+  name: 'invites REST (#1395) - a claim with no code finds the invite sent to your own email',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const personas = await getPersonas()
+    const { userA, userB } = personas
+    const emailB = (userB as unknown as { email: string }).email
+    const admin = createAdminClient().schema('core')
+    try {
+      // Nothing sent to A: no code, nothing to find.
+      assertEquals((await call('POST', '/invites/claim', userA.token, {})).body, { claimed: false, reason: 'no_invite' })
+
+      // An email invite from A to B, as POST /invites stores it.
+      const { data: invite, error } = await admin.from('generic_invitations').insert({
+        inviter_id: userA.id,
+        invitee_email: emailB.toLowerCase(),
+        kind: 'targeted',
+        channel: 'email',
+        status: 'pending',
+        source: 'test',
+        referral_code: `t${rand()}${rand()}`.slice(0, 12).replace(/[^a-z0-9]/g, 'a'),
+        expires_at: new Date(Date.now() + 86_400_000).toISOString(),
+      }).select('id').single()
+      assertEquals(error, null)
+
+      const claim = await call('POST', '/invites/claim', userB.token, {})
+      assertEquals(claim.status, 200, claim.text)
+      assertEquals(claim.body.claimed, true)
+      const { data: row } = await admin.from('generic_invitations')
+        .select('status, invitee_user_id').eq('id', invite?.id ?? '').single()
+      assertEquals(row, { status: 'accepted', invitee_user_id: userB.id })
+      assertEquals((await call('POST', '/invites/claim', userB.token, {})).body.reason, 'already_attributed')
+    } finally {
+      await admin.from('referral_attributions').delete().in('user_id', [userA.id, userB.id])
+      await admin.from('generic_invitations').delete().in('inviter_id', [userA.id, userB.id])
+      await disposePersonas()
+    }
+  },
+})

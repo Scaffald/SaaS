@@ -3,6 +3,7 @@ import type { Session } from '@supabase/auth-js'
 import { BottomBarProvider } from '@scaffald/ui'
 import type { FC, ReactNode } from 'react'
 
+import { PendingInviteClaimer } from '../features/invites/PendingInviteClaimer'
 import { AuthProvider } from './auth/AuthProvider'
 import { CookieConsentProvider } from './cookie-consent'
 import { QueryClientProvider } from './react-query'
@@ -29,6 +30,8 @@ export function Provider({
     <DatePickerProvider config={{ selectedDates: [], onDatesChange: () => {} }}>
       <Providers>
         <AuthProvider initialSession={initialSession}>
+          {/* #1395: claims an invite code saved by /i/[code] once a session exists. */}
+          <PendingInviteClaimer />
           <ScaffaldProviderFromSession>
             <ScaffaldJobsSdkProviderFromSession>{children}</ScaffaldJobsSdkProviderFromSession>
           </ScaffaldProviderFromSession>
