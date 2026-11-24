@@ -9,6 +9,7 @@ type SectionProgressSummary = {
   completed: boolean
   weight?: number
   missingFields?: string[]
+  progress?: { current: number; required: number }
 }
 
 interface ChecklistItem {
@@ -22,6 +23,8 @@ interface ChecklistItem {
   weight: number
   /** Specific field paths the backend says are still empty. */
   missingFields: string[]
+  /** Count toward the section's threshold, for sections that complete at one (skills: 1 of 3). */
+  progress?: { current: number; required: number }
 }
 
 export interface ProfileCompletionData {
@@ -50,6 +53,7 @@ export const useProfileCompletion = () => {
           actionRoute: metadata.route,
           weight: section.weight ?? 0,
           missingFields: section.missingFields ?? [],
+          progress: section.progress,
         }
       }
     )

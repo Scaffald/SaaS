@@ -56,6 +56,10 @@ const getStatusRoute = createRoute({
               weight: z.number(),
               completed: z.boolean(),
               missingFields: z.array(z.string()),
+              progress: z.object({
+                current: z.number(),
+                required: z.number(),
+              }).optional(),
             })),
             incompleteSections: z.array(z.string()),
             hasReachedFiftyPercent: z.boolean(),

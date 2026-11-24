@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router'
 import { Button, Row, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { borderRadius, colors, fontSize, fontWeight, lineHeight } from '@scaffald/ui/tokens'
+import { sectionRowLabel } from '../completion/sectionRowLabel'
 import { useProfileCompletion } from '../completion/useProfileCompletion'
 
 /** How many unfinished sections the block names before "and n more". */
@@ -57,8 +58,10 @@ export function BuildProfileBlock() {
         >
           Build your profile
         </Text>
+        {/* One number. The percent is weighted by section, so it never matched
+            a plain "5 of 6" count beside it (#1418). */}
         <Text style={{ color: colors.text[t].secondary }}>
-          {completionData?.completionPercentage ?? 0}% · {done} of {total}
+          {`${completionData?.completionPercentage ?? 0}% complete`}
         </Text>
       </Row>
 
@@ -74,7 +77,7 @@ export function BuildProfileBlock() {
             }
           >
             <Text style={{ flex: 1, minWidth: 0, color: colors.text[t].primary }}>
-              {item.title}
+              {sectionRowLabel(item)}
             </Text>
             {item.actionRoute ? (
               <Text
