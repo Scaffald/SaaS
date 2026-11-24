@@ -34,6 +34,7 @@ import {
   requireAuth,
 } from "../middleware/auth.ts";
 import { loadStripeClient } from "../../_shared/id-verification-api.ts";
+import { STATEMENT_DESCRIPTOR_SUFFIX } from "../../_shared/payments/stripe-client.ts";
 import {
   ORDERING_CLOSED,
   orderingIsOpen,
@@ -475,6 +476,7 @@ app.post(
           package_id: pkg.id,
         },
         automatic_payment_methods: { enabled: true },
+        statement_descriptor_suffix: STATEMENT_DESCRIPTOR_SUFFIX,
       });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Stripe error";
