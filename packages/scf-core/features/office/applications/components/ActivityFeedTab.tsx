@@ -25,6 +25,7 @@ import {
 } from '@scaffald/ui'
 import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import type { ATSApplication } from '../types'
+import { stageActorLabel } from '../row-labels'
 
 /** Activity event types for the feed */
 interface ActivityEvent {
@@ -44,7 +45,10 @@ interface ActivityEvent {
 }
 
 /** Build activity events from application data */
-function buildActivityFeed(application: ATSApplication): ActivityEvent[] {
+export function buildActivityFeed(
+  application: ATSApplication,
+  currentUserId?: string | null
+): ActivityEvent[] {
   const events: ActivityEvent[] = []
 
   // Stage history → status changes
@@ -52,7 +56,7 @@ function buildActivityFeed(application: ATSApplication): ActivityEvent[] {
     events.push({
       id: `stage_${entry.changedAt}`,
       type: 'status_change',
-      actor: entry.changedBy,
+      actor: stageActorLabel(entry, currentUserId),
       timestamp: entry.changedAt,
       details: {
         from: entry.fromStage ?? 'none',
@@ -133,9 +137,11 @@ function getEventDescription(event: ActivityEvent): string {
 interface ActivityFeedTabProps {
   application: ATSApplication
   isLoading?: boolean
+  /** The viewer, so their own moves read "You". */
+  currentUserId?: string | null
 }
 
-export function ActivityFeedTab({ application, isLoading }: ActivityFeedTabProps) {
+export function ActivityFeedTab({ application, isLoading, currentUserId }: ActivityFeedTabProps) {
   const { theme } = useThemeContext()
 
   if (isLoading) {
@@ -147,7 +153,7 @@ export function ActivityFeedTab({ application, isLoading }: ActivityFeedTabProps
     )
   }
 
-  const events = buildActivityFeed(application)
+  const events = buildActivityFeed(application, currentUserId)
 
   if (events.length === 0) {
     return (

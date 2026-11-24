@@ -139,4 +139,28 @@ describe('toATSApplication', () => {
 
     expect(toATSApplication(row()).team?.assignedUserName).toBeNull()
   })
+
+  it('carries who made each stage move, by name (#1414)', () => {
+    const moved = toATSApplication(
+      row({
+        stage_history: [
+          {
+            from_status: 'pending',
+            to_status: 'reviewing',
+            actor_user_id: 'user_9',
+            actor_name: 'Sam Okafor',
+            changed_at: '2026-08-02T10:00:00Z',
+          },
+          {
+            from_status: 'reviewing',
+            to_status: 'interview',
+            actor_user_id: null,
+            changed_at: '2026-08-03T10:00:00Z',
+          },
+        ],
+      } as unknown as Partial<ApplicationsListItem>)
+    )
+    expect(moved.stageHistory[0]).toMatchObject({ changedBy: 'user_9', changedByName: 'Sam Okafor' })
+    expect(moved.stageHistory[1].changedByName).toBeNull()
+  })
 })
