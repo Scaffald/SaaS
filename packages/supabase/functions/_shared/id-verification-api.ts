@@ -100,10 +100,13 @@ type SupabaseLike = {
   };
 };
 
-export async function loadStripeClient(
+/**
+ * The Stripe secret key from Vault, or null when none is configured.
+ * Throws only when the lookup itself fails.
+ */
+async function loadStripeSecret(
   supabaseAdmin: SupabaseLike,
-): Promise<Stripe> {
-  if (stripeMockEnabled()) return createMockStripeClient();
+): Promise<string | null> {
   if (!supabaseAdmin) throw new Error("Admin client not available");
 
   const { data: settings, error } = await supabaseAdmin
@@ -119,26 +122,52 @@ export async function loadStripeClient(
   if (error) {
     throw new Error(`Failed to load Stripe settings: ${error.message}`);
   }
-  if (!settings?.api_key_secret_id) {
-    throw new Error("Stripe API key is not configured.");
-  }
+  if (!settings?.api_key_secret_id) return null;
 
   const { data: secretValue, error: secretError } = await supabaseAdmin
     .schema("core")
     .rpc("get_secret_value", { p_secret_id: settings.api_key_secret_id });
 
-  if (secretError || !secretValue) {
+  if (secretError) {
     throw new Error(
-      secretError
-        ? `Failed to load Stripe secret: ${
-          (secretError as { message: string }).message
-        }`
-        : "Stripe API secret unavailable.",
+      `Failed to load Stripe secret: ${
+        (secretError as { message: string }).message
+      }`,
     );
+  }
+  return (secretValue as string | null) || null;
+}
+
+export type StripeMode = "mock" | "test" | "live" | "unconfigured";
+
+/**
+ * Which kind of money a charge made right now would move.
+ *
+ * `test` only for a key Stripe itself marks as test (`sk_test_`/`rk_test_`).
+ * Anything else that is configured counts as `live`, so an unfamiliar key
+ * format fails closed rather than being mistaken for practice money.
+ */
+export async function loadStripeMode(
+  supabaseAdmin: SupabaseLike,
+): Promise<StripeMode> {
+  if (stripeMockEnabled()) return "mock";
+  const secret = await loadStripeSecret(supabaseAdmin);
+  if (!secret) return "unconfigured";
+  return /^(sk|rk)_test_/.test(secret) ? "test" : "live";
+}
+
+export async function loadStripeClient(
+  supabaseAdmin: SupabaseLike,
+): Promise<Stripe> {
+  if (stripeMockEnabled()) return createMockStripeClient();
+
+  const secretValue = await loadStripeSecret(supabaseAdmin);
+  if (!secretValue) {
+    throw new Error("Stripe API key is not configured.");
   }
 
   const Stripe = await getStripeClass();
-  return new Stripe(secretValue as string, {
+  return new Stripe(secretValue, {
     apiVersion: STRIPE_API_VERSION,
     httpClient: await getStripeHttpClient(),
   });

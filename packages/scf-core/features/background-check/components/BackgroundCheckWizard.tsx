@@ -4,12 +4,14 @@ import { ArrowLeft, ArrowRight } from 'lucide-react-native'
 import { useMemo } from 'react'
 import { Button, H3, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { isOrderingClosedError } from '@scf/core/utils/background-checks-sdk-hooks'
 
 import { useBackgroundCheckForm } from '../hooks/useBackgroundCheckForm'
 import { ConsentStep } from './ConsentStep'
 import { DocumentChecklistStep } from './DocumentChecklistStep'
 import { PackageSelectionStep } from './PackageSelectionStep'
 import { PaymentStep } from './PaymentStep'
+import { OrderingClosedNotice } from './OrderingClosedNotice'
 import { ProgressIndicator } from './ProgressIndicator'
 import { canContinueFrom, canGoBackFrom, footerActionFor } from '../wizard-steps'
 
@@ -136,6 +138,9 @@ export function BackgroundCheckWizard() {
         return null
     }
   }
+
+  // Nothing to order here yet (#1267): no wizard, just why.
+  if (isOrderingClosedError(packagesQuery.error)) return <OrderingClosedNotice />
 
   // The route's own `ScreenHeader` names the screen and says what it is for
   // (#830); this drew the same two lines again a few pixels lower.

@@ -1,6 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
 import {
+  isOrderingClosedError,
   useBackgroundCheckPackages,
   useRequestBackgroundCheckMutation,
   useConfirmCheckPaymentMutation,
@@ -16,6 +17,7 @@ import { CircleAlert } from 'lucide-react-native'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { inferRouterOutputs } from '@trpc/server'
+import { OrderingClosedNotice } from '../components/OrderingClosedNotice'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect, ScreenHeader } from '@scaffald/ui'
@@ -82,7 +84,11 @@ export function OrganizationBackgroundCheckRequestForm() {
     }
   }, [organizations, organizationId])
 
-  const { data: packagesData, isLoading: isLoadingPackages } = useBackgroundCheckPackages()
+  const {
+    data: packagesData,
+    isLoading: isLoadingPackages,
+    error: packagesError,
+  } = useBackgroundCheckPackages()
   const packages = useMemo<PackageSummary[]>(() => packagesData ?? [], [packagesData])
 
   const workersQuery = useWorkers({
@@ -246,6 +252,8 @@ export function OrganizationBackgroundCheckRequestForm() {
       </Stack>
     )
   }
+
+  if (isOrderingClosedError(packagesError)) return <OrderingClosedNotice />
 
   if (!organizations.length) {
     return (
