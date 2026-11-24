@@ -12,3 +12,11 @@ export {
   USER_TYPE_OPTIONS,
   type UserType,
 } from './config/prerequisites-schema'
+
+export {
+  PREFILL_FIELDS,
+  type PrefillField,
+  type PrefillValues,
+  prefillValuesFrom,
+  usePrerequisitesPrefill,
+} from './hooks/usePrerequisitesPrefill'
