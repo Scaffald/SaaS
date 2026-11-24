@@ -3,12 +3,15 @@ import { Button, Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { ATSApplication } from '../types'
 import { formatYearsExperience } from '@scf/core/features/applications/screening-format'
 import { borderRadius, colors } from '@scaffald/ui/tokens'
+import { stageActorLabel } from '../row-labels'
 
 interface ApplicationDetailsTabProps {
   application: ATSApplication
+  /** The viewer, so their own stage moves read "You". */
+  currentUserId?: string | null
 }
 
-export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProps) => {
+export const ApplicationDetailsTab = ({ application, currentUserId }: ApplicationDetailsTabProps) => {
   const { theme } = useThemeContext()
 
   return (
@@ -143,7 +146,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
               <Stack flex={1} gap={4}>
                 <Text style={{ textTransform: 'capitalize' }}>{history.toStage}</Text>
                 <Text style={{ opacity: 0.7 }}>
-                  {history.changedBy} •{' '}
+                  {stageActorLabel(history, currentUserId)} •{' '}
                   {new Date(history.changedAt).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',

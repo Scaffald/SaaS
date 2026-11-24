@@ -43,6 +43,20 @@ export function assigneeLabel(
 }
 
 /**
+ * Who moved an application, as the Activity tab heads the event: "You" for
+ * the current user, else their name, else "A teammate". Never the raw actor
+ * id, which is what the tab printed before the api named actors (#1414).
+ */
+export function stageActorLabel(
+  change: { changedBy?: string | null; changedByName?: string | null },
+  currentUserId?: string | null
+): string {
+  if (currentUserId && change.changedBy && change.changedBy === currentUserId) return 'You'
+  const name = change.changedByName?.trim()
+  return name || 'A teammate'
+}
+
+/**
  * Case-insensitive match on the candidate's name and the job title — the two
  * things an employer types when looking for a row.
  */

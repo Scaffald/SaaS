@@ -95,6 +95,10 @@ const employerApplicationSchema = z
           from_status: z.string().nullable(),
           to_status: z.string(),
           actor_user_id: z.string().uuid().nullable(),
+          actor_name: z.string().nullable().openapi({
+            description:
+              "Who made the move: display name, else username. Null when the actor is unknown or has neither. The Activity tab printed the raw actor id without it (#1414).",
+          }),
           changed_at: z.string(),
         }),
       )
@@ -805,14 +809,77 @@ async function attachStageHistory(
       from_status: details.from ?? null,
       to_status: details.to,
       actor_user_id: event.actor_user_id ?? null,
+      actor_name: null,
       changed_at: event.created_at,
     });
     byApplication.set(applicationId, list);
   }
 
+  // Name the actors: one query over the distinct ids on the page, not one per
+  // event. Without it the Activity tab headed a move with a raw uuid (#1414).
+  const actorNames = await loadActorNames(
+    [...byApplication.values()].flat().map((change) => change.actor_user_id),
+  );
+  for (const list of byApplication.values()) {
+    for (const change of list) {
+      const actorId = change.actor_user_id as string | null;
+      change.actor_name = actorId ? actorNames.get(actorId) ?? null : null;
+    }
+  }
+
   for (const row of rows) {
     row.stage_history = byApplication.get(row.id as string) ?? [];
   }
+}
+
+/**
+ * Display name (else username) for each user id. Best-effort like the history
+ * itself: a failed lookup leaves the names null and the UI says "A teammate",
+ * rather than failing the list.
+ */
+async function loadActorNames(
+  actorIds: Array<unknown>,
+): Promise<Map<string, string>> {
+  const names = new Map<string, string>();
+  const ids = [
+    ...new Set(
+      actorIds.filter((id): id is string =>
+        typeof id === "string" && id !== ""
+      ),
+    ),
+  ];
+  if (ids.length === 0) return names;
+
+  const { data, error } = await getServiceClient()
+    .schema("core")
+    .from("users")
+    .select("id, display_name, username")
+    .in("id", ids);
+
+  if (error) {
+    console.error(
+      JSON.stringify({
+        severity: "error",
+        component: "employer_applications_stage_history",
+        message:
+          "Failed to name stage-history actors; they will read as unnamed",
+        db_error: error.message,
+      }),
+    );
+    return names;
+  }
+
+  for (
+    const user of (data ?? []) as Array<{
+      id: string;
+      display_name: string | null;
+      username: string | null;
+    }>
+  ) {
+    const name = user.display_name?.trim() || user.username?.trim();
+    if (name) names.set(user.id, name);
+  }
+  return names;
 }
 
 interface ActivityFacts {

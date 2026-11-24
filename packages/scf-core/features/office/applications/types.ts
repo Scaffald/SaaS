@@ -163,7 +163,10 @@ export interface ATSApplication {
   stageHistory: Array<{
     fromStage: ApplicationStatus | null
     toStage: ApplicationStatus
+    /** The actor's user id; compared against the viewer to say "You". */
     changedBy: string
+    /** The actor's display name (else username) from the api, when known (#1414). */
+    changedByName?: string | null
     changedAt: string
     reason?: string
   }>

@@ -439,7 +439,9 @@ export const CandidateDetailContent = ({
           {
             value: 'application',
             label: 'Application',
-            panel: <ApplicationDetailsTab application={application} />,
+            panel: (
+              <ApplicationDetailsTab application={application} currentUserId={currentUser?.id} />
+            ),
           },
           {
             value: 'notes',
@@ -460,7 +462,7 @@ export const CandidateDetailContent = ({
           {
             value: 'activity',
             label: 'Activity',
-            panel: <ActivityFeedTab application={application} />,
+            panel: <ActivityFeedTab application={application} currentUserId={currentUser?.id} />,
           },
           {
             value: 'inquiry',

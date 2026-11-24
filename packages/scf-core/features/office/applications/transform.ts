@@ -125,6 +125,7 @@ export function toATSApplication(app: ApplicationsListItem): ATSApplication {
       fromStage: (change.from_status as ApplicationStatus | null) ?? null,
       toStage: change.to_status as ApplicationStatus,
       changedBy: change.actor_user_id ?? '',
+      changedByName: change.actor_name ?? null,
       changedAt: change.changed_at,
     })),
     candidate: {
