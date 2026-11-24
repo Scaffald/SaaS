@@ -66,10 +66,10 @@ logins.
   has no GitHub repository linked on EAS since the move to the Scaffald org
   (`No repository found for appId`). That is why the GitHub job uploads the
   checkout and waits, instead of handing off.
-- The Android app id `com.scaffald.app.development` needs an upload keystore
-  on EAS before the first non-interactive build. Create it once,
-  interactively: `cd apps/scaffald && eas credentials --platform android`
-  (profile `qa`), or run one interactive `eas build --profile qa --platform android`.
+- The Android upload keystore for `com.scaffald.app.development` lives on EAS
+  (remote credentials, created 2026-11-24). Non-interactive builds need it;
+  if it is ever removed, recreate it once, interactively:
+  `cd apps/scaffald && eas credentials --platform android` (profile `qa`).
 
 Cost: two EAS builds per release, plus the Actions job waiting for them
 (roughly 25 to 40 minutes of the org's 2,000 monthly minutes per release).
