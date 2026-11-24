@@ -168,6 +168,14 @@ const ROUTES_CONFIG = {
     exact: true,
   },
 
+  /** A worker's invite link (#1395): personal (`users.referral_code`) or per-invite code. */
+  INVITE: {
+    path: '/i/:code',
+    titleKey: 'routes.invite',
+    protected: false,
+    exact: true,
+  },
+
   SEARCH: {
     path: '/search',
     titleKey: 'routes.search' as const,
@@ -1894,6 +1902,7 @@ export const RouteBuilder = {
   communitiesReputation: () => ROUTES.COMMUNITIES.REPUTATION.path,
   /** Public profile URL path for a given slug */
   publicProfile: (slug: string) => `/users/${slug}`,
+  invite: (code: string) => buildPath(ROUTES.INVITE, { code: encodeURIComponent(code) }),
   /** My Organizations */
   orgIndex: () => ROUTES.EMPLOYERS.ORG.path,
   orgInvitations: () => ROUTES.EMPLOYERS.INVITATIONS.path,

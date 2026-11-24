@@ -106,6 +106,25 @@ export async function fetchPublicProfileBySlug(
   return getFromApi<PublicProfile>(`/v1/profiles/slug/${encodeURIComponent(resolved)}`, false)
 }
 
+/** The public half of an invite (#1395): inviter first name and avatar only. */
+export type PublicInvitePreview = {
+  kind: 'link' | 'targeted'
+  inviter: { firstName: string; avatarUrl: string | null }
+}
+
+/**
+ * GET /v1/invites/{code}/preview, SDK-facing so not enveloped. Null for an
+ * unknown or expired code AND for a failed request; the page refetches on the
+ * client when this is null, so a transient failure isn't shown as "expired".
+ */
+export async function fetchInvitePreview(
+  code: string | string[] | undefined
+): Promise<PublicInvitePreview | null> {
+  const resolved = firstParam(code)?.trim().toLowerCase()
+  if (!resolved || !/^[a-z0-9]{6,32}$/.test(resolved)) return null
+  return getFromApi<PublicInvitePreview>(`/v1/invites/${encodeURIComponent(resolved)}/preview`, false)
+}
+
 /**
  * The open jobs shown on the public `/jobs` listing.
  *

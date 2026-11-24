@@ -540,7 +540,10 @@ app.post(
   zValidator(
     "json",
     z.object({
-      code: z.string().min(1).max(64),
+      // Optional: with no code, the claim falls back to the newest pending
+      // email invite sent to the caller's own address. That covers an invite
+      // email opened on another device than the one the link was saved on.
+      code: z.string().min(1).max(64).optional(),
       landedAt: z.string().datetime().optional(),
     }),
   ),
@@ -548,7 +551,6 @@ app.post(
     const user = c.get("user");
     if (!user) return c.json(unauthorized(), 401);
     const { code: rawCode, landedAt } = c.req.valid("json");
-    const code = rawCode.trim().toLowerCase();
     const db = serviceClient();
 
     const { data: existing } = await db.schema("core").from(
@@ -557,6 +559,28 @@ app.post(
       .select("referrer_id").eq("user_id", user.id).maybeSingle();
     if (existing) {
       return c.json({ claimed: false, reason: "already_attributed" });
+    }
+
+    let code = rawCode?.trim().toLowerCase() ?? null;
+    if (!code) {
+      const email = normalizeEmail(user.email ?? null);
+      if (!email) return c.json({ claimed: false, reason: "no_invite" });
+      const { data: invite } = await db.schema("core").from(
+        "generic_invitations",
+      )
+        .select("referral_code")
+        .eq("invitee_email", email)
+        .eq("status", "pending")
+        .eq("kind", "targeted")
+        .is("invitee_user_id", null)
+        .gt("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!invite?.referral_code) {
+        return c.json({ claimed: false, reason: "no_invite" });
+      }
+      code = invite.referral_code as string;
     }
 
     const resolved = await resolveCode(db, code);
