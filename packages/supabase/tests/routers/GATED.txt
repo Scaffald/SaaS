@@ -50,6 +50,7 @@ employers.test.ts
 feedback.test.ts
 id-verification-list-rest.test.ts
 invites-data-rls-rest.test.ts
+invites-rest.test.ts
 jobs-list-rest.test.ts
 jobs-read-rls-rest.test.ts
 legal-agreements-rest.test.ts

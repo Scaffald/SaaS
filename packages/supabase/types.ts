@@ -13397,6 +13397,13 @@ export type Database = {
         Args: { p_org_id?: string; p_role_name: string; p_user_id: string }
         Returns: boolean
       }
+      user_ids_by_email: {
+        Args: { p_emails: string[] }
+        Returns: {
+          email: string
+          user_id: string
+        }[]
+      }
       users_are_blocked: {
         Args: { user_a: string; user_b: string }
         Returns: boolean
