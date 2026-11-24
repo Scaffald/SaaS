@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('expo-router', () => ({ useRouter: () => ({ back: vi.fn() }) }))
+// JobForm makes the create's idempotency id with it (#1408); the native
+// module doesn't load under vitest.
+vi.mock('expo-crypto', () => ({ randomUUID: () => 'uuid-test' }))
 
 const { officeJobToFormData } = await import('../JobForm')
 
