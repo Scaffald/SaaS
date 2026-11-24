@@ -4627,6 +4627,7 @@ export type Database = {
       generic_invitations: {
         Row: {
           accepted_at: string | null
+          channel: string | null
           constraint_blocked: boolean | null
           constraint_reason: string | null
           created_at: string | null
@@ -4637,21 +4638,27 @@ export type Database = {
           email_sent_at: string | null
           expires_at: string | null
           id: string
-          invitee_email: string
+          invitee_email: string | null
           invitee_name: string | null
+          invitee_phone: string | null
           invitee_user_id: string | null
           inviter_id: string
           inviter_organization_id: string | null
           is_referral: boolean | null
+          kind: string
           metadata: Json | null
+          nevarmail_email_id: string | null
           personal_message: string | null
           project_id: string | null
           referral_code: string | null
+          reminder_sent_at: string | null
           rule_id: string | null
+          source: string | null
           status: string | null
         }
         Insert: {
           accepted_at?: string | null
+          channel?: string | null
           constraint_blocked?: boolean | null
           constraint_reason?: string | null
           created_at?: string | null
@@ -4662,21 +4669,27 @@ export type Database = {
           email_sent_at?: string | null
           expires_at?: string | null
           id?: string
-          invitee_email: string
+          invitee_email?: string | null
           invitee_name?: string | null
+          invitee_phone?: string | null
           invitee_user_id?: string | null
           inviter_id: string
           inviter_organization_id?: string | null
           is_referral?: boolean | null
+          kind?: string
           metadata?: Json | null
+          nevarmail_email_id?: string | null
           personal_message?: string | null
           project_id?: string | null
           referral_code?: string | null
+          reminder_sent_at?: string | null
           rule_id?: string | null
+          source?: string | null
           status?: string | null
         }
         Update: {
           accepted_at?: string | null
+          channel?: string | null
           constraint_blocked?: boolean | null
           constraint_reason?: string | null
           created_at?: string | null
@@ -4687,17 +4700,22 @@ export type Database = {
           email_sent_at?: string | null
           expires_at?: string | null
           id?: string
-          invitee_email?: string
+          invitee_email?: string | null
           invitee_name?: string | null
+          invitee_phone?: string | null
           invitee_user_id?: string | null
           inviter_id?: string
           inviter_organization_id?: string | null
           is_referral?: boolean | null
+          kind?: string
           metadata?: Json | null
+          nevarmail_email_id?: string | null
           personal_message?: string | null
           project_id?: string | null
           referral_code?: string | null
+          reminder_sent_at?: string | null
           rule_id?: string | null
+          source?: string | null
           status?: string | null
         }
         Relationships: [
@@ -6597,6 +6615,54 @@ export type Database = {
             columns: ["industry_id"]
             isOneToOne: false
             referencedRelation: "industries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_signups: {
+        Row: {
+          confirm_token: string
+          confirmed_at: string | null
+          email: string
+          ip: unknown
+          requested_at: string
+          source: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          confirm_token?: string
+          confirmed_at?: string | null
+          email: string
+          ip?: unknown
+          requested_at?: string
+          source?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          confirm_token?: string
+          confirmed_at?: string | null
+          email?: string
+          ip?: unknown
+          requested_at?: string
+          source?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_signups_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newsletter_signups_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
           },
         ]
@@ -9293,6 +9359,75 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "construction_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_attributions: {
+        Row: {
+          created_at: string
+          invitation_id: string | null
+          landed_at: string | null
+          onboarded_at: string | null
+          referral_code: string
+          referrer_id: string | null
+          signed_up_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          invitation_id?: string | null
+          landed_at?: string | null
+          onboarded_at?: string | null
+          referral_code: string
+          referrer_id?: string | null
+          signed_up_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          invitation_id?: string | null
+          landed_at?: string | null
+          onboarded_at?: string | null
+          referral_code?: string
+          referrer_id?: string | null
+          signed_up_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_attributions_invitation_id_fkey"
+            columns: ["invitation_id"]
+            isOneToOne: false
+            referencedRelation: "generic_invitations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_attributions_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_attributions_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_attributions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_attributions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
           },
         ]
@@ -12137,6 +12272,7 @@ export type Database = {
           id: string
           industry_id: string | null
           open_to_work: boolean | null
+          referral_code: string
           skills_summary: Json | null
           slug: string | null
           storage_preference:
@@ -12161,6 +12297,7 @@ export type Database = {
           id: string
           industry_id?: string | null
           open_to_work?: boolean | null
+          referral_code?: string
           skills_summary?: Json | null
           slug?: string | null
           storage_preference?:
@@ -12185,6 +12322,7 @@ export type Database = {
           id?: string
           industry_id?: string | null
           open_to_work?: boolean | null
+          referral_code?: string
           skills_summary?: Json | null
           slug?: string | null
           storage_preference?:
@@ -13059,6 +13197,7 @@ export type Database = {
         Args: { p_oauth_app_id: string; p_scopes: string[]; p_user_id: string }
         Returns: Json
       }
+      generate_referral_code: { Args: never; Returns: string }
       get_api_key_stats: {
         Args: { days?: number; org_id: string }
         Returns: Json
