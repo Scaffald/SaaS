@@ -1,4 +1,5 @@
 import {
+  useDeleteEducationMutation,
   useEducation,
   useEducationLevel,
   useSaveEducationMutationWithSync,
@@ -17,12 +18,11 @@ import {
 } from '@scaffald/ui'
 import { MonthPicker } from './components/MonthYearPicker'
 import { colors } from '@scaffald/ui/tokens'
-import { workerPalette } from '@scf/core/components/ui/styles'
 import { UniversityAutocomplete } from '@scf/core/components/university'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDown, Plus, X } from 'lucide-react-native'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Platform, View } from 'react-native'
+import { View } from 'react-native'
 import { useUnsavedChangesPrompt } from '@scf/core/utils/platform'
 import { Controller, type Resolver, useFieldArray, useForm } from 'react-hook-form'
 import {
@@ -86,27 +86,22 @@ const errorBannerStyle = {
   borderRadius: 7,
 }
 
-interface ProfileEducationLeftProps {
-  editingEntryId?: string | null
-  onEditComplete?: () => void
-}
-
 /**
  * Profile Education Left Component
- * Form for managing education background
+ *
+ * The form is the list, as in ProfileExperienceLeft: every saved school is an
+ * editable entry with its own Remove. It used to hide every saved entry unless
+ * a rail beside it asked to edit one; #1275 removed the rail and with it every
+ * way to see a saved school here (#1407).
  */
-export function ProfileEducationLeft({
-  editingEntryId,
-  onEditComplete,
-}: ProfileEducationLeftProps = {}) {
+export function ProfileEducationLeft() {
   const { theme } = useThemeContext()
-  const t = theme === 'dark' ? 'dark' : ('light' as const)
-  const pal = workerPalette[t]
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
-  const [hiddenEntryIds, setHiddenEntryIds] = useState<Set<string>>(new Set())
   const originalDataRef = useRef<EducationProfileFormData | null>(null)
-  const entryRefs = useRef<Record<string, HTMLElement | null>>({})
+  // Saved schools the user removed; the save endpoint only upserts, so these
+  // are deleted on Save (and forgotten on Discard).
+  const [removedEntryIds, setRemovedEntryIds] = useState<string[]>([])
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
 
@@ -128,13 +123,15 @@ export function ProfileEducationLeft({
       keepFormAfterFailedSaveRef.current = true
     },
   })
-  const isSaving = saveEducationMutation.isPending
+  const deleteEducationMutation = useDeleteEducationMutation()
+  const isSaving = saveEducationMutation.isPending || deleteEducationMutation.isPending
 
   // University search state
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Track manual entry mode for each education entry (by index)
-  const [manualEntryMode, setManualEntryMode] = useState<Record<number, boolean>>({})
+  // Manual-entry mode the user picked, by field id. Without a choice, a saved
+  // school with no catalog id is manual and everything else searches.
+  const [manualEntryMode, setManualEntryMode] = useState<Record<string, boolean>>({})
 
   // University search query (SDK). Only runs when query is valid.
   const searchUniversitiesQuery = useSearchUniversities(
@@ -246,16 +243,11 @@ export function ProfileEducationLeft({
     // refetch; after a failure it holds data without the user's edits. Either
     // way it is not something to reset the form to. `isSaving` is a dependency
     // so a successful save resets once, from the refetched rows (new ids).
-    if (isSaving || keepFormAfterFailedSaveRef.current) return
+    // `isLoading` spans the whole submit, deletes included: between a delete
+    // and the save the cache still holds the old rows.
+    if (isSaving || isLoading || keepFormAfterFailedSaveRef.current) return
     if (educationQuery.data && educationLevelQuery.data) {
-      const entries = educationEntries.map((edu, index) => {
-        // Set manual entry mode if no university_id
-        if (!edu.university_id) {
-          setManualEntryMode((prev) => ({ ...prev, [index]: true }))
-        }
-
-        return normalizeEducationEntry(edu)
-      })
+      const entries = educationEntries.map((edu) => normalizeEducationEntry(edu))
 
       const formData = {
         education_level: educationLevelQuery.data.education_level || undefined,
@@ -264,92 +256,9 @@ export function ProfileEducationLeft({
       // Form data from API is compatible with form schema
       reset(formData as EducationProfileFormData)
       originalDataRef.current = formData as EducationProfileFormData
-
-      // Clear hidden entries - we'll set them after fields update
-      setHiddenEntryIds(new Set())
+      setRemovedEntryIds([])
     }
-  }, [educationQuery.data, educationLevelQuery.data, reset, educationEntries, isSaving])
-
-  // Hide all existing entries after form data loads
-  useEffect(() => {
-    if (fields.length > 0 && educationQuery.data) {
-      const existingEntryFieldIds: string[] = []
-      fields.forEach((field, index) => {
-        const entryData = watch(`education_entries.${index}`)
-        // Hide if it has an ID (existing entry) and is not being edited
-        if (entryData?.id && entryData.id !== editingEntryId) {
-          existingEntryFieldIds.push(field.id)
-        }
-      })
-
-      if (existingEntryFieldIds.length > 0) {
-        setHiddenEntryIds((prev) => {
-          const next = new Set(prev)
-          for (const id of existingEntryFieldIds) {
-            next.add(id)
-          }
-          return next
-        })
-      }
-    }
-  }, [fields, educationQuery.data, editingEntryId, watch])
-
-  // Scroll to editing entry when editingEntryId changes
-  useEffect(() => {
-    if (editingEntryId) {
-      // Find the entry in the form fields by matching the ID
-      const entryIndex = fields.findIndex((_field, idx) => {
-        const entryData = watch(`education_entries.${idx}`)
-        return entryData?.id === editingEntryId
-      })
-
-      if (entryIndex !== -1) {
-        const entryId = fields[entryIndex].id
-        const entryData = watch(`education_entries.${entryIndex}`)
-
-        // Make sure the entry is visible (remove from hidden set)
-        setHiddenEntryIds((prev) => {
-          const next = new Set(prev)
-          next.delete(entryId)
-          return next
-        })
-
-        // Set manual entry mode based on whether it has a university_id
-        if (entryData) {
-          const shouldUseManualMode = !entryData.university_id
-          setManualEntryMode((prev) => ({
-            ...prev,
-            [entryIndex]: shouldUseManualMode,
-          }))
-
-          // If there's an institution name with a university_id (verified institution),
-          // trigger a search to populate results so the value displays in autocomplete
-          if (entryData.institution_name && entryData.university_id && !shouldUseManualMode) {
-            // Trigger search with the institution name to populate results
-            // This ensures the UniversityAutocomplete can find and display the value
-            setSearchQuery(entryData.institution_name)
-            handleUniversitySearch(entryData.institution_name)
-          }
-        }
-
-        // Scroll to the entry after a short delay to ensure it's rendered
-        setTimeout(() => {
-          const element = entryRefs.current[entryId]
-          if (element && Platform.OS === 'web' && typeof window !== 'undefined') {
-            // Scroll to the entry (web only)
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-            // Focus the first input in the entry after another short delay
-            setTimeout(() => {
-              const firstInput = element.querySelector('input, textarea, button')
-              if (firstInput instanceof HTMLElement) {
-                firstInput.focus()
-              }
-            }, 100)
-          }
-        }, 100)
-      }
-    }
-  }, [editingEntryId, fields, watch, handleUniversitySearch])
+  }, [educationQuery.data, educationLevelQuery.data, reset, educationEntries, isSaving, isLoading])
 
   useUnsavedChangesPrompt(isDirty)
 
@@ -358,37 +267,18 @@ export function ProfileEducationLeft({
     setSaveError(null)
     keepFormAfterFailedSaveRef.current = false
 
-    // Track which entries are new (without IDs) before save
-    const newEntryFieldIds: string[] = []
-    data.education_entries?.forEach((entry, index) => {
-      if (!entry.id && fields[index]) {
-        newEntryFieldIds.push(fields[index].id)
-      }
-    })
-
     try {
+      // Removed schools first, one at a time so a failure leaves the rest
+      // queued for the next try.
+      for (const educationId of removedEntryIds) {
+        await deleteEducationMutation.mutateAsync({ educationId })
+        setRemovedEntryIds((prev) => prev.filter((id) => id !== educationId))
+      }
+
       await saveEducationMutation.mutateAsync({
         education_level: data.education_level || null,
         education_entries: data.education_entries || [],
       })
-
-      // After successful save, hide ALL entries (both new and edited)
-      // They'll be visible in the right column instead
-      const allEntryFieldIds = fields.map((field) => field.id)
-      if (allEntryFieldIds.length > 0) {
-        setHiddenEntryIds((prev) => {
-          const next = new Set(prev)
-          for (const id of allEntryFieldIds) {
-            next.add(id)
-          }
-          return next
-        })
-      }
-
-      // Clear editing state
-      if (editingEntryId) {
-        onEditComplete?.()
-      }
     } catch (error) {
       // The form still holds the entries (see keepFormAfterFailedSaveRef);
       // say why they did not save, next to the button that tried.
@@ -406,6 +296,14 @@ export function ProfileEducationLeft({
 
   const addEducationEntry = () => {
     append(createNewEducationEntry())
+  }
+
+  const removeEducationEntry = (index: number) => {
+    const savedId = getValues(`education_entries.${index}.id`)
+    if (savedId) {
+      setRemovedEntryIds((prev) => (prev.includes(savedId) ? prev : [...prev, savedId]))
+    }
+    remove(index)
   }
 
   // Show loading state
@@ -491,56 +389,37 @@ export function ProfileEducationLeft({
           {fields.map((field, index) => {
             const entryErrors = educationEntryFieldErrors[index]
             const hasEntryErrors = entryErrors !== undefined && entryErrors !== null
-            const entryId = field.id
             const entryData = watch(`education_entries.${index}`)
-            const isEditing = editingEntryId === entryData?.id
-            const hasId = Boolean(entryData?.id)
-
-            // Hide entry if:
-            // 1. It has an ID (existing entry) AND is not being edited
-            // 2. OR it's explicitly in the hidden set and not being edited
-            const isHidden = (hasId && !isEditing) || (hiddenEntryIds.has(entryId) && !isEditing)
-
-            // Only show forms for:
-            // - New entries (no ID)
-            // - Entries being edited (isEditing is true)
-            if (isHidden) {
-              return null
-            }
+            const isManualMode =
+              manualEntryMode[field.id] ?? (Boolean(entryData?.id) && !entryData?.university_id)
+            const setManualMode = (next: boolean) =>
+              setManualEntryMode((prev) => ({ ...prev, [field.id]: next }))
 
             return (
-              <View
-                key={field.id}
-                ref={(el) => {
-                  if (el) {
-                    // View ref is compatible with HTMLElement for scroll operations
-                    entryRefs.current[entryId] = el as unknown as HTMLElement
-                  }
-                }}
-              >
+              <View key={field.id} testID={`education-entry-${index}`}>
                 <Stack
                   gap={12}
                   style={{
                     padding: 12,
                     borderWidth: 1,
-                    borderColor: isEditing
-                      ? pal.selectedBorder
-                      : hasEntryErrors
-                        ? colors.error[300]
-                        : colors.border[theme].default,
-                    backgroundColor: isEditing
-                      ? pal.pillBg
-                      : hasEntryErrors
-                        ? theme === 'light'
-                          ? colors.error[50]
-                          : colors.error[900]
-                        : colors.bg[theme].default,
+                    borderColor: hasEntryErrors ? colors.error[300] : colors.border[theme].default,
+                    backgroundColor: hasEntryErrors
+                      ? theme === 'light'
+                        ? colors.error[50]
+                        : colors.error[900]
+                      : colors.bg[theme].default,
                     borderRadius: 7,
                   }}
                 >
                   <Row justify="space-between" align="center">
-                    <Text>{entryData?.id ? 'Edit Education' : `Education ${index + 1}`}</Text>
-                    <Button size="sm" variant="outline" onPress={() => remove(index)} iconStart={X}>
+                    <Text>{`Education ${index + 1}`}</Text>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onPress={() => removeEducationEntry(index)}
+                      iconStart={X}
+                      aria-label={`Remove education ${index + 1}`}
+                    >
                       Remove
                     </Button>
                   </Row>
@@ -556,7 +435,6 @@ export function ProfileEducationLeft({
                           name={`education_entries.${index}.institution_name`}
                           control={control}
                           render={({ field: nameField }) => {
-                            const isManualMode = manualEntryMode[index] ?? false
                             return (
                               <Stack gap={8}>
                                 {!isManualMode ? (
@@ -591,10 +469,7 @@ export function ProfileEducationLeft({
                                         setValue(`education_entries.${index}.is_verified`, true, {
                                           shouldValidate: false,
                                         })
-                                        setManualEntryMode((prev) => ({
-                                          ...prev,
-                                          [index]: false,
-                                        }))
+                                        setManualMode(false)
                                       }}
                                       onSearch={handleUniversitySearch}
                                       results={
@@ -613,10 +488,7 @@ export function ProfileEducationLeft({
                                       size="sm"
                                       variant="outline"
                                       onPress={() => {
-                                        setManualEntryMode((prev) => ({
-                                          ...prev,
-                                          [index]: true,
-                                        }))
+                                        setManualMode(true)
                                         universityField.onChange(null)
                                         setValue(`education_entries.${index}.is_verified`, false, {
                                           shouldValidate: false,
@@ -644,10 +516,7 @@ export function ProfileEducationLeft({
                                       size="sm"
                                       variant="outline"
                                       onPress={() => {
-                                        setManualEntryMode((prev) => ({
-                                          ...prev,
-                                          [index]: false,
-                                        }))
+                                        setManualMode(false)
                                         nameField.onChange('')
                                         universityField.onChange(undefined)
                                       }}
@@ -988,6 +857,7 @@ export function ProfileEducationLeft({
                 if (originalDataRef.current) {
                   keepFormAfterFailedSaveRef.current = false
                   setSaveError(null)
+                  setRemovedEntryIds([])
                   reset(originalDataRef.current)
                   setShowCancelDialog(false)
                 }

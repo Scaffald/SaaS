@@ -43,7 +43,8 @@ import type { JSONContent } from '@tiptap/core'
 import { Eye } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { randomUUID } from 'expo-crypto'
 import { Toggle } from '@scaffald/ui'
 import { JobPreviewModal } from './JobPreviewModal'
 import { JobTaxonomyPicker } from './JobTaxonomyPicker'
@@ -526,7 +527,17 @@ export function JobForm({
     })
   }, [primaryTeamId])
 
+  // #1408: two presses in one frame both reached mutate, because the buttons
+  // only disable once `isPending` re-renders. The ref closes that gap; the id,
+  // generated once per form, makes the api answer a resent create with the
+  // job it already made.
+  const submittingRef = useRef(false)
+  const [newJobId] = useState(() => randomUUID())
+
   const createJob = useOfficeCreateJobMutation({
+    onSettled: () => {
+      submittingRef.current = false
+    },
     onSuccess: () => {
       toast.show({
         title: 'Job created successfully',
@@ -547,6 +558,9 @@ export function JobForm({
   })
 
   const updateJob = useOfficeUpdateJobMutation({
+    onSettled: () => {
+      submittingRef.current = false
+    },
     onSuccess: () => {
       toast.show({
         title: 'Job updated successfully',
@@ -672,6 +686,7 @@ export function JobForm({
   })
 
   const handleSubmit = (asDraft = true) => {
+    if (submittingRef.current) return
     if (!meetsDraftMinimums) {
       // The disable predicate should have caught this, but guard anyway —
       // mirrors the server-side createJobBodySchema floor.
@@ -700,8 +715,10 @@ export function JobForm({
     const params = buildJobParams(asDraft)
 
     if (mode === 'create') {
-      createJob.mutate(params)
+      submittingRef.current = true
+      createJob.mutate({ ...params, id: newJobId })
     } else if (jobId) {
+      submittingRef.current = true
       const updateParams: OfficeUpdateJobParams = { ...params }
       updateJob.mutate({ id: jobId, params: updateParams })
     }

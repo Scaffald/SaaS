@@ -354,6 +354,10 @@ app.get(
 );
 
 const createJobBodySchema = z.object({
+  // #1408: the form generates this once, so a second press of Post (or Save
+  // draft then Post) resends the same id and gets the first job back instead
+  // of inserting a twin. Optional: other callers still get a server id.
+  id: z.string().uuid("Invalid job ID").optional(),
   organization_id: z.string().uuid("Invalid organization ID"),
   // SC-122: match the shared schema in functions/_shared/job-schemas.ts so the
   // REST surface and the tRPC surface reject the same inputs. Was .min(1) /
@@ -434,6 +438,7 @@ app.post(
       .schema("core")
       .from("jobs")
       .insert({
+        ...(input.id ? { id: input.id } : {}),
         ...jobDetailColumns(input),
         ...relations.teamColumns,
         organization_id: input.organization_id,
@@ -453,6 +458,37 @@ app.post(
       .single();
 
     if (error) {
+      // #1408: the same id again is a resend of a create that already
+      // happened. Answer with that job, but only to the user who created it
+      // in the same organisation; anyone else learns nothing about the id.
+      if (error.code === "23505" && input.id) {
+        const { data: existing, error: existingError } = await supabaseAdmin
+          .schema("core")
+          .from("jobs")
+          .select("*")
+          .eq("id", input.id)
+          .maybeSingle();
+        if (existingError) {
+          return c.json({
+            error: "Internal Server Error",
+            message: existingError.message,
+          }, 500);
+        }
+        if (
+          existing &&
+          existing.organization_id === input.organization_id &&
+          existing.created_by_user_id === user.id
+        ) {
+          return c.json({ data: { job: existing } }, 200);
+        }
+        if (existing) {
+          return c.json({
+            error: "Conflict",
+            message: "A job with this id already exists",
+          }, 409);
+        }
+        // Some other unique key; report it as before.
+      }
       const failure = jobWriteError(error);
       return c.json(failure.body, failure.status);
     }

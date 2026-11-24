@@ -237,7 +237,7 @@ export function EmployerJobsList() {
                   onPress={openPosting}
                   accessibilityLabel={`Open ${job.title}`}
                   age={age != null ? `${age}d` : undefined}
-                  ageLabel={listingAgeLabel(job.posted_at)}
+                  ageLabel={listingAgeLabel(job.posted_at, job.status)}
                   // Title and meta in a fixed-width block so the applicant
                   // count starts at one x down the list.
                   title={

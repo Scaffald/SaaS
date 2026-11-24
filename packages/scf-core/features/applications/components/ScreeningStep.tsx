@@ -5,6 +5,7 @@ import { AddressAutocomplete, ResponsiveSelect, useThemeContext } from '@scaffal
 import { useMemo, useState } from 'react'
 import { Button, Input, Label, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { YEARS_EXPERIENCE_BUCKETS, bucketToYears, yearsToBucket } from '../screening-format'
 
 const EARLIEST_START_DATE_OPTIONS = [
   { label: 'Immediately', value: 'Immediately' },
@@ -14,12 +15,7 @@ const EARLIEST_START_DATE_OPTIONS = [
   { label: '3+ months', value: '3+ months' },
 ]
 
-const YEARS_EXPERIENCE_OPTIONS = [
-  { label: '0-1 years', value: '0-1' },
-  { label: '1-3 years', value: '1-3' },
-  { label: '3-5 years', value: '3-5' },
-  { label: '5+ years', value: '5+' },
-]
+const YEARS_EXPERIENCE_OPTIONS = YEARS_EXPERIENCE_BUCKETS.map(({ label, value }) => ({ label, value }))
 
 export interface ScreeningStepProps {
   /**
@@ -378,19 +374,16 @@ export function ScreeningStep({
    * Get years experience value for Select dropdown
    */
   function getYearsExperienceValue() {
-    if (answers.years_experience === undefined) return undefined
-    if (answers.years_experience <= 1) return '0-1'
-    if (answers.years_experience <= 3) return '1-3'
-    if (answers.years_experience <= 5) return '3-5'
-    return '5+'
+    return yearsToBucket(answers.years_experience)
   }
 
   /**
    * Handle years experience change from Select dropdown
    */
   function handleYearsExperienceChange(value: string) {
-    // Convert string value to number for years_experience
-    const numValue = value === '0-1' ? 0 : value === '1-3' ? 2 : value === '3-5' ? 4 : 5
+    // One table both ways, so the bucket that was chosen is the one that reopens (#1415).
+    const numValue = bucketToYears(value)
+    if (numValue === undefined) return
     onAnswersChange({ ...answers, years_experience: numValue })
     if (errors.years_experience) {
       setErrors({ ...errors, years_experience: undefined })
