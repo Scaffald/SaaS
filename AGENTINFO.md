@@ -707,6 +707,10 @@ eas build --platform android
 eas update
 ```
 
+QA builds: every `app-v*` release gets an iOS-simulator `.app` and an Android
+`.apk` (Release, pointed at dev, no Metro) attached to its GitHub release. See
+[docs/agents/QA-BUILDS.md](docs/agents/QA-BUILDS.md).
+
 ### Supabase
 
 ```bash
