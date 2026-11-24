@@ -5,6 +5,7 @@ import { ControlledAddressForm } from "@scf/core/forms";
 import { useUserLocation } from "@scf/core/hooks";
 import { useCompletePrerequisites, useIndustries } from "@scaffald/sdk/react";
 import { usePrerequisitesPrefill } from "@scf/core/features/prerequisites";
+import { useInvitedBy } from "@scf/core/features/invites/useInvitedBy";
 import { usePrerequisitesCheck } from "@scf/core/utils/prerequisites-sdk-hooks";
 import { useSessionContext } from "@scf/core/utils/supabase/useSessionContext";
 import {
@@ -47,6 +48,8 @@ import {
  */
 export default function OnboardingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // #1395: set when this account was created from someone's invite link.
+  const invitedBy = useInvitedBy();
   const [proximity, setProximity] = useState<{ lat: number; lng: number } | undefined>();
   const { isMobile } = useResponsive();
   const toast = useToast();
@@ -165,6 +168,11 @@ export default function OnboardingPage() {
         }}
       >
         <Stack maxWidth={600} width="100%" gap={4} style={{ alignSelf: "center" }}>
+          {invitedBy ? (
+            <Text size="sm" color="primary" testID="onboarding-invited-by">
+              {`${invitedBy} invited you. Welcome to Scaffald!`}
+            </Text>
+          ) : null}
           <Text weight="semibold">Complete Your Profile</Text>
           <Text color="gray" size="sm">
             Please complete these required fields to continue using Scaffald
