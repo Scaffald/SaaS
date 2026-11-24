@@ -66,6 +66,25 @@ const MATRIX: Row[] = [
     why: "push tokens are per-user",
   },
 
+  // --- 396: worker invites and newsletter (#1392) -----------------------------
+  {
+    target: 'core.generic_invitations',
+    filter: 'inviter_id=neq.{self}&invitee_user_id=is.null',
+    expect: { anon: 'denied', userA: 'none', userB: 'none', orgAdmin: 'none' },
+    why: "an inviter reads their own invites, never another user's (invites-data-rls-rest covers writes)",
+  },
+  {
+    target: 'core.referral_attributions',
+    filter: 'referrer_id=neq.{self}&user_id=neq.{self}',
+    expect: { anon: 'denied', userA: 'none', orgAdmin: 'none', office: 'none' },
+    why: 'only the referrer and the referred user read an attribution',
+  },
+  {
+    target: 'core.newsletter_signups',
+    expect: { anon: 'denied', userA: 'denied', orgAdmin: 'denied', office: 'denied' },
+    why: 'pending opt-ins carry emails and IPs; only the api function reads them',
+  },
+
   // --- 306 (via 367): views run as the caller --------------------------------
   {
     target: 'core.v_profile_search',
