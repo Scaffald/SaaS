@@ -28,7 +28,7 @@ import { Pressable, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { Check } from 'lucide-react-native'
 import { Avatar, Chip, Row, Sheet, Text, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { colors, fontSize } from '@scaffald/ui/tokens'
 import { ROUTES } from '@scf/core/constants/routes'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { AppearanceControl } from './AppearanceControl'
@@ -81,6 +81,11 @@ export function MobileAccountSheet({
   const goNotifications = useCallback(() => {
     onClose()
     router.push(ROUTES.DASHBOARD.NOTIFICATIONS.path as never)
+  }, [onClose, router])
+
+  const goInvite = useCallback(() => {
+    onClose()
+    router.push(ROUTES.DASHBOARD.INVITE.path as never)
   }, [onClose, router])
 
   const signOut = useCallback(async () => {
@@ -185,6 +190,25 @@ export function MobileAccountSheet({
         <View style={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 14, ...divider }}>
           <AppearanceControl />
         </View>
+
+        <Pressable
+          onPress={goInvite}
+          accessibilityRole="menuitem"
+          accessibilityLabel="Invite your crew"
+          testID="account-sheet-invite"
+          style={({ pressed }) => ({
+            paddingHorizontal: 20,
+            minHeight: 44,
+            paddingVertical: 13,
+            justifyContent: 'center',
+            opacity: pressed ? 0.6 : 1,
+            ...divider,
+          })}
+        >
+          <Text style={{ fontSize: fontSize.md, color: colors.text[theme].primary }}>
+            Invite your crew
+          </Text>
+        </Pressable>
 
         <Pressable
           onPress={goNotifications}

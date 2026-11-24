@@ -103,8 +103,14 @@ export default function OnboardingPage() {
         variant: "success",
       });
       refetchStatus();
-      // Redirect to dashboard immediately after completion
-      router.replace(ROUTES.DASHBOARD.path);
+      // Workers finish on "Invite your crew" (#1398), which they can skip;
+      // everyone else goes straight to the dashboard.
+      const isWorker = (getValues("user_types") ?? []).includes("worker");
+      router.replace(
+        isWorker
+          ? { pathname: ROUTES.DASHBOARD.INVITE.path, params: { from: "onboarding" } }
+          : ROUTES.DASHBOARD.path,
+      );
     },
     onError: (error: { message?: string }) => {
       // SC-112: the form-level catch in onSubmit only console.errors; this

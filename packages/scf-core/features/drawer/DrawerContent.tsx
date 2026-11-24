@@ -10,7 +10,15 @@ import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { usePathname } from '@scf/core/utils/usePathname'
 import { useUser } from '@scf/core/utils/useUser'
 import { useRouter } from 'expo-router'
-import { Bell, Check, ChevronLeft, ChevronRight, ChevronUp, LogOut } from 'lucide-react-native'
+import {
+  Bell,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  LogOut,
+  UserPlus,
+} from 'lucide-react-native'
 import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import {
   Pressable,
@@ -123,6 +131,11 @@ export const DrawerContent = ({
     handleNavigate()
   }, [router, handleNavigate])
 
+  const handleInvitePress = useCallback(() => {
+    router.push(ROUTES.DASHBOARD.INVITE.path)
+    handleNavigate()
+  }, [router, handleNavigate])
+
   const handleLogoutPress = useCallback(async () => {
     try {
       await supabase.auth.signOut()
@@ -217,6 +230,14 @@ export const DrawerContent = ({
         ))}
       </ScrollView>
 
+      {/* #1398: anyone can bring their crew; it sits with the other footer rows. */}
+      <InviteRow
+        theme={resolvedTheme}
+        collapsed={collapsed}
+        active={isActivePath(pathname, ROUTES.DASHBOARD.INVITE.path)}
+        onPress={handleInvitePress}
+      />
+
       <NotificationsRow
         theme={resolvedTheme}
         collapsed={collapsed}
@@ -276,6 +297,45 @@ function CountTag({ label }: { theme: ResolvedTheme; label: string }) {
     <Chip tone="accent" size="sm">
       {label}
     </Chip>
+  )
+}
+
+function InviteRow({
+  theme,
+  collapsed,
+  active,
+  onPress,
+}: {
+  theme: ResolvedTheme
+  collapsed: boolean
+  active: boolean
+  onPress: () => void
+}) {
+  const fg = active ? colors.text[theme].emphasis : colors.text[theme].secondary
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="link"
+      accessibilityLabel="Invite your crew"
+      accessibilityState={{ selected: active }}
+      testID="drawer-invite"
+      style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [
+        styles.footerRow,
+        collapsed && styles.footerRowCollapsed,
+        {
+          borderTopColor: colors.border[theme].subtle,
+          backgroundColor: hovered || pressed ? colors.bg[theme].subtle : 'transparent',
+        },
+      ]}
+    >
+      {collapsed ? (
+        <UserPlus size={FOOTER_ICON} color={fg} />
+      ) : (
+        <Text style={StyleSheet.flatten([styles.footerLabel, { color: fg }])}>
+          Invite your crew
+        </Text>
+      )}
+    </Pressable>
   )
 }
 
