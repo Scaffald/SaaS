@@ -107,11 +107,12 @@ app.post("/", zValidator("json", createSchema), async (c) => {
   if (!user) return c.json(unauthorized(), 401);
   const body = c.req.valid("json");
   const admin = serviceClient();
-  const core = admin.schema("core");
+  const db = admin;
 
   const [{ data: inviter }, { data: rule }] = await Promise.all([
-    core.from("users").select("display_name").eq("id", user.id).maybeSingle(),
-    core.from("invitation_rules").select("id")
+    db.schema("core").from("users").select("display_name").eq("id", user.id)
+      .maybeSingle(),
+    db.schema("core").from("invitation_rules").select("id")
       .eq("source_role", "worker").eq("target_role", "worker").maybeSingle(),
   ]);
   if (!inviter) {
@@ -134,7 +135,7 @@ app.post("/", zValidator("json", createSchema), async (c) => {
   const emails = ok.map((x) => x.email).filter((e): e is string => !!e);
   const members = new Set<string>();
   if (emails.length) {
-    const { data, error } = await core.rpc("user_ids_by_email", {
+    const { data, error } = await db.schema("core").rpc("user_ids_by_email", {
       p_emails: emails,
     });
     if (error) {
@@ -154,7 +155,7 @@ app.post("/", zValidator("json", createSchema), async (c) => {
   const phones = ok.map((x) => x.phone).filter((p): p is string => !!p);
   const recent = new Set<string>();
   if (emails.length) {
-    const { data } = await core.from("generic_invitations").select(
+    const { data } = await db.schema("core").from("generic_invitations").select(
       "invitee_email",
     )
       .eq("inviter_id", user.id).gte("created_at", since).in(
@@ -166,7 +167,7 @@ app.post("/", zValidator("json", createSchema), async (c) => {
     }
   }
   if (phones.length) {
-    const { data } = await core.from("generic_invitations").select(
+    const { data } = await db.schema("core").from("generic_invitations").select(
       "invitee_phone",
     )
       .eq("inviter_id", user.id).gte("created_at", since).in(
@@ -178,7 +179,7 @@ app.post("/", zValidator("json", createSchema), async (c) => {
     }
   }
 
-  const { count: today } = await core.from("generic_invitations")
+  const { count: today } = await db.schema("core").from("generic_invitations")
     .select("id", { count: "exact", head: true })
     .eq("inviter_id", user.id).gte("created_at", daysAgo(1));
   let remaining = DAILY_INVITE_LIMIT - (today ?? 0);
@@ -244,7 +245,9 @@ app.post("/", zValidator("json", createSchema), async (c) => {
     // A code collision is ~1 in 10^17; one retry is plenty.
     let row: { id: string; referral_code: string } | null = null;
     for (let attempt = 0; attempt < 2 && !row; attempt++) {
-      const { data, error } = await core.from("generic_invitations").insert({
+      const { data, error } = await db.schema("core").from(
+        "generic_invitations",
+      ).insert({
         rule_id: rule?.id ?? null,
         inviter_id: user.id,
         invitee_email: contact.email,
@@ -312,7 +315,7 @@ app.post("/", zValidator("json", createSchema), async (c) => {
         text: content.text,
         metadata: { invitationId: row.id, kind: "referral_invite" },
       });
-      await core.from("generic_invitations").update({
+      await db.schema("core").from("generic_invitations").update({
         nevarmail_email_id: sent.id,
         email_sent_at: new Date().toISOString(),
       }).eq("id", row.id);
@@ -325,7 +328,10 @@ app.post("/", zValidator("json", createSchema), async (c) => {
       });
     } catch (e) {
       // Nothing was sent, so nothing should look invited.
-      await core.from("generic_invitations").delete().eq("id", row.id);
+      await db.schema("core").from("generic_invitations").delete().eq(
+        "id",
+        row.id,
+      );
       recent.delete(key);
       if (e instanceof NevarMailError && e.isSuppressed) {
         results.push({
@@ -371,16 +377,16 @@ app.get("/", async (c) => {
   const user = c.get("user");
   if (!user) return c.json(unauthorized(), 401);
   // The caller's own client: RLS (396) already limits both tables to their rows.
-  const core = c.get("supabase").schema("core");
+  const db = c.get("supabase");
 
   const [{ data: invites, error }, { data: joined }] = await Promise.all([
-    core.from("generic_invitations")
+    db.schema("core").from("generic_invitations")
       .select(
         "id, kind, channel, invitee_name, invitee_email, invitee_phone, status, created_at, accepted_at, email_sent_at, email_opened_at, email_clicked_at, invitee_user_id",
       )
       .eq("inviter_id", user.id).order("created_at", { ascending: false })
       .limit(200),
-    core.from("referral_attributions")
+    db.schema("core").from("referral_attributions")
       .select("user_id, invitation_id, signed_up_at, onboarded_at")
       .eq("referrer_id", user.id),
   ]);
@@ -465,17 +471,17 @@ type ResolvedCode =
 
 // deno-lint-ignore no-explicit-any
 async function resolveCode(
-  core: any,
+  db: any,
   code: string,
 ): Promise<ResolvedCode | null> {
   if (!isPlausibleCode(code)) return null;
-  const { data: owner } = await core.from("users").select("id").eq(
+  const { data: owner } = await db.schema("core").from("users").select("id").eq(
     "referral_code",
     code,
   ).maybeSingle();
   if (owner) return { kind: "link", referrerId: owner.id };
 
-  const { data: inv } = await core.from("generic_invitations")
+  const { data: inv } = await db.schema("core").from("generic_invitations")
     .select("id, inviter_id, status, expires_at, invitee_user_id")
     .eq("referral_code", code).maybeSingle();
   if (!inv) return null;
@@ -498,15 +504,15 @@ async function resolveCode(
 // ---------------------------------------------------------------------------
 
 app.get("/:code/preview", async (c) => {
-  const core = serviceClient().schema("core");
-  const resolved = await resolveCode(core, c.req.param("code").toLowerCase());
+  const db = serviceClient();
+  const resolved = await resolveCode(db, c.req.param("code").toLowerCase());
   if (!resolved) {
     return c.json({
       error: "Not Found",
       message: "This invite link isn't valid.",
     }, 404);
   }
-  const { data: inviter } = await core.from("users")
+  const { data: inviter } = await db.schema("core").from("users")
     .select("display_name, avatar_url").eq("id", resolved.referrerId)
     .maybeSingle();
   if (!inviter) {
@@ -543,15 +549,17 @@ app.post(
     if (!user) return c.json(unauthorized(), 401);
     const { code: rawCode, landedAt } = c.req.valid("json");
     const code = rawCode.trim().toLowerCase();
-    const core = serviceClient().schema("core");
+    const db = serviceClient();
 
-    const { data: existing } = await core.from("referral_attributions")
+    const { data: existing } = await db.schema("core").from(
+      "referral_attributions",
+    )
       .select("referrer_id").eq("user_id", user.id).maybeSingle();
     if (existing) {
       return c.json({ claimed: false, reason: "already_attributed" });
     }
 
-    const resolved = await resolveCode(core, code);
+    const resolved = await resolveCode(db, code);
     if (!resolved) {
       return c.json({
         error: "Not Found",
@@ -571,7 +579,9 @@ app.post(
 
     // Attribution is for new accounts; an existing member opening a link
     // later must not credit whoever sent it.
-    const { data: me } = await core.from("users").select("created_at").eq(
+    const { data: me } = await db.schema("core").from("users").select(
+      "created_at",
+    ).eq(
       "id",
       user.id,
     ).maybeSingle();
@@ -579,7 +589,9 @@ app.post(
       return c.json({ claimed: false, reason: "not_new" });
     }
 
-    const { error: insertError } = await core.from("referral_attributions")
+    const { error: insertError } = await db.schema("core").from(
+      "referral_attributions",
+    )
       .insert({
         user_id: user.id,
         referrer_id: resolved.referrerId,
@@ -601,14 +613,16 @@ app.post(
     }
 
     if (resolved.kind === "targeted") {
-      await core.from("generic_invitations").update({
+      await db.schema("core").from("generic_invitations").update({
         status: "accepted",
         accepted_at: new Date().toISOString(),
         invitee_user_id: user.id,
       }).eq("id", resolved.invitationId);
     }
 
-    const { data: referrer } = await core.from("users").select("display_name")
+    const { data: referrer } = await db.schema("core").from("users").select(
+      "display_name",
+    )
       .eq("id", resolved.referrerId).maybeSingle();
     return c.json({
       claimed: true,

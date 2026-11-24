@@ -157,7 +157,13 @@ Deno.test({
         claimed: false,
         reason: 'self',
       })
-      const oldMember = await call('POST', '/invites/claim', office.token, { code: link.body.code })
+      // An account older than the claim window. Seeded users can't stand in for
+      // one: on CI's fresh stack they were created minutes ago. So age userB
+      // for one call, then put it back.
+      const { data: bRow } = await admin.from('users').select('created_at').eq('id', userB.id).single()
+      await admin.from('users').update({ created_at: '2025-01-01T00:00:00Z' }).eq('id', userB.id)
+      const oldMember = await call('POST', '/invites/claim', userB.token, { code: link.body.code })
+      await admin.from('users').update({ created_at: bRow?.created_at }).eq('id', userB.id)
       assertEquals(oldMember.body, { claimed: false, reason: 'not_new' }, 'existing members do not credit anyone')
 
       const claim = await call('POST', '/invites/claim', userB.token, { code: phoneCode.toUpperCase() })
