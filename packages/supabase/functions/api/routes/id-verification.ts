@@ -3,6 +3,7 @@
  * Migrated from trpc idVerification router
  */
 
+import { STATEMENT_DESCRIPTOR_SUFFIX } from "../../_shared/payments/stripe-client.ts";
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
@@ -219,6 +220,7 @@ app.post(
           persona_status: personaInquiry.status,
         },
         automatic_payment_methods: { enabled: true },
+        statement_descriptor_suffix: STATEMENT_DESCRIPTOR_SUFFIX,
       });
 
       if (!intent.client_secret) {

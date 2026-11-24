@@ -15,6 +15,7 @@ import {
 // The shared loader: same Vault key path, plus STRIPE_MOCK_MODE for the REST
 // tests (#937) — this file used to carry its own copy without it.
 import { loadStripeClient } from "../../_shared/id-verification-api.ts";
+import { STATEMENT_DESCRIPTOR_SUFFIX } from "../../_shared/payments/stripe-client.ts";
 import { PIPELINE_ROLES, userHasOrgAccess } from "../lib/application-access.ts";
 
 const FEE_PERCENTAGE = 10;
@@ -413,6 +414,7 @@ app.post(
             stage: "upfront",
           },
           automatic_payment_methods: { enabled: true },
+          statement_descriptor_suffix: STATEMENT_DESCRIPTOR_SUFFIX,
         });
 
       if (!linkedIntentId) {

@@ -21,6 +21,15 @@ import type { NotificationSupabaseClient } from '../notifications/types.ts'
 // with the SDK upgrade in #454.
 export const STRIPE_API_VERSION = '2025-11-17.clover' as Stripe.LatestApiVersion
 
+/**
+ * Appended to the account's statement descriptor on every charge we create,
+ * so a card statement reads `UNICORN LOVE* SCAFFALD` rather than only the
+ * legal entity's name, which a Scaffald customer would not recognise (#1260).
+ * Stripe joins it to the account's shortened descriptor; the two together
+ * must fit 22 characters, so keep it short and letters-only.
+ */
+export const STATEMENT_DESCRIPTOR_SUFFIX = 'SCAFFALD'
+
 let StripeClass: typeof import('stripe').default | null = null
 
 /**
