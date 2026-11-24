@@ -14,6 +14,11 @@ import {
   AUTH_EMAIL_TEMPLATES,
   type AuthEmailKind,
 } from "./auth-email-templates.ts";
+import { createNevarMailClient } from "./nevarmail.ts";
+import {
+  verifyStandardWebhook,
+  type WebhookSignatureHeaders,
+} from "./webhook-signature.ts";
 
 export interface HookPayload {
   user: { id?: string; email?: string; new_email?: string };
@@ -39,75 +44,21 @@ export interface OutgoingEmail {
 // Standard Webhooks signature (what Supabase signs hooks with)
 // ---------------------------------------------------------------------------
 
-const TOLERANCE_SECONDS = 5 * 60;
-
-function b64ToBytes(b64: string): Uint8Array<ArrayBuffer> {
-  const bin = atob(b64);
-  const out = new Uint8Array(new ArrayBuffer(bin.length));
-  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-  return out;
-}
-
-function bytesToB64(bytes: ArrayBuffer): string {
-  let bin = "";
-  for (const b of new Uint8Array(bytes)) bin += String.fromCharCode(b);
-  return btoa(bin);
-}
-
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-}
-
 /**
  * Verifies a Standard Webhooks request. `secret` is the value Supabase shows
- * when the hook is created: `v1,whsec_<base64>`. Returns false (never throws)
- * on anything malformed, stale or unsigned.
+ * when the hook is created: `v1,whsec_<base64>` (the key is the decoded
+ * base64). Returns false (never throws) on anything malformed, stale or
+ * unsigned.
  */
-export async function verifyHookSignature(
+export function verifyHookSignature(
   secret: string,
-  headers: {
-    id: string | null;
-    timestamp: string | null;
-    signature: string | null;
-  },
+  headers: WebhookSignatureHeaders,
   body: string,
   nowSeconds = Math.floor(Date.now() / 1000),
 ): Promise<boolean> {
-  const { id, timestamp, signature } = headers;
-  if (!id || !timestamp || !signature) return false;
-  const ts = Number(timestamp);
-  if (!Number.isFinite(ts) || Math.abs(nowSeconds - ts) > TOLERANCE_SECONDS) {
-    return false;
-  }
-
-  const raw = secret.replace(/^v1,/, "").replace(/^whsec_/, "");
-  let keyBytes: Uint8Array<ArrayBuffer>;
-  try {
-    keyBytes = b64ToBytes(raw);
-  } catch {
-    return false;
-  }
-  const key = await crypto.subtle.importKey(
-    "raw",
-    keyBytes,
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
-  const mac = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    new TextEncoder().encode(`${id}.${timestamp}.${body}`),
-  );
-  const expected = bytesToB64(mac);
-
-  // The header may carry several space-separated "v1,<sig>" entries.
-  return signature.split(" ").some((part) => {
-    const [version, sig] = part.split(",");
-    return version === "v1" && !!sig && timingSafeEqual(sig, expected);
+  return verifyStandardWebhook(secret, headers, body, {
+    keyEncoding: "base64",
+    nowSeconds,
   });
 }
 
@@ -263,29 +214,23 @@ export interface NevarMailConfig {
   baseUrl?: string;
 }
 
+/** Sends one auth email as a transactional NevarMail send (see _shared/nevarmail.ts). */
 export async function sendViaNevarMail(
   cfg: NevarMailConfig,
   email: OutgoingEmail,
   fetchImpl: typeof fetch = fetch,
 ): Promise<void> {
-  const base = (cfg.baseUrl ?? "https://app.nevarmail.com").replace(/\/+$/, "");
-  const res = await fetchImpl(`${base}/api/v1/email/send`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${cfg.apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      to: email.to,
-      subject: email.subject,
-      html: email.html,
-      text: email.text,
-      use_case_id: cfg.useCaseId,
-      emailType: "transactional",
-    }),
+  const client = createNevarMailClient({
+    apiKey: cfg.apiKey,
+    baseUrl: cfg.baseUrl,
+    fetch: fetchImpl,
   });
-  if (!res.ok) {
-    const detail = (await res.text()).slice(0, 300);
-    throw new Error(`NevarMail send failed (${res.status}): ${detail}`);
-  }
+  await client.send({
+    to: email.to,
+    useCaseId: cfg.useCaseId,
+    subject: email.subject,
+    html: email.html,
+    text: email.text,
+    emailType: "transactional",
+  });
 }
