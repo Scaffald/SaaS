@@ -36,6 +36,10 @@ import {
   nextStageFor,
 } from '../candidate-actions'
 import { assigneeLabel, formatScore } from '../row-labels'
+import {
+  formatScreeningLocation,
+  formatYearsExperience,
+} from '@scf/core/features/applications/screening-format'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { ApplicationDetailsTab } from './ApplicationDetailsTab'
@@ -218,14 +222,14 @@ export const CandidateDetailContent = ({
     currentUser?.id
   )
   const years = application.candidate.yearsExperience
-  const metaLine = [
+  // One Text per part, so a narrow screen wraps between parts instead of
+  // running the line off the edge (#1417).
+  const metaParts = [
     `Assignee — ${assignee}`,
     `Applied ${formatAppliedAgo(application.appliedAt)}`,
-    application.candidate.location || null,
-    years > 0 ? `${years} yr${years === 1 ? '' : 's'} exp` : null,
-  ]
-    .filter(Boolean)
-    .join(' · ')
+    formatScreeningLocation(application.candidate.location) || null,
+    years > 0 ? `${formatYearsExperience(years)} exp` : null,
+  ].filter((part): part is string => Boolean(part))
 
   const inquiryFormValues = useMemo(() => {
     if (!inquiryData?.inquiry) {
@@ -381,13 +385,30 @@ export const CandidateDetailContent = ({
 
           {/* Assignee, applied and experience as one line, not three
               labelled blocks. */}
-          <Row gap={8} align="center" wrap>
+          <Row
+            gap={8}
+            align="center"
+            wrap
+            style={{ flexShrink: 1, minWidth: 0, maxWidth: '100%' }}
+            testID="candidate-meta-line"
+          >
             {application.unionStatus?.isUnionMember ? (
               <UnionStatusBadge unionStatus={application.unionStatus} compact />
             ) : null}
-            <Text style={{ fontSize: fontSize.sm, color: colors.text[theme].secondary }}>
-              {metaLine}
-            </Text>
+            <Row wrap style={{ flexShrink: 1, minWidth: 0, maxWidth: '100%' }}>
+              {metaParts.map((part, i) => (
+                <Text
+                  key={part}
+                  style={{
+                    fontSize: fontSize.sm,
+                    color: colors.text[theme].secondary,
+                    flexShrink: 1,
+                  }}
+                >
+                  {i > 0 ? ` · ${part}` : part}
+                </Text>
+              ))}
+            </Row>
           </Row>
         </Row>
       </ScreenHeader>

@@ -34,6 +34,7 @@ import {
   useToast,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { screeningAnswerRows } from '../screening-format'
 import { ActivityTimeline } from './ActivityTimeline'
 import { ApplicationStatusBadge } from './ApplicationStatusBadge'
 
@@ -70,14 +71,6 @@ const EMPLOYMENT_LABELS: Record<string, string> = {
   contract: 'Contract',
   temp: 'Temporary',
   intern: 'Internship',
-}
-
-const SCREENING_LABELS: Record<string, string> = {
-  current_location: 'Location',
-  willing_to_relocate: 'Willing to Relocate',
-  years_experience: 'Years of Experience',
-  is_authorized_to_work: 'Authorized to Work in US',
-  earliest_start_date: 'Earliest Start Date',
 }
 
 const WITHDRAWABLE_STATUSES = ['pending', 'reviewing', 'inquired']
@@ -151,7 +144,9 @@ export function ApplicationDetailScreen({ applicationId }: ApplicationDetailScre
       ? formatDistanceToNow(appliedDate, { addSuffix: true })
       : 'recently'
   const canWithdraw = WITHDRAWABLE_STATUSES.includes(application.status)
-  const screening = application.screening_answers ?? {}
+  const screeningRows = screeningAnswerRows(
+    application.screening_answers as Record<string, unknown> | null | undefined
+  )
   const activity = activityResponse?.data ?? []
   const messages = messagesResponse?.data ?? []
 
@@ -259,33 +254,32 @@ export function ApplicationDetailScreen({ applicationId }: ApplicationDetailScre
         )}
 
         {/* Screening Answers */}
-        {Object.keys(screening).length > 0 && (
+        {screeningRows.length > 0 && (
           <DashboardWidget gap={12}>
             <Text style={{ color: colors.text[theme].primary, fontSize: 15, fontWeight: '600' }}>
               Your Screening Answers
             </Text>
             <Stack gap={8}>
-              {Object.entries(screening).map(([key, value]) => {
-                const label = SCREENING_LABELS[key] ?? key.replace(/_/g, ' ')
-                const display =
-                  typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value ?? '—')
-                return (
-                  <Row key={key} justify="space-between">
-                    <Text style={{ color: colors.text[theme].secondary, fontSize: 14 }}>
-                      {label}
-                    </Text>
-                    <Text
-                      style={{
-                        color: colors.text[theme].primary,
-                        fontSize: 14,
-                        fontWeight: '500',
-                      }}
-                    >
-                      {display}
-                    </Text>
-                  </Row>
-                )
-              })}
+              {screeningRows.map(({ key, label, value }) => (
+                <Row key={key} justify="space-between" align="flex-start" gap={12}>
+                  <Text
+                    style={{ color: colors.text[theme].secondary, fontSize: 14, flexShrink: 1 }}
+                  >
+                    {label}
+                  </Text>
+                  <Text
+                    style={{
+                      color: colors.text[theme].primary,
+                      fontSize: 14,
+                      fontWeight: '500',
+                      flexShrink: 1,
+                      textAlign: 'right',
+                    }}
+                  >
+                    {value}
+                  </Text>
+                </Row>
+              ))}
             </Stack>
           </DashboardWidget>
         )}
