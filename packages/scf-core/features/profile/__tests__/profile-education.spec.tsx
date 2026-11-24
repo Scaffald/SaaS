@@ -142,9 +142,13 @@ describe('ProfileEducationLeft', () => {
 
     // The catalog pick fills the search field, the manual one the plain input.
     await waitFor(() =>
-      expect(screen.getByLabelText('Institution search')).toHaveValue('Catalog University')
+      expect((screen.getByLabelText('Institution search') as HTMLInputElement).value).toBe(
+        'Catalog University'
+      )
     )
-    expect(screen.getByLabelText('Institution name')).toHaveValue('Night School of Welding')
+    expect((screen.getByLabelText('Institution name') as HTMLInputElement).value).toBe(
+      'Night School of Welding'
+    )
     expect(screen.getByLabelText('Remove education 1')).toBeTruthy()
     expect(screen.getByLabelText('Remove education 2')).toBeTruthy()
     expect(screen.queryByText('No education entries added yet')).toBeNull()
