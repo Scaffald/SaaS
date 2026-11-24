@@ -14,12 +14,24 @@ import {
   type ProfileWizardStepId,
 } from "./profile-wizard-schema.ts";
 
+/** How far a count-based section is toward its threshold, e.g. 1 of 3 skills. */
+export interface SectionCountProgress {
+  current: number;
+  required: number;
+}
+
 export interface SectionStatus {
   id: ProfileWizardStepId;
   title: string;
   weight: number;
   completed: boolean;
   missingFields: string[];
+  /**
+   * Set on sections that complete at a count (skills, certifications), so the
+   * client can say "1 of 3" instead of a bare "Add" (#1418). `current` is
+   * capped at `required`.
+   */
+  progress?: SectionCountProgress;
 }
 
 export interface CompletionInputs {
@@ -45,6 +57,19 @@ const SECTION_TITLES: Record<ProfileWizardStepId, string> = {
 
 const COMPLETION_MILESTONES = [25, 50, 75, 100] as const;
 
+/** Trade (csi/onet) skills a profile needs for the skills section. */
+export const REQUIRED_SKILLS = 3;
+/** Certifications a profile needs for the certifications section. */
+export const REQUIRED_CERTIFICATIONS = 1;
+
+const countProgress = (
+  count: number,
+  required: number,
+): SectionCountProgress => ({
+  current: Math.min(Math.max(0, count), required),
+  required,
+});
+
 const text = (value: unknown): string => `${value ?? ""}`.trim();
 
 export function getSectionStatuses(inputs: CompletionInputs): SectionStatus[] {
@@ -55,14 +80,15 @@ export function getSectionStatuses(inputs: CompletionInputs): SectionStatus[] {
   if (text(profile.last_name).length === 0) generalMissing.push("last_name");
   if (text(inputs.headline).length === 0) generalMissing.push("headline");
 
-  const skillsComplete = inputs.skillsCount >= 3;
+  const skillsComplete = inputs.skillsCount >= REQUIRED_SKILLS;
 
   const experienceComplete = inputs.experience.some(
     (entry) =>
       text(entry?.job_title).length > 0 && text(entry?.company_name).length > 0,
   );
 
-  const certificationsComplete = inputs.certificationsCount > 0;
+  const certificationsComplete =
+    inputs.certificationsCount >= REQUIRED_CERTIFICATIONS;
 
   const preferredLocations = Array.isArray(profile.preferred_work_locations)
     ? (profile.preferred_work_locations as unknown[])
@@ -86,7 +112,8 @@ export function getSectionStatuses(inputs: CompletionInputs): SectionStatus[] {
       title: SECTION_TITLES.skills,
       weight: PROFILE_WIZARD_STEP_WEIGHTS.skills,
       completed: skillsComplete,
-      missingFields: skillsComplete ? [] : ["skills>=3"],
+      missingFields: skillsComplete ? [] : [`skills>=${REQUIRED_SKILLS}`],
+      progress: countProgress(inputs.skillsCount, REQUIRED_SKILLS),
     },
     experience: {
       id: "experience",
@@ -101,6 +128,10 @@ export function getSectionStatuses(inputs: CompletionInputs): SectionStatus[] {
       weight: PROFILE_WIZARD_STEP_WEIGHTS.certifications,
       completed: certificationsComplete,
       missingFields: certificationsComplete ? [] : ["certification_entry"],
+      progress: countProgress(
+        inputs.certificationsCount,
+        REQUIRED_CERTIFICATIONS,
+      ),
     },
     preferences: {
       id: "preferences",

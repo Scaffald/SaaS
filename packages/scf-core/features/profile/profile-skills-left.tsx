@@ -140,7 +140,7 @@ export function ProfileSkillsLeft() {
                 sheetTitle="Select Industry"
               />
               <Text style={{ color: colors.text[theme].secondary }}>
-                Select your industry to search for relevant skills
+                Select your industry, then add at least 3 trade skills to complete this section
               </Text>
             </Stack>
 
