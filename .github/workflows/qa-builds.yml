@@ -6,10 +6,11 @@ name: QA mobile builds
 # (#1419). Both are Release builds pointed at dev with no dev client: they run
 # with no Metro.
 #
-# The builds run on EAS (apps/scaffald/.eas/workflows/qa-builds.yml, cloud
-# clone with submodules). This job triggers that run, waits for it and uploads
-# the two files. The wait is billed Actions time (~25-40 min per release,
-# ubuntu runner); that is the price of not storing a GitHub token on EAS.
+# The builds run on EAS: this job uploads the tagged checkout (`eas build`,
+# as scripts/ship-ios.sh does), waits for both builds and attaches the files.
+# The wait is billed Actions time (~25-40 min per release, ubuntu runner).
+# EAS Workflows (--ref, no wait here) would avoid that, but the EAS project has
+# no GitHub repository linked since the org move.
 #
 # Docs for the QA agent: docs/agents/QA-BUILDS.md.
 
@@ -87,59 +88,43 @@ jobs:
               --notes "scaffald-app v${VERSION}. See CHANGELOG.md."
           fi
 
-      - name: Run the qa EAS workflow and wait
-        id: eas
+      - name: Build qa on EAS and wait
         working-directory: apps/scaffald
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-          SHA: ${{ steps.commit.outputs.sha }}
         run: |
           set -euo pipefail
           if [ -z "$EXPO_TOKEN" ]; then
             echo "::error::EXPO_TOKEN secret is not configured."
             exit 1
           fi
-          pnpm dlx "$EAS_CLI" workflow:run .eas/workflows/qa-builds.yml \
-            --ref "$SHA" --non-interactive --wait --json > "$RUNNER_TEMP/run.json" || true
-          cat "$RUNNER_TEMP/run.json"
-          RUN_ID=$(jq -r '.id // empty' "$RUNNER_TEMP/run.json")
-          if [ -z "$RUN_ID" ]; then
-            echo "::error::Could not start the EAS workflow run."
-            exit 1
-          fi
-          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
-          pnpm dlx "$EAS_CLI" workflow:view "$RUN_ID" --non-interactive --json > "$RUNNER_TEMP/view.json"
-          STATUS=$(jq -r '.status' "$RUNNER_TEMP/view.json")
-          echo "EAS workflow run $RUN_ID: $STATUS"
-          if [ "$STATUS" != "SUCCESS" ]; then
-            echo "::error::EAS workflow run $RUN_ID ended $STATUS. https://expo.dev/accounts/unicorn-love/projects/scf-scaffald/workflows/$RUN_ID"
+          # Uploads this checkout (submodules included) like scripts/ship-ios.sh
+          # does; EAS-side GitHub cloning is not set up for this project.
+          pnpm dlx "$EAS_CLI" build --profile qa --platform all \
+            --non-interactive --wait --json > "$RUNNER_TEMP/builds.json"
+          jq -r '.[] | "\(.platform) \(.id) \(.status) \(.artifacts.buildUrl)"' "$RUNNER_TEMP/builds.json"
+          if jq -e '[.[] | select(.status != "FINISHED")] | length > 0' "$RUNNER_TEMP/builds.json" >/dev/null; then
+            echo "::error::An EAS build did not finish. https://expo.dev/accounts/unicorn-love/projects/scf-scaffald/builds"
             exit 1
           fi
 
       - name: Download artifacts
-        working-directory: apps/scaffald
         env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           VERSION: ${{ steps.tag.outputs.version }}
         run: |
           set -euo pipefail
           OUT="$RUNNER_TEMP/qa"
           mkdir -p "$OUT/ios"
-          # Each build job's outputs carry its EAS build id.
-          for JOB in build_ios build_android; do
-            BUILD_ID=$(jq -r --arg k "$JOB" \
-              '.jobs[] | select(.key == $k) | .outputs.build_id' "$RUNNER_TEMP/view.json")
-            URL=$(pnpm dlx "$EAS_CLI" build:view "$BUILD_ID" --json | jq -r '.artifacts.buildUrl')
-            echo "$JOB: build $BUILD_ID -> $URL"
-            if [ "$JOB" = build_ios ]; then
-              curl -fsSL "$URL" -o "$OUT/ios.tar.gz"
-              tar -xzf "$OUT/ios.tar.gz" -C "$OUT/ios"
-              APP=$(find "$OUT/ios" -maxdepth 2 -name '*.app' -type d | head -1)
-              (cd "$(dirname "$APP")" && zip -qry "$OUT/Scaffald-${VERSION}-sim.app.zip" "$(basename "$APP")")
-            else
-              curl -fsSL "$URL" -o "$OUT/Scaffald-${VERSION}.apk"
-            fi
-          done
+          IOS_URL=$(jq -r '.[] | select(.platform == "IOS") | .artifacts.buildUrl' "$RUNNER_TEMP/builds.json")
+          APK_URL=$(jq -r '.[] | select(.platform == "ANDROID") | .artifacts.buildUrl' "$RUNNER_TEMP/builds.json")
+          # The simulator build is a tar.gz holding the .app; re-zip it so
+          # symlinks inside the bundle survive (zip -y).
+          curl -fsSL "$IOS_URL" -o "$OUT/ios.tar.gz"
+          tar -xzf "$OUT/ios.tar.gz" -C "$OUT/ios"
+          APP=$(find "$OUT/ios" -maxdepth 2 -name '*.app' -type d | head -1)
+          [ -n "$APP" ] || { echo "::error::No .app in the iOS artifact"; exit 1; }
+          (cd "$(dirname "$APP")" && zip -qry "$OUT/Scaffald-${VERSION}-sim.app.zip" "$(basename "$APP")")
+          curl -fsSL "$APK_URL" -o "$OUT/Scaffald-${VERSION}.apk"
           ls -la "$OUT"
 
       - name: Attach to the release
@@ -148,7 +133,6 @@ jobs:
           TAG: ${{ steps.tag.outputs.tag }}
           VERSION: ${{ steps.tag.outputs.version }}
           SHA: ${{ steps.commit.outputs.sha }}
-          RUN_ID: ${{ steps.eas.outputs.run_id }}
         run: |
           set -euo pipefail
           OUT="$RUNNER_TEMP/qa"
@@ -168,7 +152,7 @@ jobs:
           - \`Scaffald-${VERSION}-sim.app.zip\`: iOS simulator (iPhone and iPad). \`unzip\`, then \`xcrun simctl install booted Scaffald*.app\`.
           - \`Scaffald-${VERSION}.apk\`: Android emulator. \`adb install -r Scaffald-${VERSION}.apk\`.
 
-          EAS run: https://expo.dev/accounts/unicorn-love/projects/scf-scaffald/workflows/${RUN_ID}
+          EAS builds: $(jq -r '[.[] | "https://expo.dev/accounts/unicorn-love/projects/scf-scaffald/builds/\(.id)"] | join(" ")' "$RUNNER_TEMP/builds.json")
           <!-- /qa-builds -->
           EOF
           gh release edit "$TAG" --notes-file "$RUNNER_TEMP/notes.md"

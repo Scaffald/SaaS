@@ -43,7 +43,8 @@
       }
     },
     "qa": {
-      "extends": "development",
+      "node": "22.20.0",
+      "pnpm": "10.28.2",
       "android": {
         "buildType": "apk",
         "cache": {
@@ -52,16 +53,24 @@
         }
       },
       "developmentClient": false,
+      "distribution": "internal",
       "env": {
-        "NODE_ENV": "production"
+        "APP_ENV": "development",
+        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_DEV}",
+        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtdGRxcmZwdW1xd2tkaHBnd2N6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNjI1NTQsImV4cCI6MjA4OTczODU1NH0.0ki7wpWYZkveeGZPXkPQ05JKR2q_c_ny2iMyX50BeP0",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://pmtdqrfpumqwkdhpgwcz.supabase.co",
+        "EXPO_PUBLIC_URL": "https://dev.scaffald.com"
       },
+      "environment": "development",
       "ios": {
         "buildConfiguration": "Release",
         "cache": {
           "disabled": false,
           "key": "qa-ios"
         },
-        "simulator": true
+        "simulator": true,
+        "image": "macos-sequoia-15.6-xcode-26.2"
       }
     },
     "production": {

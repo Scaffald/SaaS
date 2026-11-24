@@ -47,21 +47,29 @@ logins.
 
 ## How the builds are made
 
-- Profile `qa` in `apps/scaffald/eas.json`: extends `development` (same env),
+- Profile `qa` in `apps/scaffald/eas.json`: the `development` env vars (dev
+  Supabase, `dev.scaffald.com`), EAS environment `development`,
   `developmentClient: false`, iOS `Release` + `simulator: true`, Android
-  `buildType: apk`, `NODE_ENV=production`.
+  `buildType: apk`. It does not extend `development`, so `NODE_ENV` stays
+  unset as in `production` (a `production` value would make the worker's
+  install skip devDependencies).
 - `.github/workflows/qa-builds.yml` runs on each `app-v*` tag push (which
   `scripts/release.sh` does). It creates the GitHub release if there is none,
-  starts the EAS workflow `apps/scaffald/.eas/workflows/qa-builds.yml` at the
-  tagged commit, waits for both builds, and uploads the two files with the
-  commit in the notes.
+  runs `eas build --profile qa --platform all --wait` from the tagged
+  checkout, and uploads the two files with the commit in the notes.
 - Ad hoc: run **QA mobile builds** from the Actions tab (`workflow_dispatch`,
   optional `tag`; empty means the latest `app-v*` tag). Re-running replaces
   the files.
-- Build by hand without a release:
-  `cd apps/scaffald && eas workflow:run .eas/workflows/qa-builds.yml --ref <sha>`.
-  Always pass `--ref` (a pushed commit): only the cloud clone hydrates the
-  `packages/ui` and `packages/sdk` submodules.
+- Build by hand without a release, from a clean tree:
+  `cd apps/scaffald && eas build --profile qa --platform all --non-interactive --no-wait`.
+- EAS Workflows (`eas workflow:run --ref`) do not work for this project: it
+  has no GitHub repository linked on EAS since the move to the Scaffald org
+  (`No repository found for appId`). That is why the GitHub job uploads the
+  checkout and waits, instead of handing off.
+- The Android app id `com.scaffald.app.development` needs an upload keystore
+  on EAS before the first non-interactive build. Create it once,
+  interactively: `cd apps/scaffald && eas credentials --platform android`
+  (profile `qa`), or run one interactive `eas build --profile qa --platform android`.
 
 Cost: two EAS builds per release, plus the Actions job waiting for them
 (roughly 25 to 40 minutes of the org's 2,000 monthly minutes per release).
