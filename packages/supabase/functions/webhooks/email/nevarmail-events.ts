@@ -10,6 +10,7 @@
 import type { NevarMailEmailEvent } from '../../_shared/nevarmail.ts'
 
 // deno-lint-ignore no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: untyped Deno Supabase client (#477)
 type Supabase = any
 
 export type InviteEventResult =
