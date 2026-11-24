@@ -7,9 +7,22 @@ import {
   isValidDeliveryStatus,
   recordDeliveryEvent,
 } from '../../_shared/notifications/utils.ts'
+import {
+  type NevarMailEmailEvent,
+  nevarMailWebhookHeaders,
+  verifyNevarMailWebhook,
+} from '../../_shared/nevarmail.ts'
+import { applyInviteEvent } from './nevarmail-events.ts'
 
 /**
- * Resend delivery-event webhook.
+ * Email delivery-event webhook: NevarMail (X-Webhook-* headers, epic #1399)
+ * and, until #1391 removes it, Resend (svix-* headers).
+ *
+ * NevarMail events are matched to worker invites here (#1393); matching them
+ * to notification deliveries arrives with #1389, which moves notifications
+ * onto NevarMail.
+ *
+ * Resend delivery events:
  *
  * Resend posts one event object per request (SendGrid batched an array), and
  * identifies the message as `data.email_id` — the same id the send call returns
@@ -102,6 +115,41 @@ async function isValidSignature(req: Request, rawBody: string): Promise<boolean>
     .some((candidate) => candidate === expected)
 }
 
+/** NevarMail: Standard Webhooks signature keyed by the secret's text (see _shared/nevarmail.ts). */
+async function handleNevarMail(req: Request, rawBody: string): Promise<Response> {
+  const secret = Deno.env.get('NEVARMAIL_WEBHOOK_SECRET')
+  if (!secret) {
+    console.warn('[webhooks/email] NEVARMAIL_WEBHOOK_SECRET is not set; refusing unverified event')
+    return jsonResponse({ error: 'Invalid signature' }, 401)
+  }
+  if (!(await verifyNevarMailWebhook(secret, nevarMailWebhookHeaders(req.headers), rawBody))) {
+    return jsonResponse({ error: 'Invalid signature' }, 401)
+  }
+
+  let event: NevarMailEmailEvent
+  try {
+    event = JSON.parse(rawBody) as NevarMailEmailEvent
+  } catch (error) {
+    return jsonResponse({ error: 'Invalid NevarMail payload', details: `${error}` }, 400)
+  }
+  if (!event.type?.startsWith('email.')) {
+    // contact.* / domain.* — acknowledged so NevarMail does not retry.
+    return jsonResponse({ ok: true, ignored: event.type ?? null })
+  }
+
+  try {
+    const result = await applyInviteEvent(createServiceSupabaseClient(), event)
+    if (result.matched) {
+      return jsonResponse({ ok: true, event: event.type, invitationId: result.invitationId, changed: result.changed })
+    }
+  } catch (error) {
+    console.error('[webhooks/email] NevarMail invite event failed:', (error as Error).message)
+    return jsonResponse({ ok: false, error: 'Could not record event' }, 500)
+  }
+  // Not an invite. Notification deliveries are matched once #1389 lands.
+  return jsonResponse({ ok: true, event: event.type, matched: false })
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return createCorsResponse('ok')
@@ -114,6 +162,10 @@ serve(async (req) => {
   // Read the body as text: the signature covers the exact bytes, so it has to
   // be verified before parsing.
   const rawBody = await req.text()
+
+  if (req.headers.get('x-webhook-id')) {
+    return await handleNevarMail(req, rawBody)
+  }
 
   if (!(await isValidSignature(req, rawBody))) {
     return jsonResponse({ error: 'Invalid signature' }, 401)
