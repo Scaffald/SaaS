@@ -167,6 +167,8 @@ gcp_jwt_path = "supabase/gcloud.json"
 # auth must verify the token in code (e.g. supabase.auth.getUser(token)).
 [functions.account-deletion-process]
 verify_jwt = false
+[functions.invites-remind]
+verify_jwt = false
 [functions.api]
 verify_jwt = false
 

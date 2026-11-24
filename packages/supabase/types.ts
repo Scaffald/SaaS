@@ -13364,6 +13364,7 @@ export type Database = {
         Returns: string
       }
       run_account_deletion_processor: { Args: never; Returns: Json }
+      run_invite_reminders: { Args: never; Returns: Json }
       search_all_skills: {
         Args: { search_term: string; taxonomy_filter?: string }
         Returns: {
@@ -13540,6 +13541,8 @@ export type Database = {
         | "community.new_follower"
         | "community.followed_user_post"
         | "community.karma_received"
+        | "referral.joined"
+        | "referral.onboarded"
       organization_document_category:
         | "contracts"
         | "templates"
@@ -18551,6 +18554,8 @@ export const Constants = {
         "community.new_follower",
         "community.followed_user_post",
         "community.karma_received",
+        "referral.joined",
+        "referral.onboarded",
       ],
       organization_document_category: [
         "contracts",

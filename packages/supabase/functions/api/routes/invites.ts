@@ -26,6 +26,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { ApiEnv } from "../middleware/auth.ts";
 import { wrapInBrandedTemplate } from "../../_shared/email-template.ts";
 import { resolveAppBaseUrl } from "../../_shared/app-url.ts";
+import { notifyReferrerJoined } from "../../_shared/invites/notify.ts";
 import {
   NevarMailError,
   nevarMailFromEnv,
@@ -642,6 +643,31 @@ app.post(
         accepted_at: new Date().toISOString(),
         invitee_user_id: user.id,
       }).eq("id", resolved.invitationId);
+    }
+
+    // #1397: tell the inviter. Never fails the claim.
+    try {
+      const [{ data: invite }, { data: me }] = await Promise.all([
+        resolved.kind === "targeted"
+          ? db.schema("core").from("generic_invitations").select("invitee_name")
+            .eq("id", resolved.invitationId).maybeSingle()
+          : Promise.resolve({ data: null }),
+        db.schema("core").from("users").select("display_name").eq("id", user.id)
+          .maybeSingle(),
+      ]);
+      await notifyReferrerJoined(db, {
+        referrerId: resolved.referrerId,
+        newUserId: user.id,
+        name: invite?.invitee_name || me?.display_name || null,
+        invitationId: resolved.kind === "targeted"
+          ? resolved.invitationId
+          : null,
+      });
+    } catch (e) {
+      console.error(
+        "[invites] joined notification failed:",
+        (e as Error).message,
+      );
     }
 
     const { data: referrer } = await db.schema("core").from("users").select(
