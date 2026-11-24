@@ -83,6 +83,11 @@ export function MobileAccountSheet({
     router.push(ROUTES.DASHBOARD.NOTIFICATIONS.path as never)
   }, [onClose, router])
 
+  const goInvite = useCallback(() => {
+    onClose()
+    router.push(ROUTES.DASHBOARD.INVITE.path as never)
+  }, [onClose, router])
+
   const signOut = useCallback(async () => {
     onClose()
     try {
@@ -185,6 +190,23 @@ export function MobileAccountSheet({
         <View style={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 14, ...divider }}>
           <AppearanceControl />
         </View>
+
+        <Pressable
+          onPress={goInvite}
+          accessibilityRole="menuitem"
+          accessibilityLabel="Invite your crew"
+          testID="account-sheet-invite"
+          style={({ pressed }) => ({
+            paddingHorizontal: 20,
+            minHeight: 44,
+            paddingVertical: 13,
+            justifyContent: 'center',
+            opacity: pressed ? 0.6 : 1,
+            ...divider,
+          })}
+        >
+          <Text style={{ fontSize: 14, color: colors.text[theme].primary }}>Invite your crew</Text>
+        </Pressable>
 
         <Pressable
           onPress={goNotifications}

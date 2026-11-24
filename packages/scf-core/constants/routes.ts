@@ -1037,6 +1037,13 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: true,
     },
+    /** "Invite your crew" (#1398); also the last onboarding step (?from=onboarding). */
+    INVITE: {
+      path: '/dashboard/invite',
+      titleKey: 'routes.dashboard.invite',
+      protected: true,
+      exact: true,
+    },
     NOTIFICATIONS_SETTINGS: {
       path: '/dashboard/notifications/settings',
       titleKey: 'routes.dashboard.settings.notifications',

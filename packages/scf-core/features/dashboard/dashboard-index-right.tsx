@@ -5,6 +5,7 @@ import {
   CompactNewsWidget,
   SuggestedContactsWidget,
 } from './components'
+import { InviteCrewBlock } from '../invites/InviteCrewBlock'
 
 /**
  * The desktop second column: the reading material.
@@ -26,6 +27,8 @@ export function DashboardIndexRight() {
           material (#1033). Renders nothing once the profile is complete. */}
       <BuildProfileBlock />
       <CommunitiesWidget />
+      <Separator />
+      <InviteCrewBlock />
       <Separator />
       <CompactNewsWidget />
       <Separator />

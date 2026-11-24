@@ -20,7 +20,7 @@ critical_constraints:
 ## Canonical useQuery Pattern
 
 ```typescript
-import { useScaffaldJobsClient } from '@scaffald/sdk/react'
+import { useScaffaldJobsClient } from './jobs-sdk-context' // in packages/scf-core/utils/
 import { useQuery } from '@tanstack/react-query'
 
 export function useTeams(params: { organizationId: string }) {
@@ -40,7 +40,7 @@ export function useTeams(params: { organizationId: string }) {
 ## Canonical useMutation Pattern
 
 ```typescript
-import { useScaffaldJobsClient } from '@scaffald/sdk/react'
+import { useScaffaldJobsClient } from './jobs-sdk-context' // in packages/scf-core/utils/
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query'
 
 type SendConnectionParams = { targetUserId: string }
@@ -59,6 +59,12 @@ export function useSendConnectionMutation(
   })
 }
 ```
+
+**Where the client comes from:** `useScaffaldJobsClient` lives in
+`packages/scf-core/utils/jobs-sdk-context.tsx` (re-exported from `@scf/core/provider`).
+`@scaffald/sdk/react` does NOT export it, and importing it from there fails
+typecheck (`has no exported member`); the 54 existing `*-sdk-hooks.ts` files
+use `./jobs-sdk-context`.
 
 **Key rules:**
 - Always accept `UseMutationOptions` as the last parameter

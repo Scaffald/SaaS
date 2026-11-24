@@ -23,6 +23,7 @@
     "title": "Communities"
   },
   "dashboard": {
+    "invite": "Invita a tu equipo",
     "applications": {
       "detail": "Application Details",
       "inquiry": "Inquiry",
