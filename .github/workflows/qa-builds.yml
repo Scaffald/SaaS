@@ -1,0 +1,174 @@
+name: QA mobile builds
+
+# On every scaffald-app release tag, build the `qa` EAS profile for iOS
+# (simulator .app, iPhone + iPad) and Android (.apk) and attach both to the
+# GitHub release, so the daily QA run can install the app without building it
+# (#1419). Both are Release builds pointed at dev with no dev client: they run
+# with no Metro.
+#
+# The builds run on EAS (apps/scaffald/.eas/workflows/qa-builds.yml, cloud
+# clone with submodules). This job triggers that run, waits for it and uploads
+# the two files. The wait is billed Actions time (~25-40 min per release,
+# ubuntu runner); that is the price of not storing a GitHub token on EAS.
+#
+# Docs for the QA agent: docs/agents/QA-BUILDS.md.
+
+on:
+  push:
+    tags: ['app-v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build and attach to (app-vX.Y.Z). Empty = latest app-v* tag.'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: qa-builds-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  EAS_CLI: eas-cli@27.11.0
+
+jobs:
+  qa-builds:
+    name: Build qa (iOS sim + Android APK) and attach to release
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Resolve tag
+        id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            TAG="${GITHUB_REF_NAME}"
+          elif [ -n "${INPUT_TAG}" ]; then
+            TAG="${INPUT_TAG}"
+          else
+            TAG=$(gh api "repos/${GITHUB_REPOSITORY}/git/matching-refs/tags/app-v" \
+              -q '.[].ref | sub("refs/tags/"; "")' | sort -V | tail -1)
+          fi
+          case "$TAG" in app-v*) ;; *) echo "::error::Not an app-v* tag: $TAG"; exit 1 ;; esac
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#app-v}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ steps.tag.outputs.tag }}
+          fetch-depth: 1
+          submodules: true
+
+      # eas-cli evaluates apps/scaffald/app.config.ts, which resolves config
+      # plugins from node_modules, so it needs the install.
+      - uses: ./.github/actions/install
+
+      - name: Resolve commit
+        id: commit
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure the GitHub release exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          set -euo pipefail
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --verify-tag \
+              --title "scaffald-app v${VERSION}" \
+              --notes "scaffald-app v${VERSION}. See CHANGELOG.md."
+          fi
+
+      - name: Run the qa EAS workflow and wait
+        id: eas
+        working-directory: apps/scaffald
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          SHA: ${{ steps.commit.outputs.sha }}
+        run: |
+          set -euo pipefail
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error::EXPO_TOKEN secret is not configured."
+            exit 1
+          fi
+          pnpm dlx "$EAS_CLI" workflow:run .eas/workflows/qa-builds.yml \
+            --ref "$SHA" --non-interactive --wait --json > "$RUNNER_TEMP/run.json" || true
+          cat "$RUNNER_TEMP/run.json"
+          RUN_ID=$(jq -r '.id // empty' "$RUNNER_TEMP/run.json")
+          if [ -z "$RUN_ID" ]; then
+            echo "::error::Could not start the EAS workflow run."
+            exit 1
+          fi
+          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+          pnpm dlx "$EAS_CLI" workflow:view "$RUN_ID" --non-interactive --json > "$RUNNER_TEMP/view.json"
+          STATUS=$(jq -r '.status' "$RUNNER_TEMP/view.json")
+          echo "EAS workflow run $RUN_ID: $STATUS"
+          if [ "$STATUS" != "SUCCESS" ]; then
+            echo "::error::EAS workflow run $RUN_ID ended $STATUS. https://expo.dev/accounts/unicorn-love/projects/scf-scaffald/workflows/$RUN_ID"
+            exit 1
+          fi
+
+      - name: Download artifacts
+        working-directory: apps/scaffald
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/qa"
+          mkdir -p "$OUT/ios"
+          # Each build job's outputs carry its EAS build id.
+          for JOB in build_ios build_android; do
+            BUILD_ID=$(jq -r --arg k "$JOB" \
+              '.jobs[] | select(.key == $k) | .outputs.build_id' "$RUNNER_TEMP/view.json")
+            URL=$(pnpm dlx "$EAS_CLI" build:view "$BUILD_ID" --json | jq -r '.artifacts.buildUrl')
+            echo "$JOB: build $BUILD_ID -> $URL"
+            if [ "$JOB" = build_ios ]; then
+              curl -fsSL "$URL" -o "$OUT/ios.tar.gz"
+              tar -xzf "$OUT/ios.tar.gz" -C "$OUT/ios"
+              APP=$(find "$OUT/ios" -maxdepth 2 -name '*.app' -type d | head -1)
+              (cd "$(dirname "$APP")" && zip -qry "$OUT/Scaffald-${VERSION}-sim.app.zip" "$(basename "$APP")")
+            else
+              curl -fsSL "$URL" -o "$OUT/Scaffald-${VERSION}.apk"
+            fi
+          done
+          ls -la "$OUT"
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+          VERSION: ${{ steps.tag.outputs.version }}
+          SHA: ${{ steps.commit.outputs.sha }}
+          RUN_ID: ${{ steps.eas.outputs.run_id }}
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/qa"
+          gh release upload "$TAG" --clobber \
+            "$OUT/Scaffald-${VERSION}-sim.app.zip" \
+            "$OUT/Scaffald-${VERSION}.apk"
+
+          # Replace the QA block in the notes (idempotent on re-runs).
+          gh release view "$TAG" --json body -q .body \
+            | sed '/<!-- qa-builds -->/,/<!-- \/qa-builds -->/d' > "$RUNNER_TEMP/notes.md"
+          cat >> "$RUNNER_TEMP/notes.md" <<EOF
+          <!-- qa-builds -->
+          ### QA builds
+
+          Commit \`${SHA}\` (compare with https://dev.scaffald.com/build.json). Release builds against **dev**, no dev client, no Metro needed.
+
+          - \`Scaffald-${VERSION}-sim.app.zip\`: iOS simulator (iPhone and iPad). \`unzip\`, then \`xcrun simctl install booted Scaffald*.app\`.
+          - \`Scaffald-${VERSION}.apk\`: Android emulator. \`adb install -r Scaffald-${VERSION}.apk\`.
+
+          EAS run: https://expo.dev/accounts/unicorn-love/projects/scf-scaffald/workflows/${RUN_ID}
+          <!-- /qa-builds -->
+          EOF
+          gh release edit "$TAG" --notes-file "$RUNNER_TEMP/notes.md"
