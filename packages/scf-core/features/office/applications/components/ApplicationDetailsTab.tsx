@@ -1,6 +1,7 @@
 import { Download } from 'lucide-react-native'
 import { Button, Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { ATSApplication } from '../types'
+import { formatYearsExperience } from '@scf/core/features/applications/screening-format'
 import { borderRadius, colors } from '@scaffald/ui/tokens'
 
 interface ApplicationDetailsTabProps {
@@ -26,7 +27,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
           </Row>
           <Row justify="space-between">
             <Text style={{ opacity: 0.7 }}>Years of Experience</Text>
-            <Text>{application.screeningAnswers.yearsExperience}</Text>
+            <Text>{formatYearsExperience(application.screeningAnswers.yearsExperience)}</Text>
           </Row>
           <Row justify="space-between">
             <Text style={{ opacity: 0.7 }}>Authorized to Work</Text>
