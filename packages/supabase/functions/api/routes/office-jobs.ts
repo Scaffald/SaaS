@@ -37,6 +37,7 @@ import {
   readJobRelations,
   writeJobRelations,
 } from "../lib/office-job-fields.ts";
+import { jobPayProblem, mergedJobPay } from "../lib/job-pay.ts";
 
 /** A foreign-key violation (an unknown hiring manager, say) is the caller's mistake. */
 function jobWriteError(error: { code?: string; message: string }) {
@@ -385,7 +386,18 @@ const createJobBodySchema = z.object({
 })
   // #1342: the rest of the job form. Without these, zod stripped them.
   .merge(jobDetailFieldsSchema)
-  .merge(jobRelationFieldsSchema);
+  .merge(jobRelationFieldsSchema)
+  // #1411 / #1412: Min not above Max, and a type with any amount.
+  .superRefine((input, ctx) => {
+    const problem = jobPayProblem(input);
+    if (problem) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [problem.field],
+        message: problem.message,
+      });
+    }
+  });
 
 app.post(
   "/",
@@ -549,7 +561,9 @@ app.patch(
     const { data: existingJob, error: fetchError } = await supabaseAdmin
       .schema("core")
       .from("jobs")
-      .select("id, organization_id")
+      .select(
+        "id, organization_id, pay_range_min_cents, pay_range_max_cents, pay_range_type",
+      )
       .eq("id", id)
       .single();
 
@@ -585,6 +599,15 @@ app.patch(
           message:
             "Changing organization_id via PATCH is not supported. Use the org-transfer flow.",
         },
+        400,
+      );
+    }
+
+    // #1411 / #1412: judge the pay the row would be left with, not the body.
+    const payProblem = jobPayProblem(mergedJobPay(existingJob, input));
+    if (payProblem) {
+      return c.json(
+        { error: "Bad Request", message: payProblem.message },
         400,
       );
     }

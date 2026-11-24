@@ -60,6 +60,7 @@ notifications-operations-rest.test.ts
 office-communities-rest.test.ts
 office-jobs-fields-rest.test.ts
 office-jobs-idempotent-rest.test.ts
+office-jobs-pay-rest.test.ts
 office-jobs-posted-at-rest.test.ts
 office-jobs-rest.test.ts
 office-organization-requests-rest.test.ts

@@ -46,6 +46,7 @@ import {
   Row,
   Stack,
 } from '@scaffald/ui'
+import { formatPayRange } from '@scf/core/features/office/cms-format'
 
 /**
  * One section opener for the whole screen: a real heading, optionally with a
@@ -108,38 +109,6 @@ type InternalJobExtended = {
   application_deadline?: string
   certifications?: Array<{ id: string; name: string }>
   skills?: InternalJobSkill[]
-}
-
-/**
- * Format pay range for display
- */
-function formatPayRange(minCents?: number, maxCents?: number, type?: string): string {
-  if (!minCents || !maxCents || !type) return ''
-
-  const min = (minCents / 100).toFixed(2)
-  const max = (maxCents / 100).toFixed(2)
-
-  const formatCurrency = (value: string) => {
-    return `$${Number.parseFloat(value).toLocaleString('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    })}`
-  }
-
-  const range = `${formatCurrency(min)} - ${formatCurrency(max)}`
-
-  switch (type) {
-    case 'hourly':
-      return `${range}/hr`
-    case 'salary':
-      return `${range}/yr`
-    case 'contract':
-      return `${range} contract`
-    case 'project':
-      return `${range} project`
-    default:
-      return range
-  }
 }
 
 /**

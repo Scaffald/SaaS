@@ -114,18 +114,21 @@ describe('listingAgeLabel', () => {
   })
 })
 
-describe('listingPayRange (#1199)', () => {
-  it('formats an hourly range in whole dollars', () => {
-    expect(listingPayRange(4_000, 5_800, 'hourly')).toBe('$40 – $58/hr')
+describe('listingPayRange (#1199, #1412)', () => {
+  it('writes pay the way workers see it', () => {
+    // #1412: one formatter, so employer and worker read the same string.
+    expect(listingPayRange(4_000, 5_800, 'hourly')).toBe('$40–58/hr')
+    expect(listingPayRange(6_500_000, 8_000_000, 'salary')).toBe('$65k–80k/yr')
   })
 
-  it('formats a salary', () => {
-    expect(listingPayRange(6_500_000, 8_000_000, 'salary')).toBe('$65,000 – $80,000/yr')
-  })
-
-  it('shows one figure when only one end, or both the same, is set', () => {
-    expect(listingPayRange(null, 5_000, 'hourly')).toBe('$50/hr')
+  it('says which end a one-ended range has, and collapses equal ends', () => {
+    expect(listingPayRange(null, 5_000, 'hourly')).toBe('Up to $50/hr')
+    expect(listingPayRange(4_000, null, 'hourly')).toBe('From $40/hr')
     expect(listingPayRange(5_000, 5_000, 'hourly')).toBe('$50/hr')
+  })
+
+  it('never prints reversed ends (#1411)', () => {
+    expect(listingPayRange(9_000_000, 5_000_000, 'salary')).toBe('$50k–90k/yr')
   })
 
   it('returns null when the posting states no pay', () => {
@@ -143,7 +146,7 @@ describe('listingMetaLine (#1199)', () => {
         pay_range_max_cents: 5_800,
         pay_range_type: 'hourly',
       })
-    ).toBe('Portland, OR · Full-time · $40 – $58/hr')
+    ).toBe('Portland, OR · Full-time · $40–58/hr')
   })
 
   it('drops the segments a posting does not have', () => {

@@ -67,6 +67,7 @@ Deno.test("JOB FLOW: Complete job discovery to application submission", async ()
         location: "San Francisco, CA",
         pay_range_min_cents: 15000000,
         pay_range_max_cents: 20000000,
+        pay_range_type: "salary",
       },
       {
         organization_id: org!.id,
@@ -78,6 +79,7 @@ Deno.test("JOB FLOW: Complete job discovery to application submission", async ()
         location: "San Francisco, CA",
         pay_range_min_cents: 12000000,
         pay_range_max_cents: 16000000,
+        pay_range_type: "salary",
       },
       {
         organization_id: org!.id,
@@ -89,6 +91,7 @@ Deno.test("JOB FLOW: Complete job discovery to application submission", async ()
         location: "New York, NY",
         pay_range_min_cents: 14000000,
         pay_range_max_cents: 18000000,
+        pay_range_type: "salary",
       },
     ])
     .select();

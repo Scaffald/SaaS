@@ -7,12 +7,8 @@ import { formatRelativeDate } from '@scf/core/utils/relative-date'
 import { StatusBadge } from '@scf/core/components/ui/StatusBadge'
 import { type RequirementInputs, rowRequirementsSummary } from '../job-requirements'
 import { type ExternalJob, formatCompensation } from './ExternalJobCard'
-import {
-  type InternalJob,
-  formatEmploymentType,
-  formatPayRange,
-  formatRemoteOption,
-} from './InternalJobCard'
+import { formatPayRange } from '@scf/core/features/office/cms-format'
+import { type InternalJob, formatEmploymentType, formatRemoteOption } from './InternalJobCard'
 import { SaveJobButton } from './SaveJobButton'
 
 type JobListRowProps =
