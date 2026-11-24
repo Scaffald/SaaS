@@ -42,6 +42,28 @@
         "simulator": true
       }
     },
+    "qa": {
+      "extends": "development",
+      "android": {
+        "buildType": "apk",
+        "cache": {
+          "disabled": false,
+          "key": "qa-android"
+        }
+      },
+      "developmentClient": false,
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "ios": {
+        "buildConfiguration": "Release",
+        "cache": {
+          "disabled": false,
+          "key": "qa-ios"
+        },
+        "simulator": true
+      }
+    },
     "production": {
       "node": "22.20.0",
       "pnpm": "10.28.2",
