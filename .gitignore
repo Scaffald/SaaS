@@ -140,3 +140,6 @@ infra/aws/dist/
 
 # Design System artifact publish folder (docs/design-system/build.mjs)
 tmp-design-system/
+
+# scripts/invite-list.ts output: contact lists and invite links (#1394)
+tmp/invite-list/

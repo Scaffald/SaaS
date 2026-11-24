@@ -103,7 +103,7 @@ Deno.test("links and texts: the sms: link carries the encoded text; names fall b
 Deno.test("email: subject names the inviter; the personal note and names are escaped", () => {
   const mail = renderInviteEmail({
     inviterName: "Clay <b>",
-    inviteeName: "Sam",
+    inviteeName: "Sam Ortiz",
     link: "https://scaffald.com/i/abc234",
     message: 'Join us <script>alert("x")</script>',
   });
