@@ -47,6 +47,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Toggle } from '@scaffald/ui'
 import { JobPreviewModal } from './JobPreviewModal'
 import { JobTaxonomyPicker } from './JobTaxonomyPicker'
+import { jobPayProblems } from '../job-pay'
 import { useMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
 import { useScaffaldJobsClient } from '@scf/core/utils/jobs-sdk-context'
 import { colors } from '@scaffald/ui/tokens'
@@ -660,6 +661,10 @@ export function JobForm({
     return params
   }
 
+  // #1411 / #1412: the api refuses these, so say so here and hold the save.
+  const payProblems = jobPayProblems(formData)
+  const payProblem = payProblems.range ?? payProblems.type
+
   /** A half-typed date would fail the save; say which one instead. */
   const invalidDateField = DATE_FIELDS.find((key) => {
     const value = formData[key]
@@ -684,6 +689,11 @@ export function JobForm({
         message: `${invalidDateField.replace(/_/g, ' ')} must be a date like 2027-01-31.`,
         variant: 'error',
       })
+      return
+    }
+
+    if (payProblem) {
+      toast.show({ title: 'Check the pay', message: payProblem, variant: 'error' })
       return
     }
 
@@ -783,7 +793,7 @@ export function JobForm({
               onPress={() => handleSubmit(true)}
               // SC-123: mirror the server's createJobBodySchema floor so a
               // tap can't bypass into a guaranteed-fail submission.
-              disabled={isLoading || !meetsDraftMinimums}
+              disabled={isLoading || !meetsDraftMinimums || !!payProblem}
             >
               {isLoading && <Spinner variant="ios" />}
               {!isLoading && 'Save draft'}
@@ -799,6 +809,7 @@ export function JobForm({
               disabled={Boolean(
                 isLoading ||
                   !meetsDraftMinimums ||
+                  payProblem ||
                   !formData.location ||
                   (formData.scheduled_publish_at &&
                     new Date(formData.scheduled_publish_at) <= new Date())
@@ -1010,10 +1021,14 @@ export function JobForm({
                     })
                   }}
                   disabled={isLoading}
+                  error={!!payProblems.range}
+                  errorMessage={payProblems.range}
                 />
               </Stack>
               <Stack gap={4} flex={1}>
                 <ResponsiveSelect
+                  testID="job-pay-type-select"
+                  error={payProblems.type}
                   value={formData.pay_range_type ?? ''}
                   onValueChange={(value: string) =>
                     setFormData({ ...formData, pay_range_type: value || undefined })

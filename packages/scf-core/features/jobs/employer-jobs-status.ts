@@ -7,6 +7,8 @@
  * jobs, so they belong somewhere both the list and its tabs can read.
  */
 
+import { formatPayRange } from '../office/cms-format'
+
 export type JobListingStatus = 'draft' | 'open' | 'published' | 'paused' | 'closed' | 'archived'
 
 export type ListingTone = 'neutral' | 'active' | 'attention'
@@ -102,29 +104,22 @@ const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
   internship: 'Internship',
 }
 
-const wholeDollars = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  maximumFractionDigits: 0,
-})
-
 /**
- * "$40 – $58/hr" from a posting's cents, or null when it states no pay.
+ * A posting's pay, or null when it states none.
  *
  * Null rather than "Pay not listed": a missing range is the employer's own
  * omission on their own row, so the segment simply drops.
+ *
+ * The same formatter workers see (cms-format, #1412). This printed the ends
+ * as stored, so "$90,000 – $50,000" showed here while Office sorted them and
+ * workers, whose copy wanted min, max and type all set, saw nothing.
  */
 export function listingPayRange(
   minCents: number | null | undefined,
   maxCents: number | null | undefined,
   type: string | null | undefined
 ): string | null {
-  if (!minCents && !maxCents) return null
-  const low = minCents ? wholeDollars.format(minCents / 100) : null
-  const high = maxCents ? wholeDollars.format(maxCents / 100) : null
-  const range = low && high && low !== high ? `${low} – ${high}` : (low ?? high)
-  const suffix = type === 'hourly' ? '/hr' : type === 'salary' ? '/yr' : ''
-  return `${range}${suffix}`
+  return formatPayRange(minCents, maxCents, type)
 }
 
 /**

@@ -11,6 +11,9 @@ import { useMemo } from 'react'
 import { Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { jobPalette, workerPalette, textSmall, MetricRow, Pill } from '@scf/core/components/ui'
+// One pay formatter for every surface (#1412): this copy hid a range unless
+// min, max and type were all set, so workers saw no pay where Office did.
+import { formatPayRange } from '@scf/core/features/office/cms-format'
 
 /**
  * Internal job type definition with all enhanced fields
@@ -85,27 +88,6 @@ interface InternalJobCardProps {
   job: InternalJob
   hasApplied?: boolean
   applicationId?: string | null
-}
-
-export function formatPayRange(minCents?: number, maxCents?: number, type?: string): string {
-  if (!minCents || !maxCents || !type) return ''
-  const min = (minCents / 100).toFixed(2)
-  const max = (maxCents / 100).toFixed(2)
-  const formatCurrency = (value: string) =>
-    `$${Number.parseFloat(value).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
-  const range = `${formatCurrency(min)} - ${formatCurrency(max)}`
-  switch (type) {
-    case 'hourly':
-      return `${range}/hr`
-    case 'salary':
-      return `${range}/yr`
-    case 'contract':
-      return `${range} contract`
-    case 'project':
-      return `${range} project`
-    default:
-      return range
-  }
 }
 
 export function formatEmploymentType(type?: string): string {
