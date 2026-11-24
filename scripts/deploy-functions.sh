@@ -65,6 +65,8 @@ pnpm exec supabase secrets set --project-ref "$PROJECT_REF" \
 #    from this list, so prod ran a 2025-11 build for eleven months (#1155).
 #    account-deletion-process carries out deletion requests daily (migration
 #    391, #1313). Without it requests are recorded and never acted on.
+#    invites-remind sends the one reminder each email invite gets, daily
+#    (migration 400, #1397).
 #    auth-email-hook is Supabase Auth's "Send Email" hook: it sends sign-in,
 #    signup, recovery and email-change mail through NevarMail (2026-11-17).
 #    Deploying it changes nothing until the hook is enabled in that project's
@@ -79,6 +81,7 @@ FUNCTIONS=(
   send-team-invitation webhooks-email
   stripe-webhook payments-reconcile
   account-deletion-process
+  invites-remind
   auth-email-hook
 )
 

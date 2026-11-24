@@ -127,19 +127,24 @@ export function renderInviteEmail(opts: {
   inviteeName?: string | null;
   link: string;
   message?: string | null;
+  /** The one follow-up a few days later (#1397): different subject and opener. */
+  reminder?: boolean;
 }): InviteEmailContent {
   const inviter = opts.inviterName.trim() || "A friend";
   // First name only: "Hi Sam," not "Hi Sam Ortiz,".
   const invitee = opts.inviteeName?.trim().split(/\s+/)[0];
   const greeting = invitee ? `Hi ${invitee},` : "Hi,";
   const note = opts.message?.trim();
-  const subject = `${inviter} invited you to Scaffald`;
+  const subject = opts.reminder
+    ? `Reminder: ${inviter} invited you to Scaffald`
+    : `${inviter} invited you to Scaffald`;
+  const opener = opts.reminder
+    ? `Just a reminder: ${inviter} invited you to Scaffald a few days ago, where construction workers find their next job and get hired on their skills.`
+    : `${inviter} thinks you should be on Scaffald, where construction workers find their next job and get hired on their skills.`;
 
   const bodyHtml = [
     `<p style="margin:0 0 16px">${escapeHtml(greeting)}</p>`,
-    `<p style="margin:0 0 16px">${
-      escapeHtml(inviter)
-    } thinks you should be on Scaffald, where construction workers find their next job and get hired on their skills.</p>`,
+    `<p style="margin:0 0 16px">${escapeHtml(opener)}</p>`,
     note
       ? `<blockquote style="margin:0 0 16px;padding:12px 16px;border-left:3px solid #c8a96a;background:#faf6ee">${
         escapeHtml(note).replace(/\n/g, "<br>")
@@ -157,7 +162,7 @@ export function renderInviteEmail(opts: {
 
   const text = [
     greeting,
-    `${inviter} thinks you should be on Scaffald, where construction workers find their next job and get hired on their skills.`,
+    opener,
     note ? `"${note}"` : "",
     `Join here: ${opts.link}`,
   ].filter(Boolean).join("\n\n");

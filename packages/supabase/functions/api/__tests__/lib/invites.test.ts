@@ -132,3 +132,30 @@ Deno.test("source: app, onboarding, share, or script:<file>", () => {
     assert(!SOURCE_RE.test(bad), bad);
   }
 });
+
+Deno.test("email: the reminder has its own subject and opener, same link and note", () => {
+  const first = renderInviteEmail({
+    inviterName: "Riley",
+    inviteeName: "Sam",
+    link: "https://scaffald.com/i/abc234",
+    message: "Hi",
+  });
+  const reminder = renderInviteEmail({
+    inviterName: "Riley",
+    inviteeName: "Sam",
+    link: "https://scaffald.com/i/abc234",
+    message: "Hi",
+    reminder: true,
+  });
+  assertEquals(reminder.subject, "Reminder: Riley invited you to Scaffald");
+  assertStringIncludes(
+    reminder.text,
+    "Just a reminder: Riley invited you to Scaffald a few days ago",
+  );
+  assertStringIncludes(reminder.bodyHtml, "Just a reminder");
+  assertStringIncludes(
+    reminder.text,
+    "Join here: https://scaffald.com/i/abc234",
+  );
+  assert(!first.text.includes("reminder"));
+});

@@ -19,6 +19,16 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { type ApiEnv, authMiddleware } from "../middleware/auth.ts";
+import { createClient } from "@supabase/supabase-js";
+import { markReferralOnboarded } from "../../_shared/invites/notify.ts";
+
+/** Service-role client for the referral stamp (#1397); RLS keeps it from users. */
+function serviceClientForReferrals() {
+  return createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+  );
+}
 
 const app = new OpenAPIHono<ApiEnv>();
 
@@ -645,6 +655,18 @@ app.openapi(completeRoute, async (c) => {
       userAgent: c.req.header("user-agent") || null,
       ipAddress: clientIp(c.req.header("x-forwarded-for")),
     });
+
+    // #1397: if an invite brought this user in, the inviter hears they've
+    // finished setting up. Service role (the attribution is not the user's
+    // to write); never fails onboarding.
+    try {
+      await markReferralOnboarded(serviceClientForReferrals(), user.id);
+    } catch (e) {
+      console.error(
+        "[prerequisites] referral onboarded failed:",
+        (e as Error).message,
+      );
+    }
 
     return c.json({ success: true });
   } catch (error) {
