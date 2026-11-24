@@ -20,6 +20,9 @@
  * screening provider; that needs the provider's real API (part 2). A paid
  * check therefore stays `pending` with `paid_at` set, which is exactly what
  * the office review queue shows.
+ *
+ * Until it does, ordering is closed wherever a charge would be real money:
+ * see `orderingIsOpen`.
  */
 
 import { Hono } from "hono";
@@ -31,6 +34,10 @@ import {
   requireAuth,
 } from "../middleware/auth.ts";
 import { loadStripeClient } from "../../_shared/id-verification-api.ts";
+import {
+  ORDERING_CLOSED,
+  orderingIsOpen,
+} from "../lib/background-check-ordering.ts";
 import { canReadOrgInternals } from "../lib/org-access.ts";
 
 const app = new Hono<ApiEnv>();
@@ -167,6 +174,16 @@ async function mayRequestForOrganization(
   return access.allowed;
 }
 
+function orderingClosed(
+  c: { json: (body: unknown, status?: number) => Response },
+) {
+  return c.json({
+    error: "Background checks are not open yet",
+    message: "Background checks are not open yet. Nothing was charged.",
+    code: ORDERING_CLOSED,
+  }, 503);
+}
+
 // ============================================================================
 // Literal routes first — a literal declared after a /:param sibling of the
 // same method is unreachable (literal-routes-precede-params.test.ts).
@@ -179,9 +196,15 @@ async function mayRequestForOrganization(
  * check costs Scaffald — and `provider_package_code`. Neither is the worker's
  * business, and `*` sent both to every signed-in user (#1127).
  */
-app.get("/packages", requireAuth, async (c) => {
+app.get("/packages", requireAuth, addSupabaseAdminForUser, async (c) => {
   const supabase = c.get("supabase");
+  const admin = c.get("supabaseAdmin");
   if (!supabase) return fail(c, 401, "Unauthorized");
+  if (!admin) return fail(c, 500, "Admin client not available");
+
+  // Nothing on offer while ordering is closed: the worker's wizard and the
+  // Office order form both start here, and both show "not open yet".
+  if (!(await orderingIsOpen(admin))) return orderingClosed(c);
 
   const { data: packages, error } = await supabase
     .schema("core")
@@ -286,6 +309,9 @@ app.post(
     const admin = c.get("supabaseAdmin");
     if (!user?.id) return fail(c, 401, "Unauthorized");
     if (!admin) return fail(c, 500, "Admin client not available");
+
+    // Before anything is written or any intent exists.
+    if (!(await orderingIsOpen(admin))) return orderingClosed(c);
 
     const body = c.req.valid("json");
 

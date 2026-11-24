@@ -102,6 +102,15 @@ export function useUpdateBackgroundCheckPrivacyMutation(
   });
 }
 
+/**
+ * True when the api says checks cannot be ordered in this environment yet
+ * (#1267): no screening provider is connected and a charge would be real
+ * money. `/packages` and `/request` both answer 503 `ordering_closed`.
+ */
+export function isOrderingClosedError(error: unknown): boolean {
+  return (error as { code?: unknown } | null)?.code === "ordering_closed";
+}
+
 /** List background check packages (user-facing). */
 export function useBackgroundCheckPackages(options?: {
   enabled?: boolean;
@@ -116,6 +125,9 @@ export function useBackgroundCheckPackages(options?: {
     },
     enabled: !!client && options?.enabled !== false,
     staleTime: options?.staleTime ?? 60_000,
+    // Closed is an answer, not a blip: retrying it only delays the message.
+    retry: (failureCount, error) =>
+      !isOrderingClosedError(error) && failureCount < 3,
   });
 }
 
