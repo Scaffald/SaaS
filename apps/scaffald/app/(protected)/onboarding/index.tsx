@@ -3,11 +3,10 @@ import { useTranslation } from "@scf/core/utils/useTranslation";
 import { US_STATES } from "@scf/core/constants/us-states";
 import { ControlledAddressForm } from "@scf/core/forms";
 import { useUserLocation } from "@scf/core/hooks";
-import {
-  usePrerequisites,
-  useCompletePrerequisites,
-  useIndustries,
-} from "@scaffald/sdk/react";
+import { useCompletePrerequisites, useIndustries } from "@scaffald/sdk/react";
+import { usePrerequisitesPrefill } from "@scf/core/features/prerequisites";
+import { usePrerequisitesCheck } from "@scf/core/utils/prerequisites-sdk-hooks";
+import { useSessionContext } from "@scf/core/utils/supabase/useSessionContext";
 import {
   Button,
   Checkbox,
@@ -23,7 +22,7 @@ import {
 } from "@scaffald/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -69,12 +68,18 @@ export default function OnboardingPage() {
     return () => clearTimeout(t);
   }, [requestLocation]);
 
-  // Check prerequisites status
+  // Check prerequisites status. Wait for the session's token (#1386): the
+  // (protected) layout renders this page under its loading overlay before the
+  // session restores, and until then the SDK client carries the anon key, to
+  // which /check answers 200 with blank names. That blank answer used to seed
+  // the form and sit in the cache. This is the same query (and cache entry)
+  // the onboarding layout reads.
+  const { session } = useSessionContext();
   const {
     data: statusData,
     isLoading: isCheckingStatus,
     refetch: refetchStatus,
-  } = usePrerequisites();
+  } = usePrerequisitesCheck({ enabled: !!session?.access_token });
 
   // Fetch industries for dropdown. SC-111: surface the error state with a
   // retry — the previous form showed "No industries available" on a failed
@@ -120,56 +125,18 @@ export default function OnboardingPage() {
     control,
     handleSubmit,
     formState: { errors },
+    getValues,
     setValue,
     trigger,
-    reset,
   } = useForm<PrerequisitesFormData>({
     resolver: zodResolver(prerequisitesSchema),
     defaultValues: prerequisitesDefaults,
     mode: "onSubmit", // Validate on submit instead of onChange to prevent premature validation errors
   });
 
-  const previousPrefillHashRef = useRef<string | null>(null);
-
-  // Populate form with existing data when loaded
-  useEffect(() => {
-    if (!statusData?.data) {
-      return;
-    }
-
-    const prefillData: PrerequisitesFormData = {
-      first_name: statusData.data.first_name ?? "",
-      last_name: statusData.data.last_name ?? "",
-      address: {
-        street:
-          statusData.data.address?.street ??
-          prerequisitesDefaults.address.street,
-        city:
-          statusData.data.address?.city ?? prerequisitesDefaults.address.city,
-        state:
-          statusData.data.address?.state ?? prerequisitesDefaults.address.state,
-        zip: statusData.data.address?.zip ?? prerequisitesDefaults.address.zip,
-        country:
-          statusData.data.address?.country ??
-          prerequisitesDefaults.address.country,
-        latitude: statusData.data.address?.latitude,
-        longitude: statusData.data.address?.longitude,
-      },
-      user_types: statusData.data.user_types ?? [],
-      industry_id: statusData.data.industry_id ?? "",
-      accepts_privacy_policy: prerequisitesDefaults.accepts_privacy_policy,
-      accepts_terms_of_service: prerequisitesDefaults.accepts_terms_of_service,
-    };
-
-    const prefillHash = JSON.stringify(prefillData);
-
-    if (previousPrefillHashRef.current === prefillHash) {
-      return;
-    }
-
-    previousPrefillHashRef.current = prefillHash;
-    reset(prefillData);
-  }, [reset, statusData?.data]);
+  // Fill the form from /check whenever it answers, without overwriting
+  // anything the user has already entered.
+  usePrerequisitesPrefill({ getValues, setValue }, statusData?.data);
 
   // Handle form submission
   const onSubmit = async (data: PrerequisitesFormData) => {
