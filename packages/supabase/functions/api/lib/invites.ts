@@ -129,9 +129,9 @@ export function renderInviteEmail(opts: {
   message?: string | null;
 }): InviteEmailContent {
   const inviter = opts.inviterName.trim() || "A friend";
-  const greeting = opts.inviteeName?.trim()
-    ? `Hi ${opts.inviteeName.trim()},`
-    : "Hi,";
+  // First name only: "Hi Sam," not "Hi Sam Ortiz,".
+  const invitee = opts.inviteeName?.trim().split(/\s+/)[0];
+  const greeting = invitee ? `Hi ${invitee},` : "Hi,";
   const note = opts.message?.trim();
   const subject = `${inviter} invited you to Scaffald`;
 

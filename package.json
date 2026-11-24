@@ -127,6 +127,8 @@
     "test:deps:strict": "pnpm check-deps && pnpm check-circular-deps",
     "test:expo": "pnpm --filter scaffald-app test",
     "test:health": "tsx scripts/test-health-analyzer.ts",
+    "invite-list": "tsx scripts/invite-list.ts",
+    "test:invite-list": "tsx --test scripts/invite-list/lib.test.ts",
     "test:health:full": "pnpm test:unit && pnpm test:health",
     "test:integration": "pnpm test:deps && pnpm test:lint",
     "test:lint": "pnpm lint:fix && pnpm typecheck",
