@@ -105,3 +105,28 @@ Deno.test("milestones + nextMilestone track the percentage", () => {
   assertEquals(nextMilestone(55), 75);
   assertEquals(nextMilestone(100), null);
 });
+
+Deno.test("count-based sections report progress toward their threshold", () => {
+  const one = getSectionStatuses({ ...EMPTY, skillsCount: 1 });
+  const skills = one.find((s) => s.id === "skills");
+  assertEquals(skills?.completed, false);
+  assertEquals(skills?.progress, { current: 1, required: 3 });
+  assertEquals(
+    one.find((s) => s.id === "certifications")?.progress,
+    { current: 0, required: 1 },
+  );
+
+  // Capped at the threshold, so "5 of 3" never reaches a screen.
+  const many = getSectionStatuses({ ...EMPTY, skillsCount: 5 });
+  assertEquals(many.find((s) => s.id === "skills")?.progress, {
+    current: 3,
+    required: 3,
+  });
+});
+
+Deno.test("sections that do not complete at a count carry no progress", () => {
+  const sections = getSectionStatuses(FULL);
+  for (const id of ["general", "experience", "preferences", "education"]) {
+    assertEquals(sections.find((s) => s.id === id)?.progress, undefined);
+  }
+});

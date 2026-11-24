@@ -28,7 +28,7 @@ import { Pressable, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { Check } from 'lucide-react-native'
 import { Avatar, Chip, Row, Sheet, Text, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { colors, fontSize } from '@scaffald/ui/tokens'
 import { ROUTES } from '@scf/core/constants/routes'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { AppearanceControl } from './AppearanceControl'
@@ -205,7 +205,9 @@ export function MobileAccountSheet({
             ...divider,
           })}
         >
-          <Text style={{ fontSize: 14, color: colors.text[theme].primary }}>Invite your crew</Text>
+          <Text style={{ fontSize: fontSize.md, color: colors.text[theme].primary }}>
+            Invite your crew
+          </Text>
         </Pressable>
 
         <Pressable

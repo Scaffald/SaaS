@@ -97,6 +97,20 @@ describe('listingAgeLabel', () => {
   it('says a never-posted draft is in draft', () => {
     expect(listingAgeLabel(null)).toBe('in draft')
     expect(listingAgeLabel(undefined)).toBe('in draft')
+    expect(listingAgeLabel(null, 'draft')).toBe('in draft')
+  })
+
+  it('never calls a live job "in draft", stamped or not (#1409)', () => {
+    // Boris: the Live group read "0d IN DRAFT" — posted_at was never set.
+    expect(listingAgeLabel(null, 'open')).toBe('posted')
+    expect(listingAgeLabel(undefined, 'published')).toBe('posted')
+    expect(listingAgeLabel('2026-11-20T00:00:00Z', 'open')).toBe('posted')
+  })
+
+  it('counts a paused or closed job that was never stamped from its creation', () => {
+    expect(listingAgeLabel(null, 'paused')).toBe('created')
+    expect(listingAgeLabel(null, 'closed')).toBe('created')
+    expect(listingAgeLabel('2026-07-07T00:00:00Z', 'closed')).toBe('posted')
   })
 })
 

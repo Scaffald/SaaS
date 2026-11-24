@@ -87,9 +87,17 @@ export function daysOpen(
  * read "98d OPEN" beside a Closed chip (#1084). The age counts from
  * `posted_at` whatever the status, so the caption says that and leaves the
  * status to the chip; a never-posted draft's age counts from `created_at`.
+ *
+ * A null `posted_at` used to mean "in draft" whatever the status, and nothing
+ * set `posted_at` when a job went live, so the Live group read "0d IN DRAFT"
+ * (#1409; migration 398 now stamps it). The status settles it: a live row is
+ * posted even without the stamp, only a draft is "in draft", and a paused or
+ * closed row that never carried one counts from when it was created.
  */
-export function listingAgeLabel(postedAt: string | null | undefined): string {
-  return postedAt ? 'posted' : 'in draft'
+export function listingAgeLabel(postedAt: string | null | undefined, status?: string): string {
+  if (postedAt) return 'posted'
+  if (status === undefined || status === 'draft') return 'in draft'
+  return FILTER_STATUSES.live?.includes(status) ? 'posted' : 'created'
 }
 
 const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
