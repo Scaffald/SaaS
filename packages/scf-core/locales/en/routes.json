@@ -273,6 +273,11 @@
     "title": "Get Started"
   },
   "org": {
+    "developers": "Developers",
+    "apiKeys": "API keys",
+    "webhooks": "Webhooks",
+    "webhookCreate": "New webhook",
+    "webhookDetail": "Webhook",
     "detail": "Organization",
     "invitations": "Invitations",
     "logs": "Logs",

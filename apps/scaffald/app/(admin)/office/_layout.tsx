@@ -1,6 +1,7 @@
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
 import { scrollingScreenLayout } from '@scf/core/components/layouts/ScreenScroll'
 import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
+import { isLegacyDevelopersPath } from '@scf/core/features/developers/legacy-paths'
 import { isLegacyHiringPath } from '@scf/core/features/hiring/legacy-paths'
 import { useOfficeRouteProtection } from '@scf/core/utils/auth/useOfficeRouteProtection'
 import { useRoleProtectedRoute } from '@scf/core/utils/auth/useRoleProtectedRoute'
@@ -15,9 +16,10 @@ export default function OfficeLayout() {
   // links are mostly employers without the office role — gated here, they
   // were sent to the dashboard before the redirect could run. So those paths,
   // and only those, skip the role checks. They render nothing but a
-  // <Redirect>, so there is nothing of Office's to leak.
+  // <Redirect>, so there is nothing of Office's to leak. API keys and webhooks
+  // moved to each organization's Developers tab the same way (#1440).
   const pathname = usePathname()
-  const legacyHiring = isLegacyHiringPath(pathname)
+  const legacyHiring = isLegacyHiringPath(pathname) || isLegacyDevelopersPath(pathname)
   const { isAuthorized, isLoading } = useRoleProtectedRoute(['office'], {
     enabled: !legacyHiring,
   })
@@ -132,11 +134,13 @@ export default function OfficeLayout() {
           <Stack.Screen name="violations/index" options={{ title: 'Violation Reports' }} />
           <Stack.Screen name="settings/geographic" options={{ title: 'Geographic Settings' }} />
           <Stack.Screen name="settings/stripe" options={{ title: 'Stripe Payments' }} />
+          {/* Redirects to each organization's Developers tab (#1440). */}
           <Stack.Screen name="api-keys/index" options={{ title: 'API Keys' }} />
           <Stack.Screen name="oauth-apps/index" options={{ title: 'OAuth Apps' }} />
           <Stack.Screen name="oauth-apps/[id]/index" options={{ title: 'OAuth App' }} />
           <Stack.Screen name="webhooks/index" options={{ title: 'Webhooks' }} />
           <Stack.Screen name="webhooks/create" options={{ title: 'Create Webhook' }} />
+          <Stack.Screen name="webhooks/[id]" options={{ title: 'Webhook' }} />
           <Stack.Screen
             name="communities/verification"
             options={{ title: 'Community Verification' }}

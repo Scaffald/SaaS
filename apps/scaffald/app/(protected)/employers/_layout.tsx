@@ -36,6 +36,18 @@ export default function EmployersLayout() {
           name="org/[slug]/logs/[workLogId]/index"
           options={{ title: 'Log Detail' }}
         />
+        {/* API keys and webhooks, per organization (#1440). */}
+        <Stack.Screen name="org/[slug]/developers/index" options={{ title: 'Developers' }} />
+        <Stack.Screen name="org/[slug]/developers/api-keys/index" options={{ title: 'API keys' }} />
+        <Stack.Screen name="org/[slug]/developers/webhooks/index" options={{ title: 'Webhooks' }} />
+        <Stack.Screen
+          name="org/[slug]/developers/webhooks/create"
+          options={{ title: 'New webhook' }}
+        />
+        <Stack.Screen
+          name="org/[slug]/developers/webhooks/[id]/index"
+          options={{ title: 'Webhook' }}
+        />
         <Stack.Screen name="teams/index" options={{ title: 'Teams' }} />
         <Stack.Screen name="teams/invitations" options={{ title: 'Team Invitations' }} />
         <Stack.Screen name="teams/[id]/index" options={{ title: 'Team Detail' }} />

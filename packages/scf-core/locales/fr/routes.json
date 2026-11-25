@@ -233,6 +233,11 @@
     "title": "Commencer"
   },
   "org": {
+    "developers": "Développeurs",
+    "apiKeys": "Clés d'API",
+    "webhooks": "Webhooks",
+    "webhookCreate": "Nouveau webhook",
+    "webhookDetail": "Webhook",
     "detail": "Organisation",
     "invitations": "Invitations",
     "logs": "Journaux",

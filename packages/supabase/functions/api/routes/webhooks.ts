@@ -7,12 +7,14 @@
  * here used to filter or insert on `user_id`, so all three answered 500
  * (`column webhooks.user_id does not exist`) on production too (#1016).
  *
- * Authorization is the table's RLS (migration 225): a row is visible and
- * writable only to callers holding a role assignment scoped to its
- * organization. So list and delete simply run as the caller; create has to
- * name an organization, which it resolves from the caller's own org-scoped
- * role assignments and never guesses between several (#1037 is what guessing
- * looks like).
+ * Authorization is explicit here (lib/org-developer-roles.ts, #1440): a
+ * member of the organization — on one of its teams, its owner, or holding a
+ * role scoped to it — sees its webhooks and their deliveries; only its admins
+ * create or delete one. The table's RLS (migration 225) admits org-scoped role
+ * assignments only, which refused a team_admin with no such role, so reads and
+ * writes go through the service client once the check has passed, each query
+ * pinned to the organizations it authorized. Create names an organization and
+ * never guesses between several (#1037 is what guessing looks like).
  */
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
@@ -23,33 +25,73 @@ import {
   authMiddleware,
 } from "../middleware/auth.ts";
 import { webhookEventTypeCatalog } from "../../_shared/webhook-event-types.ts";
+import {
+  callerOrgRoles,
+  type OrgRoles,
+  resolveCreateOrganization,
+} from "../lib/org-developer-roles.ts";
 
 const app = new OpenAPIHono<ApiEnv>();
 app.use("*", authMiddleware);
 app.use("*", addSupabaseAdminForUser);
 
+/** The organization a webhook belongs to, or null if there is no such webhook. */
+async function webhookOrganizationId(
+  admin: SupabaseClient,
+  id: string,
+): Promise<string | null> {
+  const { data } = await admin
+    .from("webhooks")
+    .select("organization_id")
+    .eq("id", id)
+    .maybeSingle();
+  return (data?.organization_id as string | undefined) ?? null;
+}
+
+type WebhookAccess =
+  | { status: "ok"; organizationId: string; admin: boolean }
+  | { status: "not_found" }
+  | { status: "error"; message: string };
+
 /**
- * The organizations the caller holds an org-scoped role in. Read with the
- * service client, filtered to the caller, so the answer does not depend on how
- * role_assignments' own RLS is written.
+ * Whether the caller may see the webhook, and manage it. Not found and not a
+ * member are the same answer, so an id outside the caller's organizations
+ * confirms nothing.
  */
-async function callerOrganizationIds(
+async function webhookAccess(
   admin: SupabaseClient,
   userId: string,
-): Promise<string[]> {
-  const { data, error } = await admin
-    .schema("core")
-    .from("role_assignments")
-    .select("scope_org_id")
-    .eq("user_id", userId)
-    .not("scope_org_id", "is", null);
-  if (error) throw error;
-  return [...new Set((data ?? []).map((r) => r.scope_org_id as string))];
+  id: string,
+): Promise<WebhookAccess> {
+  try {
+    const [organizationId, roles] = await Promise.all([
+      webhookOrganizationId(admin, id),
+      callerOrgRoles(admin, userId),
+    ]);
+    const role = organizationId ? roles.get(organizationId) : undefined;
+    if (!organizationId || !role) return { status: "not_found" };
+    return { status: "ok", organizationId, admin: role.admin };
+  } catch (err) {
+    return { status: "error", message: (err as Error).message };
+  }
 }
+
+const WEBHOOK_COLUMNS =
+  "id, organization_id, url, description, events, is_active, retry_max_attempts, retry_backoff_seconds, timeout_ms, rate_limit_per_minute, metadata, last_delivery_at, last_success_at, last_failure_at, total_deliveries, successful_deliveries, failed_deliveries, created_at, updated_at, created_by, updated_by";
 
 const _errorResponseSchema = z.object({
   error: z.string(),
   message: z.string().optional(),
+});
+
+/**
+ * One error answer, declared on a route so its handler type-checks against it:
+ * a route that declared only its success made every `c.json(..., 401)` a type
+ * error, which is what the typecheck ratchet was counting here.
+ */
+const errorResponse = (description: string) => ({
+  description,
+  content: { "application/json": { schema: _errorResponseSchema } },
 });
 
 /**
@@ -76,24 +118,41 @@ app.openapi(
           },
         },
       },
+      401: errorResponse("Unauthorized"),
+      500: errorResponse("Server error"),
     },
     security: [{ bearerAuth: [] }],
   }),
   async (c) => {
-    const supabase = c.get("supabase");
+    const admin = c.get("supabaseAdmin");
     const user = c.get("user");
 
     if (!user) {
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    // RLS limits the rows to the caller's organizations; the optional filter
-    // narrows to one of them.
+    // The caller's organizations; the optional filter narrows to one of them.
+    // An organization they are not in lists nothing, as RLS did.
     const { organization_id } = c.req.valid("query");
-    let query = supabase.from("webhooks").select("*")
+    let orgIds: string[];
+    try {
+      orgIds = [...(await callerOrgRoles(admin, user.id)).keys()];
+    } catch (err) {
+      return c.json({
+        error: "Failed to fetch webhooks",
+        message: (err as Error).message,
+      }, 500);
+    }
+    if (organization_id) {
+      orgIds = orgIds.includes(organization_id) ? [organization_id] : [];
+    }
+    if (orgIds.length === 0) return c.json({ data: [] });
+
+    // Everything but the signing secret, which is shown once, at creation.
+    const { data, error } = await admin.from("webhooks")
+      .select(WEBHOOK_COLUMNS)
+      .in("organization_id", orgIds)
       .order("created_at", { ascending: false });
-    if (organization_id) query = query.eq("organization_id", organization_id);
-    const { data, error } = await query;
 
     if (error) {
       return c.json({
@@ -102,7 +161,7 @@ app.openapi(
       }, 500);
     }
 
-    return c.json({ data: data || [] });
+    return c.json({ data: data || [] }, 200);
   },
 );
 
@@ -191,11 +250,14 @@ app.openapi(
           },
         },
       },
+      400: errorResponse("Bad request"),
+      401: errorResponse("Unauthorized"),
+      403: errorResponse("Forbidden"),
+      500: errorResponse("Server error"),
     },
     security: [{ bearerAuth: [] }],
   }),
   async (c) => {
-    const supabase = c.get("supabase");
     const user = c.get("user");
     const body = c.req.valid("json");
 
@@ -203,9 +265,10 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    let orgIds: string[];
+    const admin = c.get("supabaseAdmin");
+    let roles: OrgRoles;
     try {
-      orgIds = await callerOrganizationIds(c.get("supabaseAdmin"), user.id);
+      roles = await callerOrgRoles(admin, user.id);
     } catch (err) {
       return c.json({
         error: "Failed to create webhook",
@@ -213,36 +276,28 @@ app.openapi(
       }, 500);
     }
 
-    let organizationId: string;
-    if (body.organization_id) {
-      if (!orgIds.includes(body.organization_id)) {
-        return c.json({
-          error: "Forbidden",
-          message: "You do not belong to that organization",
-        }, 403);
-      }
-      organizationId = body.organization_id;
-    } else if (orgIds.length === 1) {
-      organizationId = orgIds[0];
-    } else if (orgIds.length === 0) {
+    const target = resolveCreateOrganization(roles, body.organization_id);
+    if (!target.ok) {
+      return c.json({
+        error: target.status === 400 ? "Bad Request" : "Forbidden",
+        message: target.status === 403 && roles.size === 0
+          ? "Webhooks belong to an organization, and you are not in one"
+          : target.message,
+      }, target.status);
+    }
+    const organizationId = target.organizationId;
+    if (!roles.get(organizationId)?.admin) {
       return c.json({
         error: "Forbidden",
-        message: "Webhooks belong to an organization, and you are not in one",
+        message: "Only organization admins can create webhooks",
       }, 403);
-    } else {
-      return c.json({
-        error: "Bad Request",
-        message:
-          "You belong to more than one organization; pass organization_id",
-      }, 400);
     }
 
     // Generate webhook secret
     const secret = crypto.randomUUID();
 
-    // Inserted as the caller, so the table's insert policy still has the final
-    // say on the organization.
-    const { data, error } = await supabase
+    // The organization was authorized above; the insert is pinned to it.
+    const { data, error } = await admin
       .from("webhooks")
       .insert({
         organization_id: organizationId,
@@ -278,6 +333,157 @@ app.openapi(
 );
 
 /**
+ * GET /v1/webhooks/:id
+ * One webhook, for its detail screen (#1440). The list row pushed to a detail
+ * route that never existed, so tapping a webhook was a 404.
+ */
+app.openapi(
+  createRoute({
+    method: "get",
+    path: "/{id}",
+    tags: ["Webhooks"],
+    summary: "Retrieve webhook",
+    request: {
+      params: z.object({ id: z.string().uuid() }),
+    },
+    responses: {
+      200: {
+        description: "Webhook",
+        content: {
+          "application/json": {
+            schema: z.object({ data: z.any() }),
+          },
+        },
+      },
+      401: errorResponse("Unauthorized"),
+      404: errorResponse("Not found"),
+      500: errorResponse("Server error"),
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const admin = c.get("supabaseAdmin");
+    const user = c.get("user");
+    const { id } = c.req.valid("param");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const access = await webhookAccess(admin, user.id, id);
+    if (access.status === "error") {
+      return c.json({
+        error: "Failed to fetch webhook",
+        message: access.message,
+      }, 500);
+    }
+    if (access.status === "not_found") {
+      return c.json({ error: "Not Found" }, 404);
+    }
+
+    const { data, error } = await admin.from("webhooks")
+      .select(WEBHOOK_COLUMNS)
+      .eq("id", id)
+      .eq("organization_id", access.organizationId)
+      .maybeSingle();
+    if (error) {
+      return c.json({
+        error: "Failed to fetch webhook",
+        message: error.message,
+      }, 500);
+    }
+    if (!data) return c.json({ error: "Not Found" }, 404);
+
+    return c.json({ data }, 200);
+  },
+);
+
+/**
+ * GET /v1/webhooks/:id/deliveries
+ * The webhook's recent delivery attempts, newest first.
+ */
+app.openapi(
+  createRoute({
+    method: "get",
+    path: "/{id}/deliveries",
+    tags: ["Webhooks"],
+    summary: "List webhook deliveries",
+    request: {
+      params: z.object({ id: z.string().uuid() }),
+      query: z.object({
+        status: z.enum([
+          "pending",
+          "success",
+          "failed",
+          "retrying",
+          "cancelled",
+        ])
+          .optional(),
+        event_type: z.string().optional(),
+        limit: z.coerce.number().int().min(1).max(100).optional(),
+        offset: z.coerce.number().int().min(0).optional(),
+      }),
+    },
+    responses: {
+      200: {
+        description: "Deliveries",
+        content: {
+          "application/json": {
+            schema: z.object({ data: z.array(z.any()) }),
+          },
+        },
+      },
+      401: errorResponse("Unauthorized"),
+      404: errorResponse("Not found"),
+      500: errorResponse("Server error"),
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const admin = c.get("supabaseAdmin");
+    const user = c.get("user");
+    const { id } = c.req.valid("param");
+    const { status, event_type, limit = 50, offset = 0 } = c.req.valid(
+      "query",
+    );
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const access = await webhookAccess(admin, user.id, id);
+    if (access.status === "error") {
+      return c.json({
+        error: "Failed to fetch deliveries",
+        message: access.message,
+      }, 500);
+    }
+    if (access.status === "not_found") {
+      return c.json({ error: "Not Found" }, 404);
+    }
+
+    let query = admin.from("webhook_deliveries")
+      .select(
+        "id, webhook_id, event_type, status, attempt_number, response_status_code, response_time_ms, error_message, retry_count, next_retry_at, created_at, delivered_at, completed_at",
+      )
+      .eq("webhook_id", id)
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
+    if (status) query = query.eq("status", status);
+    if (event_type) query = query.eq("event_type", event_type);
+    const { data, error } = await query;
+    if (error) {
+      return c.json({
+        error: "Failed to fetch deliveries",
+        message: error.message,
+      }, 500);
+    }
+
+    return c.json({ data: data ?? [] }, 200);
+  },
+);
+
+/**
  * DELETE /v1/webhooks/:id
  * Delete webhook
  */
@@ -299,11 +505,15 @@ app.openapi(
           },
         },
       },
+      401: errorResponse("Unauthorized"),
+      403: errorResponse("Forbidden"),
+      404: errorResponse("Not found"),
+      500: errorResponse("Server error"),
     },
     security: [{ bearerAuth: [] }],
   }),
   async (c) => {
-    const supabase = c.get("supabase");
+    const admin = c.get("supabaseAdmin");
     const user = c.get("user");
     const { id } = c.req.valid("param");
 
@@ -311,10 +521,27 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    // RLS scopes the delete to the caller's organizations. A webhook outside
-    // them matches no row, which reads as 404 rather than confirming it exists.
-    const { data, error } = await supabase.from("webhooks").delete()
-      .eq("id", id).select("id");
+    // A webhook outside the caller's organizations reads as 404, which does
+    // not confirm it exists; a member who is not an admin is refused.
+    const access = await webhookAccess(admin, user.id, id);
+    if (access.status === "error") {
+      return c.json({
+        error: "Failed to delete webhook",
+        message: access.message,
+      }, 500);
+    }
+    if (access.status === "not_found") {
+      return c.json({ error: "Not Found" }, 404);
+    }
+    if (!access.admin) {
+      return c.json({
+        error: "Forbidden",
+        message: "Only organization admins can delete webhooks",
+      }, 403);
+    }
+
+    const { data, error } = await admin.from("webhooks").delete()
+      .eq("id", id).eq("organization_id", access.organizationId).select("id");
 
     if (error) {
       return c.json({
@@ -326,7 +553,7 @@ app.openapi(
       return c.json({ error: "Not Found" }, 404);
     }
 
-    return c.json({ success: true });
+    return c.json({ success: true }, 200);
   },
 );
 

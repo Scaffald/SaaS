@@ -4,6 +4,7 @@
  */
 
 export { DeveloperPortal } from './DeveloperPortal'
+export type { DeveloperPortalProps } from './DeveloperPortal'
 export { APIKeysList } from './APIKeysList'
 export { APIKeyCreateModal } from './APIKeyCreateModal'
 export { APIKeyUsageChart } from './APIKeyUsageChart'
