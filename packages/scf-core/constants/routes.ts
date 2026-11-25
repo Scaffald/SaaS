@@ -283,6 +283,38 @@ const ROUTES_CONFIG = {
             exact: true,
           },
         },
+        // API keys and webhooks belong to an organization, so they live on it
+        // (#1440). They sat in Office, which admits only platform staff.
+        DEVELOPERS: {
+          path: '/employers/org/:slug/developers',
+          titleKey: 'routes.org.developers',
+          protected: true,
+          exact: false,
+          API_KEYS: {
+            path: '/employers/org/:slug/developers/api-keys',
+            titleKey: 'routes.org.apiKeys',
+            protected: true,
+            exact: true,
+          },
+          WEBHOOKS: {
+            path: '/employers/org/:slug/developers/webhooks',
+            titleKey: 'routes.org.webhooks',
+            protected: true,
+            exact: false,
+            CREATE: {
+              path: '/employers/org/:slug/developers/webhooks/create',
+              titleKey: 'routes.org.webhookCreate',
+              protected: true,
+              exact: true,
+            },
+            DETAIL: {
+              path: '/employers/org/:slug/developers/webhooks/:id',
+              titleKey: 'routes.org.webhookDetail',
+              protected: true,
+              exact: true,
+            },
+          },
+        },
       },
     },
     TEAMS: {
@@ -1439,17 +1471,23 @@ const ROUTES_CONFIG = {
       exact: true,
       icon: AlertTriangle,
     },
+    // Legacy: API keys and webhooks moved to each organization's Developers
+    // tab, ROUTES.EMPLOYERS.ORG.DETAIL.DEVELOPERS (#1440). These paths only
+    // redirect, and the office layout lets every signed-in user through to
+    // them (features/developers/legacy-paths.ts).
     API_KEYS: {
       path: '/office/api-keys',
       titleKey: 'routes.office.apiKeys.title',
       protected: true,
       exact: true,
+      hidden: true,
     },
     WEBHOOKS: {
       path: '/office/webhooks',
       titleKey: 'routes.office.webhooks.title',
       protected: true,
       exact: false,
+      hidden: true,
       CREATE: {
         path: '/office/webhooks/create',
         titleKey: 'routes.office.webhooks.create',
@@ -1925,6 +1963,13 @@ export const RouteBuilder = {
   orgTaskCreate: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.TASKS.CREATE, { slug }),
   orgTaskDetail: (slug: string, taskId: string) =>
     buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.TASKS.DETAIL, { slug, taskId }),
+  orgDevelopers: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.DEVELOPERS, { slug }),
+  orgApiKeys: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.DEVELOPERS.API_KEYS, { slug }),
+  orgWebhooks: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.DEVELOPERS.WEBHOOKS, { slug }),
+  orgWebhookCreate: (slug: string) =>
+    buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.DEVELOPERS.WEBHOOKS.CREATE, { slug }),
+  orgWebhookDetail: (slug: string, id: string) =>
+    buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.DEVELOPERS.WEBHOOKS.DETAIL, { slug, id }),
   applicationMessages: (applicationId: string) =>
     buildPath(ROUTES.JOBS.APPLICATIONS.MESSAGES, { applicationId }),
 } as const

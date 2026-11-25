@@ -13,15 +13,16 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 
 /**
- * Hook to list all API keys for the current user's organization
+ * Hook to list one organization's API keys, or, with no id, every
+ * organization's the caller belongs to.
  *
  * @example
  * ```tsx
- * const { data: keys, isLoading } = useAPIKeys()
+ * const { data: keys, isLoading } = useAPIKeys(org.organizationId)
  * ```
  */
-export const useAPIKeys = () => {
-  return useApiKeysSDK()
+export const useAPIKeys = (organizationId?: string) => {
+  return useApiKeysSDK(organizationId ? { organization_id: organizationId } : undefined)
 }
 
 /**

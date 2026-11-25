@@ -16,6 +16,7 @@ import type {
   CreateApiKeyParams,
   UpdateApiKeyParams,
   GetUsageParams,
+  ListApiKeysParams,
   RevokeApiKeyResponse,
 } from '@scaffald/sdk'
 
@@ -24,17 +25,21 @@ import type {
 // ============================================================================
 
 /**
- * Hook to list all API keys for the user's organization
+ * Hook to list API keys: one organization's with `params.organization_id`,
+ * otherwise every organization the caller belongs to.
  */
 export function useApiKeys(
+  params?: ListApiKeysParams,
   options?: Omit<UseQueryOptions<ApiKey[], Error>, 'queryKey' | 'queryFn'>
 ) {
   const client = useScaffaldJobsClient()
   return useQuery({
-    queryKey: ['scaffald', 'apiKeys', 'list'],
+    // The list key is a prefix of every org's, so invalidating
+    // ['scaffald', 'apiKeys', 'list'] refreshes them all.
+    queryKey: ['scaffald', 'apiKeys', 'list', params?.organization_id ?? null],
     queryFn: async () => {
       if (!client) throw new Error('Scaffald client not available')
-      return client.apiKeys.list()
+      return client.apiKeys.list(params)
     },
     enabled: !!client && options?.enabled !== false,
     ...options,

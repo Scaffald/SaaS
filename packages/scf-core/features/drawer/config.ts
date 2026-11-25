@@ -1,4 +1,4 @@
-import { ROUTES } from '@scf/core/constants/routes'
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import type { OrganizationMembership } from '@scf/core/utils/useOrganizations'
 import {
   AlertTriangle,
@@ -22,7 +22,7 @@ import { ownsPath } from './utils'
 
 /**
  * Per-organization entries under Employers. On an org's own pages the tab
- * strip becomes that org's: its overview, Teams and Logs.
+ * strip becomes that org's: its overview, Teams, Logs and Developers.
  */
 const buildOrgSubItems = (memberships: OrganizationMembership[]): DrawerItemConfig[] => {
   const seen = new Set<string>()
@@ -46,6 +46,13 @@ const buildOrgSubItems = (memberships: OrganizationMembership[]): DrawerItemConf
           key: `org-${m.organization_slug}-logs`,
           titleKey: ROUTES.EMPLOYERS.LOGS.titleKey,
           href: `/employers/org/${m.organization_slug}/logs`,
+        },
+        {
+          // API keys and webhooks belong to the organization (#1440). Every
+          // member sees the tab; only its admins get create and revoke.
+          key: `org-${m.organization_slug}-developers`,
+          titleKey: ROUTES.EMPLOYERS.ORG.DETAIL.DEVELOPERS.titleKey,
+          href: buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.DEVELOPERS, { slug: m.organization_slug }),
         },
       ],
     }))

@@ -1,11 +1,18 @@
 /**
- * Developer Portal
- * Complete API keys management interface
- * Connects all UI components with tRPC hooks
+ * Developer Portal — one organization's API keys.
+ *
+ * Keys belong to an organization, so the portal is always for one: the
+ * organization's Developers tab passes its id, and every call names it, which
+ * is also what keeps a member of several organizations from the api's "pass
+ * organization_id" refusal (#1440). It used to live at /office/api-keys,
+ * which only platform staff could open.
+ *
+ * Creating, re-scoping and revoking are for the organization's admins; the api
+ * refuses anyone else, and `canManage` keeps the controls from being offered.
  */
 
 import { useState } from 'react'
-import { Stack } from '@scaffald/ui'
+import { ErrorState, Stack } from '@scaffald/ui'
 import { useToast } from '@scaffald/ui'
 import { confirmDialog } from '@scf/core/utils/platform'
 import { APIKeysList } from './APIKeysList'
@@ -16,11 +23,17 @@ import { useAPIKeys, useCreateAPIKey, useUpdateAPIKey, useRevokeAPIKey } from '.
 import type { ApiKeyScope } from '@scaffald/sdk'
 import type { CreateKeyParams } from './APIKeyCreateModal'
 
-export function DeveloperPortal() {
+export interface DeveloperPortalProps {
+  organizationId: string
+  /** Whether the viewer is an admin of the organization. */
+  canManage: boolean
+}
+
+export function DeveloperPortal({ organizationId, canManage }: DeveloperPortalProps) {
   const toast = useToast()
 
   // Fetch API keys
-  const { data: keys = [], isLoading } = useAPIKeys()
+  const { data: keys = [], isLoading, isError, error, refetch } = useAPIKeys(organizationId)
 
   // Mutations
   const createKey = useCreateAPIKey()
@@ -41,6 +54,7 @@ export function DeveloperPortal() {
   const handleCreateKey = async (params: CreateKeyParams) => {
     try {
       const result = await createKey.mutateAsync({
+        organization_id: organizationId,
         name: params.name,
         scopes: params.scopes as ApiKeyScope[],
         expires_at: params.expiresAt,
@@ -136,16 +150,28 @@ export function DeveloperPortal() {
     }
   }
 
+  if (isError) {
+    // A failed load is not "no keys" (#1021).
+    return (
+      <ErrorState
+        title="Couldn’t load API keys"
+        description="This organization’s API keys did not load. Nothing here does not mean it has none."
+        error={error as Error}
+        retry={() => refetch()}
+      />
+    )
+  }
+
   return (
     <Stack flex={1} gap={16}>
       {/* Main List */}
       <APIKeysList
         keys={keys}
         isLoading={isLoading}
-        onCreateKey={() => setIsCreateModalOpen(true)}
-        onRevokeKey={handleRevokeKey}
+        onCreateKey={canManage ? () => setIsCreateModalOpen(true) : undefined}
+        onRevokeKey={canManage ? handleRevokeKey : undefined}
         onViewUsage={handleViewUsage}
-        onManageScopes={handleManageScopes}
+        onManageScopes={canManage ? handleManageScopes : undefined}
       />
 
       {/* Create Modal */}

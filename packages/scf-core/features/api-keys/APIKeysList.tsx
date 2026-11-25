@@ -63,8 +63,13 @@ export interface APIKey {
 export interface APIKeysListProps {
   keys: APIKey[]
   isLoading?: boolean
-  onCreateKey: () => void
-  onRevokeKey: (keyId: string) => void
+  /**
+   * Absent for someone who may only look: an organization's keys are created
+   * and revoked by its admins (#1440), so for everyone else the button and the
+   * menu entry are simply not there.
+   */
+  onCreateKey?: () => void
+  onRevokeKey?: (keyId: string) => void
   onViewUsage: (keyId: string) => void
   onManageScopes?: (keyId: string) => void
 }
@@ -288,7 +293,7 @@ export function APIKeysList({
         if (key.is_active && onManageScopes) {
           actions.push({ label: 'Manage scopes', onPress: () => onManageScopes(key.id) })
         }
-        if (key.is_active) {
+        if (key.is_active && onRevokeKey) {
           actions.push({ label: 'Revoke', onPress: () => onRevokeKey(key.id), destructive: true })
         }
         return <KeyActionsMenu keyName={key.name} actions={actions} />
@@ -313,9 +318,11 @@ export function APIKeysList({
         title="API keys"
         tip="Keys for third-party integrations and SDK access."
         actions={
-          <Button iconStart={Plus} onPress={onCreateKey} color="primary">
-            Create API Key
-          </Button>
+          onCreateKey ? (
+            <Button iconStart={Plus} onPress={onCreateKey} color="primary">
+              Create API Key
+            </Button>
+          ) : undefined
         }
       />
 
@@ -323,7 +330,11 @@ export function APIKeysList({
         <EmptyState
           icon={Key}
           title="No API keys"
-          description="Create your first API key to start using the Scaffald SDK."
+          description={
+            onCreateKey
+              ? 'Create your first API key to start using the Scaffald SDK.'
+              : 'An organization admin can create one.'
+          }
         />
       ) : (
         <>

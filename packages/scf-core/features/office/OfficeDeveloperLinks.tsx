@@ -15,6 +15,9 @@
  * The portal itself was already complete: list, create, scope management, usage
  * chart and revoke-with-confirmation. #424 asked for it to be built; what it
  * actually needed was a way in.
+ *
+ * API keys and webhooks have since left: they belong to an organization, and
+ * live on each organization's Developers tab (#1440).
  */
 
 import { useCallback } from 'react'
@@ -23,7 +26,7 @@ import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
 import { Caption, Paragraph, Row, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
-import { ChevronRight, KeyRound, Puzzle, Webhook } from 'lucide-react-native'
+import { ChevronRight, type KeyRound, Puzzle } from 'lucide-react-native'
 
 type DeveloperLink = {
   href: Href
@@ -34,22 +37,10 @@ type DeveloperLink = {
 
 const LINKS: DeveloperLink[] = [
   {
-    href: '/office/api-keys',
-    label: 'API keys',
-    description: 'Mint, scope and revoke keys for automated callers.',
-    Icon: KeyRound,
-  },
-  {
     href: '/office/oauth-apps',
     label: 'OAuth apps',
     description: 'Registered third-party applications and their allowed scopes.',
     Icon: Puzzle,
-  },
-  {
-    href: '/office/webhooks',
-    label: 'Webhooks',
-    description: 'Outbound event subscriptions.',
-    Icon: Webhook,
   },
 ]
 

@@ -94,9 +94,14 @@ inquiry and hire screens shipped unreachable (#1312).
 - Don't link an employer screen to an Office page (the CMS job form, say)
   without gating the link on `hasOfficeRole`.
 - Moving a route out of `/office` leaves a `<Redirect>` at the old path, and
-  the office layout must skip its role gate for it (`isLegacyHiringPath`) —
-  otherwise the people following the old link are sent to the dashboard
-  before the redirect runs.
+  the office layout must skip its role gate for it (`isLegacyHiringPath`,
+  `isLegacyDevelopersPath`) — otherwise the people following the old link
+  are sent to the dashboard before the redirect runs.
+- Anything that belongs to an organization (its API keys and webhooks, #1440)
+  lives on that organization, under `/employers/org/[slug]/…`, and every call
+  names the organization from the slug. Decide who is a member or admin the
+  way the api does (`functions/api/lib/org-developer-roles.ts`: teams, owner,
+  org-scoped role) — not from one source, which locked out owners on no team.
 
 ## Navigation Guard Pattern
 
