@@ -72,6 +72,7 @@ office-users-delete-rest.test.ts
 office-users-list-rest.test.ts
 office.test.ts
 onet.test.ts
+org-developers-rest.test.ts
 organizations.test.ts
 payments-rest.test.ts
 payments-settlement.test.ts

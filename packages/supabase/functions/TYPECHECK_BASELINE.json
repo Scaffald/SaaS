@@ -60,7 +60,6 @@
     "packages/supabase/functions/api/routes/tasks.ts": 5,
     "packages/supabase/functions/api/routes/teams.ts": 18,
     "packages/supabase/functions/api/routes/user-profiles.ts": 11,
-    "packages/supabase/functions/api/routes/webhooks.ts": 3,
     "packages/supabase/functions/api/routes/work-logs.ts": 23,
     "packages/supabase/functions/api/routes/workers.ts": 2,
     "packages/supabase/functions/ccpa-deadline-check/index.ts": 2,

@@ -57,9 +57,28 @@ describe('getSectionTabs', () => {
   it("hands an organisation page the org's own tabs, with a way back", () => {
     const strip = getSectionTabs('/employers/org/acme/teams', employer)
     expect(strip?.ownerKey).toBe('org-acme')
-    expect(strip?.tabs.map((t) => t.key)).toEqual(['org-acme', 'org-acme-teams', 'org-acme-logs'])
+    expect(strip?.tabs.map((t) => t.key)).toEqual([
+      'org-acme',
+      'org-acme-teams',
+      'org-acme-logs',
+      'org-acme-developers',
+    ])
     expect(strip?.activeKey).toBe('org-acme-teams')
     expect(getSectionTabs('/employers/org/acme', employer)?.activeKey).toBe('org-acme')
+  })
+
+  it('lights Developers on every API keys and webhooks page of an organisation (#1440)', () => {
+    for (const path of [
+      '/employers/org/acme/developers',
+      '/employers/org/acme/developers/api-keys',
+      '/employers/org/acme/developers/webhooks',
+      '/employers/org/acme/developers/webhooks/create',
+      '/employers/org/acme/developers/webhooks/abc',
+    ]) {
+      const strip = getSectionTabs(path, employer)
+      expect(strip?.ownerKey).toBe('org-acme')
+      expect(strip?.activeKey).toBe('org-acme-developers')
+    }
   })
 
   it('keeps Employers tabs on the employer search and join pages', () => {

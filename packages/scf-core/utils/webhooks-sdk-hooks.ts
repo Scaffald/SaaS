@@ -9,6 +9,7 @@ import type {
   CreateWebhookParams,
   UpdateWebhookParams,
   ListDeliveriesParams,
+  ListWebhooksParams,
   WebhookResponse,
   WebhookCreatedResponse,
   RetryDeliveryResponse,
@@ -19,14 +20,18 @@ import type {
 // QUERY HOOKS
 // ============================================================================
 
-/** List all webhooks for the user's organization */
-export function useWebhooks(options?: { enabled?: boolean }) {
+/**
+ * List webhooks: one organization's with `params.organization_id`, otherwise
+ * every organization the caller belongs to.
+ */
+export function useWebhooks(params?: ListWebhooksParams, options?: { enabled?: boolean }) {
   const client = useScaffaldJobsClient()
   return useQuery({
-    queryKey: ['webhooks', 'list'],
+    // A prefix of ['webhooks', 'list'], so invalidating that refreshes every org's.
+    queryKey: ['webhooks', 'list', params?.organization_id ?? null],
     queryFn: async () => {
       if (!client) throw new Error('Missing client')
-      return client.webhooks.list()
+      return client.webhooks.list(params)
     },
     enabled: !!client && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
