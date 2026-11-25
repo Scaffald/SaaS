@@ -63,7 +63,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
     onSuccess: () => {
       appQuery.refetch()
       setShowRejectDialog(false)
-      router.push(ROUTES.OFFICE.OAUTH_APPS.path)
+      router.push(ROUTES.ADMIN.OAUTH_APPS.path)
     },
   })
 

@@ -90,9 +90,21 @@ describe('getSectionTabs', () => {
     expect(getSectionTabs('/office/compliance/project-hiring', office)?.activeKey).toBe(
       'office-compliance'
     )
-    expect(getSectionTabs('/office/integrations/hris', office)?.activeKey).toBe(
-      'office-integrations'
+    expect(getSectionTabs('/office/compliance/eeo-reports', office)?.activeKey).toBe(
+      'office-compliance'
     )
+  })
+
+  // #1439: platform setup moved to Admin.
+  it('has no Integrations, Payments or Transactions tab in Office', () => {
+    const officeTabs = office[0].subItems?.map((t) => t.key)
+    expect(officeTabs).toEqual([
+      'office-overview',
+      'office-screening',
+      'office-cms',
+      'office-compliance',
+      'office-violations',
+    ])
   })
 
   // #1312: the pipeline is the employer's, under /hiring, not an Office tab.
@@ -157,8 +169,60 @@ describe('getSectionTabs', () => {
 
   it('lights Overview on the Office home only', () => {
     expect(getSectionTabs('/office', office)?.activeKey).toBe('office-overview')
-    expect(getSectionTabs('/office/notifications', office)?.activeKey).toBeNull()
-    expect(getSectionTabs('/office/payments', office)?.activeKey).toBe('office-payments')
+    expect(getSectionTabs('/office/violations', office)?.activeKey).toBe('office-violations')
+  })
+
+  // #1439
+  describe('Admin', () => {
+    const tabs: Array<[string, string]> = [
+      ['/admin/general/geographic', 'admin-general'],
+      ['/admin/general', 'admin-general'],
+      ['/admin/billing/stripe', 'admin-billing'],
+      ['/admin/billing/payments', 'admin-billing'],
+      ['/admin/billing/transactions', 'admin-billing'],
+      ['/admin/integrations/background-checks', 'admin-integrations'],
+      ['/admin/integrations/hris', 'admin-integrations'],
+      ['/admin/oauth-apps', 'admin-developer'],
+      ['/admin/oauth-apps/abc-123', 'admin-developer'],
+      ['/admin/system/notifications', 'admin-system'],
+      ['/admin/system/storage', 'admin-system'],
+    ]
+
+    it('has the tabs General, Billing, Integrations, Developer platform, System', () => {
+      const admin = office.find((item) => item.key === 'admin')
+      expect(admin?.subItems?.map((t) => t.key)).toEqual([
+        'admin-general',
+        'admin-billing',
+        'admin-integrations',
+        'admin-developer',
+        'admin-system',
+      ])
+    })
+
+    it.each(tabs)('%s lights %s', (pathname, tab) => {
+      for (const items of [office, employerAdmin]) {
+        const strip = getSectionTabs(pathname, items)
+        expect(strip?.ownerKey).toBe('admin')
+        expect(strip?.activeKey).toBe(tab)
+      }
+    })
+
+    it('lights no tab on the bare /admin landing', () => {
+      expect(getSectionTabs('/admin', office)?.ownerKey).toBe('admin')
+      expect(getSectionTabs('/admin', office)?.activeKey).toBeNull()
+    })
+
+    it('lands each tab on a page it owns', () => {
+      const admin = office.find((item) => item.key === 'admin')
+      for (const tab of admin?.subItems ?? []) {
+        expect(getSectionTabs(tab.href, office)?.activeKey).toBe(tab.key)
+      }
+    })
+
+    it('is not offered to someone without the office role', () => {
+      expect(getSectionTabs('/admin/billing/payments', worker)).toBeNull()
+      expect(getSectionTabs('/admin/billing/payments', employer)).toBeNull()
+    })
   })
 
   it('does not offer Office tabs to someone without the role', () => {
@@ -275,9 +339,22 @@ describe('navigation follows the mode (#1157)', () => {
     ])
   })
 
-  it('puts Office first for an admin, in either mode', () => {
-    expect(top(office)[0]).toBe('office')
-    expect(top(employerAdmin)[0]).toBe('office')
+  it('puts Office first for an admin, in either mode, with Admin right after (#1439)', () => {
+    expect(top(office).slice(0, 2)).toEqual(['office', 'admin'])
+    expect(top(employerAdmin).slice(0, 2)).toEqual(['office', 'admin'])
+    expect(top(worker)).not.toContain('admin')
+    expect(top(employer)).not.toContain('admin')
+  })
+
+  it('claims /admin pages for Admin and leaves /office to Office', () => {
+    for (const items of [office, employerAdmin]) {
+      expect(activeNavKey(items, '/admin')).toBe('admin')
+      expect(activeNavKey(items, '/admin/oauth-apps/abc-123')).toBe('admin')
+      expect(activeNavKey(items, '/admin/system/notifications')).toBe('admin')
+      expect(activeNavKey(items, '/office')).toBe('office')
+      expect(activeNavKey(items, '/office/violations')).toBe('office')
+    }
+    expect(activeNavKey(worker, '/admin/billing/payments')).toBeNull()
   })
 
   it("lights the employer's Applications on the pipeline and its candidates (#1312)", () => {

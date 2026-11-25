@@ -1,4 +1,32 @@
 {
+  "admin": {
+    "billing": {
+      "payments": "Paiements",
+      "stripe": "Paramètres Stripe",
+      "title": "Facturation",
+      "transactions": "Transactions"
+    },
+    "developer": {
+      "oauthApps": "Approbation des apps OAuth",
+      "oauthAppDetail": "App OAuth",
+      "title": "Plateforme développeurs"
+    },
+    "general": {
+      "geographic": "Paramètres géographiques",
+      "title": "Général"
+    },
+    "integrations": {
+      "backgroundChecks": "Fournisseurs de vérification des antécédents",
+      "hris": "SIRH et paie",
+      "title": "Intégrations"
+    },
+    "system": {
+      "notifications": "Notifications",
+      "storage": "Stockage",
+      "title": "Système"
+    },
+    "title": "Administration"
+  },
   "auth": {
     "callback": "Auth Callback",
     "confirm": "Confirm Account",

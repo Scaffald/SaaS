@@ -1,4 +1,32 @@
 {
+  "admin": {
+    "billing": {
+      "payments": "Payments",
+      "stripe": "Stripe settings",
+      "title": "Billing",
+      "transactions": "Transactions"
+    },
+    "developer": {
+      "oauthApps": "OAuth app approvals",
+      "oauthAppDetail": "OAuth app",
+      "title": "Developer platform"
+    },
+    "general": {
+      "geographic": "Geographic settings",
+      "title": "General"
+    },
+    "integrations": {
+      "backgroundChecks": "Background check providers",
+      "hris": "HRIS & Payroll",
+      "title": "Integrations"
+    },
+    "system": {
+      "notifications": "Notifications",
+      "storage": "Storage",
+      "title": "System"
+    },
+    "title": "Admin"
+  },
   "auth": {
     "callback": "Auth Callback",
     "confirm": "Confirm Account",

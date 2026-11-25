@@ -1,5 +1,2 @@
-import { OfficeStorageDashboard } from '@scf/core/features/office/office-storage-dashboard'
-
-export default function OfficeStorageScreen() {
-  return <OfficeStorageDashboard />
-}
+// Moved to Admin (#1439). See MovedToAdminRedirect.
+export { MovedToAdminRedirect as default } from '@scf/core/features/admin/MovedToAdminRedirect'
