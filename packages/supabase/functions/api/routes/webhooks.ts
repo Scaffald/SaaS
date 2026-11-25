@@ -85,6 +85,16 @@ const _errorResponseSchema = z.object({
 });
 
 /**
+ * One error answer, declared on a route so its handler type-checks against it:
+ * a route that declared only its success made every `c.json(..., 401)` a type
+ * error, which is what the typecheck ratchet was counting here.
+ */
+const errorResponse = (description: string) => ({
+  description,
+  content: { "application/json": { schema: _errorResponseSchema } },
+});
+
+/**
  * GET /v1/webhooks
  * List webhooks
  */
@@ -108,6 +118,8 @@ app.openapi(
           },
         },
       },
+      401: errorResponse("Unauthorized"),
+      500: errorResponse("Server error"),
     },
     security: [{ bearerAuth: [] }],
   }),
@@ -149,7 +161,7 @@ app.openapi(
       }, 500);
     }
 
-    return c.json({ data: data || [] });
+    return c.json({ data: data || [] }, 200);
   },
 );
 
@@ -238,6 +250,10 @@ app.openapi(
           },
         },
       },
+      400: errorResponse("Bad request"),
+      401: errorResponse("Unauthorized"),
+      403: errorResponse("Forbidden"),
+      500: errorResponse("Server error"),
     },
     security: [{ bearerAuth: [] }],
   }),
@@ -339,6 +355,9 @@ app.openapi(
           },
         },
       },
+      401: errorResponse("Unauthorized"),
+      404: errorResponse("Not found"),
+      500: errorResponse("Server error"),
     },
     security: [{ bearerAuth: [] }],
   }),
@@ -375,7 +394,7 @@ app.openapi(
     }
     if (!data) return c.json({ error: "Not Found" }, 404);
 
-    return c.json({ data });
+    return c.json({ data }, 200);
   },
 );
 
@@ -414,6 +433,9 @@ app.openapi(
           },
         },
       },
+      401: errorResponse("Unauthorized"),
+      404: errorResponse("Not found"),
+      500: errorResponse("Server error"),
     },
     security: [{ bearerAuth: [] }],
   }),
@@ -457,7 +479,7 @@ app.openapi(
       }, 500);
     }
 
-    return c.json({ data: data ?? [] });
+    return c.json({ data: data ?? [] }, 200);
   },
 );
 
@@ -483,6 +505,10 @@ app.openapi(
           },
         },
       },
+      401: errorResponse("Unauthorized"),
+      403: errorResponse("Forbidden"),
+      404: errorResponse("Not found"),
+      500: errorResponse("Server error"),
     },
     security: [{ bearerAuth: [] }],
   }),
@@ -527,7 +553,7 @@ app.openapi(
       return c.json({ error: "Not Found" }, 404);
     }
 
-    return c.json({ success: true });
+    return c.json({ success: true }, 200);
   },
 );
 
