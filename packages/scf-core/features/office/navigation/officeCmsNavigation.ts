@@ -185,12 +185,12 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
       {
         key: 'integrations-hris',
         label: 'HRIS & Payroll',
-        href: ROUTES.OFFICE.INTEGRATIONS.HRIS.path,
+        href: ROUTES.ADMIN.INTEGRATIONS.HRIS.path,
       },
       {
         key: 'integrations-bg-checks',
         label: 'Background Check Providers',
-        href: ROUTES.OFFICE.INTEGRATIONS.BACKGROUND_CHECKS.path,
+        href: ROUTES.ADMIN.INTEGRATIONS.BACKGROUND_CHECKS.path,
       },
     ],
   },

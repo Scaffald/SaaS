@@ -1,5 +1,2 @@
-import { OfficePaymentAnalytics } from '@scf/core/features/office/payments'
-
-export default function OfficePaymentsScreen() {
-  return <OfficePaymentAnalytics />
-}
+// Moved to Admin (#1439). See MovedToAdminRedirect.
+export { MovedToAdminRedirect as default } from '@scf/core/features/admin/MovedToAdminRedirect'
