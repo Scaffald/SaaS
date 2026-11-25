@@ -17,6 +17,7 @@
  * actually needed was a way in.
  */
 
+import { ROUTES } from '@scf/core/constants/routes'
 import { useCallback } from 'react'
 import { Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
@@ -40,7 +41,8 @@ const LINKS: DeveloperLink[] = [
     Icon: KeyRound,
   },
   {
-    href: '/office/oauth-apps',
+    // Moved to Admin → Developer platform (#1439).
+    href: ROUTES.ADMIN.OAUTH_APPS.path,
     label: 'OAuth apps',
     description: 'Registered third-party applications and their allowed scopes.',
     Icon: Puzzle,

@@ -133,7 +133,7 @@ export function OAuthAppList() {
                 size="sm"
                 variant="outline"
                 onPress={() =>
-                  router.push(buildPath(ROUTES.OFFICE.OAUTH_APPS.DETAIL, { id: app.id }) as never)
+                  router.push(buildPath(ROUTES.ADMIN.OAUTH_APPS.DETAIL, { id: app.id }) as never)
                 }
                 data-testid="oauth-app-view-button"
               >

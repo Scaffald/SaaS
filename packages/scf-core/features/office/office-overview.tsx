@@ -52,7 +52,7 @@ const PREVIEW_ROWS = 4
  * an administrator (#839, #1170, #1201).
  *
  * It used to stack the whole Notification operations console and the Storage
- * dashboard (also /office/storage) under three queue figures, several screens
+ * dashboard (now /admin/system/storage) under three queue figures, several screens
  * of consoles at 390. The prototype's admin Overview is a header, a band of
  * figures, and two cards — the screening queue and open reports — each with
  * "View all". The consoles are a list of links underneath; notifications has
@@ -248,8 +248,8 @@ export function OfficeOverview() {
           onPress={() =>
             router.push(
               (failedDeliveries?.value ?? 0) > 0
-                ? { pathname: ROUTES.OFFICE.NOTIFICATIONS.path, params: { status: 'failed' } }
-                : ROUTES.OFFICE.NOTIFICATIONS.path
+                ? { pathname: ROUTES.ADMIN.SYSTEM.NOTIFICATIONS.path, params: { status: 'failed' } }
+                : ROUTES.ADMIN.SYSTEM.NOTIFICATIONS.path
             )
           }
         />
@@ -257,7 +257,7 @@ export function OfficeOverview() {
           t={t}
           label="Storage analytics"
           hint="How workers use storage across work logs, portfolios and certifications."
-          onPress={() => router.push(ROUTES.OFFICE.STORAGE.path)}
+          onPress={() => router.push(ROUTES.ADMIN.SYSTEM.STORAGE.path)}
         />
       </Stack>
     </Stack>

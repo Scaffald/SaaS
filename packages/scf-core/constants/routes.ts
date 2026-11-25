@@ -1140,6 +1140,104 @@ const ROUTES_CONFIG = {
     },
   },
 
+  // Platform setup that staff rarely touch, split out of Office (#1439). Same
+  // gate as Office for now: the office role, tablet width or wider. Each tab
+  // is a group whose path its pages sit under, so the tab strip lights the
+  // group on every page of it. The old /office paths redirect here
+  // (features/admin/moved-paths.ts).
+  ADMIN: {
+    path: '/admin',
+    titleKey: 'routes.admin.title',
+    protected: true,
+    exact: false,
+    GENERAL: {
+      path: '/admin/general',
+      titleKey: 'routes.admin.general.title',
+      protected: true,
+      exact: false,
+      GEOGRAPHIC: {
+        path: '/admin/general/geographic',
+        titleKey: 'routes.admin.general.geographic',
+        protected: true,
+        exact: true,
+      },
+    },
+    BILLING: {
+      path: '/admin/billing',
+      titleKey: 'routes.admin.billing.title',
+      protected: true,
+      exact: false,
+      STRIPE: {
+        path: '/admin/billing/stripe',
+        titleKey: 'routes.admin.billing.stripe',
+        protected: true,
+        exact: true,
+      },
+      PAYMENTS: {
+        path: '/admin/billing/payments',
+        titleKey: 'routes.admin.billing.payments',
+        protected: true,
+        exact: true,
+      },
+      TRANSACTIONS: {
+        path: '/admin/billing/transactions',
+        titleKey: 'routes.admin.billing.transactions',
+        protected: true,
+        exact: true,
+      },
+    },
+    INTEGRATIONS: {
+      path: '/admin/integrations',
+      titleKey: 'routes.admin.integrations.title',
+      protected: true,
+      exact: false,
+      BACKGROUND_CHECKS: {
+        path: '/admin/integrations/background-checks',
+        titleKey: 'routes.admin.integrations.backgroundChecks',
+        protected: true,
+        exact: true,
+      },
+      HRIS: {
+        path: '/admin/integrations/hris',
+        titleKey: 'routes.admin.integrations.hris',
+        protected: true,
+        exact: true,
+      },
+    },
+    // The Developer platform tab: approving third-party OAuth apps. Org API
+    // keys and webhooks are the organisation's, not the platform's (#1440).
+    OAUTH_APPS: {
+      path: '/admin/oauth-apps',
+      titleKey: 'routes.admin.developer.oauthApps',
+      protected: true,
+      exact: false,
+      DETAIL: {
+        path: '/admin/oauth-apps/:id',
+        titleKey: 'routes.admin.developer.oauthAppDetail',
+        protected: true,
+        exact: true,
+      },
+    },
+    SYSTEM: {
+      path: '/admin/system',
+      titleKey: 'routes.admin.system.title',
+      protected: true,
+      exact: false,
+      NOTIFICATIONS: {
+        path: '/admin/system/notifications',
+        titleKey: 'routes.admin.system.notifications',
+        protected: true,
+        exact: true,
+      },
+      STORAGE: {
+        path: '/admin/system/storage',
+        titleKey: 'routes.admin.system.storage',
+        protected: true,
+        exact: true,
+      },
+    },
+  },
+
   OFFICE: {
     path: '/office',
     titleKey: 'routes.office.title',
@@ -1388,6 +1486,8 @@ const ROUTES_CONFIG = {
       titleKey: 'routes.office.integrations.title',
       protected: true,
       exact: false,
+      // Moved to ROUTES.ADMIN (#1439); only a redirect is left here.
+      hidden: true,
       icon: Database,
       HRIS: {
         path: '/office/integrations/hris',
@@ -1408,6 +1508,7 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: true,
       icon: Bell,
+      // Moved to ROUTES.ADMIN (#1439); only a redirect is left here.
       hidden: true,
     },
     STORAGE: {
@@ -1416,6 +1517,7 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: true,
       icon: HardDrive,
+      // Moved to ROUTES.ADMIN (#1439); only a redirect is left here.
       hidden: true,
     },
     PAYMENTS: {
@@ -1423,6 +1525,8 @@ const ROUTES_CONFIG = {
       titleKey: 'routes.office.payments',
       protected: true,
       exact: true,
+      // Moved to ROUTES.ADMIN (#1439); only a redirect is left here.
+      hidden: true,
       icon: CreditCard,
     },
     TRANSACTIONS: {
@@ -1430,6 +1534,8 @@ const ROUTES_CONFIG = {
       titleKey: 'routes.office.transactions',
       protected: true,
       exact: true,
+      // Moved to ROUTES.ADMIN (#1439); only a redirect is left here.
+      hidden: true,
       icon: FileText,
     },
     VIOLATIONS: {
@@ -1468,6 +1574,8 @@ const ROUTES_CONFIG = {
       titleKey: 'routes.office.oauthApps.title',
       protected: true,
       exact: false,
+      // Moved to ROUTES.ADMIN (#1439); only a redirect is left here.
+      hidden: true,
       DETAIL: {
         path: '/office/oauth-apps/:id',
         titleKey: 'routes.office.oauthApps.detail',
@@ -1481,6 +1589,7 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: false,
       icon: ShieldCheck,
+      // Moved to ROUTES.ADMIN (#1439); only a redirect is left here.
       hidden: true,
       GEOGRAPHIC: {
         path: '/office/settings/geographic',

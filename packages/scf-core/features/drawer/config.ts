@@ -1,17 +1,21 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import { ADMIN_LANDING } from '@scf/core/features/admin/admin-groups'
 import type { OrganizationMembership } from '@scf/core/utils/useOrganizations'
 import {
   AlertTriangle,
   BarChart3,
+  Activity,
   Bookmark,
   Briefcase,
   Building2,
   ClipboardCheck,
   CreditCard,
   Database,
-  FileText,
   Link,
+  MapPin,
+  Puzzle,
   ShieldCheck,
+  SlidersHorizontal,
   TrendingUp,
   User,
   Users,
@@ -343,30 +347,63 @@ export const generateOfficeDrawerItem = (isCheckAdmin = false): DrawerItemConfig
       matchPrefix: ROUTES.OFFICE.COMPLIANCE.path,
       icon: ShieldCheck,
     },
-    {
-      key: 'office-integrations',
-      titleKey: 'routes.office.integrations.title',
-      href: ROUTES.OFFICE.INTEGRATIONS.BACKGROUND_CHECKS.path,
-      matchPrefix: ROUTES.OFFICE.INTEGRATIONS.path,
-      icon: Database,
-    },
-    {
-      key: 'office-payments',
-      titleKey: 'routes.office.payments',
-      href: ROUTES.OFFICE.PAYMENTS.path,
-      icon: CreditCard,
-    },
-    {
-      key: 'office-transactions',
-      titleKey: 'routes.office.transactions',
-      href: ROUTES.OFFICE.TRANSACTIONS.path,
-      icon: FileText,
-    },
+    // Integrations, Payments and Transactions moved to Admin (#1439).
     {
       key: 'office-violations',
       titleKey: 'routes.office.violations',
       href: ROUTES.OFFICE.VIOLATIONS.path,
       icon: AlertTriangle,
+    },
+  ],
+})
+
+/**
+ * The Admin section (#1439): platform setup that staff rarely touch, split
+ * out of Office. Same audience as Office (the office role). Its sub-items are
+ * the Admin tab strip; each tab owns its whole group of pages, so Billing
+ * stays lit on Stripe settings, Payments and Transactions alike.
+ */
+export const generateAdminDrawerItem = (): DrawerItemConfig => ({
+  key: 'admin',
+  titleKey: ROUTES.ADMIN.titleKey,
+  href: ROUTES.ADMIN.path,
+  matchPrefix: ROUTES.ADMIN.path,
+  icon: SlidersHorizontal,
+  subItems: [
+    {
+      key: 'admin-general',
+      titleKey: ROUTES.ADMIN.GENERAL.titleKey,
+      href: ADMIN_LANDING.general,
+      matchPrefix: ROUTES.ADMIN.GENERAL.path,
+      icon: MapPin,
+    },
+    {
+      key: 'admin-billing',
+      titleKey: ROUTES.ADMIN.BILLING.titleKey,
+      href: ADMIN_LANDING.billing,
+      matchPrefix: ROUTES.ADMIN.BILLING.path,
+      icon: CreditCard,
+    },
+    {
+      key: 'admin-integrations',
+      titleKey: ROUTES.ADMIN.INTEGRATIONS.titleKey,
+      href: ADMIN_LANDING.integrations,
+      matchPrefix: ROUTES.ADMIN.INTEGRATIONS.path,
+      icon: Database,
+    },
+    {
+      key: 'admin-developer',
+      titleKey: 'routes.admin.developer.title',
+      href: ADMIN_LANDING.developer,
+      matchPrefix: ROUTES.ADMIN.OAUTH_APPS.path,
+      icon: Puzzle,
+    },
+    {
+      key: 'admin-system',
+      titleKey: ROUTES.ADMIN.SYSTEM.titleKey,
+      href: ADMIN_LANDING.system,
+      matchPrefix: ROUTES.ADMIN.SYSTEM.path,
+      icon: Activity,
     },
   ],
 })
@@ -467,8 +504,8 @@ const employerNav = (memberships: OrganizationMembership[] | undefined): DrawerI
 }
 
 /**
- * The whole navigation tree for one person in one mode: Office first when
- * they hold the role, then the sections of the mode they are using. The
+ * The whole navigation tree for one person in one mode: Office, then Admin,
+ * first when they hold the role, then the sections of the mode they are using. The
  * drawer draws the top level; the section tab strip draws the level
  * beneath. Desktop used to show one list in every mode while the phone bar
  * switched with it, so the two disagreed (#1157).
@@ -479,7 +516,7 @@ export const getNavItems = (
   mode: AppMode = 'worker',
   isCheckAdmin = false
 ): DrawerItemConfig[] => [
-  ...(hasOfficeRole ? [generateOfficeDrawerItem(isCheckAdmin)] : []),
+  ...(hasOfficeRole ? [generateOfficeDrawerItem(isCheckAdmin), generateAdminDrawerItem()] : []),
   ...(mode === 'employer' ? employerNav(memberships) : workerNav(memberships)),
 ]
 

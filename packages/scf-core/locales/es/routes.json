@@ -1,4 +1,32 @@
 {
+  "admin": {
+    "billing": {
+      "payments": "Pagos",
+      "stripe": "Configuración de Stripe",
+      "title": "Facturación",
+      "transactions": "Transacciones"
+    },
+    "developer": {
+      "oauthApps": "Aprobación de apps OAuth",
+      "oauthAppDetail": "App OAuth",
+      "title": "Plataforma para desarrolladores"
+    },
+    "general": {
+      "geographic": "Configuración geográfica",
+      "title": "General"
+    },
+    "integrations": {
+      "backgroundChecks": "Proveedores de verificación de antecedentes",
+      "hris": "HRIS y nómina",
+      "title": "Integraciones"
+    },
+    "system": {
+      "notifications": "Notificaciones",
+      "storage": "Almacenamiento",
+      "title": "Sistema"
+    },
+    "title": "Administración"
+  },
   "auth": {
     "callback": "Auth Callback",
     "confirm": "Confirm Account",
