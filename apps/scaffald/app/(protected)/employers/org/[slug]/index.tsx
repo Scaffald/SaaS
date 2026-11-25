@@ -4,7 +4,7 @@ import { useOrgBySlug } from '@scf/core/utils/useOrgBySlug'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
-import { Building2, ClipboardList, FileText } from 'lucide-react-native'
+import { Building2, ClipboardList, Code, FileText } from 'lucide-react-native'
 
 export default function OrgDetailPage() {
   const { slug } = useLocalSearchParams<{ slug: string }>()
@@ -70,6 +70,18 @@ export default function OrgDetailPage() {
             onPress={() => router.push(RouteBuilder.orgLogs(org.slug))}
           >
             Logs
+          </Button>
+          {/* The organization's API keys and webhooks (#1440). In Worker mode
+              the org's tab strip is hidden, so without this link the only way
+              in was an old /office URL. Every member may look; only admins
+              can create or revoke. */}
+          <Button
+            size="md"
+            variant="outline"
+            iconStart={Code}
+            onPress={() => router.push(RouteBuilder.orgDevelopers(org.slug))}
+          >
+            Developers
           </Button>
         </Row>
       </Stack>
