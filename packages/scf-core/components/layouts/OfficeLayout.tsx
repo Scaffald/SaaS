@@ -1,20 +1,18 @@
-import type { RouteConfig } from '@scf/core/constants/routes'
+import { GroupTabs } from '@scf/core/features/drawer/GroupTabs'
+import { officeGroupPages } from '@scf/core/features/office/office-groups'
+import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { ScrollView, StyleSheet } from 'react-native'
-import { useTranslation } from '@scf/core/utils/useTranslation'
-import { getChildRoutes } from '@scf/core/utils/navigation/routeHierarchy'
 import { usePathname } from '@scf/core/utils/usePathname'
 import type { ReactNode } from 'react'
-import { useMemo } from 'react'
 import { Grid, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { StackProps } from '@scaffald/ui'
-import { Breadcrumb, type BreadcrumbItemData, Tabs } from '@scaffald/ui'
+import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
 
 /** Golden ratio (φ) for column proportion: left ~61.8%, right ~38.2% */
 const GOLDEN_RATIO_TEMPLATE = 'minmax(300px, 1.618fr) minmax(300px, 1fr)'
 import { useScreenRhythm } from '../../constants/layout'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
-import { findActiveOfficeSection, findActiveSubTab } from './office-sections'
 
 type OfficeLayoutProps = {
   rightContent?: ReactNode
@@ -70,7 +68,6 @@ export const OfficeLayout = ({
     columnGap,
     rowGap,
   } = useScreenRhythm()
-  const { t } = useTranslation()
   const { theme } = useThemeContext()
 
   // Auto-generate breadcrumbs if enabled and no manual override
@@ -85,93 +82,16 @@ export const OfficeLayout = ({
   // Calculate current index (last item is always active)
   const currentIndex = displayBreadcrumbs.length - 1
 
-  // Get top-level office routes (direct children of /office)
-  const childRoutes = useMemo(() => getChildRoutes('/office'), [])
-
-  const topLevelRoutes = useMemo(() => {
-    // Filter to only include routes that are direct children of /office
-    // These will have paths like /office/applications, /office/cms, etc.
-    // Exclude nested routes (which would have 4+ segments like /office/cms/jobs)
-    return childRoutes.filter((route: RouteConfig) => {
-      // Skip hidden routes
-      if (route.hidden) {
-        return false
-      }
-      const pathSegments = route.path.split('/').filter(Boolean)
-      // Top-level routes have 2-3 segments:
-      // - 2 segments: ['office', 'section'] e.g. /office/applications
-      // - 3 segments: ['office', 'section', 'subsection'] e.g. /office/cms (which is a container)
-      // Exclude deeper nested routes (4+ segments)
-      return pathSegments.length >= 2 && pathSegments.length <= 3 && pathSegments[0] === 'office'
-    })
-  }, [childRoutes])
-
-  type TabItem = {
-    key: string
-    label: string
-    href: string
-    /** The tab's child pages, which light it too (#1202). */
-    owns: string[]
-  }
-
-  const activeTopRoute = useMemo(
-    () => findActiveOfficeSection(currentPath, topLevelRoutes),
-    [currentPath, topLevelRoutes]
-  )
-
-  const secondaryTabItems = useMemo<TabItem[]>(() => {
-    if (!activeTopRoute) {
-      return []
-    }
-
-    const parentPath = activeTopRoute.path
-    const shouldShowSecondaryTabs =
-      parentPath.startsWith('/office/cms') || parentPath.startsWith('/office/ats')
-    if (!shouldShowSecondaryTabs) {
-      return []
-    }
-
-    const children = getChildRoutes(parentPath)
-
-    return children
-      .filter((route) => {
-        if (route.hidden) {
-          return false
-        }
-        const normalizedChild = route.path.replace(/\/$/, '')
-        const normalizedParent = parentPath.replace(/\/$/, '')
-        if (normalizedChild === normalizedParent) {
-          return false
-        }
-        if (normalizedChild.includes('/:')) {
-          return false
-        }
-        return true
-      })
-      .map((route) => ({
-        key: route.path,
-        label: t(route.titleKey),
-        href: route.path,
-        owns: getChildRoutes(route.path)
-          .map((child) => child.path)
-          .filter((path) => !path.includes('/:')),
-      }))
-  }, [activeTopRoute, t])
-
-  const activeSecondaryValue = useMemo(() => {
-    if (secondaryTabItems.length === 0) {
-      return ''
-    }
-    const activeItem = findActiveSubTab(currentPath, secondaryTabItems)
-    return activeItem?.key ?? secondaryTabItems[0]?.key ?? ''
-  }, [currentPath, secondaryTabItems])
+  // The row of the Office tab's own pages (#1441): Organizations' Teams,
+  // Projects and Universities, Screening's queues. It used to be built from
+  // the route tree with tabs that did not navigate.
+  const { hasRole } = useUserRoles()
+  const group = officeGroupPages(currentPath, {
+    isCheckAdmin: hasRole('background_check_admin'),
+  })
 
   const hasLeftContent = Boolean(leftContent)
   const hasRightContent = Boolean(rightContent)
-
-  const handleTabChange = () => {
-    // Navigation is handled by Link components in Tab
-  }
 
   return (
     <ScrollView
@@ -189,24 +109,11 @@ export const OfficeLayout = ({
           </Row>
         )}
 
-        {/* Secondary Tabs - sub-section tabs for CMS/ATS (Workers, Jobs, etc.).
-            One scrolling strip: below Tabs' wrap breakpoint the five ATS tabs
-            wrapped over three rows at 390 (#1032). */}
-        {secondaryTabItems.length > 0 && (
+        {/* The Office tab's pages. One scrolling strip: below Tabs' wrap
+            breakpoint the ATS tabs wrapped over three rows at 390 (#1032). */}
+        {group && (
           <Row paddingHorizontal={contentPadding}>
-            <Tabs
-              value={activeSecondaryValue}
-              onValueChange={handleTabChange}
-              type="default"
-              orientation="horizontal"
-              scrollable
-            >
-              {secondaryTabItems.map((item: TabItem) => (
-                <Tabs.Item key={item.key} value={item.key}>
-                  <Tabs.Trigger>{item.label}</Tabs.Trigger>
-                </Tabs.Item>
-              ))}
-            </Tabs>
+            <GroupTabs group={group} />
           </Row>
         )}
 

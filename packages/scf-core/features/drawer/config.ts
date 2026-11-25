@@ -338,28 +338,58 @@ export const generateOfficeDrawerItem = (isCheckAdmin = false): DrawerItemConfig
       alsoOwns: [ROUTES.OFFICE.COMMUNITIES.VERIFICATION.path],
       icon: ShieldCheck,
     },
+    // People, Organizations and Jobs were one Content Management tab that
+    // opened on Users with no way on to the rest (#1441). The URLs stay under
+    // /office/cms; only the tabs changed.
     {
-      key: 'office-cms',
-      titleKey: 'routes.office.cms.title',
+      key: 'office-people',
+      titleKey: 'routes.office.people',
       href: ROUTES.OFFICE.CMS.path,
+      // /office/cms is the prefix of every CMS page, so People owns only its
+      // own list and the worker pages, not Organizations' or Jobs'.
+      exact: true,
+      alsoOwns: [ROUTES.OFFICE.CMS.WORKERS.path],
       icon: Users,
+    },
+    // Teams, Projects and Universities are pages of this tab, reached from
+    // the row beneath the strip (office-groups.ts), the way Admin's Billing
+    // holds Payments and Transactions.
+    {
+      key: 'office-organizations',
+      titleKey: ROUTES.OFFICE.CMS.ORGANIZATIONS.titleKey,
+      href: ROUTES.OFFICE.CMS.ORGANIZATIONS.path,
+      matchPrefix: ROUTES.OFFICE.CMS.ORGANIZATIONS.path,
+      alsoOwns: [
+        ROUTES.OFFICE.CMS.TEAMS.path,
+        ROUTES.OFFICE.CMS.PROJECTS.path,
+        ROUTES.OFFICE.CMS.UNIVERSITIES.path,
+      ],
+      icon: Building2,
+    },
+    {
+      key: 'office-jobs',
+      titleKey: ROUTES.OFFICE.CMS.JOBS.titleKey,
+      href: ROUTES.OFFICE.CMS.JOBS.path,
+      matchPrefix: ROUTES.OFFICE.CMS.JOBS.path,
+      icon: Briefcase,
     },
     // No Applications tab: the pipeline is the employer's, under /hiring, and
     // shows the caller's own organisations' applications — not a platform-wide
     // queue (#1312). Staff reach theirs from Employer mode like anyone else.
+    // Integrations, Payments and Transactions moved to Admin (#1439).
+    // Violation reports; renaming it Moderation is #1272's call.
+    {
+      key: 'office-reports',
+      titleKey: 'routes.office.reports',
+      href: ROUTES.OFFICE.VIOLATIONS.path,
+      icon: AlertTriangle,
+    },
     {
       key: 'office-compliance',
       titleKey: 'routes.office.compliance.title',
       href: ROUTES.OFFICE.COMPLIANCE.EEO_REPORTS.path,
       matchPrefix: ROUTES.OFFICE.COMPLIANCE.path,
       icon: ShieldCheck,
-    },
-    // Integrations, Payments and Transactions moved to Admin (#1439).
-    {
-      key: 'office-violations',
-      titleKey: 'routes.office.violations',
-      href: ROUTES.OFFICE.VIOLATIONS.path,
-      icon: AlertTriangle,
     },
   ],
 })
@@ -681,12 +711,13 @@ export const getEmployerMobileSections = ({
     // The employer's Jobs screen is `/jobs/my-listings`; `/office/cms/jobs`
     // is the admin CMS and stays admin-only (#835). This tab pointed at the
     // CMS, so an employer tapping Jobs on a phone landed in a table of every
-    // organisation's postings rather than their own.
+    // organisation's postings rather than their own. It no longer claims the
+    // CMS either: that is Office's Jobs tab, and lights only Office (#1441).
     key: 'employer-jobs',
     label: 'Jobs',
     icon: Briefcase,
     route: ROUTES.JOBS.MY_LISTINGS.path,
-    matchPrefixes: ['/jobs/my-listings', '/office/cms/jobs'],
+    matchPrefixes: ['/jobs/my-listings'],
     subItems: [],
   },
   ...(hasOfficeRole

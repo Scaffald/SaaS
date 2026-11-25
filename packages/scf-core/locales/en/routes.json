@@ -259,6 +259,8 @@
       "title": "OAuth Apps"
     },
     "payments": "Payment Analytics",
+    "people": "People",
+    "reports": "Reports",
     "settings": {
       "geographic": "Geographic Settings",
       "stripe": "Stripe Payments",

@@ -95,16 +95,62 @@ describe('getSectionTabs', () => {
     )
   })
 
-  // #1439: platform setup moved to Admin.
-  it('has no Integrations, Payments or Transactions tab in Office', () => {
+  // #1439 took platform setup to Admin; #1441 split Content Management into
+  // People, Organizations and Jobs.
+  it('gives Office its seven tabs, with no Integrations, Payments or Transactions', () => {
     const officeTabs = office[0].subItems?.map((t) => t.key)
     expect(officeTabs).toEqual([
       'office-overview',
       'office-screening',
-      'office-cms',
+      'office-people',
+      'office-organizations',
+      'office-jobs',
+      'office-reports',
       'office-compliance',
-      'office-violations',
     ])
+    expect(officeTabs?.length).toBeLessThanOrEqual(7)
+  })
+
+  // #1441: CMS opened on Users and nothing led on to the rest of it.
+  describe('People, Organizations and Jobs', () => {
+    const tabs: Array<[string, string]> = [
+      ['/office/cms', 'office-people'],
+      ['/office/cms/workers', 'office-people'],
+      ['/office/cms/workers/abc/edit', 'office-people'],
+      ['/office/cms/organizations', 'office-organizations'],
+      ['/office/cms/organizations/create', 'office-organizations'],
+      ['/office/cms/organizations/abc/edit', 'office-organizations'],
+      ['/office/cms/teams', 'office-organizations'],
+      ['/office/cms/teams/create', 'office-organizations'],
+      ['/office/cms/teams/abc', 'office-organizations'],
+      ['/office/cms/teams/abc/analytics', 'office-organizations'],
+      ['/office/cms/teams/abc/settings', 'office-organizations'],
+      ['/office/cms/projects', 'office-organizations'],
+      ['/office/cms/projects/abc', 'office-organizations'],
+      ['/office/cms/projects/abc/edit', 'office-organizations'],
+      ['/office/cms/universities', 'office-organizations'],
+      ['/office/cms/universities/abc/edit', 'office-organizations'],
+      ['/office/cms/jobs', 'office-jobs'],
+      ['/office/cms/jobs/create', 'office-jobs'],
+      ['/office/cms/jobs/abc/edit', 'office-jobs'],
+    ]
+
+    it.each(tabs)('%s lights %s', (pathname, key) => {
+      for (const items of [office, officeNoChecks, employerAdmin]) {
+        expect(activeNavKey(items, pathname)).toBe('office')
+        const strip = getSectionTabs(pathname, items)
+        expect(strip?.ownerKey).toBe('office')
+        expect(strip?.activeKey).toBe(key)
+      }
+    })
+
+    it('lands each tab on its list', () => {
+      const href = (key: string) => office[0].subItems?.find((t) => t.key === key)?.href
+      expect(href('office-people')).toBe('/office/cms')
+      expect(href('office-organizations')).toBe('/office/cms/organizations')
+      expect(href('office-jobs')).toBe('/office/cms/jobs')
+      expect(href('office-reports')).toBe('/office/violations')
+    })
   })
 
   // #1312: the pipeline is the employer's, under /hiring, not an Office tab.
@@ -162,14 +208,14 @@ describe('getSectionTabs', () => {
     })
 
     it('leaves the other Office tabs their own pages', () => {
-      expect(getSectionTabs('/office/violations', office)?.activeKey).toBe('office-violations')
-      expect(getSectionTabs('/office/cms/workers', office)?.activeKey).toBe('office-cms')
+      expect(getSectionTabs('/office/violations', office)?.activeKey).toBe('office-reports')
+      expect(getSectionTabs('/office/cms/workers', office)?.activeKey).toBe('office-people')
     })
   })
 
   it('lights Overview on the Office home only', () => {
     expect(getSectionTabs('/office', office)?.activeKey).toBe('office-overview')
-    expect(getSectionTabs('/office/violations', office)?.activeKey).toBe('office-violations')
+    expect(getSectionTabs('/office/violations', office)?.activeKey).toBe('office-reports')
   })
 
   // #1439
@@ -369,6 +415,8 @@ describe('navigation follows the mode (#1157)', () => {
   it('still gives an admin Office and its tabs everywhere else under /office', () => {
     expect(activeNavKey(employerAdmin, '/office/cms/jobs')).toBe('office')
     expect(getSectionTabs('/office/cms/jobs', employerAdmin)?.ownerKey).toBe('office')
+    // Office's own Jobs tab, never the employer's Jobs row (#1441).
+    expect(getSectionTabs('/office/cms/jobs', employerAdmin)?.activeKey).toBe('office-jobs')
   })
 
   it('lights exactly one row per page', () => {

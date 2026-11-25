@@ -1,8 +1,7 @@
 import { useScreenRhythm } from '@scf/core/constants/layout'
+import { GroupTabs } from '@scf/core/features/drawer/GroupTabs'
 import { usePathname } from '@scf/core/utils/usePathname'
-import { useTranslation } from '@scf/core/utils/useTranslation'
-import { type Href, useRouter } from 'expo-router'
-import { Row, Tabs } from '@scaffald/ui'
+import { Row } from '@scaffald/ui'
 import { adminGroupPages } from './admin-groups'
 
 /**
@@ -11,8 +10,6 @@ import { adminGroupPages } from './admin-groups'
  */
 export function AdminGroupTabs() {
   const pathname = usePathname()
-  const router = useRouter()
-  const { t } = useTranslation()
   const { gutter, verticalPadding } = useScreenRhythm()
   const group = adminGroupPages(pathname)
 
@@ -20,19 +17,7 @@ export function AdminGroupTabs() {
 
   return (
     <Row paddingHorizontal={gutter} paddingTop={verticalPadding}>
-      <Tabs
-        value={group.activeHref ?? ''}
-        onValueChange={(href) => router.push(href as Href)}
-        type="default"
-        orientation="horizontal"
-        scrollable
-      >
-        {group.pages.map((page) => (
-          <Tabs.Item key={page.href} value={page.href}>
-            <Tabs.Trigger>{t(page.titleKey)}</Tabs.Trigger>
-          </Tabs.Item>
-        ))}
-      </Tabs>
+      <GroupTabs group={group} />
     </Row>
   )
 }

@@ -219,6 +219,8 @@
     },
     "notifications": "Notifications",
     "payments": "Payment Analytics",
+    "people": "Personas",
+    "reports": "Reportes",
     "settings": {
       "geographic": "Geographic Settings",
       "stripe": "Stripe Payments",

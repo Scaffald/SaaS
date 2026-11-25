@@ -158,6 +158,16 @@ describe('employer tabs point at surfaces that exist', () => {
     }
   })
 
+  // #1441: the CMS jobs table is Office's Jobs tab. On a phone it lit the
+  // employer's Jobs, as though it were their own listings.
+  it('leaves the Office jobs CMS out of the employer Jobs tab', () => {
+    for (const p of ['/office/cms/jobs', '/office/cms/jobs/create', '/office/cms/jobs/abc/edit']) {
+      expect(activeIndex(p, EMPLOYER_MOBILE_SECTIONS), p).toBe(-1)
+    }
+    const jobs = EMPLOYER_MOBILE_SECTIONS.findIndex((s) => s.key === 'employer-jobs')
+    expect(activeIndex('/jobs/my-listings', EMPLOYER_MOBILE_SECTIONS)).toBe(jobs)
+  })
+
   // #1312: the pipeline left /office, whose layout turns away most employers.
   it('sends Apps to the pipeline under /hiring and lights it on a candidate', () => {
     const i = EMPLOYER_PLAIN_SECTIONS.findIndex((s) => s.key === 'applications')
