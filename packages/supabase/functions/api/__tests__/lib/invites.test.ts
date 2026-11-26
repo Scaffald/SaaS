@@ -159,3 +159,15 @@ Deno.test("email: the reminder has its own subject and opener, same link and not
   );
   assert(!first.text.includes("reminder"));
 });
+
+Deno.test("email: the footer says why an invitee got it, not account settings they don't have", () => {
+  const mail = renderInviteEmail({
+    inviterName: "Riley <x>",
+    link: "https://scaffald.com/i/abc234",
+  });
+  assertStringIncludes(
+    mail.footerHtml,
+    "Riley &lt;x&gt; invited you to join Scaffald",
+  );
+  assert(!mail.footerHtml.includes("account settings"));
+});

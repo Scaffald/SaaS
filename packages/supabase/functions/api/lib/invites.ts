@@ -114,6 +114,13 @@ export interface InviteEmailContent {
   subject: string;
   /** Body HTML for the branded wrapper. */
   bodyHtml: string;
+  /**
+   * Footer for the branded wrapper. Its default ("Manage your notification
+   * preferences in your account settings") is for members; an invitee has
+   * no account, so this says why they got the email instead. NevarMail adds
+   * the postal address and the unsubscribe link below it.
+   */
+  footerHtml: string;
   text: string;
 }
 
@@ -167,7 +174,11 @@ export function renderInviteEmail(opts: {
     `Join here: ${opts.link}`,
   ].filter(Boolean).join("\n\n");
 
-  return { subject, bodyHtml, text };
+  const footerHtml = `<p style="margin:0;">You're getting this because ${
+    escapeHtml(inviter)
+  } invited you to join Scaffald. You don't have an account with us; the unsubscribe link below stops further invitations.</p>`;
+
+  return { subject, bodyHtml, footerHtml, text };
 }
 
 export type ContactSkipReason =
