@@ -294,3 +294,55 @@ Deno.test({
     }
   },
 })
+
+Deno.test({
+  name: 'invite webhook mapping - matches by recipient when NevarMail email_id is not the id we stored',
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const personas = await getPersonas()
+    const { userA } = personas
+    const admin = createAdminClient()
+    const db = admin.schema('core')
+    const to = `webhook-${rand()}@example.test`
+    const base = { project_id: 'p', campaign_send_id: null, send_mode: 'production' }
+    try {
+      const sentAt = new Date(Date.now() - 60_000).toISOString()
+      const { data: pending } = await db.from('generic_invitations').insert({
+        inviter_id: userA.id, kind: 'targeted', channel: 'email', status: 'pending', source: 'test',
+        invitee_email: to, email_sent_at: sentAt, nevarmail_email_id: 'provider-msg-id',
+      }).select('id').single()
+      // Older invite to the same address that was already accepted: never matched.
+      await db.from('generic_invitations').insert({
+        inviter_id: userA.id, kind: 'targeted', channel: 'email', status: 'accepted', source: 'test',
+        invitee_email: `other-${to}`, email_sent_at: sentAt,
+      })
+
+      const clicked = await applyInviteEvent(admin, {
+        ...base, type: 'email.clicked', email_id: 'bc5b82a7-8795-4536-92c6-9385ed1be3a2',
+        recipient: to.toUpperCase(), occurred_at: new Date().toISOString(),
+      })
+      assertEquals(clicked.matched && clicked.invitationId, pending?.id, 'matched by recipient')
+      const { data: row } = await db.from('generic_invitations').select('email_clicked_at, email_opened_at').eq('id', pending?.id ?? '').single()
+      assert(row?.email_clicked_at && row?.email_opened_at, 'click stamps click and open')
+
+      assertEquals(
+        await applyInviteEvent(admin, { ...base, type: 'email.opened', email_id: null, recipient: `nobody-${to}`, occurred_at: new Date().toISOString() }),
+        { matched: false },
+      )
+      assertEquals(
+        await applyInviteEvent(admin, { ...base, type: 'email.opened', email_id: null, recipient: `other-${to}`, occurred_at: new Date().toISOString() }),
+        { matched: false },
+        'an accepted invite is not matched by recipient',
+      )
+      // An event from before the invite was sent is someone else's email.
+      assertEquals(
+        await applyInviteEvent(admin, { ...base, type: 'email.opened', email_id: null, recipient: to, occurred_at: new Date(Date.now() - 3_600_000).toISOString() }),
+        { matched: false },
+      )
+    } finally {
+      await db.from('generic_invitations').delete().eq('inviter_id', userA.id)
+      await disposePersonas()
+    }
+  },
+})
