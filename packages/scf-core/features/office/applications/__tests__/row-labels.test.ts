@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { assigneeLabel, formatScore, matchesPipelineSearch, stageActorLabel } from '../row-labels'
+import {
+  assigneeLabel,
+  formatScore,
+  matchesPipelineSearch,
+  stageActorLabel,
+  stageLabel,
+} from '../row-labels'
 
 describe('formatScore (#1198)', () => {
   it('returns null for an unscored candidate rather than 0', () => {
@@ -67,5 +73,18 @@ describe('stageActorLabel (#1414)', () => {
     )
     expect(stageActorLabel({ changedBy: uuid, changedByName: '  ' })).toBe('A teammate')
     expect(stageActorLabel({ changedBy: '', changedByName: undefined }, '')).toBe('A teammate')
+  })
+})
+
+describe('stageLabel (#1434)', () => {
+  it('names stages the way the pipeline columns do', () => {
+    expect(stageLabel('new')).toBe('New')
+    expect(stageLabel('screen')).toBe('Screening')
+    expect(stageLabel('withdrawn')).toBe('Withdrawn')
+  })
+
+  it('capitalises a key it does not know rather than dropping it', () => {
+    expect(stageLabel('archived')).toBe('Archived')
+    expect(stageLabel(null)).toBe('')
   })
 })

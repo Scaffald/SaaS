@@ -7,5 +7,7 @@ import { EmployerJobForm } from '@scf/core/features/jobs/EmployerJobForm'
  * organisations this person can hire for.
  */
 export default function MyListingsCreateRoute() {
-  return <DashboardPage leftContent={<EmployerJobForm mode="create" />} />
+  // The form opens with its own header, which carries the save buttons, so
+  // the shell's title would be the page's second (#1436).
+  return <DashboardPage hideScreenHeader leftContent={<EmployerJobForm mode="create" />} />
 }

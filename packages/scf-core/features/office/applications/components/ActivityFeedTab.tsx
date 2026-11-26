@@ -25,7 +25,7 @@ import {
 } from '@scaffald/ui'
 import { borderRadius, colors, fontSize } from '@scaffald/ui/tokens'
 import type { ATSApplication } from '../types'
-import { stageActorLabel } from '../row-labels'
+import { stageActorLabel, stageLabel } from '../row-labels'
 
 /** Activity event types for the feed */
 interface ActivityEvent {
@@ -112,8 +112,8 @@ function getEventStyle(type: ActivityEvent['type']) {
 function getEventDescription(event: ActivityEvent): string {
   switch (event.type) {
     case 'status_change': {
-      const from = event.details.from === 'none' ? '' : ` from ${event.details.from}`
-      return `Moved${from} to ${event.details.to}${event.details.reason ? ` — ${event.details.reason}` : ''}`
+      const from = event.details.from === 'none' ? '' : ` from ${stageLabel(event.details.from)}`
+      return `Moved${from} to ${stageLabel(event.details.to)}${event.details.reason ? ` — ${event.details.reason}` : ''}`
     }
     case 'note_added':
       return `Added a note: "${event.details.preview}"`
