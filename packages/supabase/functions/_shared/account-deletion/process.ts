@@ -91,7 +91,7 @@ export interface ProcessOptions {
   timeBudgetMs?: number;
   /** Only these requests (an operator re-run, or the gated test). */
   ids?: string[];
-  /** Defaults to the Resend adapter. Tests pass their own. */
+  /** Defaults to the notification email adapter (NevarMail). Tests pass their own. */
   sendEmail?: SendEmail;
 }
 
@@ -140,7 +140,7 @@ export async function processDueDeletions(
 ): Promise<ProcessSummary> {
   const limit = options.limit ?? DEFAULT_LIMIT;
   const budget = options.timeBudgetMs ?? TIME_BUDGET_MS;
-  const sendEmail = options.sendEmail ?? sendWithResend;
+  const sendEmail = options.sendEmail ?? sendWithEmailAdapter;
   const startedAt = Date.now();
   const seen = new Set<string>();
 
@@ -467,8 +467,8 @@ async function sendConfirmation(
   }
 }
 
-/** The production sender: the notification pipeline's Resend adapter. */
-const sendWithResend: SendEmail = async ({ to, subject, html, text }) => {
+/** The production sender: the notification pipeline's email adapter (NevarMail). */
+const sendWithEmailAdapter: SendEmail = async ({ to, subject, html, text }) => {
   const result = await emailAdapter.send({
     // The adapter reads only these fields of a delivery and a notification.
     supabase: null as never,

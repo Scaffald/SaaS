@@ -1,16 +1,17 @@
 import type { ChannelAdapter, NotificationRow } from '../types.ts'
 import { normalizeMetadata } from '../utils.ts'
 import { wrapInBrandedTemplate, EMAIL_COLORS } from '../../email-template.ts'
+import { NevarMailError, nevarMailFromEnv, nevarMailUseCase } from '../../nevarmail.ts'
 
 interface SendEmailPayload {
-  from: string
-  to: string[]
+  /** Only when a delivery names one (a bare address); otherwise the use case's sender. */
+  from?: string
+  fromName?: string
+  to: string
   subject: string
   html: string
   text: string
 }
-
-const RESEND_ENDPOINT = 'https://api.resend.com/emails'
 
 /** Prepend the app base URL if the CTA URL is relative (starts with /). */
 function resolveCtaUrl(url: string | null): string {
@@ -130,15 +131,11 @@ function buildEmailPayload(
   notificationBody: Record<string, unknown>,
   messageFallback: string
 ): SendEmailPayload {
-  const fromEmail =
-    typeof metadata.fromEmail === 'string'
-      ? metadata.fromEmail
-      : (Deno.env.get('RESEND_FROM_EMAIL') ?? 'notifications@scaffald.com')
-
-  const fromName =
-    typeof metadata.fromName === 'string'
-      ? metadata.fromName
-      : (Deno.env.get('RESEND_FROM_NAME') ?? 'Scaffald')
+  // The sender is the NevarMail use case's ("Scaffald <notifications@
+  // mail.scaffald.com>"). A delivery may still name its own address; NevarMail
+  // refuses one outside the use case's domain (403 FROM_NOT_ALLOWED).
+  const fromEmail = typeof metadata.fromEmail === 'string' ? metadata.fromEmail : null
+  const fromName = typeof metadata.fromName === 'string' ? metadata.fromName : 'Scaffald'
 
   // Cast to string because the DB enum includes policy.renewal via migration
   // but the generated types may not yet reflect it until next type generation.
@@ -162,22 +159,28 @@ function buildEmailPayload(
         : messageFallback
 
   return {
-    // Resend takes a single RFC 5322 string rather than a name/email pair.
-    from: `${fromName} <${fromEmail}>`,
-    to: [String(metadata.email)],
+    ...(fromEmail ? { from: fromEmail, fromName } : {}),
+    to: String(metadata.email),
     subject: typeof metadata.subject === 'string' ? metadata.subject : notification.title,
     html: htmlBody,
     text: textBody,
   }
 }
 
+/** Whether a failed send is worth another attempt later. */
+function retryable(error: NevarMailError): boolean {
+  // The daily cap and rate limits clear on their own; so do outages.
+  return error.isDailyCap || error.status === 429 || error.status >= 500
+}
+
 export const emailAdapter: ChannelAdapter = {
   async send({ delivery, notification }) {
-    const apiKey = Deno.env.get('RESEND_API_KEY')
-    if (!apiKey) {
+    const client = nevarMailFromEnv()
+    const useCaseId = nevarMailUseCase('notifications')
+    if (!client || !useCaseId) {
       return {
         status: 'failed',
-        error: 'RESEND_API_KEY environment variable is not set',
+        error: 'Email is not configured: NEVARMAIL_API_KEY and NEVARMAIL_USE_CASE_NOTIFICATIONS must be set',
       }
     }
 
@@ -197,46 +200,39 @@ export const emailAdapter: ChannelAdapter = {
     const payload = buildEmailPayload(metadata, notification, bodyPayload, messageFallback)
 
     try {
-      const response = await fetch(RESEND_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
+      const sent = await client.send({
+        to: payload.to,
+        useCaseId,
+        emailType: 'transactional',
+        subject: payload.subject,
+        html: payload.html,
+        text: payload.text,
+        ...(payload.from ? { from: payload.from, fromName: payload.fromName } : {}),
+        metadata: {
+          notificationId: notification.id ?? null,
+          deliveryId: delivery.id ?? null,
         },
-        body: JSON.stringify(payload),
       })
-
-      if (response.ok) {
-        // Resend returns the id in the body; SendGrid used an x-message-id
-        // header. The id is what Logs and webhook events key on, so losing it
-        // would make deliveries untraceable.
-        const body = (await response.json().catch(() => null)) as { id?: string } | null
-        return {
-          status: 'sent',
-          providerMessageId: body?.id,
-          events: [
-            {
-              kind: 'accepted',
-              meta: {
-                provider: 'resend',
-                status: response.status,
-              },
-            },
-          ],
-        }
-      }
-
-      const errorBody = await response.text()
-
-      // 429 is Resend's rate limit and clears on its own, so it is worth
-      // retrying even though it is not a 5xx.
-      const shouldRetry = response.status >= 500 || response.status === 429
-
       return {
-        status: shouldRetry ? 'retry' : 'failed',
-        error: `Resend responded with status ${response.status}: ${errorBody}`,
+        status: 'sent',
+        // Stored as notification_deliveries.provider_msg_id; the email webhook
+        // matches NevarMail events to deliveries by it (see #1389: NevarMail's
+        // send `id` and its webhook `email_id` must agree for that to work).
+        providerMessageId: sent.id,
+        events: [
+          {
+            kind: 'accepted',
+            meta: { provider: 'nevarmail', provider_provider: sent.provider ?? null },
+          },
+        ],
       }
     } catch (error) {
+      if (error instanceof NevarMailError) {
+        return {
+          status: retryable(error) ? 'retry' : 'failed',
+          error: error.message,
+        }
+      }
       return {
         status: 'retry',
         error: error instanceof Error ? error.message : 'Unknown email error',

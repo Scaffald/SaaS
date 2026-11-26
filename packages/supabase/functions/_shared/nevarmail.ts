@@ -61,8 +61,12 @@ export interface SendEmailInput {
   variables?: Record<string, unknown>;
   /** Defaults to "transactional". Invites and the newsletter are "marketing". */
   emailType?: NevarMailEmailType;
-  /** Must be on a domain of the use case's project; omit to use its sender. */
+  /** A bare address on a domain of the use case's project; omit to use its sender. */
   from?: string;
+  fromName?: string;
+  /** Where replies go (bare address), e.g. a contact form's submitter. */
+  replyTo?: string;
+  replyToName?: string;
   metadata?: Record<string, unknown>;
 }
 
@@ -231,6 +235,9 @@ export function createNevarMailClient(cfg: NevarMailConfig) {
         ...(input.templateId ? { templateId: input.templateId } : {}),
         ...(input.variables ? { variables: input.variables } : {}),
         ...(input.from ? { from: input.from } : {}),
+        ...(input.fromName ? { fromName: input.fromName } : {}),
+        ...(input.replyTo ? { replyTo: input.replyTo } : {}),
+        ...(input.replyToName ? { replyToName: input.replyToName } : {}),
         ...(input.metadata ? { metadata: input.metadata } : {}),
       });
     },

@@ -9,8 +9,7 @@ import {
   notificationEventSchema,
 } from '../_shared/notifications/types.ts'
 import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
-
-const RESEND_ENDPOINT = 'https://api.resend.com/emails'
+import { NevarMailError, nevarMailFromEnv, nevarMailUseCase } from '../_shared/nevarmail.ts'
 
 const payloadSchema = z.object({
   invitationId: z.string().uuid(),
@@ -132,53 +131,35 @@ async function sendPlainEmail(
   to: string,
   content: { subject: string; text: string; html: string }
 ): Promise<EmailResult> {
-  const apiKey = Deno.env.get('RESEND_API_KEY')
-  if (!apiKey) {
-    return { ok: false, status: 'failed', error: 'Missing RESEND_API_KEY environment variable.' }
-  }
-
-  const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') ?? 'notifications@scaffald.com'
-  const fromName = Deno.env.get('RESEND_FROM_NAME') ?? 'Scaffald'
-
-  const payload = {
-    from: `${fromName} <${fromEmail}>`,
-    to: [to],
-    subject: content.subject,
-    text: content.text,
-    html: content.html,
-  }
-
-  try {
-    const response = await fetch(RESEND_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-
-    if (response.ok) {
-      // Resend returns the id in the body, unlike SendGrid's x-message-id header.
-      const body = (await response.json().catch(() => null)) as { id?: string } | null
-      return {
-        ok: true,
-        status: 'sent',
-        providerMessageId: body?.id ?? null,
-      }
-    }
-
-    const errorBody = await response.text()
+  // Sent as the "Scaffald team invites" use case, from its sender
+  // (notifications@mail.scaffald.com). Transactional: the invitee asked to be
+  // part of this team's flow, and there is no list to leave.
+  const client = nevarMailFromEnv()
+  const useCaseId = nevarMailUseCase('team_invites')
+  if (!client || !useCaseId) {
     return {
       ok: false,
       status: 'failed',
-      error: `Resend responded with status ${response.status}: ${errorBody}`,
+      error: 'Email is not configured: NEVARMAIL_API_KEY and NEVARMAIL_USE_CASE_TEAM_INVITES must be set.',
     }
+  }
+
+  try {
+    const sent = await client.send({
+      to,
+      useCaseId,
+      emailType: 'transactional',
+      subject: content.subject,
+      text: content.text,
+      html: content.html,
+      metadata: { kind: 'team_invitation' },
+    })
+    return { ok: true, status: 'sent', providerMessageId: sent.id }
   } catch (error) {
     return {
       ok: false,
       status: 'failed',
-      error: error instanceof Error ? error.message : String(error),
+      error: error instanceof NevarMailError || error instanceof Error ? error.message : String(error),
     }
   }
 }

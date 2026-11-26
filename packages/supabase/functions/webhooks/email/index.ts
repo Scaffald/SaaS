@@ -12,15 +12,14 @@ import {
   nevarMailWebhookHeaders,
   verifyNevarMailWebhook,
 } from '../../_shared/nevarmail.ts'
-import { applyInviteEvent } from './nevarmail-events.ts'
+import { applyDeliveryEvent, applyInviteEvent } from './nevarmail-events.ts'
 
 /**
  * Email delivery-event webhook: NevarMail (X-Webhook-* headers, epic #1399)
  * and, until #1391 removes it, Resend (svix-* headers).
  *
- * NevarMail events are matched to worker invites here (#1393); matching them
- * to notification deliveries arrives with #1389, which moves notifications
- * onto NevarMail.
+ * NevarMail events are matched to a worker invite (#1393), else to a
+ * notification delivery by provider_msg_id (#1389).
  *
  * Resend delivery events:
  *
@@ -137,16 +136,21 @@ async function handleNevarMail(req: Request, rawBody: string): Promise<Response>
     return jsonResponse({ ok: true, ignored: event.type ?? null })
   }
 
+  const supabase = createServiceSupabaseClient()
   try {
-    const result = await applyInviteEvent(createServiceSupabaseClient(), event)
-    if (result.matched) {
-      return jsonResponse({ ok: true, event: event.type, invitationId: result.invitationId, changed: result.changed })
+    const invite = await applyInviteEvent(supabase, event)
+    if (invite.matched) {
+      return jsonResponse({ ok: true, event: event.type, invitationId: invite.invitationId, changed: invite.changed })
+    }
+    const delivery = await applyDeliveryEvent(supabase, event)
+    if (delivery.matched) {
+      return jsonResponse({ ok: true, event: event.type, deliveryId: delivery.deliveryId, status: delivery.status })
     }
   } catch (error) {
-    console.error('[webhooks/email] NevarMail invite event failed:', (error as Error).message)
+    console.error('[webhooks/email] NevarMail event failed:', (error as Error).message)
     return jsonResponse({ ok: false, error: 'Could not record event' }, 500)
   }
-  // Not an invite. Notification deliveries are matched once #1389 lands.
+  // Neither ours nor an id we know: acknowledged (200) so NevarMail does not retry.
   return jsonResponse({ ok: true, event: event.type, matched: false })
 }
 
