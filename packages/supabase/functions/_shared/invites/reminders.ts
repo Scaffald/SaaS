@@ -138,6 +138,7 @@ export async function processDueReminders(
         html: wrapInBrandedTemplate({
           title: "Scaffald",
           body: content.bodyHtml,
+          footerHtml: content.footerHtml,
         }),
         text: content.text,
         metadata: { invitationId: invite.id, kind: "referral_invite_reminder" },

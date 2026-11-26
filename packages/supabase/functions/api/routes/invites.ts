@@ -312,6 +312,7 @@ app.post("/", zValidator("json", createSchema), async (c) => {
         html: wrapInBrandedTemplate({
           title: "Scaffald",
           body: content.bodyHtml,
+          footerHtml: content.footerHtml,
         }),
         text: content.text,
         metadata: { invitationId: row.id, kind: "referral_invite" },
