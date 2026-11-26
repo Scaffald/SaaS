@@ -43,6 +43,7 @@ import type { JSONContent } from '@tiptap/core'
 import { Eye } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
+import { ROUTES } from '@scf/core/constants/routes'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { randomUUID } from 'expo-crypto'
 import { Toggle } from '@scaffald/ui'
@@ -200,6 +201,12 @@ type JobFormProps = {
   }
   onSuccess?: () => void
   /**
+   * Where a save lands when there is no page to go back to, as on a direct
+   * load of the form (#1436). Defaults to the Office CMS job list; the
+   * employer's form passes My Listings.
+   */
+  doneHref?: string
+  /**
    * The organisations the picker offers. Omitted, it is every organisation —
    * the Office CMS, where staff post for anyone. The employer's own form
    * passes the organisations they can hire for, since the all-organisations
@@ -316,11 +323,18 @@ export function JobForm({
   initialData,
   initialRelations,
   onSuccess,
+  doneHref = ROUTES.OFFICE.CMS.JOBS.path,
   organizations: scopedOrganizations,
 }: JobFormProps) {
   const { theme } = useThemeContext()
   const geocodingProvider = useMapboxGeocodingProvider()
   const router = useRouter()
+  // router.back() does nothing on a page opened directly, which left the
+  // employer on the form after posting (#1436).
+  const leaveForm = () => {
+    if (router.canGoBack()) router.back()
+    else router.replace(doneHref as never)
+  }
   const toast = useToast()
   const { data: allOrganizationsData } = useAllOrganizations({ enabled: !scopedOrganizations })
   const organizationsData = scopedOrganizations
@@ -545,7 +559,7 @@ export function JobForm({
         variant: 'success',
       })
       onSuccess?.()
-      router.back()
+      leaveForm()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
@@ -568,7 +582,7 @@ export function JobForm({
         variant: 'success',
       })
       onSuccess?.()
-      router.back()
+      leaveForm()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'

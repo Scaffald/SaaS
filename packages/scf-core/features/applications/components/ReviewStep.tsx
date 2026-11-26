@@ -3,6 +3,7 @@ import { Check, Edit3, FileText } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, Checkbox, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { formatYearsExperience } from '../screening-format'
 
 export interface ReviewStepProps {
   /**
@@ -118,8 +119,10 @@ export function ReviewStep({
             theme={theme}
             label="Years of Experience"
             value={
-              screeningAnswers.years_experience
-                ? `${screeningAnswers.years_experience} years`
+              // "5+ yrs" for the open-ended top bucket, as the screening
+              // step and the employer view show it (#1433).
+              screeningAnswers.years_experience != null
+                ? formatYearsExperience(screeningAnswers.years_experience)
                 : 'Not provided'
             }
           />

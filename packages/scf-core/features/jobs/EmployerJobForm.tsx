@@ -77,9 +77,12 @@ export function EmployerJobForm(props: EmployerJobFormProps) {
         organizations={organizations}
         initialData={officeJobToFormData(job as unknown as Record<string, unknown>)}
         initialRelations={{ skills: job.skills, certifications: job.certifications }}
+        doneHref={ROUTES.JOBS.MY_LISTINGS.path}
       />
     )
   }
 
-  return <JobForm mode="create" organizations={organizations} />
+  return (
+    <JobForm mode="create" organizations={organizations} doneHref={ROUTES.JOBS.MY_LISTINGS.path} />
+  )
 }

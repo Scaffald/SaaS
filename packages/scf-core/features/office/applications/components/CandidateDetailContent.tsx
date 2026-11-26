@@ -325,8 +325,16 @@ export const CandidateDetailContent = ({
           {/* No success/error fills (#1200). Advance is the one outlined
               action; closing out is a text button that still confirms in the
               modal, because rejection is the one move a candidate reads as
-              final. Advance names the ACTUAL next stage (§12 #1). */}
-          <Row gap={4} align="center" wrap>
+              final. Advance names the ACTUAL next stage (§12 #1). Capped at
+              the row's width so the buttons wrap instead of pushing the
+              header 14 px past a 390 px phone (#1435). */}
+          <Row
+            gap={4}
+            align="center"
+            wrap
+            style={{ flexShrink: 1, minWidth: 0, maxWidth: '100%' }}
+            testID="candidate-action-row"
+          >
             {nextStage ? (
               <Button
                 variant="outline"

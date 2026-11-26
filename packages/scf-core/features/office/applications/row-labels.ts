@@ -56,6 +56,27 @@ export function stageActorLabel(
   return name || 'A teammate'
 }
 
+const STAGE_LABELS: Record<string, string> = {
+  new: 'New',
+  screen: 'Screening',
+  inquired: 'Inquired',
+  interview: 'Interview',
+  offer: 'Offer',
+  hired: 'Hired',
+  rejected: 'Rejected',
+  withdrawn: 'Withdrawn',
+}
+
+/**
+ * A pipeline stage as people read it: "Screening", not the stored key
+ * "screen". The Activity tab printed the keys, so a move read "Moved from new
+ * to screen" (#1434). An unknown key comes back capitalised rather than blank.
+ */
+export function stageLabel(stage: string | null | undefined): string {
+  if (!stage) return ''
+  return STAGE_LABELS[stage] ?? stage.charAt(0).toUpperCase() + stage.slice(1)
+}
+
 /**
  * Case-insensitive match on the candidate's name and the job title — the two
  * things an employer types when looking for a row.
