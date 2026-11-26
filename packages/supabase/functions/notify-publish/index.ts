@@ -163,7 +163,7 @@ serve(async (req) => {
           supabase,
           notification.id,
           'email',
-          'resend',
+          'nevarmail',
           {
             email: contacts.email,
             subject: event.title,

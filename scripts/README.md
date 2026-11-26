@@ -443,7 +443,7 @@ Run these by path. Each has usage notes in its header comment.
 | `fix-gotrue-env.sh` | Patch the local GoTrue container's site URL after `supa start` so magic links resolve. |
 | `seed-app-review-prod.sh` | Seed the App Store reviewer demo accounts into production. |
 | `seed-notify-cron-vault.sh` | Seed the Vault secret pg_cron uses to call the notification edge functions (migration 337). |
-| `set-resend-eas-env.sh` | Publish `RESEND_API_KEY` from `.env` into the EAS environments. |
+| `set-nevarmail-eas-env.sh` | Publish `NEVARMAIL_API_KEY` and `NEVARMAIL_USE_CASE_CONTACT` from `.env` into the EAS environments. |
 
 ## Archived Scripts
 

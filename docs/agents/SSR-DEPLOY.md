@@ -190,7 +190,8 @@ Required runtime env:
 | `EXPO_PUBLIC_SUPABASE_URL` | Baked in at build; also read by loaders at runtime |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Anon key for loader/sitemap fetches |
 | `EXPO_PUBLIC_URL` | Canonical origin used in metadata + sitemaps |
-| `RESEND_API_KEY` | Contact form delivery |
+| `NEVARMAIL_API_KEY` | Contact form delivery (`scripts/set-nevarmail-eas-env.sh`) |
+| `NEVARMAIL_USE_CASE_CONTACT` | The "Scaffald contact" NevarMail use case (its sender is hello@mail.scaffald.com) |
 | `CONTACT_FORM_TO` | Optional; defaults to `hello@scaffald.com` |
 
 `EXPO_PUBLIC_*` values are inlined into the client bundle at build time — set

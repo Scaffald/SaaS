@@ -113,3 +113,97 @@ export async function applyInviteEvent(
   }
   return { matched: true, invitationId: invite.id, changed };
 }
+
+export type DeliveryEventResult =
+  | { matched: false; ignored?: boolean }
+  | { matched: true; deliveryId: number; status: string | null };
+
+type DeliveryMapping = {
+  /** New delivery status, if the event changes it. */
+  status?: "sent" | "delivered" | "bounce" | "blocked";
+  /** notification_events kind recorded for the event. */
+  event: "accepted" | "delivered" | "opened" | "clicked" | "bounce" | "complaint" | "failed";
+  error?: boolean;
+};
+
+/**
+ * NevarMail event → notification delivery. Opens, clicks, complaints and
+ * deferrals are recorded as events without touching the status: a complaint
+ * comes after delivery, and NevarMail retries a deferral itself.
+ */
+const DELIVERY_MAP: Partial<Record<NevarMailEmailEvent["type"], DeliveryMapping>> = {
+  "email.sent": { status: "sent", event: "accepted" },
+  "email.delivered": { status: "delivered", event: "delivered" },
+  "email.opened": { event: "opened" },
+  "email.clicked": { event: "clicked" },
+  "email.bounced": { status: "bounce", event: "bounce", error: true },
+  // Dropped = never attempted (suppressed or rejected before sending).
+  "email.dropped": { status: "blocked", event: "failed", error: true },
+  "email.complained": { event: "complaint", error: true },
+  "email.deferred": { event: "accepted" },
+};
+
+/** Statuses a late `email.sent` may still advance; it never undoes `delivered`. */
+const SENT_FROM = new Set(["queued", "sending"]);
+
+/**
+ * Applies an `email.*` event to the notification delivery whose
+ * provider_msg_id is the event's `email_id` (#1389). Matching by id only:
+ * a delivery row has no recipient address to fall back on.
+ */
+export async function applyDeliveryEvent(
+  supabase: Supabase,
+  event: NevarMailEmailEvent,
+): Promise<DeliveryEventResult> {
+  const mapping = DELIVERY_MAP[event.type];
+  if (!mapping) return { matched: false, ignored: true };
+  if (!event.email_id) return { matched: false };
+
+  const core = supabase.schema("core");
+  const { data: delivery, error } = await core
+    .from("notification_deliveries")
+    .select("id, notification_id, channel, status")
+    .eq("provider_msg_id", event.email_id)
+    .maybeSingle();
+  if (error) throw new Error(`delivery lookup failed: ${error.message}`);
+  if (!delivery) return { matched: false };
+
+  let status: string | null = null;
+  if (
+    mapping.status &&
+    (mapping.status !== "sent" || SENT_FROM.has(delivery.status))
+  ) {
+    status = mapping.status;
+    const { error: updateError } = await core
+      .from("notification_deliveries")
+      .update({
+        status,
+        last_error: mapping.error
+          ? (event.reason ?? `NevarMail reported ${event.type}`)
+          : null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", delivery.id);
+    if (updateError) {
+      throw new Error(`delivery update failed: ${updateError.message}`);
+    }
+  }
+
+  const { error: eventError } = await core.from("notification_events").insert({
+    notification_id: delivery.notification_id,
+    delivery_id: delivery.id,
+    channel: delivery.channel,
+    event: mapping.event,
+    ...(event.occurred_at ? { occurred_at: event.occurred_at } : {}),
+    meta: {
+      provider: "nevarmail",
+      type: event.type,
+      ...(event.url ? { url: event.url } : {}),
+      ...(event.reason ? { reason: event.reason } : {}),
+    },
+  });
+  if (eventError) {
+    throw new Error(`delivery event insert failed: ${eventError.message}`);
+  }
+  return { matched: true, deliveryId: delivery.id, status };
+}

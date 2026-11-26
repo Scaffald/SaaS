@@ -36,7 +36,8 @@ async function loadRoute() {
 }
 
 beforeEach(() => {
-  process.env.RESEND_API_KEY = 'test-key'
+  process.env.NEVARMAIL_API_KEY = 'test-key'
+  process.env.NEVARMAIL_USE_CASE_CONTACT = 'contact-use-case'
   vi.stubGlobal(
     'fetch',
     vi.fn(async () => new Response(JSON.stringify({ id: 'stub' }), { status: 200 }))
@@ -47,7 +48,8 @@ afterEach(() => {
   vi.unstubAllGlobals()
   // `process.env.X = undefined` stores the *string* "undefined", which is
   // truthy — the variable has to be deleted to simulate an unset key.
-  delete process.env.RESEND_API_KEY
+  delete process.env.NEVARMAIL_API_KEY
+  delete process.env.NEVARMAIL_USE_CASE_CONTACT
 })
 
 describe('validation', () => {
@@ -58,7 +60,7 @@ describe('validation', () => {
     expect(res.status).toBe(200)
     await expect(res.json()).resolves.toEqual({ ok: true })
     expect(fetch).toHaveBeenCalledTimes(1)
-    expect(vi.mocked(fetch).mock.calls[0][0]).toBe('https://api.resend.com/emails')
+    expect(vi.mocked(fetch).mock.calls[0][0]).toBe('https://app.nevarmail.com/api/v1/email/send')
   })
 
   test.each(['name', 'email', 'company', 'orgType'])(
@@ -99,14 +101,17 @@ describe('validation', () => {
     expect(res.status).toBe(400)
   })
 
-  test('reports a configuration problem rather than failing silently', async () => {
-    delete process.env.RESEND_API_KEY
-    const { POST } = await loadRoute()
-    const res = await POST(request(VALID))
+  test.each(['NEVARMAIL_API_KEY', 'NEVARMAIL_USE_CASE_CONTACT'])(
+    'reports a missing %s rather than failing silently',
+    async (name) => {
+      delete process.env[name]
+      const { POST } = await loadRoute()
+      const res = await POST(request(VALID))
 
-    expect(res.status).toBe(503)
-    expect(fetch).not.toHaveBeenCalled()
-  })
+      expect(res.status).toBe(503)
+      expect(fetch).not.toHaveBeenCalled()
+    }
+  )
 })
 
 describe('honeypot', () => {
@@ -196,7 +201,8 @@ describe('email payload', () => {
     await POST(request({ ...VALID, message: 'We need three welders in March.' }))
     const payload = sentPayload()
 
-    expect(payload.reply_to).toBe(VALID.email)
+    expect(payload.replyTo).toBe(VALID.email)
+    expect(payload.replyToName).toBe(VALID.name)
     expect(payload.subject).toContain(VALID.company)
     expect(sentText()).toContain('We need three welders in March.')
     expect(sentText()).toContain(VALID.name)
@@ -208,15 +214,20 @@ describe('email payload', () => {
     const { POST } = await loadRoute()
     await POST(request(VALID))
 
-    expect(sentPayload().from).not.toContain(VALID.email)
-    expect(sentPayload().from).toMatch(/<[^>]+@scaffald\.com>$/)
+    // The sender is the contact use case's (hello@mail.scaffald.com), set in
+    // NevarMail; the payload names the use case and no `from` at all.
+    const payload = sentPayload()
+    expect(payload.use_case_id).toBe('contact-use-case')
+    expect(payload.emailType).toBe('transactional')
+    expect(payload).not.toHaveProperty('from')
+    expect(JSON.stringify(payload)).not.toContain(`"from":"${VALID.email}`)
   })
 
   test('addresses exactly one recipient', async () => {
     const { POST } = await loadRoute()
     await POST(request(VALID))
 
-    expect(sentPayload().to).toHaveLength(1)
+    expect(sentPayload().to).toBe('hello@scaffald.com')
   })
 
   test('truncates oversized input before relaying it', async () => {

@@ -1,22 +1,21 @@
 /**
  * Contact form handler for the marketing landing page.
  *
- * Sends via Resend, the same transport as the app's notification email (see
- * packages/supabase/functions/_shared/notifications/adapters/email.ts), so
- * there is one account to fund, one domain to authenticate, and one place to
- * look when mail goes missing.
+ * Sends through NevarMail as the "Scaffald contact" use case, from its sender
+ * (hello@mail.scaffald.com) — the same provider as the app's notification
+ * email (packages/supabase/functions/_shared/nevarmail.ts), so there is one
+ * account and one domain to look at when mail goes missing (#1389).
  *
- * Uses the HTTP API directly rather than the SDK so this stays dependency-free
+ * Uses the HTTP API directly rather than an SDK so this stays dependency-free
  * and runs on any server runtime (Node, workerd, Bun).
+ *
+ * Env (EAS, server-side only): NEVARMAIL_API_KEY, NEVARMAIL_USE_CASE_CONTACT,
+ * optional NEVARMAIL_BASE_URL and CONTACT_FORM_TO.
  */
 
-const RESEND_ENDPOINT = 'https://api.resend.com/emails'
+const NEVARMAIL_BASE_URL = (process.env.NEVARMAIL_BASE_URL ?? 'https://app.nevarmail.com').replace(/\/+$/, '')
 
 const TO_EMAIL = process.env.CONTACT_FORM_TO ?? 'hello@scaffald.com'
-// Must be on a verified Resend domain. Matches the notification adapter's
-// default so both surfaces send as the same identity.
-const FROM_EMAIL = process.env.CONTACT_FORM_FROM ?? 'notifications@scaffald.com'
-const FROM_NAME = process.env.CONTACT_FORM_FROM_NAME ?? 'Scaffald'
 
 type ContactBody = {
   name?: string
@@ -103,9 +102,10 @@ export async function POST(request: Request): Promise<Response> {
     return json({ error: 'Invalid email address' }, 400)
   }
 
-  const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) {
-    console.error('[contact] RESEND_API_KEY is not configured')
+  const apiKey = process.env.NEVARMAIL_API_KEY
+  const useCaseId = process.env.NEVARMAIL_USE_CASE_CONTACT
+  if (!apiKey || !useCaseId) {
+    console.error('[contact] NEVARMAIL_API_KEY or NEVARMAIL_USE_CASE_CONTACT is not configured')
     return json({ error: 'Email not configured' }, 503)
   }
 
@@ -119,25 +119,27 @@ export async function POST(request: Request): Promise<Response> {
   ].join('\n')
 
   try {
-    const res = await fetch(RESEND_ENDPOINT, {
+    const res = await fetch(`${NEVARMAIL_BASE_URL}/api/v1/email/send`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: `${FROM_NAME} <${FROM_EMAIL}>`,
-        to: [TO_EMAIL],
+        to: TO_EMAIL,
+        use_case_id: useCaseId,
+        emailType: 'transactional',
         // The submitter is never the sender — that would fail SPF and DMARC for
         // their domain. Replying to the notification reaches them instead.
-        reply_to: email,
+        replyTo: email,
+        replyToName: name,
         subject: `New contact form submission — ${company}`,
         text,
       }),
     })
 
     if (!res.ok) {
-      console.error('[contact] Resend rejected the request:', res.status, await res.text())
+      console.error('[contact] NevarMail rejected the request:', res.status, await res.text())
       return json({ error: 'Failed to send' }, 502)
     }
 
